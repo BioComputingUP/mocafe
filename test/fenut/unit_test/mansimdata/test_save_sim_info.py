@@ -5,28 +5,16 @@ import mocafe.fenut.mansimdata as mansim
 from mocafe.fenut.parameters import Parameters
 
 
-def clean_folder(test_folder):
-    """
-    Clean the test folder
-    :param test_folder: name of the test folder
-    :return:
-    """
-    folder = mansim.saved_sim_folder / pathlib.Path(f"{test_folder}")
-    if fenics.MPI.comm_world.Get_rank() == 0:
-        shutil.rmtree(folder)
-
-
-def test_save_sim_info(test_folder, odf_sheet_test2):
-    data_folder = mansim.setup_data_folder(test_folder)
+def test_save_sim_info(tmpdir, odf_sheet_test2):
+    data_folder = mansim.setup_data_folder(mansim.test_sim_name, base_location=tmpdir)
     parameters = Parameters(odf_sheet_test2, "SimParams")
     mansim.save_sim_info(data_folder, 1.0, parameters, "test")
     print(str(data_folder / pathlib.Path("sim_info.html")))
     assert (data_folder / pathlib.Path("sim_info.html")).exists()
-    clean_folder(test_folder)
 
 
-def test_save_sim_info_format(test_folder, odf_sheet_test):
-    data_folder = mansim.setup_data_folder(test_folder)
+def test_save_sim_info_format(tmpdir, odf_sheet_test):
+    data_folder = mansim.setup_data_folder(mansim.test_sim_name, base_location=tmpdir)
     execution_time = 1.0
     parameters = Parameters(odf_sheet_test, "Sheet1")
     sim_name = mansim.test_sim_name
@@ -50,11 +38,10 @@ def test_save_sim_info_format(test_folder, odf_sheet_test):
         report_txt = report_file.read()
     # see result
     assert report_txt == expected_result, "The two texts should be equal"
-    clean_folder(test_folder)
 
 
-def test_save_sim_info_rationale(test_folder, odf_sheet_test):
-    data_folder = mansim.setup_data_folder(test_folder)
+def test_save_sim_info_rationale(tmpdir, odf_sheet_test):
+    data_folder = mansim.setup_data_folder(mansim.test_sim_name, base_location=tmpdir)
     execution_time = 1.0
     parameters = Parameters(odf_sheet_test, "Sheet1")
     sim_name = "another_test"
@@ -80,11 +67,10 @@ def test_save_sim_info_rationale(test_folder, odf_sheet_test):
         report_txt = report_file.read()
     # see result
     assert report_txt == expected_result, "The two dictionaries should be equal"
-    clean_folder(test_folder)
 
 
-def test_sim_info_error(test_folder, odf_sheet_test):
-    data_folder = mansim.setup_data_folder(test_folder)
+def test_sim_info_error(tmpdir, odf_sheet_test):
+    data_folder = mansim.setup_data_folder(mansim.test_sim_name, base_location=tmpdir)
     execution_time = 1.0
     parameters = Parameters(odf_sheet_test, "Sheet1")
     sim_name = "another_test"
@@ -117,4 +103,3 @@ def test_sim_info_error(test_folder, odf_sheet_test):
         report_txt = report_file.read()
     # see result
     assert report_txt == expected_result, "The two dictionaries should be equal"
-    clean_folder(test_folder)
