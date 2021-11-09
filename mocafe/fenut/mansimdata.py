@@ -9,38 +9,43 @@ Useful methods to manage simulation data
 # def macros
 default_sim_name = "default"
 test_sim_name = "test"
-runtime_folder = pathlib.Path("./runtime")
-saved_sim_folder = pathlib.Path("./saved_sim")
 sim_info_file = pathlib.Path("sim_info.html")
+default_runtime_folder_name = "runtime"
+default_saved_sim_folder_name = "saved_sim"
 
 
 def setup_data_folder(sim_name: str or None = default_sim_name,
-                      other_location: str or None = None) -> pathlib.Path:
+                      base_location: str or None = "./",
+                      saved_sim_folder: str or None = default_saved_sim_folder_name) -> pathlib.Path:
     """
     Setup the folder where the simulation will be saved. One can specify the simulation name; in case that is None the
-    simulation will be saved to the './runtime' folder, otherwise it will be saved to ./saved_sim/sim_name/0000.
+    simulation will be saved to the 'base_location/runtime' folder, otherwise it will be saved to base_location/
+    saved_sim/sim_name/0000.
     In case the same sim_name is given for multiple simulation, the result will be saved to ./saved_sim/sim_name/0001,
     0002, ... and so on.
-    Works in parallel.
-    :param sim_name: The name of the simulation. If None, the data_folder is './runtime'
-    :param other_location: instead of ./saved_sim, specify another location for your saved simulations
+    One can change the name of saved_sim folder through the parameter "saved_sim_folder"
+    Works in parallel with MPI.
+    :param sim_name: The name of the simulation. If None, the data_folder is 'base_location/runtime'
+    :param base_location: The base folder where the simulation will be saved. Default is ./
+    :param saved_sim_folder: instead of base_location/saved_sim, specify another name for your saved_folder
     :return: the data folder
     """
     comm = fenics.MPI.comm_world
     rank = comm.Get_rank()
+    runtime_folder = pathlib.Path(base_location) / pathlib.Path(default_runtime_folder_name)
+    saved_sim_folder = pathlib.Path(base_location) / pathlib.Path(saved_sim_folder)
     if rank == 0:
         if sim_name == default_sim_name or sim_name is None:
             data_folder = runtime_folder
         else:
-            local_saved_sim_folder = saved_sim_folder if other_location is None else pathlib.Path(other_location)
             base_code = "0000"
-            data_folder = local_saved_sim_folder / pathlib.Path(f"{sim_name}/{base_code}")
+            data_folder = saved_sim_folder / pathlib.Path(f"{sim_name}/{base_code}")
             if data_folder.exists():
                 sim_index = 1
                 len_code = len(base_code)
                 while data_folder.exists():
                     new_code = str(sim_index).zfill(len_code)
-                    data_folder = local_saved_sim_folder / pathlib.Path(f"{sim_name}/{new_code}")
+                    data_folder = saved_sim_folder / pathlib.Path(f"{sim_name}/{new_code}")
                     sim_index += 1
         data_folder.mkdir(parents=True, exist_ok=True)
     else:
