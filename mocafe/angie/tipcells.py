@@ -1,5 +1,4 @@
 import fenics
-import pathlib
 import numpy as np
 import mocafe.fenut.fenut as fu
 from mocafe.angie import af_sourcing
@@ -14,23 +13,6 @@ Test script for tip cell activation
 Franco Pradelli
 20 May 2021
 """
-# define logger
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.WARNING)
-# create log file
-logfolder = pathlib.Path(f"./runtime/log")
-logfolder.mkdir(parents=True, exist_ok=True)
-logfile = logfolder / pathlib.Path(f"{__name__}.log")
-if fenics.MPI.comm_world.Get_rank() == 0:
-    f = open(str(logfile), "w")
-    f.close()
-else:
-    pass
-# define file handler
-ch = logging.FileHandler(filename=str(logfile), mode='a')
-ch.setLevel(logging.DEBUG)
-# add ch to logger
-logger.addHandler(ch)
 
 
 class TipCell(BaseCell):
@@ -125,13 +107,13 @@ class TipCellManager:
         comm = fenics.MPI.comm_world
         root = 0
         # logging
-        logger.debug(f"p{rank}: Called activate_tip_cells")
+        logging.debug(f"p{rank}: Called activate_tip_cells")
         # get local mesh points
         local_mesh_points = self.mesh_wrapper.get_local_mesh().coordinates()
         # initialize local possible locations list
         local_possible_locations = []
         # Debug: setup cunters to check which test is not passed
-        logger.debug(f"p{rank}: Searching for new tip cells")
+        logging.debug(f"p{rank}: Searching for new tip cells")
         n_points_to_check = len(local_mesh_points)
         n_points_distant = 0
         n_points_phi_09 = 0
@@ -147,7 +129,7 @@ class TipCellManager:
                         if np.linalg.norm(gradT(point)) > self.G_m:
                             n_points_over_Gm += 1
                             local_possible_locations.append(point)
-        logger.debug(
+        logging.debug(
             f"DEBUG: p{rank}: finished checking. I found: \n"
             f"            * {n_points_distant} / {n_points_to_check} distant to the current tip cells \n"
             f"            * {n_points_phi_09} / {n_points_to_check} which were at phi > {self.phi_th} \n"
@@ -180,7 +162,7 @@ class TipCellManager:
                                    self.cell_radius,
                                    current_step)
             self._add_tip_cell(new_tip_cell)
-            logger.debug(f"DEBUG: p{rank}: created new tip cell at point {new_tip_cell_position}")
+            logging.debug(f"DEBUG: p{rank}: created new tip cell at point {new_tip_cell_position}")
 
     def _remove_tip_cells(self, local_to_remove):
         # get comm, rank and root
@@ -199,11 +181,11 @@ class TipCellManager:
         dbg_msg = f"p{rank}: created global_to_remove list. It includes: \n"
         for tip_cell in global_to_remove:
             dbg_msg += f" * tip_cell at position {tip_cell.get_position()}"
-        logger.debug(dbg_msg)
+        logging.debug(dbg_msg)
 
         # remove cells from global and local
         for tip_cell in global_to_remove:
-            logger.debug(f"p{rank}: Removing tip cell at position {tip_cell.get_position()}")
+            logging.debug(f"p{rank}: Removing tip cell at position {tip_cell.get_position()}")
             self.global_tip_cells_list.remove(tip_cell)
             if tip_cell in self.local_tip_cells_list:
                 self.local_tip_cells_list.remove(tip_cell)
@@ -271,7 +253,7 @@ class TipCellManager:
             # compute new position
             dt = self.parameters.get_value("dt")
             new_position = tip_cell_position + (dt * velocity)
-            logger.debug(
+            logging.debug(
                 f"DEBUG: p{fenics.MPI.comm_world.Get_rank()}: computing new tip cell position: \n"
                 f"    *[tip cell position] + [dt] * [velocity] = \n"
                 f"    *{tip_cell_position} + {dt} * {velocity} = {new_position}"
