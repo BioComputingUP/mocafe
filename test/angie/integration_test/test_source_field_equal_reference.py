@@ -1,12 +1,13 @@
 import fenics
 import numpy as np
-from src_traang.af_sourcing import SourceMap, SourcesField
-import fenut.fenut as fu
+from mocafe.angie.af_sourcing import SourceMap, SourcesField
+import mocafe.fenut.fenut as fu
+import os
 
 
 def test_source_field_equals_reference(parameters):
     # setup data folder
-    data_folder = "test/integration_test/input_test_files/test_source_field_equal_reference"
+    data_folder = f"{os.path.dirname(__file__)}/input_test_files/test_source_field_equal_reference"
 
     # define files
     file_names = ["T_checkpoint", "T"]

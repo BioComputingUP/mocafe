@@ -1,12 +1,12 @@
 import fenics
 import pathlib
 import numpy as np
-import fenut.fenut as fu
-from src_traang import af_sourcing
-from src_traang.base_classes import BaseCell
+import mocafe.fenut.fenut as fu
+from mocafe.angie import af_sourcing
+from mocafe.angie.base_classes import BaseCell
 import random
 import logging
-from fenut.parameters import Parameters
+from mocafe.fenut.parameters import Parameters
 
 """
 Test script for tip cell activation

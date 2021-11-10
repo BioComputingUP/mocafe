@@ -1,11 +1,11 @@
 import fenics
-import fenut.fenut as fu
+import mocafe.fenut.fenut as fu
 import numpy as np
 import random
 import logging
 import pathlib
-from src_traang import base_classes
-from fenut.parameters import Parameters
+from mocafe.angie import base_classes
+from mocafe.fenut.parameters import Parameters
 
 """
 Classes and methods to manages sources of angiognic factors.

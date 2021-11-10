@@ -1,13 +1,14 @@
-import fenut.fenut as fu
+import mocafe.fenut.fenut as fu
 import fenics
-from src_traang.forms import angiogenic_factor_form
-from src_traang.af_sourcing import SourceMap, SourcesManager
+from mocafe.angie.forms import angiogenic_factor_form
+from mocafe.angie.af_sourcing import SourceMap, SourcesManager
 import numpy as np
+import os
 
 
 def test_angiogenic_factor_form(parameters):
     # setup data folder
-    data_folder = "test/integration_test/input_test_files/test_angiogenic_factor_form"
+    data_folder = f"{os.path.dirname(__file__)}/input_test_files/test_angiogenic_factor_form"
 
     # define files
     file_names = ["T_checkpoint"]

@@ -1,5 +1,5 @@
 import numpy as np
-from src_traang.af_sourcing import SourceCell
+from mocafe.angie.af_sourcing import SourceCell
 
 
 def test_distance_source_cells():

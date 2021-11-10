@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from src_traang.tipcells import TipCell
+from mocafe.angie.tipcells import TipCell
 
 
 @pytest.fixture

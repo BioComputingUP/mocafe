@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 import fenics
-from src_traang.af_sourcing import SourcesField
+from mocafe.angie.af_sourcing import SourcesField
 
 
 @pytest.fixture

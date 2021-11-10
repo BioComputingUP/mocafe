@@ -1,6 +1,6 @@
 import fenics
-from src_traang.af_sourcing import SourceMap, SourcesManager
-import fenut.fenut as fu
+from mocafe.angie.af_sourcing import SourceMap, SourcesManager
+import mocafe.fenut.fenut as fu
 import numpy as np
 
 

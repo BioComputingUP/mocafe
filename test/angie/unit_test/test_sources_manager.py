@@ -1,5 +1,5 @@
 import pytest
-from src_traang.af_sourcing import SourcesManager
+from mocafe.angie.af_sourcing import SourcesManager
 
 
 @pytest.fixture

@@ -1,5 +1,5 @@
 import fenics
-from fenut.parameters import Parameters
+from mocafe.fenut.parameters import Parameters
 
 """FEniCS forms used throughout the simulation"""
 

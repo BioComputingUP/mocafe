@@ -1,5 +1,5 @@
 import numpy as np
-from src_traang.af_sourcing import sources_in_circle_points
+from mocafe.angie.af_sourcing import sources_in_circle_points
 
 
 def test_one():

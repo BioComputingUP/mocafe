@@ -1,19 +1,19 @@
 import fenics
 import numpy as np
 import pytest
-import fenut.fenut as fu
-from src_traang.tipcells import TipCellManager
+import mocafe.fenut.fenut as fu
+from mocafe.angie.tipcells import TipCellManager
 
 
-@pytest.fixture
-def file_list():
-    # setup root folder
-    data_folder = "runtime/test/tipcell"
-
-    # define files
-    file_names = ["phi", "T", "grad_T"]
-    file_list = fu.setup_xdmf_files(file_names, data_folder)
-    return file_list
+# @pytest.fixture
+# def file_list():
+#     # setup root folder
+#     data_folder = "runtime/test/tipcell"
+#
+#     # define files
+#     file_names = ["phi", "T", "grad_T"]
+#     file_list = fu.setup_xdmf_files(file_names, data_folder)
+#     return file_list
 
 
 @pytest.fixture

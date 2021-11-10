@@ -1,18 +1,19 @@
 import fenics
 import pytest
-from fenut.fenut import RectangleMeshWrapper
-from src_traang.af_sourcing import SourceMap
+from mocafe.fenut.fenut import RectangleMeshWrapper
+from mocafe.angie.af_sourcing import SourceMap
 import pathlib
-from fenut.parameters import Parameters
-from src_traang import load_random_state
+from mocafe.fenut.parameters import Parameters
+from mocafe.angie import load_random_state
+import os
 
 """Global fixtures"""
-load_random_state("test/test_randomstate.pickle")
+load_random_state(f"{os.path.dirname(__file__)}/test_randomstate.pickle")
 
 
 @pytest.fixture
 def parameters() -> Parameters:
-    return Parameters(pathlib.Path("input_files/parameters.ods"), "SimParams")
+    return Parameters(pathlib.Path(f"{os.path.dirname(__file__)}/test_parameters.ods"), "SimParams")
 
 
 @pytest.fixture

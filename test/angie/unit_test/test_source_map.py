@@ -1,5 +1,5 @@
 import pytest
-from src_traang.af_sourcing import SourceCell
+from mocafe.angie.af_sourcing import SourceCell
 
 
 @pytest.fixture

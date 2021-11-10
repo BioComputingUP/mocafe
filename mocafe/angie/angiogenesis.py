@@ -1,14 +1,14 @@
 import fenics
 import time
-import fenut.fenut as fu
-import fenut.mansimdata as mansimd
+import mocafe.fenut.fenut as fu
+import mocafe.fenut.mansimdata as mansimd
 import logging
 import pathlib
-from src_traang import af_sourcing, tipcells
-from src_traang.expressions import AngiogenesisInitialCondition
-from src_traang.forms import angiogenesis_form, angiogenic_factor_form
+from mocafe.angie import af_sourcing, tipcells
+from mocafe.angie.expressions import AngiogenesisInitialCondition
+from mocafe.angie.forms import angiogenesis_form, angiogenic_factor_form
 from tqdm import tqdm
-from fenut.parameters import Parameters
+from mocafe.fenut.parameters import Parameters
 
 """
 FEniCS implementation of the angiogenesis model formulated by Travasso et al. 
@@ -45,8 +45,8 @@ def run_simulation(parameters_file: pathlib.Path, expression_function_parameters
     fenics.parameters["std_out_all_processes"] = False
     # set log level
     fenics.set_log_level(fenics.LogLevel.ERROR)
-    logging.getLogger("src_traang.tipcells").setLevel(logging.ERROR)
-    logging.getLogger("src_traang.af_sourcing").setLevel(logging.ERROR)
+    logging.getLogger("mocafe.angie.tipcells").setLevel(logging.ERROR)
+    logging.getLogger("mocafe.angie.af_sourcing").setLevel(logging.ERROR)
     # define data folder
     data_folder = mansimd.setup_data_folder(sim_name)
 
