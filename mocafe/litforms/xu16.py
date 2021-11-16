@@ -9,6 +9,7 @@ https://doi.org/10.1371/JOURNAL.PONE.0149422
 """
 import fenics
 from mocafe.math import shf
+from mocafe.fenut.parameters import Parameters
 
 
 def xu2016_nutrient_form(sigma: fenics.Function,
@@ -37,7 +38,7 @@ def xu_2016_cancer_form(phi: fenics.Function,
                         phi_old: fenics.Function,
                         sigma: fenics.Function,
                         v: fenics.TestFunction,
-                        params: dict):
+                        params: Parameters):
     """
     Equation describing cancer evolution according to equation (5) of the paper of Xu et al. (2016).
     :param phi: function representing the tumor at a given time t_n
@@ -54,7 +55,7 @@ def xu_2016_cancer_form(phi: fenics.Function,
     # define chem potential
     g = (phi ** 2) * ((1 - phi) ** 2)
     h = (phi ** 2) * (3 - 2 * phi)
-    m_sigma = (- 2 / (3.01 * fenics.pi)) * fenics.atan(15 * (sigma - params["sigma^(h-v)"]))
+    m_sigma = (- 2 / (3.01 * fenics.pi)) * fenics.atan(15 * (sigma - params.get_value("sigma^(h-v)")))
     chem_poteintial = g + (h * m_sigma)
 
     # define mu
@@ -62,8 +63,8 @@ def xu_2016_cancer_form(phi: fenics.Function,
 
     # define form
     form = \
-        ((phi - phi_old) / params["dt"]) * v * fenics.dx + \
-        (params["M_phi"] * (params["lambda_phi"] ** 2) * fenics.dot(fenics.grad(phi), fenics.grad(v)) * fenics.dx) + \
-        (params["M_phi"] * mu * v * fenics.dx)
+        ((phi - phi_old) / params.get_value("dt")) * v * fenics.dx + \
+        (params.get_value("M_phi") * (params.get_value("lambda_phi") ** 2) * fenics.dot(fenics.grad(phi), fenics.grad(v)) * fenics.dx) + \
+        (params.get_value("M_phi") * mu * v * fenics.dx)
 
     return form
