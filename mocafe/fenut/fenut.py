@@ -81,6 +81,26 @@ class RectangleMeshWrapper:
         return self.dim
 
 
+def get_mixed_function_space(mesh: fenics.Mesh,
+                             n_variables: int,
+                             element_type: str = "CG",
+                             degree: int = 1):
+    """
+    Builds a mixed function space for the given mesh with n_variables elements of the same given element_type.
+    :param mesh: the mesh to build the function space on.
+    :param n_variables: the number of elements composing the mixed elements space, usually equal to the number of
+    variables you need to simulate.
+    :param element_type: the type of element you want to use, identified with the fenics string. Default is Continuos
+    Glaerkin, 'CG'.
+    :param degree: the degree of the elements you want to use. Default is 1.
+    :return: the function space for the given mesh.
+    """
+    element = fenics.FiniteElement(element_type, fenics.triangle, degree)
+    mixed_element = fenics.MixedElement([element] * n_variables)
+    function_space = fenics.FunctionSpace(mesh, mixed_element)
+    return function_space
+
+
 def build_local_box(local_mesh, border_width):
     x_list = []
     y_list = []
