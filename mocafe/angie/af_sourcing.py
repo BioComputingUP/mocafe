@@ -2,15 +2,19 @@ import fenics
 import mocafe.fenut.fenut as fu
 import numpy as np
 import random
-import logging
 from mocafe.angie import base_classes
 from mocafe.fenut.parameters import Parameters
+from mocafe.fenut.log import get_info_adapter, get_progress_adapter
 
 """
 Classes and methods to manages sources of angiognic factors.
 """
 # get rank
 rank = fenics.MPI.comm_world.Get_rank()
+
+# get progress and info loggers
+progress_logger = get_progress_adapter(__name__)
+info_logger = get_info_adapter(__name__)
 
 
 class SourceCell(base_classes.BaseCell):
@@ -160,12 +164,12 @@ class SourceMap:
     def remove_global_source(self, source_cell: SourceCell):
         # remove from global list
         self.global_source_cells.remove(source_cell)
-        logging.debug(f"p{rank}: Removed source cell {source_cell.__hash__()} at position {source_cell.get_position()}"
+        info_logger.info(f"p{rank}: Removed source cell {source_cell.__hash__()} at position {source_cell.get_position()}"
                      f"from the global list")
         # if in local, remove from local list too
         if source_cell in self.local_source_cells:
             self.local_source_cells.remove(source_cell)
-            logging.debug(
+            info_logger.info(
                 f"p{rank}: Removed source cell {source_cell.__hash__()} at position {source_cell.get_position()}"
                 f"from the local list")
 
@@ -194,18 +198,18 @@ class SourcesManager:
         """
         # prepare list of cells to remove
         to_remove = []
-        logging.debug(f"p{rank}: Starting to remove source cells")
+        info_logger.info(f"p{rank}: Starting to remove source cells")
         for source_cell in self.source_map.get_local_source_cells():
             source_cell_position = source_cell.get_position()
-            logging.debug(f"p{rank}: Checking cell {source_cell.__hash__()} at position {source_cell_position}")
+            info_logger.info(f"p{rank}: Checking cell {source_cell.__hash__()} at position {source_cell_position}")
             clock_check_test_result = self.clock_checker.clock_check(source_cell_position,
                                                                      phi,
                                                                      self.parameters.get_value("phi_th"),
                                                                      lambda val, thr: val > thr)
-            logging.debug(f"p{rank}: Clock Check test result is {clock_check_test_result}")
+            info_logger.info(f"p{rank}: Clock Check test result is {clock_check_test_result}")
             if clock_check_test_result:
                 to_remove.append(source_cell)
-                logging.debug(f"p{rank}: Appended source cell {source_cell.__hash__()} at position "
+                info_logger.info(f"p{rank}: Appended source cell {source_cell.__hash__()} at position "
                              f"{source_cell_position} to the 'to_remove' list")
 
         self._remove_sources(to_remove)
@@ -327,9 +331,9 @@ class ClockChecker:
         for vector in self.circle_vectors:
             for scale in np.arange(1., 0., -(1 / 20)):
                 ppv = point + (scale * vector)
-                logging.debug(f"p{rank}: Checking point {ppv}")
+                info_logger.info(f"p{rank}: Checking point {ppv}")
                 if self.mesh_wrapper.is_inside_local_mesh(fenics.Point(ppv)):
-                    logging.debug(f"p{rank}: Point {ppv} is inside local mesh.")
+                    info_logger.info(f"p{rank}: Point {ppv} is inside local mesh.")
                     if condition(function(list(ppv)), threshold):  # ppv translated to List to avoid FutureWarning
                         return True
                 else:

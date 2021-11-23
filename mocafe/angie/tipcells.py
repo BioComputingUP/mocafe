@@ -4,8 +4,8 @@ import mocafe.fenut.fenut as fu
 from mocafe.angie import af_sourcing
 from mocafe.angie.base_classes import BaseCell
 import random
-import logging
 from mocafe.fenut.parameters import Parameters
+from mocafe.fenut.log import get_progress_adapter, get_info_adapter
 
 """
 Test script for tip cell activation
@@ -13,6 +13,11 @@ Test script for tip cell activation
 Franco Pradelli
 20 May 2021
 """
+
+
+# get progress and info loggers
+progress_logger = get_progress_adapter(__name__)
+info_logger = get_info_adapter(__name__)
 
 
 class TipCell(BaseCell):
@@ -107,13 +112,13 @@ class TipCellManager:
         comm = fenics.MPI.comm_world
         root = 0
         # logging
-        logging.debug(f"p{rank}: Called activate_tip_cells")
+        progress_logger.info(f"Called {self.activate_tip_cell.__name__}")
         # get local mesh points
         local_mesh_points = self.mesh_wrapper.get_local_mesh().coordinates()
         # initialize local possible locations list
         local_possible_locations = []
         # Debug: setup cunters to check which test is not passed
-        logging.debug(f"p{rank}: Searching for new tip cells")
+        info_logger.info(f"p{rank}: Searching for new tip cells")
         n_points_to_check = len(local_mesh_points)
         n_points_distant = 0
         n_points_phi_09 = 0
@@ -129,7 +134,7 @@ class TipCellManager:
                         if np.linalg.norm(gradT(point)) > self.G_m:
                             n_points_over_Gm += 1
                             local_possible_locations.append(point)
-        logging.debug(
+        info_logger.info(
             f"DEBUG: p{rank}: finished checking. I found: \n"
             f"            * {n_points_distant} / {n_points_to_check} distant to the current tip cells \n"
             f"            * {n_points_phi_09} / {n_points_to_check} which were at phi > {self.phi_th} \n"
@@ -162,7 +167,7 @@ class TipCellManager:
                                    self.cell_radius,
                                    current_step)
             self._add_tip_cell(new_tip_cell)
-            logging.debug(f"DEBUG: p{rank}: created new tip cell at point {new_tip_cell_position}")
+            info_logger.info(f"DEBUG: p{rank}: created new tip cell at point {new_tip_cell_position}")
 
     def _remove_tip_cells(self, local_to_remove):
         # get comm, rank and root
@@ -181,16 +186,17 @@ class TipCellManager:
         dbg_msg = f"p{rank}: created global_to_remove list. It includes: \n"
         for tip_cell in global_to_remove:
             dbg_msg += f" * tip_cell at position {tip_cell.get_position()}"
-        logging.debug(dbg_msg)
+        info_logger.info(dbg_msg)
 
         # remove cells from global and local
         for tip_cell in global_to_remove:
-            logging.debug(f"p{rank}: Removing tip cell at position {tip_cell.get_position()}")
+            info_logger.info(f"p{rank}: Removing tip cell at position {tip_cell.get_position()}")
             self.global_tip_cells_list.remove(tip_cell)
             if tip_cell in self.local_tip_cells_list:
                 self.local_tip_cells_list.remove(tip_cell)
 
     def revert_tip_cells(self, T, gradT):
+        progress_logger.info(f"Called {self.revert_tip_cells.__name__}")
         local_to_remove = []
         for tip_cell in self.local_tip_cells_list:
             position = tip_cell.get_position()
@@ -253,7 +259,7 @@ class TipCellManager:
             # compute new position
             dt = self.parameters.get_value("dt")
             new_position = tip_cell_position + (dt * velocity)
-            logging.debug(
+            info_logger.info(
                 f"DEBUG: p{fenics.MPI.comm_world.Get_rank()}: computing new tip cell position: \n"
                 f"    *[tip cell position] + [dt] * [velocity] = \n"
                 f"    *{tip_cell_position} + {dt} * {velocity} = {new_position}"
@@ -320,45 +326,13 @@ class TipCellManager:
         return t_c_f_function
 
     def move_tip_cells(self, phi, T, gradT, V, is_V_sub_space) -> fenics.Function:
+        progress_logger.info(f"Called {self.move_tip_cells.__name__}")
         # update tip cell positions
         tip_cells_field_expression = self._update_tip_cell_positions_and_get_field(T, gradT)
         # apply tip_cells_field to phi
         t_c_f_fucntion = self._apply_tip_cells_field(phi, tip_cells_field_expression, V, is_V_sub_space)
         # return tip cell field function for monitoring
         return t_c_f_fucntion
-        # # collapse function space
-        # if is_V_sub_space:
-        #     V_interpolation = V.collapse()
-        # else:
-        #     V_interpolation = V
-        # share new position among processes
-        # if self.mesh_wrapper.is_inside_global_mesh(new_position):
-        #     # move tip cell
-        #     tip_cell.move(new_position)
-        #     # compute current tip cell field
-        #     tip_cell_field = tipCells.TipCellField(tip_cell,
-        #                                            self.alpha_p,
-        #                                            velocity,
-        #                                            T(new_position),
-        #                                            self.T_p)
-        #     # interpolate current tip cell field on V_interpolation
-        #     tip_cell_field_interpolated = fenics.interpolate(tip_cell_field, V_interpolation)
-        #     if is_V_sub_space:
-        #         # define function assigner from collapsed to sub
-        #         assigner_to_collapsed = fenics.FunctionAssigner(V_interpolation, V)
-        #         # assign self.phi to a given function on V_interpolation
-        #         phi_temp = fenics.Function(V_interpolation)
-        #         assigner_to_collapsed.assign(phi_temp, phi)
-        #         # get the new value of phi on V_interpolation
-        #         phi_temp.assign(phi_temp + tip_cell_field_interpolated)
-        #         # create function assigner from V_interpolated to subspace V
-        #         assigner_to_sub = fenics.FunctionAssigner(V, V_interpolation)
-        #         # assign phi_temp to self.phi
-        #         assigner_to_sub.assign(phi, phi_temp)
-        #     else:
-        #         phi.assign(phi + tip_cell_field_interpolated)
-        # else:
-        #     tip_cells_out_of_mesh.append(tip_cell)
 
     def compute_tip_cell_velocity(self, gradT, chi, tip_cell_position):
         grad_T_at_point = gradT(tip_cell_position)
