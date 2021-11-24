@@ -4,8 +4,9 @@ import mocafe.fenut.fenut as fu
 from mocafe.angie import af_sourcing
 from mocafe.angie.base_classes import BaseCell
 import random
+import logging
 from mocafe.fenut.parameters import Parameters
-from mocafe.fenut.log import get_progress_adapter, get_info_adapter
+from mocafe.fenut.log import confgure_root_logger_with_standard_settings, InfoCsvAdapter, DebugAdapter
 
 """
 Test script for tip cell activation
@@ -14,10 +15,13 @@ Franco Pradelli
 20 May 2021
 """
 
+# get rank
+rank = fenics.MPI.comm_world.Get_rank()
 
-# get progress and info loggers
-progress_logger = get_progress_adapter(__name__)
-info_logger = get_info_adapter(__name__)
+# configure logger
+logger = logging.getLogger(__name__)
+info_adapter = InfoCsvAdapter(logger, {"rank": rank, "module": __name__})
+debug_adapter = DebugAdapter(logger, {"rank": rank, "module": __name__})
 
 
 class TipCell(BaseCell):
@@ -112,13 +116,13 @@ class TipCellManager:
         comm = fenics.MPI.comm_world
         root = 0
         # logging
-        progress_logger.info(f"Called {self.activate_tip_cell.__name__}")
+        info_adapter.info(f"Called {self.activate_tip_cell.__name__}")
         # get local mesh points
         local_mesh_points = self.mesh_wrapper.get_local_mesh().coordinates()
         # initialize local possible locations list
         local_possible_locations = []
         # Debug: setup cunters to check which test is not passed
-        info_logger.info(f"p{rank}: Searching for new tip cells")
+        debug_adapter.debug(f"Searching for new tip cells")
         n_points_to_check = len(local_mesh_points)
         n_points_distant = 0
         n_points_phi_09 = 0
@@ -134,14 +138,15 @@ class TipCellManager:
                         if np.linalg.norm(gradT(point)) > self.G_m:
                             n_points_over_Gm += 1
                             local_possible_locations.append(point)
-        info_logger.info(
-            f"DEBUG: p{rank}: finished checking. I found: \n"
-            f"            * {n_points_distant} / {n_points_to_check} distant to the current tip cells \n"
-            f"            * {n_points_phi_09} / {n_points_to_check} which were at phi > {self.phi_th} \n"
-            f"            * {n_points_over_Tc} / {n_points_to_check} which were at T > {self.T_c} \n"
-            f"            * {n_points_over_Gm} / {n_points_to_check} which were at G > {self.G_m} \n"
-            f"            * {n_points_over_Gm} / {n_points_to_check} new possible locations"
-        )
+        debug_msg = \
+            f"Finished checking. I found: \n" \
+            f"\t* {n_points_distant} / {n_points_to_check} distant to the current tip cells \n" \
+            f"\t* {n_points_phi_09} / {n_points_to_check} which were at phi > {self.phi_th} \n" \
+            f"\t* {n_points_over_Tc} / {n_points_to_check} which were at T > {self.T_c} \n" \
+            f"\t* {n_points_over_Gm} / {n_points_to_check} which were at G > {self.G_m} \n" \
+            f"\t* {n_points_over_Gm} / {n_points_to_check} new possible locations"
+        for line in debug_msg.split("\n"):
+            debug_adapter.debug(line)
 
         # gather possible locations on root
         local_possible_locations_lists = comm.gather(local_possible_locations, root)
@@ -167,7 +172,7 @@ class TipCellManager:
                                    self.cell_radius,
                                    current_step)
             self._add_tip_cell(new_tip_cell)
-            info_logger.info(f"DEBUG: p{rank}: created new tip cell at point {new_tip_cell_position}")
+            debug_adapter.debug(f"Created new tip cell at point {new_tip_cell_position}")
 
     def _remove_tip_cells(self, local_to_remove):
         # get comm, rank and root
@@ -183,20 +188,19 @@ class TipCellManager:
         else:
             global_to_remove = None
         global_to_remove = comm.bcast(global_to_remove, root)
-        dbg_msg = f"p{rank}: created global_to_remove list. It includes: \n"
+        debug_adapter.debug(f"Created global_to_remove list. It includes:")
         for tip_cell in global_to_remove:
-            dbg_msg += f" * tip_cell at position {tip_cell.get_position()}"
-        info_logger.info(dbg_msg)
+            debug_adapter.debug(f"\t* tip_cell at position {tip_cell.get_position()}")
 
         # remove cells from global and local
         for tip_cell in global_to_remove:
-            info_logger.info(f"p{rank}: Removing tip cell at position {tip_cell.get_position()}")
+            debug_adapter.debug(f"Removing tip cell at position {tip_cell.get_position()}")
             self.global_tip_cells_list.remove(tip_cell)
             if tip_cell in self.local_tip_cells_list:
                 self.local_tip_cells_list.remove(tip_cell)
 
     def revert_tip_cells(self, T, gradT):
-        progress_logger.info(f"Called {self.revert_tip_cells.__name__}")
+        info_adapter.info(f"Called {self.revert_tip_cells.__name__}")
         local_to_remove = []
         for tip_cell in self.local_tip_cells_list:
             position = tip_cell.get_position()
@@ -259,11 +263,12 @@ class TipCellManager:
             # compute new position
             dt = self.parameters.get_value("dt")
             new_position = tip_cell_position + (dt * velocity)
-            info_logger.info(
-                f"DEBUG: p{fenics.MPI.comm_world.Get_rank()}: computing new tip cell position: \n"
-                f"    *[tip cell position] + [dt] * [velocity] = \n"
-                f"    *{tip_cell_position} + {dt} * {velocity} = {new_position}"
-            )
+            debug_msg = \
+                f"DEBUG: p{fenics.MPI.comm_world.Get_rank()}: computing new tip cell position: \n" \
+                f"\t*[tip cell position] + [dt] * [velocity] = \n" \
+                f"\t*{tip_cell_position} + {dt} * {velocity} = {new_position}"
+            for line in debug_msg.split("\n"):
+                debug_adapter.debug(line)
 
             # if new position is not in global mesh
             if not self.mesh_wrapper.is_inside_global_mesh(new_position):
@@ -326,7 +331,7 @@ class TipCellManager:
         return t_c_f_function
 
     def move_tip_cells(self, phi, T, gradT, V, is_V_sub_space) -> fenics.Function:
-        progress_logger.info(f"Called {self.move_tip_cells.__name__}")
+        info_adapter.info(f"Called {self.move_tip_cells.__name__}")
         # update tip cell positions
         tip_cells_field_expression = self._update_tip_cell_positions_and_get_field(T, gradT)
         # apply tip_cells_field to phi

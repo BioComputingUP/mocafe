@@ -4,7 +4,8 @@ import numpy as np
 import random
 from mocafe.angie import base_classes
 from mocafe.fenut.parameters import Parameters
-from mocafe.fenut.log import get_info_adapter, get_progress_adapter
+import logging
+from mocafe.fenut.log import InfoCsvAdapter, DebugAdapter
 
 """
 Classes and methods to manages sources of angiognic factors.
@@ -12,9 +13,10 @@ Classes and methods to manages sources of angiognic factors.
 # get rank
 rank = fenics.MPI.comm_world.Get_rank()
 
-# get progress and info loggers
-progress_logger = get_progress_adapter(__name__)
-info_logger = get_info_adapter(__name__)
+# configure logger
+logger = logging.getLogger(__name__)
+info_adapter = InfoCsvAdapter(logger, {"rank": rank, "module": __name__})
+debug_adapter = DebugAdapter(logger, {"rank": rank, "module": __name__})
 
 
 class SourceCell(base_classes.BaseCell):
@@ -164,13 +166,13 @@ class SourceMap:
     def remove_global_source(self, source_cell: SourceCell):
         # remove from global list
         self.global_source_cells.remove(source_cell)
-        info_logger.info(f"p{rank}: Removed source cell {source_cell.__hash__()} at position {source_cell.get_position()}"
-                     f"from the global list")
+        debug_adapter.debug(f"Removed source cell {source_cell.__hash__()} at position {source_cell.get_position()}"
+                            f"from the global list")
         # if in local, remove from local list too
         if source_cell in self.local_source_cells:
             self.local_source_cells.remove(source_cell)
-            info_logger.info(
-                f"p{rank}: Removed source cell {source_cell.__hash__()} at position {source_cell.get_position()}"
+            debug_adapter.debug(
+                "Removed source cell {source_cell.__hash__()} at position {source_cell.get_position()}"
                 f"from the local list")
 
 
@@ -198,19 +200,19 @@ class SourcesManager:
         """
         # prepare list of cells to remove
         to_remove = []
-        info_logger.info(f"p{rank}: Starting to remove source cells")
+        debug_adapter.debug(f"Starting to remove source cells")
         for source_cell in self.source_map.get_local_source_cells():
             source_cell_position = source_cell.get_position()
-            info_logger.info(f"p{rank}: Checking cell {source_cell.__hash__()} at position {source_cell_position}")
+            debug_adapter.debug(f"Checking cell {source_cell.__hash__()} at position {source_cell_position}")
             clock_check_test_result = self.clock_checker.clock_check(source_cell_position,
                                                                      phi,
                                                                      self.parameters.get_value("phi_th"),
                                                                      lambda val, thr: val > thr)
-            info_logger.info(f"p{rank}: Clock Check test result is {clock_check_test_result}")
+            debug_adapter.debug(f"Clock Check test result is {clock_check_test_result}")
             if clock_check_test_result:
                 to_remove.append(source_cell)
-                info_logger.info(f"p{rank}: Appended source cell {source_cell.__hash__()} at position "
-                             f"{source_cell_position} to the 'to_remove' list")
+                debug_adapter.debug(f"Appended source cell {source_cell.__hash__()} at position "
+                                    f"{source_cell_position} to the 'to_remove' list")
 
         self._remove_sources(to_remove)
 
@@ -331,9 +333,9 @@ class ClockChecker:
         for vector in self.circle_vectors:
             for scale in np.arange(1., 0., -(1 / 20)):
                 ppv = point + (scale * vector)
-                info_logger.info(f"p{rank}: Checking point {ppv}")
+                debug_adapter.debug(f"Checking point {ppv}")
                 if self.mesh_wrapper.is_inside_local_mesh(fenics.Point(ppv)):
-                    info_logger.info(f"p{rank}: Point {ppv} is inside local mesh.")
+                    debug_adapter.debug(f"Point {ppv} is inside local mesh.")
                     if condition(function(list(ppv)), threshold):  # ppv translated to List to avoid FutureWarning
                         return True
                 else:
