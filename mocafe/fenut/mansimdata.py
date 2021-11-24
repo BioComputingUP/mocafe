@@ -115,4 +115,3 @@ def save_sim_info(data_folder: pathlib.Path,
                                   f"    {error_msg} \n"
                                   f"  </p>\n")
             report_file.write(f"</article>")
-
