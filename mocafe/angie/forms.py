@@ -58,7 +58,7 @@ def cahn_hillard_form(c: fenics.Variable,
     :return: the UFL form of the Cahn-Hillard Equation
     """
     # Define form for mu (theta method)
-    mu_mid = (1.0 - theta) * mu0 + theta * mu
+    mu_mid = (fenics.Constant(1.0) - theta) * mu0 + theta * mu
 
     # chem potential derivative
     dfdc = fenics.diff(chem_potential, c)

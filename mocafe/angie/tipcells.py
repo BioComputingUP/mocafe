@@ -6,7 +6,7 @@ from mocafe.angie.base_classes import BaseCell
 import random
 import logging
 from mocafe.fenut.parameters import Parameters
-from mocafe.fenut.log import confgure_root_logger_with_standard_settings, InfoCsvAdapter, DebugAdapter
+from mocafe.fenut.log import InfoCsvAdapter, DebugAdapter
 
 """
 Test script for tip cell activation
@@ -16,7 +16,8 @@ Franco Pradelli
 """
 
 # get rank
-rank = fenics.MPI.comm_world.Get_rank()
+comm = fenics.MPI.comm_world
+rank = comm.Get_rank()
 
 # configure logger
 logger = logging.getLogger(__name__)
@@ -111,9 +112,7 @@ class TipCellManager:
             self.local_tip_cells_list.append(tip_cell)
 
     def activate_tip_cell(self, phi, T, gradT, current_step):
-        # get rank, comm and root
-        rank = fenics.MPI.comm_world.Get_rank()
-        comm = fenics.MPI.comm_world
+        # define root rank
         root = 0
         # logging
         info_adapter.info(f"Called {self.activate_tip_cell.__name__}")
@@ -175,9 +174,7 @@ class TipCellManager:
             debug_adapter.debug(f"Created new tip cell at point {new_tip_cell_position}")
 
     def _remove_tip_cells(self, local_to_remove):
-        # get comm, rank and root
-        comm = fenics.MPI.comm_world
-        rank = comm.Get_rank()
+        # define root rank
         root = 0
         # get global to remove list
         local_to_remove_array = comm.gather(local_to_remove, root)
@@ -217,9 +214,7 @@ class TipCellManager:
         # init tip cell field
         tip_cells_field_expression = TipCellsField(self.parameters)
 
-        # get comm, rank and root
-        comm = fenics.MPI.comm_world
-        rank = comm.Get_rank()
+        # define root rank
         root = 0
         # initialize cells went out of mesh
         tip_cells_out_of_mesh = []

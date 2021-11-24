@@ -11,7 +11,8 @@ from mocafe.fenut.log import InfoCsvAdapter, DebugAdapter
 Classes and methods to manages sources of angiognic factors.
 """
 # get rank
-rank = fenics.MPI.comm_world.Get_rank()
+comm = fenics.MPI.comm_world
+rank = comm.Get_rank()
 
 # configure logger
 logger = logging.getLogger(__name__)
@@ -67,10 +68,8 @@ class SourceMap:
         :param mesh_wrapper: mesh
         :return: the ndarray of the selected points
         """
-        # get rank and size
-        comm_world = fenics.MPI.comm_world
-        rank = comm_world.Get_rank()
-        n_procs = comm_world.Get_size()
+        # get size and root rank
+        n_procs = comm.Get_size()
         root = 0
 
         # get global coordinates
@@ -81,44 +80,43 @@ class SourceMap:
             coords_chunks_list = fu.devide_in_chunks(global_coords, n_procs)
         else:
             coords_chunks_list = None
-        local_coords_chunk = comm_world.scatter(coords_chunks_list, root)
+        local_coords_chunk = comm.scatter(coords_chunks_list, root)
 
         # removed points with x[0] less than x_lim
         pickable_points = [point for point in local_coords_chunk if point[0] > x_lim]
 
         # compute n local sources
-        local_n_sources = self._compute_local_n_sources(n_sources, len(pickable_points),
-                                                        comm_world, rank, root)
+        local_n_sources = self._compute_local_n_sources(n_sources, len(pickable_points), root)
 
         # pick the source point randomly
         local_sources_array = random.sample(pickable_points, local_n_sources)
 
         # gather picked sources and share among processes
-        local_sources_array_list = comm_world.gather(local_sources_array, root)
+        local_sources_array_list = comm.gather(local_sources_array, root)
         if rank == root:
             sources_array = fu.flatten_list_of_lists(local_sources_array_list)
         else:
             sources_array = None
-        sources_array = comm_world.bcast(sources_array, root)
+        sources_array = comm.bcast(sources_array, root)
 
         # sort them along the x axes
         sources_array.sort(key=lambda x: x[0])
         return sources_array
 
-    def _compute_local_n_sources(self, global_n_sources, n_local_pickable_points, comm_world, rank, root):
+    def _compute_local_n_sources(self, global_n_sources, n_local_pickable_points, root):
         # compute global number of pickable points
-        n_local_pickable_points_array = comm_world.gather(n_local_pickable_points, root)
+        n_local_pickable_points_array = comm.gather(n_local_pickable_points, root)
         if rank == root:
             n_global_pickable_points = sum(n_local_pickable_points_array)
         else:
             n_global_pickable_points = None
-        n_global_pickable_points = comm_world.bcast(n_global_pickable_points, root)
+        n_global_pickable_points = comm.bcast(n_global_pickable_points, root)
 
         # compute local process weight
         loc_w = int(np.floor(global_n_sources * (n_local_pickable_points / n_global_pickable_points)))
 
         # manage missing sources
-        loc_w_list = comm_world.gather(loc_w, root)
+        loc_w_list = comm.gather(loc_w, root)
         if rank == root:
             # compute missing_sources
             missing_sources = global_n_sources - sum(loc_w_list)
@@ -133,7 +131,7 @@ class SourceMap:
         else:
             marked_procs = None
         # get marked processes
-        marked_procs = comm_world.bcast(marked_procs, root)
+        marked_procs = comm.bcast(marked_procs, root)
 
         # compute local n_sources
         local_n_sources = loc_w
@@ -176,7 +174,6 @@ class SourceMap:
                 f"from the local list")
 
 
-
 class SourcesManager:
     def __init__(self, source_map: SourceMap,
                  mesh_wrapper: fu.RectangleMeshWrapper,
@@ -217,8 +214,7 @@ class SourcesManager:
         self._remove_sources(to_remove)
 
     def _remove_sources(self, local_to_remove):
-        comm = fenics.MPI.comm_world
-        rank = comm.Get_rank()
+        # get root rank
         root = 0
 
         # share cells to remove among processes
