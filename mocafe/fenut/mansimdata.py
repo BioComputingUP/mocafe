@@ -6,6 +6,9 @@ import pathlib
 Useful methods to manage simulation data
 """
 
+comm = fenics.MPI.comm_world
+rank = comm.Get_rank()
+
 # def macros
 default_sim_name = "default"
 test_sim_name = "test"
@@ -30,8 +33,6 @@ def setup_data_folder(sim_name: str or None = default_sim_name,
     :param saved_sim_folder: instead of base_location/saved_sim, specify another name for your saved_folder
     :return: the data folder
     """
-    comm = fenics.MPI.comm_world
-    rank = comm.Get_rank()
     runtime_folder = pathlib.Path(base_location) / pathlib.Path(default_runtime_folder_name)
     saved_sim_folder = pathlib.Path(base_location) / pathlib.Path(saved_sim_folder)
     if rank == 0:
@@ -76,8 +77,6 @@ def save_sim_info(data_folder: pathlib.Path,
     :param error_msg: if an error occurred during the simulation, save the error message
     :return: nothing
     """
-    comm = fenics.MPI.comm_world
-    rank = comm.Get_rank()
     # if sim_name is not default, ask user the rationale for the simulation
     if rank == 0:
         if sim_name == default_sim_name or sim_name == test_sim_name:
@@ -115,3 +114,5 @@ def save_sim_info(data_folder: pathlib.Path,
                                   f"    {error_msg} \n"
                                   f"  </p>\n")
             report_file.write(f"</article>")
+    # wait until MPI process 0 has written the simulation info file
+    comm.Barrier()

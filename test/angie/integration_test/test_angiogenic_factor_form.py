@@ -1,9 +1,12 @@
-import mocafe.fenut.fenut as fu
 import fenics
+import mocafe.fenut.fenut as fu
 from mocafe.angie.forms import angiogenic_factor_form
 from mocafe.angie.af_sourcing import SourceMap, SourcesManager
 import numpy as np
 import os
+import logging
+
+logging.StreamHandler().setLevel(logging.ERROR)
 
 
 def test_angiogenic_factor_form(parameters):

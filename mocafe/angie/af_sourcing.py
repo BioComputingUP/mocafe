@@ -1,40 +1,57 @@
 import fenics
-import mocafe.fenut.fenut as fu
-import numpy as np
 import random
+import numpy as np
+import logging
+import mocafe.fenut.fenut as fu
 from mocafe.angie import base_classes
 from mocafe.fenut.parameters import Parameters
-import logging
 from mocafe.fenut.log import InfoCsvAdapter, DebugAdapter
 
 """
-Classes and methods to manages sources of angiognic factors.
+This module contains classes and methods to manage discrete angiogenic factor sources in ``mocafe``. More precisely, 
+it provides useful tools to create cells (described as circles with a given radius) which act as angiogenic factor
+sources, inducing angiogenesis.
+
+This module have been implemented to reproduce the results given by the angiogenesis model presented by Lorenzo et al. 
+(2011) [Travasso2011] _, where they where testing their model using multiple sources in random positions.
+
+.. [Travasso2011] Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., & Hernández-Machado, A. 
+   (2011). Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5), e19989. 
+   https://doi.org/10.1371/journal.pone.0019989
 """
-# get rank
+
+# Get MPI communicator and rank to be used in the module
 comm = fenics.MPI.comm_world
 rank = comm.Get_rank()
 
 # configure logger
 logger = logging.getLogger(__name__)
-info_adapter = InfoCsvAdapter(logger, {"rank": rank, "module": __name__})
-debug_adapter = DebugAdapter(logger, {"rank": rank, "module": __name__})
+info_adapter = InfoCsvAdapter(logger, {"rank": rank, "module": __name__})  # mainly for process optimization
+debug_adapter = DebugAdapter(logger, {"rank": rank, "module": __name__})  # all kinds of information
 
 
 class SourceCell(base_classes.BaseCell):
     """
-    Wrapper for position and radius of the source
+    Class representing a source cell, i.e. a cell of the non-vascular tissue which expresses an angiogenic factor. It
+    is just a wrapper of BaseCell.
     """
 
     def __init__(self,
                  point: np.ndarray,
-                 hmin,
                  creation_step):
-        base_classes.BaseCell.__init__(self, point, hmin, creation_step)
+        """
+        inits a source cell centered in a given point.
+        :param point: center of the tip cell, as ndarray
+        :param creation_step: the step of the simulation at which the cell is created. It is used together with the
+        poisition to generate an unique identifier of the cell.
+        """
+        super(SourceCell, self).__init__(point, creation_step)
 
 
 class SourceMap:
     """
-    Wrapper for the position of Source Cells
+    Class representing the spatial map of the source cell positions. This class is responsible for keeping the position
+    of each source cell at any point of the simulation, providing access to it to other objects and methods.
     """
 
     def __init__(self,
@@ -53,7 +70,7 @@ class SourceMap:
         else:
             global_source_points = source_points
         # initialize SourceCells
-        self.global_source_cells = [SourceCell(point, self.mesh_wrapper.get_local_mesh().hmin(), current_step)
+        self.global_source_cells = [SourceCell(point, current_step)
                                     for point in global_source_points]
         # compute local source cells
         self.local_source_cells = self._devide_source_cells()

@@ -5,7 +5,7 @@ from mocafe.angie.tipcells import TipCell
 
 @pytest.fixture
 def tip_cell_in_0():
-    tip_cell = TipCell(np.array([0., 0.]), 0.5, 4, 0)
+    tip_cell = TipCell(np.array([0., 0.]), 4, 0)
     return tip_cell
 
 

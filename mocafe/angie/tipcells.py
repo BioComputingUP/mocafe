@@ -26,8 +26,8 @@ debug_adapter = DebugAdapter(logger, {"rank": rank, "module": __name__})
 
 
 class TipCell(BaseCell):
-    def __init__(self, position, hmin, radius, creation_step):
-        BaseCell.__init__(self, position, hmin, creation_step)
+    def __init__(self, position, radius, creation_step):
+        super(TipCell, self).__init__(position, creation_step)
         self.radius = radius
 
     def move(self, new_position):
@@ -167,7 +167,6 @@ class TipCellManager:
         # create tip cell and add it to the list
         if new_tip_cell_position is not None:
             new_tip_cell = TipCell(new_tip_cell_position,
-                                   self.mesh_wrapper.get_local_mesh().hmin(),
                                    self.cell_radius,
                                    current_step)
             self._add_tip_cell(new_tip_cell)

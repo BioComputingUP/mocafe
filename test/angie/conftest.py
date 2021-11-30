@@ -3,7 +3,7 @@ import pytest
 from mocafe.fenut.fenut import RectangleMeshWrapper
 from mocafe.angie.af_sourcing import SourceMap
 import pathlib
-from mocafe.fenut.parameters import Parameters
+from mocafe.fenut.parameters import from_ods_sheet, Parameters
 from mocafe.angie import load_random_state
 import os
 
@@ -13,7 +13,7 @@ load_random_state(f"{os.path.dirname(__file__)}/test_randomstate.pickle")
 
 @pytest.fixture
 def parameters() -> Parameters:
-    return Parameters(pathlib.Path(f"{os.path.dirname(__file__)}/test_parameters.ods"), "SimParams")
+    return from_ods_sheet(pathlib.Path(f"{os.path.dirname(__file__)}/test_parameters.ods"), "SimParams")
 
 
 @pytest.fixture

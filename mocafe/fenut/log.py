@@ -61,7 +61,7 @@ def confgure_root_logger_with_standard_settings(data_folder: Path):
     debug_fh = logging.FileHandler(str(current_debug_log_folder / default_debug_log_file), mode="w")
     debug_fh.setLevel(logging.DEBUG)
     # create dubug format
-    debug_formatter = logging.Formatter("\033[94m{asctime}\033[0m - {message}", style="{")
+    debug_formatter = logging.Formatter("{asctime} - {message}", style="{")
     debug_fh.setFormatter(debug_formatter)
     # add handler to root logger
     root_logger.addHandler(debug_fh)

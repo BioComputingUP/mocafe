@@ -1,13 +1,11 @@
 import pathlib
-import shutil
-import fenics
 import mocafe.fenut.mansimdata as mansim
-from mocafe.fenut.parameters import Parameters
+from mocafe.fenut.parameters import from_ods_sheet
 
 
 def test_save_sim_info(tmpdir, odf_sheet_test2):
     data_folder = mansim.setup_data_folder(mansim.test_sim_name, base_location=tmpdir)
-    parameters = Parameters(odf_sheet_test2, "SimParams")
+    parameters = from_ods_sheet(odf_sheet_test2, "SimParams")
     mansim.save_sim_info(data_folder, 1.0, parameters, "test")
     print(str(data_folder / pathlib.Path("sim_info.html")))
     assert (data_folder / pathlib.Path("sim_info.html")).exists()
@@ -16,7 +14,7 @@ def test_save_sim_info(tmpdir, odf_sheet_test2):
 def test_save_sim_info_format(tmpdir, odf_sheet_test):
     data_folder = mansim.setup_data_folder(mansim.test_sim_name, base_location=tmpdir)
     execution_time = 1.0
-    parameters = Parameters(odf_sheet_test, "Sheet1")
+    parameters = from_ods_sheet(odf_sheet_test, "Sheet1")
     sim_name = mansim.test_sim_name
     dateandtime = "test"
     mansim.save_sim_info(data_folder, execution_time, parameters, sim_name, dateandtime)
@@ -43,7 +41,7 @@ def test_save_sim_info_format(tmpdir, odf_sheet_test):
 def test_save_sim_info_rationale(tmpdir, odf_sheet_test):
     data_folder = mansim.setup_data_folder(mansim.test_sim_name, base_location=tmpdir)
     execution_time = 1.0
-    parameters = Parameters(odf_sheet_test, "Sheet1")
+    parameters = from_ods_sheet(odf_sheet_test, "Sheet1")
     sim_name = "another_test"
     dateandtime = "test"
     sim_rationale = "A rationale"
@@ -72,7 +70,7 @@ def test_save_sim_info_rationale(tmpdir, odf_sheet_test):
 def test_sim_info_error(tmpdir, odf_sheet_test):
     data_folder = mansim.setup_data_folder(mansim.test_sim_name, base_location=tmpdir)
     execution_time = 1.0
-    parameters = Parameters(odf_sheet_test, "Sheet1")
+    parameters = from_ods_sheet(odf_sheet_test, "Sheet1")
     sim_name = "another_test"
     dateandtime = "test"
     sim_rationale = "A rationale"

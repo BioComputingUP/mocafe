@@ -4,12 +4,11 @@ import numpy as np
 class BaseCell:
     def __init__(self,
                  point: np.ndarray,
-                 hmin,
                  creation_step):
         self.initial_position = point
         self.creation_step = creation_step
         self.position = point
-        self.hmin = hmin
+        # self.hmin = hmin
 
     def __eq__(self, other):
         return hash(other) == self.__hash__()
