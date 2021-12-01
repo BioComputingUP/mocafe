@@ -61,7 +61,18 @@ class SourceMap:
                  current_step: int,
                  parameters: Parameters,
                  source_points=None):
-        # mesh wrapper
+        """
+        inits a SourceMap, i.e. a class responsible for keeping the current position of each source cell at any point
+        of the simulation. By default, the sources are placed randomly in the spatial domain.
+        :param n_sources: number of random sources to place
+        :param x_lim: defines the x value where to start placing sources. if x_lim is 5, the source cells will be placed
+        at any point of the domain if x[0] > x_lim
+        :param mesh_wrapper: the mesh wrapper
+        :param current_step: initialization step of the source map. It is used to initialize tip cells.
+        :param parameters: simulation parameters
+        :source_points: if the user does not want to have random sources, ha can also define a list of positions where
+        to place source cells.
+        """
         self.mesh_wrapper = mesh_wrapper
         self.local_box = self._build_local_box(parameters)
         # compute source point
@@ -79,32 +90,29 @@ class SourceMap:
                                         x_lim,
                                         mesh_wrapper: fu.RectangleMeshWrapper):
         """
+        INTERNAL USE
         Return the source points selected randomly and sorted along the x axis
         :param n_sources: number of sources to select
         :param x_lim: part of the x axis to select
-        :param mesh_wrapper: mesh
+        :param mesh_wrapper: mesh wrapper
         :return: the ndarray of the selected points
         """
-        # get size and root rank
+        # get comm size
         n_procs = comm.Get_size()
+        # define root proc
         root = 0
-
         # get global coordinates
         global_coords = mesh_wrapper.get_global_mesh().coordinates()
-
-        # devide coords among processes
+        # devide coordinates among processes
         if rank == root:
             coords_chunks_list = fu.devide_in_chunks(global_coords, n_procs)
         else:
             coords_chunks_list = None
         local_coords_chunk = comm.scatter(coords_chunks_list, root)
-
-        # removed points with x[0] less than x_lim
+        # remove points with x[0] less than x_lim
         pickable_points = [point for point in local_coords_chunk if point[0] > x_lim]
-
         # compute n local sources
         local_n_sources = self._compute_local_n_sources(n_sources, len(pickable_points), root)
-
         # pick the source point randomly
         local_sources_array = random.sample(pickable_points, local_n_sources)
 
@@ -121,6 +129,14 @@ class SourceMap:
         return sources_array
 
     def _compute_local_n_sources(self, global_n_sources, n_local_pickable_points, root):
+        """
+        INTERNAL USE
+        Computes the number of sources to randomly select for the local process, considering that the number
+        of pickable points may differ between different processes and that the global number of sources is fixed.
+        :param global_n_sources: number of global sources
+        :param n_local_pickable_points: number of pickable points
+        :param root: MPI root process
+        """
         # compute global number of pickable points
         n_local_pickable_points_array = comm.gather(n_local_pickable_points, root)
         if rank == root:
