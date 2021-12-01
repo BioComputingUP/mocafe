@@ -10,6 +10,36 @@ rank = comm.Get_rank()
 default_randomstate_file = Path(f"p{rank}.randomstate")
 
 
+def setup_random_state(equal_for_all_p: bool = True,
+                       save: bool = False,
+                       save_path: Path or None = None,
+                       load: bool = False,
+                       load_path: Path or None = None):
+    # if save is true, check if you have a save_path
+    if save:
+        if save_path is None:
+            raise RuntimeError("You must specify a save_path.")
+    # if load is true, check if you have a load_path
+    if load:
+        if load_path is None:
+            raise RuntimeError("You must specify a load_path")
+
+    if save and load:
+        # load the random_state from the load_path and save it
+        load_random_state(load_path, equal_for_all_p)
+        save_random_state(save_path, equal_for_all_p)
+    elif load:
+        # just load random_state from the load_path
+        load_random_state(load_path, equal_for_all_p)
+    elif save:
+        # save the random state to the save path and then load it (otherwise is not reproducible)
+        save_random_state(save_path, equal_for_all_p)
+        load_random_state(save_path, equal_for_all_p)
+    else:
+        if equal_for_all_p:
+            set_equal_randomstate_for_all_p()
+
+
 def set_equal_randomstate_for_all_p():
     """
     Set the randomstate of to MPI process 0 to all processes.
