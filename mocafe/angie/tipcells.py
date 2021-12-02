@@ -386,12 +386,14 @@ class TipCellManager:
         # if not empty
         self._remove_tip_cells(local_to_remove)
 
-    def _update_tip_cell_positions_and_get_field(self, T, gradT):
+    def _update_tip_cell_positions_and_get_field(self, af, grad_af):
         """
+        INTERNAL USE.
+        Updates the tip cell position according to the angiogenic factor distribution and returns the tip cells field.
 
-        :param T:
-        :param gradT:
-        :return:
+        :param af: angiogenic factor field
+        :param grad_af: angiogenic factor gradient
+        :return: the updated tip cells field
         """
         # init tip cell field
         tip_cells_field_expression = TipCellsField(self.parameters)
@@ -408,11 +410,9 @@ class TipCellManager:
             # the process that has access to tip cell position computes the mesh_related values
             if self.mesh_wrapper.is_inside_local_mesh(tip_cell_position):
                 # compute velocity
-                velocity = self.compute_tip_cell_velocity(gradT,
-                                                          self.parameters.get_value("chi"),
-                                                          tip_cell_position)
+                velocity = self.compute_tip_cell_velocity(grad_af, self.parameters.get_value("chi"), tip_cell_position)
                 # compute value of T in position
-                T_at_point = T(tip_cell_position)
+                T_at_point = af(tip_cell_position)
             else:
                 velocity = None
                 T_at_point = None
@@ -471,22 +471,42 @@ class TipCellManager:
         # return tip cells field
         return tip_cells_field_expression
 
-    def _assign_values_to_vector(self, phi, t_c_f_function):
+    def _assign_values_to_vector(self, c, t_c_f_function):
+        """
+        Assign the positive values of ``t_c_f_function`` to the capillaries field c.
+
+        :param c: capillaries field
+        :param t_c_f_function: tip cell field function
+        :return: nothing
+        """
         # get local values for T and source_field
         t_c_f_loc_values = t_c_f_function.vector().get_local()
-        phi_loc_values = phi.vector().get_local()
+        phi_loc_values = c.vector().get_local()
         # set T to 1. where source_field is 1
         where_t_c_f_greater_than_0 = t_c_f_loc_values > 0.
         phi_loc_values[where_t_c_f_greater_than_0] = t_c_f_loc_values[where_t_c_f_greater_than_0]
-        phi.vector().set_local(phi_loc_values)
-        phi.vector().update_ghost_values()  # necessary, otherwise errors
+        c.vector().set_local(phi_loc_values)
+        c.vector().update_ghost_values()  # necessary, otherwise errors
 
-    def _apply_tip_cells_field(self, phi, tip_cells_field_expression, V, is_V_sub_space):
+    def _apply_tip_cells_field(self, c, tip_cells_field_expression, V, is_V_sub_space):
+        """
+        INTERNAL USE.
+        Applies the tip cells field in the given ``tip_cells_field_expression`` to the capillaries field ``c``.
+
+        More precisely, all the values in the tip cell field greater than zero are pasted over the the capillaries
+        field.
+
+        :param c: the capillaries field
+        :param tip_cells_field_expression: the tip cells field expression
+        :param V: the function space for interpolating the tip cells field
+        :param is_V_sub_space: True if V is a sub-space of a MixedElementFunctionSpace, False otherwise
+        :return: the tip cell field as a FEniCS function
+        """
         if not is_V_sub_space:
             # interpolate tip_cells_field
             t_c_f_function = fenics.interpolate(tip_cells_field_expression, V)
             # assign t_c_f_function to phi where is greater than 0
-            self._assign_values_to_vector(phi, t_c_f_function)
+            self._assign_values_to_vector(c, t_c_f_function)
         else:
             # collapse subspace
             V_collapsed = V.collapse()
@@ -496,28 +516,77 @@ class TipCellManager:
             assigner_to_collapsed = fenics.FunctionAssigner(V_collapsed, V)
             # assign phi to local variable phi_temp
             phi_temp = fenics.Function(V_collapsed)
-            assigner_to_collapsed.assign(phi_temp, phi)
+            assigner_to_collapsed.assign(phi_temp, c)
             # assign values to phi_temp
             self._assign_values_to_vector(phi_temp, t_c_f_function)
             # create inverse assigner
             assigner_to_sub = fenics.FunctionAssigner(V, V_collapsed)
             # assign phi_temp to phi
-            assigner_to_sub.assign(phi, phi_temp)
+            assigner_to_sub.assign(c, phi_temp)
 
         # return tip cells field function for monitoring
         return t_c_f_function
 
-    def move_tip_cells(self, phi, T, gradT, V, is_V_sub_space) -> fenics.Function:
+    def move_tip_cells(self, c, af, grad_af, V, is_V_sub_space) -> fenics.Function:
+        r"""
+        Move the tip cell to follow the gradient of the angiogenic factor, with the velocity computed by the method
+        ``compute_tip_cell_velocity``.
+
+        The method also updates the tip cell field and returns it.
+
+        The tip cells field is a FEniCS function which inside each tip cell has the value defined by Travasso et al.
+        (2011) [Travasso2011] _, which is:
+
+        .. math::
+           \frac{\alpha_p(af) \cdot \pi \cdot R_c}{2 \cdot |v|}
+
+        In every other point, the function has value 0.
+
+        References:
+
+        .. [Travasso2011] Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., & Hernández-Machado, A.
+           (2011). Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5), e19989.
+           https://doi.org/10.1371/journal.pone.0019989
+
+        :param c: capillaries field
+        :param af: angiogenic factor field
+        :param grad_af: gradient of the angiogenic factor field
+        :param V: FunctionSpace to interpolate the tip cell field
+        :param is_V_sub_space: True if V is the sub space of a MixedElementFunctionSpace. False otherwise.
+        :return: the tip cell field function
+        """
         info_adapter.info(f"Called {self.move_tip_cells.__name__}")
         # update tip cell positions
-        tip_cells_field_expression = self._update_tip_cell_positions_and_get_field(T, gradT)
+        tip_cells_field_expression = self._update_tip_cell_positions_and_get_field(af, grad_af)
         # apply tip_cells_field to phi
-        t_c_f_fucntion = self._apply_tip_cells_field(phi, tip_cells_field_expression, V, is_V_sub_space)
+        t_c_f_fucntion = self._apply_tip_cells_field(c, tip_cells_field_expression, V, is_V_sub_space)
         # return tip cell field function for monitoring
         return t_c_f_fucntion
 
-    def compute_tip_cell_velocity(self, gradT, chi, tip_cell_position):
-        grad_T_at_point = gradT(tip_cell_position)
+    def compute_tip_cell_velocity(self, grad_af, chi, tip_cell_position):
+        r"""
+        Compute the tip cell velocity given its position, the gradient of the angiogenic factor, and the constant chi.
+
+        In this implementation the velocity is computed according to the model presented by Travasso et al. (2011)
+        [Travasso2011] _. The formula is:
+
+        .. math::
+           v = \chi \nabla af [1 + (\frac{G_M}{G})\cdot (G - G_M)]
+
+        Where :math:`G` is the norm of the angiogenic factor gradient (:math:`\nabla af`).
+
+        References:
+
+        .. [Travasso2011] Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., & Hernández-Machado, A.
+           (2011). Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5), e19989.
+           https://doi.org/10.1371/journal.pone.0019989
+
+        :param grad_af:
+        :param chi:
+        :param tip_cell_position:
+        :return:
+        """
+        grad_T_at_point = grad_af(tip_cell_position)
         G_at_point = np.linalg.norm(grad_T_at_point)
         if G_at_point < self.G_M:
             velocity = chi * grad_T_at_point
