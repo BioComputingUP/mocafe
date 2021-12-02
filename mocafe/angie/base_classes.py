@@ -1,5 +1,9 @@
 import numpy as np
 
+"""
+Base classes used only by mocafe.angie
+"""
+
 
 class BaseCell:
     def __init__(self,
