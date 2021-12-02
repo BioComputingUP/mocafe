@@ -18,7 +18,7 @@ def setup_xdmf_files(file_names: list, data_folder, comm=fenics.MPI.comm_world):
     return xdmf_files
 
 
-def devide_in_chunks(given_list, n_chnks):
+def divide_in_chunks(given_list, n_chnks):
     quot, rem = divmod(len(given_list), n_chnks)
     chunks_list = []
     bookmark = 0

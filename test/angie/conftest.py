@@ -4,11 +4,11 @@ from mocafe.fenut.fenut import RectangleMeshWrapper
 from mocafe.angie.af_sourcing import SourceMap
 import pathlib
 from mocafe.fenut.parameters import from_ods_sheet, Parameters
-from mocafe.angie import load_random_state
+from mocafe.angie import setup_random_state
 import os
 
 """Global fixtures"""
-load_random_state(f"{os.path.dirname(__file__)}/test_randomstate.pickle")
+setup_random_state(load=True, load_path=f"{os.path.dirname(__file__)}")
 
 
 @pytest.fixture
