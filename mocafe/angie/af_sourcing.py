@@ -15,6 +15,8 @@ sources, inducing angiogenesis.
 This module have been implemented to reproduce the results given by the angiogenesis model presented by Travasso et al. 
 (2011) [Travasso2011] _, where they where testing their model using multiple sources in random positions.
 
+References:
+
 .. [Travasso2011] Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., & Hernández-Machado, A. 
    (2011). Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5), e19989. 
    https://doi.org/10.1371/journal.pone.0019989
@@ -192,6 +194,7 @@ class SourceMap:
         INTERNAL USE
         Builds the local box for the MPI process. The local box is a square spatial domain that is used to check
         if the source cells are near a blood vessel.
+
         :param parameters:
         :return:
         """

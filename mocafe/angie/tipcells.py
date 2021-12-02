@@ -9,10 +9,8 @@ from mocafe.fenut.parameters import Parameters
 from mocafe.fenut.log import InfoCsvAdapter, DebugAdapter
 
 """
-Test script for tip cell activation
-
-Franco Pradelli
-20 May 2021
+This module contains classes and methods to manage the tip cells in ``mocafe``. More precisely, it provides useful
+tools to activate, remove, and move the tip cell in the spatial domain.
 """
 
 # get rank
@@ -26,25 +24,76 @@ debug_adapter = DebugAdapter(logger, {"rank": rank, "module": __name__})
 
 
 class TipCell(BaseCell):
+    """
+    Class representing a tip cell. The tip cells are represented as a circle with a given radius.
+    """
     def __init__(self, position, radius, creation_step):
+        """
+        inits a TipCell in the given position for the given radius.
+        :param position: tip cell position
+        :param radius: tip cell radius
+        :param creation_step: the simulation step when the tip cell have been created. It is used for internal purposes.
+        """
         super(TipCell, self).__init__(position, creation_step)
         self.radius = radius
 
     def move(self, new_position):
+        """
+        Move the tip cell to the new position.
+        :param new_position: the new position where to move the tip cell.
+        :return: nothing
+        """
         self.position = new_position
 
     def get_radius(self):
+        """
+        Get the radius of the tip cell
+        :return: the radius of the tip cell
+        """
         return self.radius
 
     def is_point_inside(self, x):
+        """
+        Check if the given point is inside the tip cell
+        :param x: point to check
+        :return: True if the point is inside; False otherwise
+        """
         return self.get_distance(x) <= self.radius
 
 
 class TipCellsField(fenics.UserExpression):
+    r"""
+    Expression representing the capillary field value inside the tip cells.
+
+    In this implementation, the value is coherent with the one used by Travasso et al (2011) in their Phase Field
+    angiogenesis model [Travasso2011] _, that is:
+
+    .. math::
+       \frac{\alpha_p(af) \cdot \pi \cdot R_c}{2 \cdot |v|}
+
+    Where :math:`R_c` is the radius of the tip cell, :math:`v` is the velocity of the tip cell, and
+    :math:`\alpha_p(af)` is the proliferation rate for the capillaries' cells, defined as a function of the angiogenic
+    factor concentration (:math:`af`) which reads:
+
+    .. math::
+       \alpha_p(af) &= \alpha_p \cdot af_p \quad \textrm{if} \quad af>af_p \\
+                    &= \alpha_p \cdot af  \quad \textrm{if} \quad 0<af \le af_p \\
+                    & = 0 \quad \textrm{if} \quad af \le 0
+
+    References:
+
+    .. [Travasso2011] Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., & Hernández-Machado, A.
+       (2011). Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5), e19989.
+       https://doi.org/10.1371/journal.pone.0019989
+    """
     def __floordiv__(self, other):
         pass
 
     def __init__(self, parameters: Parameters):
+        """
+        inits the TipCellField for the given simulation parameters
+        :param parameters: simulation parameters
+        """
         super(TipCellsField, self).__init__()
         self.alpha_p = parameters.get_value("alpha_p")
         self.T_p = parameters.get_value("T_p")
@@ -54,12 +103,26 @@ class TipCellsField(fenics.UserExpression):
         self.velocities = []
         self.T_values = []
 
-    def add_tip_cell(self, tip_cell, velocity, T_at_point):
+    def add_tip_cell(self, tip_cell, velocity, af_at_point):
+        """
+        Add a tip cell to the field.
+        :param tip_cell: the tip cell to add.
+        :param velocity: the velocity of the tip cell, that is used for computing the field value.
+        :param af_at_point: the angiogenic factor concentration at the tip cell center, that is used for computing the
+        field value.
+        :return:
+        """
         self.tip_cells.append(tip_cell)
         self.velocities.append(velocity)
-        self.T_values.append(self.T_p if T_at_point > self.T_p else T_at_point)
+        self.T_values.append(self.T_p if af_at_point > self.T_p else af_at_point)
 
     def eval(self, values, x):
+        """
+        evaluate the field value for the given point
+        :param values: internal FEniCS parameter
+        :param x: given point
+        :return: nothing
+        """
         point_value = self.phi_min
         for tip_cell, velocity, T_value in zip(self.tip_cells, self.velocities, self.T_values):
             if tip_cell.is_point_inside(x):
@@ -73,8 +136,17 @@ class TipCellsField(fenics.UserExpression):
 
 
 class TipCellManager:
+    """
+    Class to manage the tip cells throughout the simulation.
+    """
     def __init__(self, mesh_wrapper: fu.RectangleMeshWrapper,
                  parameters: Parameters):
+        """
+        inits a TipCellManager
+
+        :param mesh_wrapper: mesh wrapper
+        :param parameters: simulation parameters
+        """
         self.global_tip_cells_list = []
         self.local_tip_cells_list = []
         self.mesh_wrapper = mesh_wrapper
@@ -91,9 +163,23 @@ class TipCellManager:
         self.local_box = self._build_local_box(self.cell_radius)
 
     def get_global_tip_cells_list(self):
+        """
+        Get the global tip cell list, i.e. all the tip cells for all the MPI processes
+
+        :return: a list of the tip cells
+        """
         return self.global_tip_cells_list
 
     def _point_distant_to_tip_cells(self, point: fenics.Point):
+        """
+        INTERNAL USE.
+        Check if the given point is distant from all the tip cells. The point is "distant" if the distance between
+        the given point and the closest tip cell is bigger than the parameter "min_tipcell_distance", that must be
+        defined inside the simulation parameters.
+
+        :param point: the point to check
+        :return: True if exists at least one tip cell that is "close" to the point; False otherwise.
+        """
         if self.global_tip_cells_list:
             for tip_cell in self.global_tip_cells_list:
                 if point.distance(fenics.Point(tip_cell.get_position())) < self.min_tipcell_distance:
@@ -101,17 +187,75 @@ class TipCellManager:
         return True
 
     def _build_local_box(self, cell_radius):
+        """
+        INTERNAL USE.
+        Builds the local box for the current MPI process. The local box is used by the TipCellManager to build the
+        local tip cell list, which is the list of the tip cells the current MPI process "knows".
+
+        :param cell_radius: the tip cell radius, which is used to build the local box
+        :return:
+        """
         return fu.build_local_box(self.mesh_wrapper.get_local_mesh(), cell_radius)
 
     def _is_in_local_box(self, position):
+        """
+        INTERNAL USE.
+        Check if the given position is inside the current MPI process local box
+
+        :param position: the position to check
+        :return: True if the position is inside the local box; False otherwise.
+        """
         return fu.is_in_local_box(self.local_box, position)
 
     def _add_tip_cell(self, tip_cell: TipCell):
+        """
+        INTERNAL USE.
+        Add the given tip cell to the list of tip cells that the TipCellManager manages. The tip cell is added both to
+        the global tip cells list and to the local tip cells list.
+
+        :param tip_cell: the tip cell to add
+        :return: nothing
+        """
         self.global_tip_cells_list.append(tip_cell)
         if self._is_in_local_box(tip_cell.get_position()):
             self.local_tip_cells_list.append(tip_cell)
 
-    def activate_tip_cell(self, phi, T, gradT, current_step):
+    def activate_tip_cell(self, c, af, grad_af, current_step):
+        """
+        Activates a tip cell if the right conditions on the capillaries field c, the angiogenic factor field af and
+        its gradient, grad_af, are met.
+
+        In this implementation the conditions are coherent with the one used by Travasso et al. (2011)
+        [Travasso2011] _, which are reported in the following pseudo-code::
+
+            p = possible new tip cell center
+            if distance(p, closest_tip_cell) > min_tipcell_distance:
+                if c(p) > phi_th:
+                    if af(p) > T_c:
+                        if norm(grad_af(c)) > G_m
+                            create new tip cell at point p
+            else:
+                do nothing
+
+        Where ``min_tipcell_distance``, ``phi_th``, ``T_c``, and ``G_m`` are defined in the simulation parameters.
+
+        The procedure above is applied to every point of the mesh.
+
+        If more than two point are found as possible new tip cell positions, only one is randomly selected. Thus, in
+        this implementation only one tip cell can be activated at each call of the method.
+
+        References:
+
+        .. [Travasso2011] Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., & Hernández-Machado, A.
+           (2011). Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5), e19989.
+           https://doi.org/10.1371/journal.pone.0019989
+
+        :param c: capillaries field
+        :param af: angiogenic factor field
+        :param grad_af: gradient of the angiogenic factor field
+        :param current_step: current simulation step. it is used for internal purpose
+        :return:
+        """
         # define root rank
         root = 0
         # logging
@@ -130,11 +274,11 @@ class TipCellManager:
         for point in local_mesh_points:
             if self._point_distant_to_tip_cells(fenics.Point(point)):
                 n_points_distant += 1
-                if phi(point) > self.phi_th:
+                if c(point) > self.phi_th:
                     n_points_phi_09 += 1
-                    if T(point) > self.T_c:
+                    if af(point) > self.T_c:
                         n_points_over_Tc += 1
-                        if np.linalg.norm(gradT(point)) > self.G_m:
+                        if np.linalg.norm(grad_af(point)) > self.G_m:
                             n_points_over_Gm += 1
                             local_possible_locations.append(point)
         debug_msg = \
@@ -173,6 +317,13 @@ class TipCellManager:
             debug_adapter.debug(f"Created new tip cell at point {new_tip_cell_position}")
 
     def _remove_tip_cells(self, local_to_remove):
+        """
+        INTERNAL USE.
+        Remove the tip cells in the given list from both the global and local tip cell list.
+
+        :param local_to_remove: list of tip cells to remove
+        :return: nothing
+        """
         # define root rank
         root = 0
         # get global to remove list
@@ -195,13 +346,39 @@ class TipCellManager:
             if tip_cell in self.local_tip_cells_list:
                 self.local_tip_cells_list.remove(tip_cell)
 
-    def revert_tip_cells(self, T, gradT):
+    def revert_tip_cells(self, af, grad_af):
+        """
+        Deactivate the tip cells when the right conditions are met.
+
+        In this implementation the conditions are coherent with the one used by Travasso et al. (2011)
+        [Travasso2011] _, which are reported in the following pseudo-code::
+
+            tc_p = a tip cell position
+            if (af(tc_p) < T_c or norm(grad_af(tc_p)) < G_m):
+                deactivate tip cell at position tc_p
+            else:
+                do nothing
+
+        Where ``T_c`` and ``G_m`` are constants defined in the simulation parameter.
+
+        The procedure above is applied to all the active tip cells.
+
+        References:
+
+        .. [Travasso2011] Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., & Hernández-Machado, A.
+           (2011). Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5), e19989.
+           https://doi.org/10.1371/journal.pone.0019989
+
+        :param af: angiogenic factor field
+        :param grad_af: gradient of the angiogenic factor
+        :return: nothing
+        """
         info_adapter.info(f"Called {self.revert_tip_cells.__name__}")
         local_to_remove = []
         for tip_cell in self.local_tip_cells_list:
             position = tip_cell.get_position()
             if self.mesh_wrapper.is_inside_local_mesh(position):  # check only if point is in local mesh
-                if (T(position) < self.T_c) or (np.linalg.norm(gradT(position)) < self.G_m):
+                if (af(position) < self.T_c) or (np.linalg.norm(grad_af(position)) < self.G_m):
                     local_to_remove.append(tip_cell)
             else:
                 if not self.mesh_wrapper.is_inside_global_mesh(position):  # remove tip cell if not in global mesh
@@ -210,6 +387,12 @@ class TipCellManager:
         self._remove_tip_cells(local_to_remove)
 
     def _update_tip_cell_positions_and_get_field(self, T, gradT):
+        """
+
+        :param T:
+        :param gradT:
+        :return:
+        """
         # init tip cell field
         tip_cells_field_expression = TipCellsField(self.parameters)
 
@@ -270,7 +453,7 @@ class TipCellManager:
             else:
                 # else update local lists
                 if tip_cell in self.local_tip_cells_list:
-                    if not self._is_in_local_box(new_position):  # if tip cell is no motre in the local box
+                    if not self._is_in_local_box(new_position):  # if tip cell is no more in the local box
                         self.local_tip_cells_list.remove(tip_cell)  # remove it
                 else:
                     if self._is_in_local_box(new_position):  # if tip cell is now in the local box
