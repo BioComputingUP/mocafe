@@ -12,7 +12,7 @@ This module contains classes and methods to manage discrete angiogenic factor so
 it provides useful tools to create cells (described as circles with a given radius) which act as angiogenic factor
 sources, inducing angiogenesis.
 
-This module have been implemented to reproduce the results given by the angiogenesis model presented by Lorenzo et al. 
+This module have been implemented to reproduce the results given by the angiogenesis model presented by Travasso et al. 
 (2011) [Travasso2011] _, where they where testing their model using multiple sources in random positions.
 
 .. [Travasso2011] Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., & Hernández-Machado, A. 
