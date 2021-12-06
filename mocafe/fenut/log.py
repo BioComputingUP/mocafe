@@ -18,16 +18,34 @@ default_info_log_file = Path(f"p{rank}_info_log.csv")
 
 
 class InfoCsvAdapter(logging.LoggerAdapter):
+    """
+    Standard logging adapter for logging the "INFO" level as a csv file.
+
+    This is mainly used for internal purposes, but can be used from the user as well.
+    """
     def process(self, msg: str, kwargs):
         return f"p{self.extra['rank']};{self.extra['module']};{msg}", kwargs
 
 
 class DebugAdapter(logging.LoggerAdapter):
+    """
+    Standerd logging adapter ffor logging the "DEBUG" level.
+
+    This is mainly used for internal purposes, but can be used from the user as well.
+    """
     def process(self, msg: str, kwargs):
         return f"p{self.extra['rank']} - {self.extra['module']}\n \t{msg}", kwargs
 
 
 def _create_clean_log_folder(folder: Path):
+    """
+    INTERNAL USE
+
+    Creates a clean log folder, eliminating all possible files inside.
+
+    :param folder: the log folder to clean
+    :return: the clean folder
+    """
     # create folder
     folder.mkdir(parents=True, exist_ok=True)
     # clean the folder
@@ -42,6 +60,16 @@ def _create_clean_log_folder(folder: Path):
 
 
 def confgure_root_logger_with_standard_settings(data_folder: Path):
+    """
+    Configures the root logger with the standard mocafe settings.
+
+    This is mainly used for internal purposes, but can be used from the user as well.
+
+    The user can define its own logging configurations using the ``logging`` Python module.
+
+    :param data_folder: the folder where to place the logging files and folder.
+    :return: nothing
+    """
     # define debug log folder - more verbose
     current_debug_log_folder = data_folder / default_debug_log_folder
     # define info log folder - for optimization
