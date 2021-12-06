@@ -2,6 +2,12 @@ import fenics
 
 
 class PETScProblem(fenics.NonlinearProblem):
+    """
+    INTERNAL USE
+
+    Defines a nonlinear problem directly calling the PETSc linear algebra backend. This is the preferred way of
+    defining a problem.
+    """
     def __init__(self, J, F, bcs):
         self.bilinear_form = J
         self.linear_form = F
@@ -20,6 +26,11 @@ class PETScProblem(fenics.NonlinearProblem):
 
 
 class PETScSolver(fenics.NewtonSolver):
+    """
+    INTERNAL USE
+
+    Defines a solver for a nonlinear problem directly calling the PETSc linear algebra backend.
+    """
     def __init__(self, solver_parameters: dict, comm=fenics.MPI.comm_world):
         self.solver_parameters = solver_parameters
         fenics.NewtonSolver.__init__(self, comm,
