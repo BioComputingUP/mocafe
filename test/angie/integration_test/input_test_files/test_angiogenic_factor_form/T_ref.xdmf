@@ -8,7 +8,7 @@
       <Geometry GeometryType="XY">
         <DataItem Dimensions="90601 2" Format="HDF">T_ref.h5:/Mesh/mesh/geometry</DataItem>
       </Geometry>
-      <Attribute Name="f_68" AttributeType="Scalar" Center="Node">
+      <Attribute Name="f_66" AttributeType="Scalar" Center="Node">
         <DataItem Dimensions="90601 1" Format="HDF">T_ref.h5:/VisualisationVector/0</DataItem>
       </Attribute>
     </Grid>
