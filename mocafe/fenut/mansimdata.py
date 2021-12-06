@@ -24,10 +24,14 @@ def setup_data_folder(sim_name: str or None = default_sim_name,
     Setup the folder where the simulation will be saved. One can specify the simulation name; in case that is None the
     simulation will be saved to the 'base_location/runtime' folder, otherwise it will be saved to base_location/
     saved_sim/sim_name/0000.
+
     In case the same sim_name is given for multiple simulation, the result will be saved to ./saved_sim/sim_name/0001,
     0002, ... and so on.
+
     One can change the name of saved_sim folder through the parameter "saved_sim_folder"
+
     Works in parallel with MPI.
+
     :param sim_name: The name of the simulation. If None, the data_folder is 'base_location/runtime'
     :param base_location: The base folder where the simulation will be saved. Default is ./
     :param saved_sim_folder: instead of base_location/saved_sim, specify another name for your saved_folder
@@ -63,17 +67,18 @@ def save_sim_info(data_folder: pathlib.Path,
                   sim_rationale: str = "input",
                   error_msg: str = None) -> None:
     """
-    Save simulation infos as json file. The simulation infos will be stored in the provided data_folder.
+    Save simulation infos as html file. The simulation infos will be stored in the provided data_folder.
+
     :param data_folder: the data folder containing the simulation files
     :param execution_time: the execution time of the simulation
     :param parameters: the parameters used for the simulation (can be a dict of parameters files, each identified
                        by a name)
     :param sim_name: the simulation name
-    :param dateandtime: date and time of the simulation. If equals "auto" the time and date are automatically added by
-        the method
+    :param dateandtime: date and time of the simulation. If it is equal to "auto" the time and date are automatically
+        added by the method
     :param sim_rationale: rationale of the simulation. If set to input the method will ask the user to type the
         rationale in the command line; otherwise the given rationale will be set in the "rationale" field of the
-        sim_info.json file
+        sim_info.html file. Default is "input".
     :param error_msg: if an error occurred during the simulation, save the error message
     :return: nothing
     """
