@@ -38,9 +38,11 @@ The second equation is for the nutrient concentration :math:`\sigma`:
 #
 # First of all, we import all we need to run the simulation.
 import sys
-from pathlib import Path
+import numpy as np
 import fenics
+from pathlib import Path
 from mocafe.fenut.fenut import get_mixed_function_space
+from mocafe.expressions import EllipseField
 
 # %%
 # We also need to append the mocafe path to make it work.
@@ -91,13 +93,14 @@ function_space = get_mixed_function_space(mesh, 2, "CG", 1)
 # Initial conditions
 # ^^^^^^^^^^^^^^^^^^^
 # Since the system of differential equations involves time, we need to define initial conditions for both
-# :math:`\varphi` and :math`\sigma`. According to the original paper, we will define an initial elliptical tumor
-# as an intial condition pro :math:`\varphi`.
-#
-# With FEniCS we can do so by defining an expression which represent mathematically our initial condition:
+# :math:`\varphi` and :math`\sigma`. According to the original paper as initial condition for :math:`\varphi`
+# we will define an elliptical tumor with the given semiaxes:
+semiax_x = 100  # um
+semiax_y = 150  # um
 
-#    semiax_x = 100  # um
-#    semiax_y = 150  # um
+# %%
+# With FEniCS we can do so by defining an expression which represent mathematically our initial condition:
+#
 #    phi0_max = 1
 #    phi0_min = 0
 #    # cpp code that returns True if the point x is inside the ellipse, and False otherwise
@@ -105,10 +108,24 @@ function_space = get_mixed_function_space(mesh, 2, "CG", 1)
 #    # cpp code that returns 1 if the above statement is True, and 0 otherwise
 #    phi0_cpp_code = is_in_ellipse_cpp_code + " ? phi0_max : phi0_min"
 #    # FEniCS expression, built from cpp code defined above
-#    u0 = fenics.Expression(phi0_cpp_code,
-#                           degree=2,
-#                           semiax_x=semiax_x, semiax_y=semiax_y,
-#                           phi0_max=phi0_max, phi0_min=phi0_min)
+#    phi0 = fenics.Expression(phi0_cpp_code,
+#                             degree=2,
+#                             semiax_x=semiax_x, semiax_y=semiax_y,
+#                             phi0_max=phi0_max, phi0_min=phi0_min)
 #
 # However, if you don't feel confident in defininf your own expression, you can use the one provided by mocafe:
+phi0 = EllipseField(center=np.array([0., 0.]),
+                    semiax_x=semiax_x,
+                    semiax_y=semiax_y,
+                    inside_value=1.,
+                    outside_value=0.)
+
+# %%
+# The FEniCS expression must then be projected or interpolated in the function space. Notice that since the
+# function space we defined is mixed, we must choose one of the sub-field to define the function.
+phi0 = fenics.interpolate((phi0, phi0), function_space.sub(0).collapse())
+
+# %%
+# Notice also that since the mixed function space is defined by two identical function spaces, it makes no difference
+# to pick sub(0) or sub(1)
 
