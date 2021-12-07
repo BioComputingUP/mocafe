@@ -3,6 +3,39 @@ import numpy as np
 from mocafe.math import sigmoid
 
 
+class EllipseField(fenics.UserExpression):
+    """
+    Expression representing an ellipse with a given value inside and a given value outside. The user can set
+    the semiaxes and the center.
+    """
+    def __init__(self,
+                 center: np.ndarray,
+                 semiax_x: float,
+                 semiax_y: float,
+                 inside_value: float,
+                 outside_value: float):
+        super(EllipseField, self).__init__()
+        self.center = center
+        self.semiax_x = semiax_x
+        self.semiax_y = semiax_y
+        self.inside_value = inside_value
+        self.outside_value = outside_value
+
+    def eval(self, values, x):
+        x_in_ellipse = (((x[0] - self.center[0]) / self.semiax_x) ** 2) + \
+                       (((x[1] - self.center[1]) / self.semiax_y) ** 2) <= 1.
+        if x_in_ellipse:
+            values[0] = self.inside_value
+        else:
+            values[0] = self.outside_value
+
+    def value_shape(self):
+        return ()
+
+    def __floordiv__(self, other):
+        pass
+
+
 class SmoothCircle(fenics.UserExpression):
     """
     Expression representing a Circle with a given center and radius, with given values inside and outside the circle.
