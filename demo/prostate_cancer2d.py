@@ -5,6 +5,10 @@ Prostate cancer phase field model
 This demo presents how to simulate a prostate cancer phase field model presented by G. Lorenzo and collaborators
 in 2016 :cite:`Lorenzo2016` using FEniCS and mocafe.
 
+How to run this example on mocafe
+-------------------------------------------
+todo
+
 Brief introduction to the mathematical model
 --------------------------------------------
 
@@ -26,26 +30,23 @@ The second equation is for the nutrient concentration :math:`\sigma`:
 
 .. math::
     \frac{\partial \sigma}{\partial t} = \epsilon \nabla^2\sigma + s - \delta\cdot\varphi - \gamma\cdot\sigma
-
-.. bibliography:: references.bib
-
-Implementation
-------------------------------------------
-
-In the following we will implement the prostate cancer model using FEniCS - with the help of mocafe, starting from the
-import of the needed modules and the definition of the MPI communicator and rank, which is needed for the parallel
-computation:
 """
 
+# %%
+# Implementation
+# ------------------------------------------
+#
+# First of all, we import all we need to run the simulation.
 import sys
 from pathlib import Path
-file_folder = Path(__file__).parent.resolve()
-mocafe_folder = file_folder.parent.parent
-sys.path.append(str(mocafe_folder))
-
 import fenics
 from mocafe.fenut.fenut import get_mixed_function_space
 
+# %%
+# We also need to append the mocafe path to make it work.
+file_folder = Path(__file__).parent.resolve()
+mocafe_folder = file_folder.parent.parent
+sys.path.append(str(mocafe_folder))
 
 # %%
 # Definition of the spatial domain and the function space
@@ -70,7 +71,6 @@ mesh = fenics.RectangleMesh(fenics.Point(x_min, y_min),
                             nx,
                             ny)
 
-
 # %%
 # From the mesh defined above, we can then define the ``FunctionSpace``, that is the set of the piece-wise polynomial
 # function to be used to represent our solution computed using the finite element method (FEM). Since the model we wish
@@ -86,4 +86,29 @@ mesh = fenics.RectangleMesh(fenics.Point(x_min, y_min),
 # be used as follows:
 #
 function_space = get_mixed_function_space(mesh, 2, "CG", 1)
+
+# %%
+# Initial conditions
+# ^^^^^^^^^^^^^^^^^^^
+# Since the system of differential equations involves time, we need to define initial conditions for both
+# :math:`\varphi` and :math`\sigma`. According to the original paper, we will define an initial elliptical tumor
+# as an intial condition pro :math:`\varphi`.
+#
+# With FEniCS we can do so by defining an expression which represent mathematically our initial condition:
+
+#    semiax_x = 100  # um
+#    semiax_y = 150  # um
+#    phi0_max = 1
+#    phi0_min = 0
+#    # cpp code that returns True if the point x is inside the ellipse, and False otherwise
+#    is_in_ellipse_cpp_code = "((pow(x[0] / semiax_x, 2)) + (pow(x[1] / semiax_y, 2)) <= 1)"
+#    # cpp code that returns 1 if the above statement is True, and 0 otherwise
+#    phi0_cpp_code = is_in_ellipse_cpp_code + " ? phi0_max : phi0_min"
+#    # FEniCS expression, built from cpp code defined above
+#    u0 = fenics.Expression(phi0_cpp_code,
+#                           degree=2,
+#                           semiax_x=semiax_x, semiax_y=semiax_y,
+#                           phi0_max=phi0_max, phi0_min=phi0_min)
+#
+# However, if you don't feel confident in defininf your own expression, you can use the one provided by mocafe:
 
