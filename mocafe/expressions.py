@@ -1,6 +1,5 @@
 import fenics
 import numpy as np
-
 from mocafe.math import sigmoid
 
 
