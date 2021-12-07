@@ -1,0 +1,204 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Prostate cancer phase field model &#8212; mocafe 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Bibliography" href="../bib.html" />
+    <link rel="prev" title="Demo gallery" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-demo-doc-prostate-cancer2d-py"><span class="std std-ref">here</span></a>
+to download the full example code</p>
+</div>
+<section class="sphx-glr-example-title" id="prostate-cancer-phase-field-model">
+<span id="sphx-glr-demo-doc-prostate-cancer2d-py"></span><h1>Prostate cancer phase field model<a class="headerlink" href="#prostate-cancer-phase-field-model" title="Permalink to this headline">¶</a></h1>
+<p>This demo presents how to simulate a prostate cancer phase field model presented by G. Lorenzo and collaborators
+in 2016 <span id="id1">[]</span> using FEniCS and mocafe.</p>
+<section id="brief-introduction-to-the-mathematical-model">
+<h2>Brief introduction to the mathematical model<a class="headerlink" href="#brief-introduction-to-the-mathematical-model" title="Permalink to this headline">¶</a></h2>
+<p>The model was published on PNAS in 2016 and presentes a continuous mathematical model able to reproduce the
+growth pattern of prostate cancer at tissue scale <span id="id2">[]</span>.</p>
+<p>The model is composed of just two equations. The first one is for the cancer phase field <span class="math notranslate nohighlight">\(\varphi\)</span>, and reads:</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial \varphi}{\partial t} = \lambda \nabla^2 \varphi - \frac{1}{\tau}\frac{dF(\varphi)}{d\varphi}
++ \chi \sigma - A \varphi\]</div>
+<p>Where <span class="math notranslate nohighlight">\(F(\varphi)\)</span> is the following double-well potential:</p>
+<div class="math notranslate nohighlight">
+\[F(\varphi) = 16\cdot \varphi^2 \cdot (1 - \varphi)^2\]</div>
+<p>The second equation is for the nutrient concentration <span class="math notranslate nohighlight">\(\sigma\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial \sigma}{\partial t} = \epsilon \nabla^2\sigma + s - \delta\cdot\varphi - \gamma\cdot\sigma\]</div>
+<span class="target" id="id3"></span></section>
+<section id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>In the following we will implement the prostate cancer model using FEniCS - with the help of mocafe, starting from the
+import of the needed modules and the definition of the MPI communicator and rank, which is needed for the parallel
+computation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="n">file_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+<span class="n">mocafe_folder</span> <span class="o">=</span> <span class="n">file_folder</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">mocafe_folder</span><span class="p">))</span>
+
+<span class="kn">import</span> <span class="nn">fenics</span>
+<span class="kn">from</span> <span class="nn">mocafe.fenut.fenut</span> <span class="kn">import</span> <span class="n">get_mixed_function_space</span>
+</pre></div>
+</div>
+<section id="definition-of-the-spatial-domain-and-the-function-space">
+<h3>Definition of the spatial domain and the function space<a class="headerlink" href="#definition-of-the-spatial-domain-and-the-function-space" title="Permalink to this headline">¶</a></h3>
+<p>Simularly to the original paper, we are going to simulate the model on a 2D square mesh of dimension
+2000 x 2000 <span class="math notranslate nohighlight">\(\mu m\)</span>. This is pretty simple to do using FEniCs, which provides the class <code class="docutils literal notranslate"><span class="pre">RectangleMesh</span></code>
+to do this job.</p>
+<p>More precisely, in the following we are going to define a mesh of the dimension described above, with 512 elements for
+each side.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nx</span> <span class="o">=</span> <span class="mi">512</span>
+<span class="n">ny</span> <span class="o">=</span> <span class="n">nx</span>
+<span class="n">x_max</span> <span class="o">=</span> <span class="mi">1000</span>  <span class="c1"># um</span>
+<span class="n">x_min</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1000</span>  <span class="c1"># um</span>
+<span class="n">y_max</span> <span class="o">=</span> <span class="n">x_max</span>
+<span class="n">y_min</span> <span class="o">=</span> <span class="n">x_min</span>
+
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">RectangleMesh</span><span class="p">(</span><span class="n">fenics</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">y_min</span><span class="p">),</span>
+                            <span class="n">fenics</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="n">x_max</span><span class="p">,</span> <span class="n">y_max</span><span class="p">),</span>
+                            <span class="n">nx</span><span class="p">,</span>
+                            <span class="n">ny</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>From the mesh defined above, we can then define the <code class="docutils literal notranslate"><span class="pre">FunctionSpace</span></code>, that is the set of the piece-wise polynomial
+function to be used to represent our solution computed using the finite element method (FEM). Since the model we wish
+to simulate is composed of two coupled equations, we need to define a MixedElement function space with two different
+elements. In this implementation, we will used for both equations the same element type, “CG” (Continuous Galerking),
+of the first order, which can be created in FEniCS simply using:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cg1_element</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">FiniteElement</span><span class="p">(</span><span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="n">fenics</span><span class="o">.</span><span class="n">triangle</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">mixed_element</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">MixedElement</span><span class="p">([</span><span class="n">cg1_element</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">function_space</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">mixed_element</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>However, the very same operation can be performed quicker using a util method of mocafe, which can
+be used as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">function_space</span> <span class="o">=</span> <span class="n">get_mixed_function_space</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-demo-doc-prostate-cancer2d-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/8a40d8aa3269e4a75362d293cf86804a/prostate_cancer2d.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">prostate_cancer2d.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/df27622401ccd258725549d238b56ddb/prostate_cancer2d.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">prostate_cancer2d.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">mocafe</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Demo gallery</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Prostate cancer phase field model</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../bib.html">Bibliography</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Demo gallery</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Demo gallery</a></li>
+      <li>Next: <a href="../bib.html" title="next chapter">Bibliography</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Franco Pradelli.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/demo_doc/prostate_cancer2d.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
