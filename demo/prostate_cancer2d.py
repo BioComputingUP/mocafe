@@ -5,6 +5,10 @@ Prostate cancer phase field model
 This demo presents how to simulate a prostate cancer phase field model presented by G. Lorenzo and collaborators
 in 2016 :cite:`Lorenzo2016` using FEniCS and mocafe.
 
+How to run this example on mocafe
+-------------------------------------------
+todo
+
 Brief introduction to the mathematical model
 --------------------------------------------
 
@@ -26,26 +30,67 @@ The second equation is for the nutrient concentration :math:`\sigma`:
 
 .. math::
     \frac{\partial \sigma}{\partial t} = \epsilon \nabla^2\sigma + s - \delta\cdot\varphi - \gamma\cdot\sigma
-
-.. bibliography:: references.bib
-
-Implementation
-------------------------------------------
-
-In the following we will implement the prostate cancer model using FEniCS - with the help of mocafe, starting from the
-import of the needed modules and the definition of the MPI communicator and rank, which is needed for the parallel
-computation:
 """
 
+# %%
+# Implementation
+# ------------------------------------------
+#
+# Setup
+# ^^^^^
+# First of all, we import all we need to run the simulation.
 import sys
+import numpy as np
+import fenics
+import random
+from tqdm import tqdm
 from pathlib import Path
 file_folder = Path(__file__).parent.resolve()
-mocafe_folder = file_folder.parent.parent
-sys.path.append(str(mocafe_folder))
+mocafe_folder = file_folder.parent
+sys.path.append(str(mocafe_folder))  # appending mocafe path. Must be removed
+from mocafe.fenut.solvers import PETScProblem, PETScSolver
+from mocafe.fenut.fenut import get_mixed_function_space, setup_xdmf_files
+from mocafe.fenut.mansimdata import setup_data_folder
+from mocafe.expressions import EllipseField, PythonFunctionField
+from mocafe.fenut.parameters import from_dict
+import mocafe.litforms.prostate_cancer as pc_model
+from mocafe.angie import setup_random_state
 
-import fenics
-from mocafe.fenut.fenut import get_mixed_function_space
+# %%
+# Then, it is useful (even though not necessary) to do a number of operations befor running our simulation.
+#
+# First of all, we shut down the logging messages from FEniCS. You can comment this line if you want.
+fenics.set_log_level(fenics.LogLevel.ERROR)
 
+comm = fenics.MPI.comm_world
+rank = comm.Get_rank()
+
+data_folder = setup_data_folder(sim_name=str(__file__).replace(".py", ""),
+                                base_location=file_folder,
+                                saved_sim_folder="demo_out")
+
+setup_random_state(load=True, load_path=data_folder.parent / Path("0007"))
+
+phi_xdmf, sigma_xdmf = setup_xdmf_files(["phi", "sigma"], data_folder)
+
+parameters = from_dict({
+    "phi0_in": 1.,  # adimentional
+    "phi0_out": 0.,  # adimdimentional
+    "sigma0_in": 0.2,  # adimentional
+    "sigma0_out": 1.,  # adimentional
+    "dt": 0.01,  # years
+    "lambda": 1.6E5,  # (um^2) / years
+    "tau": 0.01,  # years
+    "chempot_constant": 16,  # adimensional
+    "chi": 600.0,  # Liters / (gram * years)
+    "A": 600.0,  # 1 / years
+    "epsilon": 5.0E6,  # (um^2) / years
+    "delta": 1003.75,  # grams / (Liters * years)
+    "gamma": 1000.0,  # grams / (Liters * years)
+    "s_average": 961.2,  # grams / (Liters * years)
+    "s_max": 73.,
+    "s_min": -73.
+})
 
 # %%
 # Definition of the spatial domain and the function space
@@ -58,7 +103,7 @@ from mocafe.fenut.fenut import get_mixed_function_space
 # More precisely, in the following we are going to define a mesh of the dimension described above, with 512 elements for
 # each side.
 #
-nx = 512
+nx = 130
 ny = nx
 x_max = 1000  # um
 x_min = -1000  # um
@@ -69,7 +114,6 @@ mesh = fenics.RectangleMesh(fenics.Point(x_min, y_min),
                             fenics.Point(x_max, y_max),
                             nx,
                             ny)
-
 
 # %%
 # From the mesh defined above, we can then define the ``FunctionSpace``, that is the set of the piece-wise polynomial
@@ -86,4 +130,112 @@ mesh = fenics.RectangleMesh(fenics.Point(x_min, y_min),
 # be used as follows:
 #
 function_space = get_mixed_function_space(mesh, 2, "CG", 1)
+
+# %%
+# Initial conditions
+# ^^^^^^^^^^^^^^^^^^^
+# Since the system of differential equations involves time, we need to define initial conditions for both
+# :math:`\varphi` and :math`\sigma`. According to the original paper as initial condition for :math:`\varphi`
+# we will define an elliptical tumor with the given semiaxes:
+semiax_x = 100  # um
+semiax_y = 150  # um
+
+# %%
+# With FEniCS we can do so by defining an expression which represent mathematically our initial condition:
+#
+#    phi0_max = 1
+#    phi0_min = 0
+#    # cpp code that returns True if the point x is inside the ellipse, and False otherwise
+#    is_in_ellipse_cpp_code = "((pow(x[0] / semiax_x, 2)) + (pow(x[1] / semiax_y, 2)) <= 1)"
+#    # cpp code that returns 1 if the above statement is True, and 0 otherwise
+#    phi0_cpp_code = is_in_ellipse_cpp_code + " ? phi0_max : phi0_min"
+#    # FEniCS expression, built from cpp code defined above
+#    phi0 = fenics.Expression(phi0_cpp_code,
+#                             degree=2,
+#                             semiax_x=semiax_x, semiax_y=semiax_y,
+#                             phi0_max=phi0_max, phi0_min=phi0_min)
+#
+# However, if you don't feel confident in defininf your own expression, you can use the one provided by mocafe:
+phi0 = EllipseField(center=np.array([0., 0.]),
+                    semiax_x=semiax_x,
+                    semiax_y=semiax_y,
+                    inside_value=parameters.get_value("phi0_in"),
+                    outside_value=parameters.get_value("phi0_out"))
+
+# %%
+# The FEniCS expression must then be projected or interpolated in the function space. Notice that since the
+# function space we defined is mixed, we must choose one of the sub-field to define the function.
+phi0 = fenics.interpolate(phi0, function_space.sub(0).collapse())
+phi_xdmf.write(phi0, 0)
+
+# %%
+# Notice also that since the mixed function space is defined by two identical function spaces, it makes no difference
+# to pick sub(0) or sub(1).
+#
+# After having defined the initial condition for :math:`\varphi`, let's define the initial for :math:`\sigma` in a
+# similar fashion:
+sigma0 = EllipseField(center=np.array([0., 0.]),
+                      semiax_x=semiax_x,
+                      semiax_y=semiax_y,
+                      inside_value=parameters.get_value("sigma0_in"),
+                      outside_value=parameters.get_value("sigma0_out"))
+sigma0 = fenics.interpolate(sigma0, function_space.sub(0).collapse())
+sigma_xdmf.write(sigma0, 0)
+
+# define an expression for s
+s_expression = PythonFunctionField(
+    python_fun=lambda: parameters.get_value("s_average") + random.uniform(parameters.get_value("s_min"),
+                                                                          parameters.get_value("s_max")),
+)
+
+# define bidim function old
+# u_old = fenics.Function(function_space)
+# fenics.assign(u_old, [phi0, sigma0])
+
+# define bidim function
+u = fenics.Function(function_space)
+fenics.assign(u, [phi0, sigma0])
+phi, sigma = fenics.split(u)
+
+# get test functions
+v1, v2 = fenics.TestFunctions(function_space)
+
+# define form
+weak_form = pc_model.prostate_cancer_form(phi, phi0, sigma, v1, parameters) + \
+            pc_model.prostate_cancer_nutrient_form(sigma, sigma0, phi, v2, s_expression, parameters)
+
+
+# define jacobian of the weak form
+jacobian = fenics.derivative(weak_form, u)
+
+# define problem and solver
+problem = PETScProblem(jacobian, weak_form, [])
+solver = PETScSolver({"ksp_type": "gmres", "pc_type": "asm"}, mesh.mpi_comm())
+
+# start time iteration
+t = 0
+n_steps = 100
+if rank == 0:
+    progress_bar = tqdm(total=n_steps, ncols=100)
+else:
+    progress_bar = None
+
+for current_step in range(1, n_steps + 1):
+    # update time
+    t += parameters.get_value("dt")
+
+    # solve problem for current time
+    solver.solve(problem, u.vector())
+
+    # update values
+    fenics.assign([phi0, sigma0], u)
+
+    # save current solutions to file
+    phi_xdmf.write(phi0, t)
+    sigma_xdmf.write(sigma0, t)
+
+    # update pbar
+    if rank == 0:
+        progress_bar.update(1)
+
 
