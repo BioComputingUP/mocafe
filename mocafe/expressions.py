@@ -94,3 +94,23 @@ class SmoothCircularTumor(SmoothCircle):
 
     def eval(self, values, x):
         super(SmoothCircularTumor, self).eval(values, x)
+
+
+class PythonFunctionField(fenics.UserExpression):
+    """
+    Expression representing a field with values determined on the basis of the given python function.
+    """
+    def __init__(self,
+                 python_fun,
+                 *python_fun_params):
+        self.python_fun = python_fun
+        self.python_fun_params = python_fun_params
+
+    def eval(self, values, x):
+        values[0] = self.python_fun(*self.python_fun_params)
+
+    def value_shape(self):
+        return ()
+
+    def __floordiv__(self, other):
+        pass
