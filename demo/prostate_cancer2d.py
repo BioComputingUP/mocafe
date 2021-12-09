@@ -45,6 +45,7 @@ from mocafe.fenut.fenut import get_mixed_function_space, setup_xdmf_files
 from mocafe.fenut.mansimdata import setup_data_folder
 from mocafe.expressions import EllipseField
 from mocafe.fenut.parameters import from_dict
+import mocafe.litforms.prostate_cancer as pc_model
 
 # %%
 # We also need to append the mocafe path to make it work.
@@ -59,10 +60,20 @@ data_folder = setup_data_folder(sim_name=str(__file__).replace(".py", ""),
 phi_xdmf, sigma_xdmf = setup_xdmf_files(["phi", "sigma"], data_folder)
 
 parameters = from_dict({
-    "phi0_in": 1.,
-    "phi0_out": 0.,
-    "sigma0_in": 0.2,
-    "sigma0_out": 1.
+    "phi0_in": 1.,  # adimentional
+    "phi0_out": 0.,  # adimdimentional
+    "sigma0_in": 0.2,  # adimentional
+    "sigma0_out": 1.,  # adimentional
+    "dt": 0.001,  # years
+    "lambda": 1.6E5,  # (um^2) / years
+    "tau": 0.01,  # years
+    "chempot_constant": 16,  # adimensional
+    "chi": 600.0,  # Liters / (gram * years)
+    "A": 600.0,  # 1 / years
+    "epsilon": 5.0E6,  # (um^2) / years
+    "delta": 1003.75,  # grams / (Liters * years)
+    "gamma": 1000.0,  # grams / (Liters * years)
+    "s_average": 961.2  # grams / (Liters * years)
 })
 
 # %%
@@ -155,11 +166,23 @@ sigma0 = EllipseField(center=np.array([0., 0.]),
 sigma0 = fenics.interpolate(sigma0, function_space.sub(0).collapse())
 sigma_xdmf.write(sigma0, 0)
 
+# define an expression for s
+
+
+# define bidim function old
 u_old = fenics.Function(function_space)
 fenics.assign(u_old, [phi0, sigma0])
+
+# define bidim function
 u = fenics.Function(function_space)
 fenics.assign(u, [phi0, sigma0])
 phi, sigma = fenics.split(u)
+
+# get test functions
+v1, v2 = fenics.TestFunctions(function_space)
+
+# define form
+weak_form = pc_model.prostate_cancer_form(phi, phi0, sigma, v1, parameters)
 
 
 
