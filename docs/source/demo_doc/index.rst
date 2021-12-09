@@ -14,7 +14,7 @@ Below my examples:
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This demo presents how to simulate a prostate cancer phase field model presented by G. Lorenzo ...">
+    <div class="sphx-glr-thumbcontainer" tooltip="In this short demo we will show you how to simulate a phase field model described by G. Lorenzo...">
 
 .. only:: html
 

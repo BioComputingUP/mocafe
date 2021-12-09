@@ -19,47 +19,66 @@
 
 
 Prostate cancer phase field model
-============================================
+==================================
 
-This demo presents how to simulate a prostate cancer phase field model presented by G. Lorenzo and collaborators
-in 2016 :cite:`Lorenzo2016` using FEniCS and mocafe.
+In this short demo we will show you how to simulate a phase field model described by G. Lorenzo and collaborators
+in 2016 :cite:`Lorenzo2016` using FEniCS and mocafe. The model was published on PNAS in 2016 and presents a
+continuous mathematical model able to reproduce the growth pattern of prostate cancer at tissue scale.
 
 How to run this example on mocafe
--------------------------------------------
-todo
+---------------------------------
+Make sure you have FEniCS and mocafe and download the source script of this page (see above for the link).
+Then, simply run it using python:
+
+    python3 prostate_cancer2d.py
+
+If you are in a hurry, you can exploit parallelization to run the simulation faster:
+
+    mpirun -n 4 python3 prostate_cancer2d.py
+
+Notice that the number following the ``-n`` option is the number of MPI processes you using for parallelizing the
+simulation. You can change it accordingly with your CPU.
 
 Brief introduction to the mathematical model
 --------------------------------------------
-
-The model was published on PNAS in 2016 and presentes a continuous mathematical model able to reproduce the
-growth pattern of prostate cancer at tissue scale :cite:`Lorenzo2016`.
-
-The model is composed of just two equations. The first one is for the cancer phase field :math:`\varphi`, and reads:
+The model is composed of just two partial differential equations (PDEs). The first describes the evolution of the
+cancer phase field  :math:`\varphi`, and reads:
 
 .. math::
     \frac{\partial \varphi}{\partial t} = \lambda \nabla^2 \varphi - \frac{1}{\tau}\frac{dF(\varphi)}{d\varphi}
     + \chi \sigma - A \varphi
 
-Where :math:`F(\varphi)` is the following double-well potential:
-
-.. math::
-    F(\varphi) = 16\cdot \varphi^2 \cdot (1 - \varphi)^2
-
-The second equation is for the nutrient concentration :math:`\sigma`:
+The second describes the variation of nutrients concentration :math:`\sigma` in time:
 
 .. math::
     \frac{\partial \sigma}{\partial t} = \epsilon \nabla^2\sigma + s - \delta\cdot\varphi - \gamma\cdot\sigma
 
-.. GENERATED FROM PYTHON SOURCE LINES 36-42
+A complete discussion of these two equations is above the purpose of this short demo so, if you're interested, we
+suggest you to refer to the original paper :cite:`Lorenzo2016`. However, we just mention some of their main features.
+
+The first equation describes a cancer development driven by both proliferation, and apoptosis. Cancer cells are
+assumed to duplicate in presence of nutrient and their proliferation is, indeed, described by the term
+:math:`\chi \sigma`, which contains the nutrients concentration. Apoptosis is, instead assumed to occurr at a constant
+rate and is rpresented in the equation by the term :math:`-A \varphi`.
+
+The second equation describes the diffusion of the nutrients with the Fick's low of diffusion
+:cite:`enwiki:1058693490`. The equation assumes that the nutrient is supplied constantly in the domain with
+a distribution :math:`s`, and that the nutrient is consumed at a constant rate by the cancer cells (term
+:math:`-\delta\varphi`). Additionaly, the nutrient is supposed to decay at a constant rate, described by the term
+:math:`\gamma \sigma`.
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 54-61
 
 Implementation
 ------------------------------------------
 
 Setup
 ^^^^^
-First of all, we import all we need to run the simulation.
+After the math, let's see the code. To reproduce this model we need first to import everything we need throughout
+the simulation. Notice that while most of the packages are provided by mocafe, we also use some other stuff.
 
-.. GENERATED FROM PYTHON SOURCE LINES 42-60
+.. GENERATED FROM PYTHON SOURCE LINES 61-77
 
 .. code-block:: default
 
@@ -80,27 +99,26 @@ First of all, we import all we need to run the simulation.
     import mocafe.litforms.prostate_cancer as pc_model
 
 
+.. GENERATED FROM PYTHON SOURCE LINES 78-82
 
+Then, it is useful (even though not necessary) to do a number of operations before running our simulation.
 
-.. GENERATED FROM PYTHON SOURCE LINES 61-64
+First of all, we shut down the logging messages from FEniCS, leaving only the error messages in case something goes
+*really* wrong. If you want to check out the FEniCS messages, you can comment this line.
 
-Then, it is useful (even though not necessary) to do a number of operations befor running our simulation.
-
-First of all, we shut down the logging messages from FEniCS. You can comment this line if you want.
-
-.. GENERATED FROM PYTHON SOURCE LINES 64-66
+.. GENERATED FROM PYTHON SOURCE LINES 82-84
 
 .. code-block:: default
 
     fenics.set_log_level(fenics.LogLevel.ERROR)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 67-69
+.. GENERATED FROM PYTHON SOURCE LINES 85-87
 
 Then, we define the MPI rank for each process. Generally speaking, this is necessary for running the simulation in
 parallel using ``mpirun``, even though in this simulation is not largely used, as we are going to see.
 
-.. GENERATED FROM PYTHON SOURCE LINES 69-72
+.. GENERATED FROM PYTHON SOURCE LINES 87-90
 
 .. code-block:: default
 
@@ -108,12 +126,14 @@ parallel using ``mpirun``, even though in this simulation is not largely used, a
     rank = comm.Get_rank()
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 73-83
+.. GENERATED FROM PYTHON SOURCE LINES 91-103
 
-Then, we can define the files where to save our result. The suggested format for saving simulations is using
-``.xdmf`` files, which can easily visualized in `Paraview <https://www.paraview.org/>`_.
+Then, we can define the files where to save our result for visualization and post-processing. The suggested format
+for saving FEniCS simulations is using ``.xdmf`` files, which can easily be visualized in
+`Paraview <https://www.paraview.org/>`_.
 
-In the following, we use two mocafe methods for defining:
+Even though FEniCS provides its own classes and method to define these files, in the following we use two mocafe
+methods for defining:
 
 - first, the folder where to save the result of the simulation. In this case, the folder will be based inside
   the current folder (``base_location``) and it's called demo_out/prostate_cancer2d;
@@ -121,7 +141,7 @@ In the following, we use two mocafe methods for defining:
   ``phi.xdmf`` and ``sigma.xdmf``.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 83-89
+.. GENERATED FROM PYTHON SOURCE LINES 103-109
 
 .. code-block:: default
 
@@ -132,13 +152,13 @@ In the following, we use two mocafe methods for defining:
     phi_xdmf, sigma_xdmf = setup_xdmf_files(["phi", "sigma"], data_folder)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 90-93
+.. GENERATED FROM PYTHON SOURCE LINES 110-113
 
 Finally, we define the parameters of the differential equation using a mocafe object created for this purpose,
 Parameters. A Parameters object can be initialized in several ways. In the following, we define it from a
 dictionary where each key is the parameter name and the value is the actual value of the parameter.
 
-.. GENERATED FROM PYTHON SOURCE LINES 93-112
+.. GENERATED FROM PYTHON SOURCE LINES 113-132
 
 .. code-block:: default
 
@@ -162,7 +182,7 @@ dictionary where each key is the parameter name and the value is the actual valu
     })
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 113-123
+.. GENERATED FROM PYTHON SOURCE LINES 133-143
 
 Definition of the spatial domain and the function space
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -175,7 +195,7 @@ More precisely, in the following we are going to define a mesh of the dimension 
 points for each side.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 123-135
+.. GENERATED FROM PYTHON SOURCE LINES 143-155
 
 .. code-block:: default
 
@@ -192,7 +212,7 @@ points for each side.
                                 ny)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 136-149
+.. GENERATED FROM PYTHON SOURCE LINES 156-169
 
 From the mesh defined above, we can then define the ``FunctionSpace``, that is the set of the piece-wise
 polynomial function to be used to represent our solution computed using the finite element method (FEM). Since
@@ -208,14 +228,14 @@ However, the very same operation can be performed in just one line using the fol
 mocafe:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 149-151
+.. GENERATED FROM PYTHON SOURCE LINES 169-171
 
 .. code-block:: default
 
     function_space = get_mixed_function_space(mesh, 2, "CG", 1)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 152-157
+.. GENERATED FROM PYTHON SOURCE LINES 172-177
 
 Initial conditions
 ^^^^^^^^^^^^^^^^^^^
@@ -223,7 +243,7 @@ Since the system of differential equations involves time, we need to define init
 :math:`\varphi` and :math`\sigma`. According to the original paper as initial condition for :math:`\varphi`
 we will define an elliptical tumor with the given semiaxes:
 
-.. GENERATED FROM PYTHON SOURCE LINES 157-160
+.. GENERATED FROM PYTHON SOURCE LINES 177-180
 
 .. code-block:: default
 
@@ -231,7 +251,7 @@ we will define an elliptical tumor with the given semiaxes:
     semiax_y = 150  # um
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 161-180
+.. GENERATED FROM PYTHON SOURCE LINES 181-200
 
 With FEniCS we can do so by defining an expression which represent mathematically our initial condition:
 
@@ -253,7 +273,7 @@ With FEniCS we can do so by defining an expression which represent mathematicall
 
 However, if you don't feel confident in defining your own expression, you can use the one provided by mocafe:
 
-.. GENERATED FROM PYTHON SOURCE LINES 180-186
+.. GENERATED FROM PYTHON SOURCE LINES 200-206
 
 .. code-block:: default
 
@@ -264,13 +284,13 @@ However, if you don't feel confident in defining your own expression, you can us
                         outside_value=parameters.get_value("phi0_out"))
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 187-190
+.. GENERATED FROM PYTHON SOURCE LINES 207-210
 
 The FEniCS expression must then be projected or interpolated in the function space in order to obtain a
 fenics Function. Notice that since the function space we defined is mixed, we must choose one of the
 sub-field to define the function.
 
-.. GENERATED FROM PYTHON SOURCE LINES 190-193
+.. GENERATED FROM PYTHON SOURCE LINES 210-213
 
 .. code-block:: default
 
@@ -278,7 +298,7 @@ sub-field to define the function.
     phi_xdmf.write(phi0, 0)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 194-199
+.. GENERATED FROM PYTHON SOURCE LINES 214-219
 
 Notice also that since the mixed function space is defined by two identical function spaces, it makes no
 difference to pick sub(0) or sub(1).
@@ -286,7 +306,7 @@ difference to pick sub(0) or sub(1).
 After having defined the initial condition for :math:`\varphi`, let's define the initial for :math:`\sigma` in a
 similar fashion:
 
-.. GENERATED FROM PYTHON SOURCE LINES 199-207
+.. GENERATED FROM PYTHON SOURCE LINES 219-227
 
 .. code-block:: default
 
@@ -299,7 +319,7 @@ similar fashion:
     sigma_xdmf.write(sigma0, 0)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 208-215
+.. GENERATED FROM PYTHON SOURCE LINES 228-235
 
 PDE System definition
 ^^^^^^^^^^^^^^^^^^^^^
@@ -309,7 +329,7 @@ itself.
 First of all, we define the two variables, ``phi`` and ``sigma``, for which the system will be solved:
 define bidim function
 
-.. GENERATED FROM PYTHON SOURCE LINES 215-219
+.. GENERATED FROM PYTHON SOURCE LINES 235-239
 
 .. code-block:: default
 
@@ -318,22 +338,22 @@ define bidim function
     phi, sigma = fenics.split(u)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 220-221
+.. GENERATED FROM PYTHON SOURCE LINES 240-241
 
 Then, we define the test functions for defining the weak forms of the PDEs:
 
-.. GENERATED FROM PYTHON SOURCE LINES 221-223
+.. GENERATED FROM PYTHON SOURCE LINES 241-243
 
 .. code-block:: default
 
     v1, v2 = fenics.TestFunctions(function_space)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 224-225
+.. GENERATED FROM PYTHON SOURCE LINES 244-245
 
 Now, let's define an expression for s
 
-.. GENERATED FROM PYTHON SOURCE LINES 225-230
+.. GENERATED FROM PYTHON SOURCE LINES 245-250
 
 .. code-block:: default
 
@@ -343,11 +363,11 @@ Now, let's define an expression for s
     )
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 231-232
+.. GENERATED FROM PYTHON SOURCE LINES 251-252
 
 And the weak form of the system, which is already defined in mocafe
 
-.. GENERATED FROM PYTHON SOURCE LINES 232-235
+.. GENERATED FROM PYTHON SOURCE LINES 252-255
 
 .. code-block:: default
 
@@ -355,14 +375,14 @@ And the weak form of the system, which is already defined in mocafe
         pc_model.prostate_cancer_nutrient_form(sigma, sigma0, phi, v2, s_expression, parameters)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 236-240
+.. GENERATED FROM PYTHON SOURCE LINES 256-260
 
 Simulation
 ^^^^^^^^^^
 Simulating this mathematical model is just a matter of solving the PDE system defined above for each time step.
 To do so, we define a Problem and a Solver directly calling the PETSc backend.
 
-.. GENERATED FROM PYTHON SOURCE LINES 240-245
+.. GENERATED FROM PYTHON SOURCE LINES 260-265
 
 .. code-block:: default
 
@@ -372,11 +392,11 @@ To do so, we define a Problem and a Solver directly calling the PETSc backend.
     solver = PETScSolver({"ksp_type": "gmres", "pc_type": "asm"}, mesh.mpi_comm())
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 246-247
+.. GENERATED FROM PYTHON SOURCE LINES 266-267
 
 Then we initialize a progress bar with tqdm
 
-.. GENERATED FROM PYTHON SOURCE LINES 247-253
+.. GENERATED FROM PYTHON SOURCE LINES 267-273
 
 .. code-block:: default
 
@@ -387,11 +407,11 @@ Then we initialize a progress bar with tqdm
         progress_bar = None
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 254-255
+.. GENERATED FROM PYTHON SOURCE LINES 274-275
 
 And finally we iterate in time and solve the system at each time step
 
-.. GENERATED FROM PYTHON SOURCE LINES 255-275
+.. GENERATED FROM PYTHON SOURCE LINES 275-295
 
 .. code-block:: default
 

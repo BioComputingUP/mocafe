@@ -1,35 +1,53 @@
 r"""
 Prostate cancer phase field model
-============================================
+==================================
 
-This demo presents how to simulate a prostate cancer phase field model presented by G. Lorenzo and collaborators
-in 2016 :cite:`Lorenzo2016` using FEniCS and mocafe.
+In this short demo we will show you how to simulate a phase field model described by G. Lorenzo and collaborators
+in 2016 :cite:`Lorenzo2016` using FEniCS and mocafe. The model was published on PNAS in 2016 and presents a
+continuous mathematical model able to reproduce the growth pattern of prostate cancer at tissue scale.
 
 How to run this example on mocafe
--------------------------------------------
-todo
+---------------------------------
+Make sure you have FEniCS and mocafe and download the source script of this page (see above for the link).
+Then, simply run it using python:
+
+    python3 prostate_cancer2d.py
+
+If you are in a hurry, you can exploit parallelization to run the simulation faster:
+
+    mpirun -n 4 python3 prostate_cancer2d.py
+
+Notice that the number following the ``-n`` option is the number of MPI processes you using for parallelizing the
+simulation. You can change it accordingly with your CPU.
 
 Brief introduction to the mathematical model
 --------------------------------------------
-
-The model was published on PNAS in 2016 and presentes a continuous mathematical model able to reproduce the
-growth pattern of prostate cancer at tissue scale :cite:`Lorenzo2016`.
-
-The model is composed of just two equations. The first one is for the cancer phase field :math:`\varphi`, and reads:
+The model is composed of just two partial differential equations (PDEs). The first describes the evolution of the
+cancer phase field  :math:`\varphi`, and reads:
 
 .. math::
     \frac{\partial \varphi}{\partial t} = \lambda \nabla^2 \varphi - \frac{1}{\tau}\frac{dF(\varphi)}{d\varphi}
     + \chi \sigma - A \varphi
 
-Where :math:`F(\varphi)` is the following double-well potential:
-
-.. math::
-    F(\varphi) = 16\cdot \varphi^2 \cdot (1 - \varphi)^2
-
-The second equation is for the nutrient concentration :math:`\sigma`:
+The second describes the variation of nutrients concentration :math:`\sigma` in time:
 
 .. math::
     \frac{\partial \sigma}{\partial t} = \epsilon \nabla^2\sigma + s - \delta\cdot\varphi - \gamma\cdot\sigma
+
+A complete discussion of these two equations is above the purpose of this short demo so, if you're interested, we
+suggest you to refer to the original paper :cite:`Lorenzo2016`. However, we just mention some of their main features.
+
+The first equation describes a cancer development driven by both proliferation, and apoptosis. Cancer cells are
+assumed to duplicate in presence of nutrient and their proliferation is, indeed, described by the term
+:math:`\chi \sigma`, which contains the nutrients concentration. Apoptosis is, instead assumed to occurr at a constant
+rate and is rpresented in the equation by the term :math:`-A \varphi`.
+
+The second equation describes the diffusion of the nutrients with the Fick's low of diffusion
+:cite:`enwiki:1058693490`. The equation assumes that the nutrient is supplied constantly in the domain with
+a distribution :math:`s`, and that the nutrient is consumed at a constant rate by the cancer cells (term
+:math:`-\delta\varphi`). Additionaly, the nutrient is supposed to decay at a constant rate, described by the term
+:math:`\gamma \sigma`.
+
 """
 
 # %%
@@ -38,7 +56,8 @@ The second equation is for the nutrient concentration :math:`\sigma`:
 #
 # Setup
 # ^^^^^
-# First of all, we import all we need to run the simulation.
+# After the math, let's see the code. To reproduce this model we need first to import everything we need throughout
+# the simulation. Notice that while most of the packages are provided by mocafe, we also use some other stuff.
 import sys
 import numpy as np
 import fenics
@@ -55,12 +74,11 @@ from mocafe.expressions import EllipseField, PythonFunctionField
 from mocafe.fenut.parameters import from_dict
 import mocafe.litforms.prostate_cancer as pc_model
 
-
-
 # %%
-# Then, it is useful (even though not necessary) to do a number of operations befor running our simulation.
+# Then, it is useful (even though not necessary) to do a number of operations before running our simulation.
 #
-# First of all, we shut down the logging messages from FEniCS. You can comment this line if you want.
+# First of all, we shut down the logging messages from FEniCS, leaving only the error messages in case something goes
+# *really* wrong. If you want to check out the FEniCS messages, you can comment this line.
 fenics.set_log_level(fenics.LogLevel.ERROR)
 
 # %%
@@ -70,10 +88,12 @@ comm = fenics.MPI.comm_world
 rank = comm.Get_rank()
 
 # %%
-# Then, we can define the files where to save our result. The suggested format for saving simulations is using
-# ``.xdmf`` files, which can easily visualized in `Paraview <https://www.paraview.org/>`_.
+# Then, we can define the files where to save our result for visualization and post-processing. The suggested format
+# for saving FEniCS simulations is using ``.xdmf`` files, which can easily be visualized in
+# `Paraview <https://www.paraview.org/>`_.
 #
-# In the following, we use two mocafe methods for defining:
+# Even though FEniCS provides its own classes and method to define these files, in the following we use two mocafe
+# methods for defining:
 #
 # - first, the folder where to save the result of the simulation. In this case, the folder will be based inside
 #   the current folder (``base_location``) and it's called demo_out/prostate_cancer2d;
