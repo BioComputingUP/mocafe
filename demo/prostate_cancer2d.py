@@ -41,14 +41,29 @@ import sys
 import numpy as np
 import fenics
 from pathlib import Path
-from mocafe.fenut.fenut import get_mixed_function_space
+from mocafe.fenut.fenut import get_mixed_function_space, setup_xdmf_files
+from mocafe.fenut.mansimdata import setup_data_folder
 from mocafe.expressions import EllipseField
+from mocafe.fenut.parameters import from_dict
 
 # %%
 # We also need to append the mocafe path to make it work.
 file_folder = Path(__file__).parent.resolve()
 mocafe_folder = file_folder.parent.parent
 sys.path.append(str(mocafe_folder))
+
+data_folder = setup_data_folder(sim_name=str(__file__).replace(".py", ""),
+                                base_location=file_folder,
+                                saved_sim_folder="demo_out")
+
+phi_xdmf, sigma_xdmf = setup_xdmf_files(["phi", "sigma"], data_folder)
+
+parameters = from_dict({
+    "phi0_in": 1.,
+    "phi0_out": 0.,
+    "sigma0_in": 0.2,
+    "sigma0_out": 1.
+})
 
 # %%
 # Definition of the spatial domain and the function space
@@ -117,15 +132,36 @@ semiax_y = 150  # um
 phi0 = EllipseField(center=np.array([0., 0.]),
                     semiax_x=semiax_x,
                     semiax_y=semiax_y,
-                    inside_value=1.,
-                    outside_value=0.)
+                    inside_value=parameters.get_value("phi0_in"),
+                    outside_value=parameters.get_value("phi0_out"))
 
 # %%
 # The FEniCS expression must then be projected or interpolated in the function space. Notice that since the
 # function space we defined is mixed, we must choose one of the sub-field to define the function.
-phi0 = fenics.interpolate((phi0, phi0), function_space.sub(0).collapse())
+phi0 = fenics.interpolate(phi0, function_space.sub(0).collapse())
+phi_xdmf.write(phi0, 0)
 
 # %%
 # Notice also that since the mixed function space is defined by two identical function spaces, it makes no difference
-# to pick sub(0) or sub(1)
+# to pick sub(0) or sub(1).
+#
+# After having defined the initial condition for :math:`\varphi`, let's define the initial for :math:`\sigma` in a
+# similar fashion:
+sigma0 = EllipseField(center=np.array([0., 0.]),
+                      semiax_x=semiax_x,
+                      semiax_y=semiax_y,
+                      inside_value=parameters.get_value("sigma0_in"),
+                      outside_value=parameters.get_value("sigma0_out"))
+sigma0 = fenics.interpolate(sigma0, function_space.sub(0).collapse())
+sigma_xdmf.write(sigma0, 0)
+
+u_old = fenics.Function(function_space)
+fenics.assign(u_old, [phi0, sigma0])
+u = fenics.Function(function_space)
+fenics.assign(u, [phi0, sigma0])
+phi, sigma = fenics.split(u)
+
+
+
+
 
