@@ -67,7 +67,6 @@ from pathlib import Path
 file_folder = Path(__file__).parent.resolve()
 mocafe_folder = file_folder.parent
 sys.path.append(str(mocafe_folder))  # appending mocafe path. Must be removed
-from mocafe.fenut.solvers import PETScProblem, PETScSolver
 from mocafe.fenut.fenut import get_mixed_function_space, setup_xdmf_files
 from mocafe.fenut.mansimdata import setup_data_folder
 from mocafe.expressions import EllipseField, PythonFunctionField
