@@ -36,26 +36,40 @@ The second equation is for the nutrient concentration :math:`\sigma`:
 # Implementation
 # ------------------------------------------
 #
+# Setup
+# ^^^^^
 # First of all, we import all we need to run the simulation.
 import sys
 import numpy as np
 import fenics
+import random
+from tqdm import tqdm
 from pathlib import Path
+file_folder = Path(__file__).parent.resolve()
+mocafe_folder = file_folder.parent
+sys.path.append(str(mocafe_folder))  # appending mocafe path. Must be removed
+from mocafe.fenut.solvers import PETScProblem, PETScSolver
 from mocafe.fenut.fenut import get_mixed_function_space, setup_xdmf_files
 from mocafe.fenut.mansimdata import setup_data_folder
-from mocafe.expressions import EllipseField
+from mocafe.expressions import EllipseField, PythonFunctionField
 from mocafe.fenut.parameters import from_dict
 import mocafe.litforms.prostate_cancer as pc_model
+from mocafe.angie import setup_random_state
 
 # %%
-# We also need to append the mocafe path to make it work.
-file_folder = Path(__file__).parent.resolve()
-mocafe_folder = file_folder.parent.parent
-sys.path.append(str(mocafe_folder))
+# Then, it is useful (even though not necessary) to do a number of operations befor running our simulation.
+#
+# First of all, we shut down the logging messages from FEniCS. You can comment this line if you want.
+fenics.set_log_level(fenics.LogLevel.ERROR)
+
+comm = fenics.MPI.comm_world
+rank = comm.Get_rank()
 
 data_folder = setup_data_folder(sim_name=str(__file__).replace(".py", ""),
                                 base_location=file_folder,
                                 saved_sim_folder="demo_out")
+
+setup_random_state(load=True, load_path=data_folder.parent / Path("0007"))
 
 phi_xdmf, sigma_xdmf = setup_xdmf_files(["phi", "sigma"], data_folder)
 
@@ -64,7 +78,7 @@ parameters = from_dict({
     "phi0_out": 0.,  # adimdimentional
     "sigma0_in": 0.2,  # adimentional
     "sigma0_out": 1.,  # adimentional
-    "dt": 0.001,  # years
+    "dt": 0.01,  # years
     "lambda": 1.6E5,  # (um^2) / years
     "tau": 0.01,  # years
     "chempot_constant": 16,  # adimensional
@@ -73,7 +87,9 @@ parameters = from_dict({
     "epsilon": 5.0E6,  # (um^2) / years
     "delta": 1003.75,  # grams / (Liters * years)
     "gamma": 1000.0,  # grams / (Liters * years)
-    "s_average": 961.2  # grams / (Liters * years)
+    "s_average": 961.2,  # grams / (Liters * years)
+    "s_max": 73.,
+    "s_min": -73.
 })
 
 # %%
@@ -87,7 +103,7 @@ parameters = from_dict({
 # More precisely, in the following we are going to define a mesh of the dimension described above, with 512 elements for
 # each side.
 #
-nx = 512
+nx = 130
 ny = nx
 x_max = 1000  # um
 x_min = -1000  # um
@@ -167,11 +183,14 @@ sigma0 = fenics.interpolate(sigma0, function_space.sub(0).collapse())
 sigma_xdmf.write(sigma0, 0)
 
 # define an expression for s
-
+s_expression = PythonFunctionField(
+    python_fun=lambda: parameters.get_value("s_average") + random.uniform(parameters.get_value("s_min"),
+                                                                          parameters.get_value("s_max")),
+)
 
 # define bidim function old
-u_old = fenics.Function(function_space)
-fenics.assign(u_old, [phi0, sigma0])
+# u_old = fenics.Function(function_space)
+# fenics.assign(u_old, [phi0, sigma0])
 
 # define bidim function
 u = fenics.Function(function_space)
@@ -182,9 +201,41 @@ phi, sigma = fenics.split(u)
 v1, v2 = fenics.TestFunctions(function_space)
 
 # define form
-weak_form = pc_model.prostate_cancer_form(phi, phi0, sigma, v1, parameters)
+weak_form = pc_model.prostate_cancer_form(phi, phi0, sigma, v1, parameters) + \
+            pc_model.prostate_cancer_nutrient_form(sigma, sigma0, phi, v2, s_expression, parameters)
 
 
+# define jacobian of the weak form
+jacobian = fenics.derivative(weak_form, u)
 
+# define problem and solver
+problem = PETScProblem(jacobian, weak_form, [])
+solver = PETScSolver({"ksp_type": "gmres", "pc_type": "asm"}, mesh.mpi_comm())
+
+# start time iteration
+t = 0
+n_steps = 100
+if rank == 0:
+    progress_bar = tqdm(total=n_steps, ncols=100)
+else:
+    progress_bar = None
+
+for current_step in range(1, n_steps + 1):
+    # update time
+    t += parameters.get_value("dt")
+
+    # solve problem for current time
+    solver.solve(problem, u.vector())
+
+    # update values
+    fenics.assign([phi0, sigma0], u)
+
+    # save current solutions to file
+    phi_xdmf.write(phi0, t)
+    sigma_xdmf.write(sigma0, t)
+
+    # update pbar
+    if rank == 0:
+        progress_bar.update(1)
 
 
