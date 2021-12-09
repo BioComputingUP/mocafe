@@ -144,7 +144,7 @@ parameters = from_dict({
 # More precisely, in the following we are going to define a mesh of the dimension described above, with 512
 # points for each side.
 #
-nx = 512
+nx = 100
 ny = nx
 x_max = 1000  # um
 x_min = -1000  # um
@@ -185,7 +185,9 @@ semiax_x = 100  # um
 semiax_y = 150  # um
 
 # %%
-# With FEniCS we can do so by defining an expression which represent mathematically our initial condition:
+# With FEniCS we can do so by defining an expression which 'mathematically' represent our initial condition.
+# Indeed, ``Espression``s are the FEniCS way to define symbolic mathematical functions and they can be defined
+# using simple C++ code as follows:
 #
 # .. code-block:: default
 #
@@ -203,7 +205,8 @@ semiax_y = 150  # um
 #                             phi0_max=phi0_max,
 #                             phi0_min=phi0_min)
 #
-# However, if you don't feel confident in defining your own expression, you can use the one provided by mocafe:
+# However, if you don't feel confident in defining your own expression with the FEniCS interface, you can use
+# the one provided by mocafe:
 phi0 = EllipseField(center=np.array([0., 0.]),
                     semiax_x=semiax_x,
                     semiax_y=semiax_y,
@@ -211,18 +214,30 @@ phi0 = EllipseField(center=np.array([0., 0.]),
                     outside_value=parameters.get_value("phi0_out"))
 
 # %%
-# The FEniCS expression must then be projected or interpolated in the function space in order to obtain a
-# fenics Function. Notice that since the function space we defined is mixed, we must choose one of the
-# sub-field to define the function.
+# The FEniCS expression must then be interpolated in the function space in order to obtain a
+# FEniCS Function. Again, explaining why we need to do so is something that goes beyond the purpose of this small
+# demo, but think about it as a necessary operation required to transform the 'symbolic' function provided by the
+# ``Expression`` into the actual set of values of our expression in our spatial domain, so we can use them to
+# calculate our solution.
+#
+# The interpolation can be done simply calling the FEniCS method ``interpolate``, which takes as arguments the
+# expression to be projected and the function space where to do the projection. Notice that, since the function space
+# we defined is mixed, we must choose one of the sub-field to define the function.
 phi0 = fenics.interpolate(phi0, function_space.sub(0).collapse())
-phi_xdmf.write(phi0, 0)
 
 # %%
 # Notice also that since the mixed function space is defined by two identical function spaces, it makes no
 # difference to pick sub(0) or sub(1).
 #
-# After having defined the initial condition for :math:`\varphi`, let's define the initial for :math:`\sigma` in a
-# similar fashion:
+# Then, we can save the initial condition of the :math:`\varphi` field in the `.xdmf` file we defined at the
+# beginning, simply calling the method ``write(phi0, 0)``. The second argument, 0, just represent the fact that
+# this is the value of the field for the time 0. As we're going to see in the simulation, the file ``phi_xdmf`` can
+# collect the values of phi for each time.
+phi_xdmf.write(phi0, 0)
+
+# %%
+# Finally, after having defined the initial condition for :math:`\varphi`, let's define the initial for
+# :math:`\sigma` in a similar fashion:
 sigma0 = EllipseField(center=np.array([0., 0.]),
                       semiax_x=semiax_x,
                       semiax_y=semiax_y,
@@ -234,67 +249,101 @@ sigma_xdmf.write(sigma0, 0)
 # %%
 # PDE System definition
 # ^^^^^^^^^^^^^^^^^^^^^
-# After having defined the initial conditions for the system, we can proceed with the definition of the system
+# After having defined the initial conditions for the system, we continue with the definition of the system
 # itself.
 #
-# First of all, we define the two variables, ``phi`` and ``sigma``, for which the system will be solved:
+# First of all, we define the two variables, ``phi`` and ``sigma``, for which the system will be solved. Since the
+# two equations are coupled (i.e. they depend on each other) the easiest way to do so is to define a 'vector'
+# function ``u`` on the mixed function space:
 u = fenics.Function(function_space)
-fenics.assign(u, [phi0, sigma0])
+
+# %%
+# And then to split the vector in its two components, which represent :math:`\varphi` and :math:`\sigma`:
 phi, sigma = fenics.split(u)
 
 # %%
-# Then, we define the test functions for defining the weak forms of the PDEs:
-v1, v2 = fenics.TestFunctions(function_space)
-
-# %%
-# Now, let's define an expression for s
+# After having defined phi and sigma, we defined the :math:`s` function, which represent the distribution of
+# nutrient that is supplied to the system.
+#
+# In the original paper they simulated the model for both a constant distibution and for a randomic one. In
+# this implementation we chose to do the the latter, which is slightly more complex, even though made
+# simplier by the mocafe ``Expression`` ``PythonFunctionField``.
+#
+# This class allows us to use a python function, such as a lambda function, to define the values of a FEniCS function.
+# In the following, indeed, we make use of a lambda function and of the methods provided by the module ``random``
+# to define the random distribution mentioned above. Indeed, The pyhton function it is used by this class to evaluate
+# the value of the FEniCS function at each point of the mesh
 s_expression = PythonFunctionField(
     python_fun=lambda: parameters.get_value("s_average") + random.uniform(parameters.get_value("s_min"),
                                                                           parameters.get_value("s_max")),
 )
 
 # %%
-# And the weak form of the system, which is already defined in mocafe
+# Now, we have everything in place to define our PDE system. Since FEniCS uses the Finite Element Method (FEM) to
+# approximate the solution we need to define the so called 'weak form' of our system. This operation is not difficult
+# to do with the Unified Form Language (UFL) of FEniCS and, if you're not experienced with that, you are encouraged to
+# have a look to The Fenics Tutorial to start :cite:`LangtangenLogg2017`. However, the weak form of this system
+# is already defined in mocefe, so we can exploit that without wondering too much about weak form construction:
+#
+v1, v2 = fenics.TestFunctions(function_space)
 weak_form = pc_model.prostate_cancer_form(phi, phi0, sigma, v1, parameters) + \
     pc_model.prostate_cancer_nutrient_form(sigma, sigma0, phi, v2, s_expression, parameters)
 
 # %%
-# Simulation
-# ^^^^^^^^^^
-# Simulating this mathematical model is just a matter of solving the PDE system defined above for each time step.
-# To do so, we define a Problem and a Solver directly calling the PETSc backend.
-jacobian = fenics.derivative(weak_form, u)  # jacobian of the system
-
-problem = PETScProblem(jacobian, weak_form, [])
-solver = PETScSolver({"ksp_type": "gmres", "pc_type": "asm"}, mesh.mpi_comm())
+# Still, you are invited to notice a couple of interesting things:
+#
+# - the trial function necessary to define every weak form are simply variables in FEniCS;
+# - the variable ``weak_form`` is defined as the sum of two elements ``prostate_cancer_form`` and
+#   ``prostate_cancer_nutrient_form``, which represent, of course, the two differential equations of the system
+# - the variable ``weak_form`` depends on ``phi``, ``sigma``, their initial values, ``s``, and the model parameters,
+#   exactly like the equations defined above
+#
+# This was just to give you a taste of how simple it is to use UFL do define systems of differential equation, and how
+# well is integrated in Python. If you want to know more about it, you're again invited to have a look to The FEniCS
+# Tutorial :cite:`LangtangenLogg2017`.
 
 # %%
-# Then we initialize a progress bar with tqdm
+# Simulation
+# ^^^^^^^^^^
+# Now that everything is set up, simulating this mathematical model is just a matter of solving the PDE system defined
+# above for each time step.
+#
+# To do so, we start defining the total number of steps to simulate:
 n_steps = 100
+# %%
+# Then, we define a progress bar with ``tqdm`` in order to monitor the iteration progress. Notice that the progress
+# bar is defined only if the rank of the process is 0. This is necessary to avoid every process to print out a
+# different progress bar.
 if rank == 0:
     progress_bar = tqdm(total=n_steps, ncols=100)
 else:
     progress_bar = None
 
 # %%
-# And finally we iterate in time and solve the system at each time step
+# Then, we define the parameters of the solver we want to use to solve the system. This requires a bit of exprience
+# with numerical method and linear algebra to be understood. Basically, we are asking FEniCS to solve the system
+# with a Newton Solver, which must use the numerical method called 'gmres' (Generalized Minimal Residue) with the
+# 'hypre_euclid' preconditioner.
+solver_parameters = {"newton_solver": {"linear_solver": "gmres", "preconditioner": "hypre_euclid"}}
+
+# %%
+# Finally, we can iterate in time to solve the system with the given solver at each time step
 t = 0
 for current_step in range(n_steps):
     # update time
     t += parameters.get_value("dt")
 
-    # solve problem for current time
-    solver.solve(problem, u.vector())
+    # solve the problem with the solver defined by the given parameters
+    fenics.solve(weak_form == 0, u,
+                 solver_parameters=solver_parameters)
 
-    # update values
+    # save new values to phi0 and sigma0, in order for them to be the initial condition for the next step
     fenics.assign([phi0, sigma0], u)
 
     # save current solutions to file
-    phi_xdmf.write(phi0, t)
-    sigma_xdmf.write(sigma0, t)
+    phi_xdmf.write(phi0, t)  # write the value of phi at time t
+    sigma_xdmf.write(sigma0, t)  # write the value of sigma at time t
 
-    # update pbar
+    # update progress bar
     if rank == 0:
         progress_bar.update(1)
-
-
