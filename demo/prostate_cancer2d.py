@@ -97,22 +97,18 @@ rank = comm.Get_rank()
 #
 # - first, the folder where to save the result of the simulation. In this case, the folder will be based inside
 #   the current folder (``base_location``) and it's called demo_out/prostate_cancer2d;
-#
-data_folder = setup_data_folder(folder_name="prostate_cancer_2d",
-                                base_location=file_folder/Path("demo_out"),
-                                enumerate=False)
-
-# %%
 # - then, the two files for the cancer :math:`\varphi` and for the nutrients :math:`\sigma`, which will be called
 #   ``phi.xdmf`` and ``sigma.xdmf``.
 #
+data_folder = setup_data_folder(sim_name=str(__file__).replace(".py", ""),
+                                base_location=file_folder,
+                                saved_sim_folder="demo_out")
+
 phi_xdmf, sigma_xdmf = setup_xdmf_files(["phi", "sigma"], data_folder)
 
 # %%
-# Finally, we define the parameters of the differential equation using a mocafe ``Parameter`` object, which is created
-# for this purpose.
-#
-# A Parameters object can be initialized in several ways. In the following, we define it from a
+# Finally, we define the parameters of the differential equation using a mocafe object created for this purpose,
+# Parameters. A Parameters object can be initialized in several ways. In the following, we define it from a
 # dictionary where each key is the parameter name and the value is the actual value of the parameter.
 parameters = from_dict({
     "phi0_in": 1.,  # adimentional
@@ -136,8 +132,8 @@ parameters = from_dict({
 # %%
 # Definition of the spatial domain and the function space
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# The first step toward the simulation of our system is the definition of the space where the simulation takes
-# place. Similarly to the original paper, we are going to simulate the model on a 2D square mesh of dimension
+#
+# Similarly to the original paper, we are going to simulate the model on a 2D square mesh of dimension
 # 2000 x 2000 :math:`\mu m`. This is pretty simple to do using FEniCs, which provides the class ``RectangleMesh``
 # to do this job.
 #

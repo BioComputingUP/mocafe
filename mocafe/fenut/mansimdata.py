@@ -10,48 +10,69 @@ comm = fenics.MPI.comm_world
 rank = comm.Get_rank()
 
 # def macros
-default_sim_name = "default"
+default_data_folder_name = "sim_data"
 test_sim_name = "test"
 sim_info_file = pathlib.Path("sim_info.html")
 default_runtime_folder_name = "runtime"
 default_saved_sim_folder_name = "saved_sim"
 
 
-def setup_data_folder(sim_name: str or None = default_sim_name,
+def setup_data_folder(folder_name: str or None = None,
                       base_location: str or None = "./",
-                      saved_sim_folder: str or None = default_saved_sim_folder_name) -> pathlib.Path:
+                      enumerate: bool = True) -> pathlib.Path:
     """
-    Setup the folder where the simulation will be saved. One can specify the simulation name; in case that is None the
-    simulation will be saved to the 'base_location/runtime' folder, otherwise it will be saved to base_location/
-    saved_sim/sim_name/0000.
+    Creates and returns the folder where the simulation files will be saved.
 
-    In case the same sim_name is given for multiple simulation, the result will be saved to ./saved_sim/sim_name/0001,
-    0002, ... and so on.
+    One can specify the folder name; in case that is None, the simulation will be saved to the
+    'sim_data' folder.
 
-    One can change the name of saved_sim folder through the parameter "saved_sim_folder"
+    The ``base_location`` is where the folder it is based. Default is './'. Thus, if one calls
+
+        setup_data_folder(base_location="./saved_simulations")
+
+    The data folder will be ``./saved_simulations/sim_data``
+
+    The ``enumerate`` argument can be used to specify if you need coded folders for the same simulation. If
+    you call:
+
+        setup_data_folder(folder_name="my_sim_data", enumerate=True)
+
+    This method will return:
+
+    - the folder ``./my_sim_data/0000`` the first time the method is called
+    - the folder ``./my_sim_data/0001`` the second time the method is called
+    - ... and so on
 
     Works in parallel with MPI.
 
-    :param sim_name: The name of the simulation. If None, the data_folder is 'base_location/runtime'
-    :param base_location: The base folder where the simulation will be saved. Default is ./
-    :param saved_sim_folder: instead of base_location/saved_sim, specify another name for your saved_folder
+    :param folder_name: the name of the folder where the simulation data will be saved
+    :param base_location: The base folder where the simulation will be saved. Default is './'
+    :param enumerate: specify if you need the method to return coded folders for each simulation with the same
+    folder name
     :return: the data folder
     """
-    runtime_folder = pathlib.Path(base_location) / pathlib.Path(default_runtime_folder_name)
-    saved_sim_folder = pathlib.Path(base_location) / pathlib.Path(saved_sim_folder)
     if rank == 0:
-        if sim_name == default_sim_name or sim_name is None:
-            data_folder = runtime_folder
+        # get base location path
+        base_location_path = pathlib.Path(base_location)
+        # get the data folder name
+        if folder_name is None:
+            data_folder = base_location_path / pathlib.Path(default_data_folder_name)
         else:
+            data_folder = base_location_path / pathlib.Path(folder_name)
+        # if you wank to keep all sim files, generate a new folder for each simulation
+        if enumerate:
             base_code = "0000"
-            data_folder = saved_sim_folder / pathlib.Path(f"{sim_name}/{base_code}")
-            if data_folder.exists():
+            data_folder_coded = data_folder / pathlib.Path(f"{base_code}")
+            if data_folder_coded.exists():
                 sim_index = 1
                 len_code = len(base_code)
-                while data_folder.exists():
+                while data_folder_coded.exists():
                     new_code = str(sim_index).zfill(len_code)
-                    data_folder = saved_sim_folder / pathlib.Path(f"{sim_name}/{new_code}")
+                    data_folder_coded = data_folder / pathlib.Path(f"{new_code}")
                     sim_index += 1
+            # the coded data folder at the end of the iteration is the data folder
+            data_folder = data_folder_coded
+
         data_folder.mkdir(parents=True, exist_ok=True)
     else:
         data_folder = None
@@ -62,7 +83,7 @@ def setup_data_folder(sim_name: str or None = default_sim_name,
 def save_sim_info(data_folder: pathlib.Path,
                   execution_time: float,
                   parameters: Parameters or dict,
-                  sim_name: str = default_sim_name,
+                  sim_name: str = default_data_folder_name,
                   dateandtime: str = "auto",
                   sim_rationale: str = "input",
                   error_msg: str = None) -> None:
@@ -84,7 +105,7 @@ def save_sim_info(data_folder: pathlib.Path,
     """
     # if sim_name is not default, ask user the rationale for the simulation
     if rank == 0:
-        if sim_name == default_sim_name or sim_name == test_sim_name:
+        if sim_name == default_data_folder_name or sim_name == test_sim_name:
             sim_rationale = sim_name
         else:
             if sim_rationale == "input":
