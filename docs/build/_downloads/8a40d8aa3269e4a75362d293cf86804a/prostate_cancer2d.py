@@ -55,8 +55,6 @@ from mocafe.expressions import EllipseField, PythonFunctionField
 from mocafe.fenut.parameters import from_dict
 import mocafe.litforms.prostate_cancer as pc_model
 
-
-
 # %%
 # Then, it is useful (even though not necessary) to do a number of operations befor running our simulation.
 #
