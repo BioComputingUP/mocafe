@@ -103,6 +103,7 @@ class PythonFunctionField(fenics.UserExpression):
     def __init__(self,
                  python_fun,
                  *python_fun_params):
+        super(PythonFunctionField, self).__init__()
         self.python_fun = python_fun
         self.python_fun_params = python_fun_params
 
