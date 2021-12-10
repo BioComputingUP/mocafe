@@ -25,7 +25,7 @@ class PETScProblem(fenics.NonlinearProblem):
             bc.apply(A)
 
 
-class PETScSolver(fenics.NewtonSolver):
+class PETScNewtonSolver(fenics.NewtonSolver):
     """
     INTERNAL USE
 
