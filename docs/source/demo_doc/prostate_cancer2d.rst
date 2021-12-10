@@ -91,7 +91,7 @@ the simulation. Notice that while most of the packages are provided by mocafe, w
     file_folder = Path(__file__).parent.resolve()
     mocafe_folder = file_folder.parent
     sys.path.append(str(mocafe_folder))  # appending mocafe path. Must be removed
-    from mocafe.fenut.solvers import PETScProblem, PETScSolver
+    from mocafe.fenut.solvers import PETScProblem, PETScNewtonSolver
     from mocafe.fenut.fenut import get_mixed_function_space, setup_xdmf_files
     from mocafe.fenut.mansimdata import setup_data_folder
     from mocafe.expressions import EllipseField, PythonFunctionField
@@ -389,7 +389,7 @@ To do so, we define a Problem and a Solver directly calling the PETSc backend.
     jacobian = fenics.derivative(weak_form, u)  # jacobian of the system
 
     problem = PETScProblem(jacobian, weak_form, [])
-    solver = PETScSolver({"ksp_type": "gmres", "pc_type": "asm"}, mesh.mpi_comm())
+    solver = PETScNewtonSolver({"ksp_type": "gmres", "pc_type": "asm"}, mesh.mpi_comm())
 
 
 .. GENERATED FROM PYTHON SOURCE LINES 266-267
