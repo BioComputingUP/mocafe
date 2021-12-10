@@ -67,6 +67,7 @@ from pathlib import Path
 file_folder = Path(__file__).parent.resolve()
 mocafe_folder = file_folder.parent
 sys.path.append(str(mocafe_folder))  # appending mocafe path. Must be removed
+from mocafe.fenut.solvers import PETScProblem, PETScNewtonSolver
 from mocafe.fenut.fenut import get_mixed_function_space, setup_xdmf_files
 from mocafe.fenut.mansimdata import setup_data_folder
 from mocafe.expressions import EllipseField, PythonFunctionField
@@ -143,7 +144,7 @@ parameters = from_dict({
 # More precisely, in the following we are going to define a mesh of the dimension described above, with 512
 # points for each side.
 #
-nx = 100
+nx = 130
 ny = nx
 x_max = 1000  # um
 x_min = -1000  # um
@@ -175,11 +176,17 @@ mesh = fenics.RectangleMesh(fenics.Point(x_min, y_min),
 function_space = get_mixed_function_space(mesh, 2, "CG", 1)
 
 # %%
-# Initial conditions
-# ^^^^^^^^^^^^^^^^^^^
-# Since the system of differential equations involves time, we need to define initial conditions for both
-# :math:`\varphi` and :math`\sigma`. According to the original paper, as initial condition for :math:`\varphi`
-# we will define an elliptical tumor with the given semiaxes:
+# Initial & boundary conditions
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# Since the model is a system of PDEs, we need both initial and boundary conditions to find a unique solution.
+#
+# In this implementation we will consider natural Neumann boundary conditions for both :math:`\varphi` and
+# :math`\sigma`, which means that the derivative in space of the two fields is zero along the entire boundary.
+# This is an easy pick for FEniCS, since it will automatically apply this condition for us without requiring any
+# command from the user.
+#
+# As initial condition for :math:`\varphi`, according to another paper of the same author :cite:`Lorenzo2017`, we
+# will define an elliptical tumor with the given semiaxes:
 semiax_x = 100  # um
 semiax_y = 150  # um
 
@@ -236,7 +243,9 @@ phi_xdmf.write(phi0, 0)
 
 # %%
 # Finally, after having defined the initial condition for :math:`\varphi`, let's define the initial for
-# :math:`\sigma` in a similar fashion:
+# :math:`\sigma`. Following the hypothesis of original author :cite:`Lorenzo2017`, we will assume a nutrient
+# distribution that is 0.2 inside the cancer and 1. outside. So, we can define this distribution similarly to
+# what we just did for ``phi0``:
 sigma0 = EllipseField(center=np.array([0., 0.]),
                       semiax_x=semiax_x,
                       semiax_y=semiax_y,
@@ -302,8 +311,8 @@ weak_form = pc_model.prostate_cancer_form(phi, phi0, sigma, v1, parameters) + \
 # Tutorial :cite:`LangtangenLogg2017`.
 
 # %%
-# Simulation
-# ^^^^^^^^^^
+# Simulation setup
+# ^^^^^^^^^^^^^^^^
 # Now that everything is set up, simulating this mathematical model is just a matter of solving the PDE system defined
 # above for each time step.
 #
@@ -319,22 +328,51 @@ else:
     progress_bar = None
 
 # %%
-# Then, we define the parameters of the solver we want to use to solve the system. This requires a bit of exprience
-# with numerical method and linear algebra to be understood. Basically, we are asking FEniCS to solve the system
-# with a Newton Solver, which must use the numerical method called 'gmres' (Generalized Minimal Residue) with the
-# 'hypre_euclid' preconditioner.
-solver_parameters = {"newton_solver": {"linear_solver": "gmres", "preconditioner": "hypre_euclid"}}
+# Then, we need to define how we want FEniCS to solve or PDE system. This can be done with just a few lines of code in
+# mocafe, which are necessary to set up the right solver for our problem:
+jacobian = fenics.derivative(weak_form, u)
+problem = PETScProblem(jacobian, weak_form, [])
+solver = PETScNewtonSolver({"ksp_type": "gmres", "pc_type": "asm"},
+                           mesh.mpi_comm())
 
 # %%
-# Finally, we can iterate in time to solve the system with the given solver at each time step
+# The few lines above might look a bit obscure if you're not experienced with FEM and numerical methods in general,
+# but we will do our best to clarify a bit.
+#
+# Like every numerical method, FEM translates a system of PDEs in an algebraic system of linear equations of which
+# the solution is an estimate of the real PDE system solution. FEniCS delegates the construction and the solution of
+# this system to `PETSc <https://petsc.org/release/>`_ (Portable, Extensible Toolkit for Scientific Computation),
+# its default algebraic backend.
+#
+# The job of the class ``PETScProblem`` is to construct the algebraic system of equations from the weak form,
+# its jacobian matrix, and the boundary conditions. For our example:
+#
+# - we already defined the weak form above, so we can use it as it is;
+# - we can retrieve the Jacobian matrix, which is a multidimensional version of the traditional matematical derivative,
+#   symply calling the FEniCS command ``derivative``;
+# - we left the list of boundary conditions empty (``[]``) because we are considering natural Neumann boundary
+#   conditions, which are applied by default by the FEM method.
+#
+# The job of the class ``PETScNewtonSolver``, instead, is to define the algorithm to be used to solve the 'problem'
+# defined above, and to apply it for the computation of the actual solution. The algorithm may be one of the many
+# available for solving algebraic systems of equations. The reason of the name 'Newton Solver` is just because
+# the system of PDEs we are solving is non-linear and thus it requires this class of solvers. More precisely, in this
+# implementation we are asking to PETSc to solve our system with a Krylov solver of type 'gmres'
+# (``"ksp_type": "gmres"``) using a preconditioner called "asm" (``"pc_type": "asm"``). For further details, you
+# are suggested to have a look to chapter 9 of the book "The Finite Element Method: Theory, Implementation,
+# and Applications", by Larson and Bengzon :cite:`Larson2013`
+
+# %%
+# Simulation
+# ^^^^^^^^^^
+# Finally, we can iterate in time to solve the system with the given solver at each time step.
 t = 0
 for current_step in range(n_steps):
     # update time
     t += parameters.get_value("dt")
 
     # solve the problem with the solver defined by the given parameters
-    fenics.solve(weak_form == 0, u,
-                 solver_parameters=solver_parameters)
+    solver.solve(problem, u.vector())
 
     # save new values to phi0 and sigma0, in order for them to be the initial condition for the next step
     fenics.assign([phi0, sigma0], u)
