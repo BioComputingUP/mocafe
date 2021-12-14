@@ -96,15 +96,14 @@ rank = comm.Get_rank()
 # methods for defining:
 #
 # - first, the folder where to save the result of the simulation. In this case, the folder will be based inside
-#   the current folder (``base_location``) and it's called demo_out/prostate_cancer2d;
+#   the current folder will be called demo_out/prostate_cancer2d
 #
-data_folder = setup_data_folder(folder_name="prostate_cancer_2d",
-                                base_location=file_folder/Path("demo_out"),
-                                enumerate=False)
+data_folder = setup_data_folder(folder_path=str(file_folder/Path("demo_out/prostate_cancer_2d")),
+                                auto_enumerate=False)
 
 # %%
 # - then, the two files for the cancer :math:`\varphi` and for the nutrients :math:`\sigma`, which will be called
-#   ``phi.xdmf`` and ``sigma.xdmf``.
+#   ``phi.xdmf`` and ``sigma.xdmf``, and will be placed inside the data folder.
 #
 phi_xdmf, sigma_xdmf = setup_xdmf_files(["phi", "sigma"], data_folder)
 
@@ -192,7 +191,7 @@ semiax_y = 150  # um
 
 # %%
 # With FEniCS we can do so by defining an expression which 'mathematically' represent our initial condition.
-# Indeed, ``Espression`` s are the FEniCS way to define symbolic mathematical functions, and they can be defined
+# Indeed, ``Espression``s are the FEniCS way to define symbolic mathematical functions and they can be defined
 # using simple C++ code as follows:
 #
 # .. code-block:: default
