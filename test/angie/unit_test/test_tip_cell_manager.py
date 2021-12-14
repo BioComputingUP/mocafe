@@ -11,7 +11,7 @@ from mocafe.angie.tipcells import TipCellManager
 #     data_folder = "runtime/test/tipcell"
 #
 #     # define files
-#     file_names = ["phi", "T", "grad_T"]
+#     file_names = ["c", "T", "grad_T"]
 #     file_list = fu.setup_xdmf_files(file_names, data_folder)
 #     return file_list
 
