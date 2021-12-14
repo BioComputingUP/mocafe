@@ -17,25 +17,27 @@ default_runtime_folder_name = "runtime"
 default_saved_sim_folder_name = "saved_sim"
 
 
-def setup_data_folder(folder_name: str or None = None,
-                      base_location: str or None = "./",
-                      enumerate: bool = True) -> pathlib.Path:
+def setup_data_folder(folder_path: str,
+                      auto_enumerate: bool = True) -> pathlib.Path:
     """
-    Creates and returns the folder where the simulation files will be saved.
+    Creates a folder at the given folder path and returns it as pathlib.Path object to use for the simulation
+    files.
 
-    One can specify the folder name; in case that is None, the simulation will be saved to the
-    'sim_data' folder.
+    If just the folder path is specified the folder will be simply created. For instance, calling the following:
 
-    The ``base_location`` is where the folder it is based. Default is './'. Thus, if one calls
+    .. code-block:: default
 
-        setup_data_folder(base_location="./saved_simulations")
+        setup_data_folder(folder_name="my_sim_data")
 
-    The data folder will be ``./saved_simulations/sim_data``
+    Will just create the folder "my_sim_data" in the current root directory.
 
-    The ``enumerate`` argument can be used to specify if you need coded folders for the same simulation. If
-    you call:
+    The ``auto_enumerate`` argument can be used to specify if you need coded folders for the same simulation. This
+    is useful especially when one needs to save multiple simulation results under the same folder without having
+    to decide a new folder path for each simulation. Indeed, if you call:
 
-        setup_data_folder(folder_name="my_sim_data", enumerate=True)
+    .. code-block:: default
+
+        setup_data_folder(folder_path="my_sim_data", auto_enumerate=True)
 
     This method will return:
 
@@ -45,22 +47,16 @@ def setup_data_folder(folder_name: str or None = None,
 
     Works in parallel with MPI.
 
-    :param folder_name: the name of the folder where the simulation data will be saved
-    :param base_location: The base folder where the simulation will be saved. Default is './'
-    :param enumerate: specify if you need the method to return coded folders for each simulation with the same
-    folder name
-    :return: the data folder
+    :param folder_path: the path of the folder to generate
+    :param auto_enumerate: if set to True, this method will create coded folder under the given ``folder_path`` in the
+    order: 0000, 0001, ..., and so on.
+    :return: the generated folder
     """
     if rank == 0:
-        # get base location path
-        base_location_path = pathlib.Path(base_location)
-        # get the data folder name
-        if folder_name is None:
-            data_folder = base_location_path / pathlib.Path(default_data_folder_name)
-        else:
-            data_folder = base_location_path / pathlib.Path(folder_name)
+        # rename folder_path
+        data_folder = pathlib.Path(folder_path)
         # if you wank to keep all sim files, generate a new folder for each simulation
-        if enumerate:
+        if auto_enumerate:
             base_code = "0000"
             data_folder_coded = data_folder / pathlib.Path(f"{base_code}")
             if data_folder_coded.exists():
@@ -72,7 +68,7 @@ def setup_data_folder(folder_name: str or None = None,
                     sim_index += 1
             # the coded data folder at the end of the iteration is the data folder
             data_folder = data_folder_coded
-
+        # create data folder
         data_folder.mkdir(parents=True, exist_ok=True)
     else:
         data_folder = None

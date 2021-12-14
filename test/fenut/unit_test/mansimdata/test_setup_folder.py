@@ -1,3 +1,4 @@
+import pathlib
 import fenics
 import mocafe.fenut.mansimdata as mansim
 
@@ -20,19 +21,16 @@ def get_p0_tmpdir(tmpdir):
 
 
 def test_setup_data_folder(tmpdir):
-    # setup data_folder
-    data_folder = mansim.setup_data_folder(folder_name=mansim.test_sim_name, base_location=tmpdir)
-    # test if exists
-    assert data_folder.exists(), "The folder should exist"
-    # test if the name is the one expected
-    p0_tmpdir = get_p0_tmpdir(tmpdir)
-    assert str(data_folder) == f"{p0_tmpdir}/{mansim.test_sim_name}/0000"
+    data_folder_path = str(tmpdir/pathlib.Path("test"))
+    data_folder = mansim.setup_data_folder(folder_path=tmpdir/pathlib.Path("test"))
+    assert data_folder.exists()
+    assert str(data_folder) == str(get_p0_tmpdir(tmpdir)/pathlib.Path("test/0000"))
 
 
-def test_setup_multiple_data_folder(tmpdir):
+def test_setup_multiple_data_folder_auto_enumerate_true(tmpdir):
     # define multiple data folders
-    data_folder1 = mansim.setup_data_folder(mansim.test_sim_name, base_location=tmpdir)
-    data_folder2 = mansim.setup_data_folder(mansim.test_sim_name, base_location=tmpdir)
+    data_folder1 = mansim.setup_data_folder(str(tmpdir/mansim.test_sim_name), auto_enumerate=True)
+    data_folder2 = mansim.setup_data_folder(str(tmpdir/mansim.test_sim_name), auto_enumerate=True)
 
     assert data_folder1.exists(), "Data folder 1 should exist"
     assert str(data_folder1) == f"{get_p0_tmpdir(tmpdir)}" \
@@ -46,10 +44,10 @@ def test_setup_multiple_data_folder(tmpdir):
                                 f"/{mansim.test_sim_name}/0001"
 
 
-def test_setup_multiple_data_folder_no_enumerate(tmpdir):
+def test_setup_multiple_data_folder_auto_enumerate_false(tmpdir):
     # define multiple data folders
-    data_folder1 = mansim.setup_data_folder(mansim.test_sim_name, base_location=tmpdir, enumerate=False)
-    data_folder2 = mansim.setup_data_folder(mansim.test_sim_name, base_location=tmpdir, enumerate=False)
+    data_folder1 = mansim.setup_data_folder(str(tmpdir/mansim.test_sim_name), auto_enumerate=False)
+    data_folder2 = mansim.setup_data_folder(str(tmpdir/mansim.test_sim_name), auto_enumerate=False)
 
     assert data_folder1.exists(), "Data folder 1 should exist"
     assert data_folder2.exists(), "Data folder 2 should exist"
