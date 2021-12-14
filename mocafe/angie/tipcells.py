@@ -505,7 +505,7 @@ class TipCellManager:
         if not is_V_sub_space:
             # interpolate tip_cells_field
             t_c_f_function = fenics.interpolate(tip_cells_field_expression, V)
-            # assign t_c_f_function to phi where is greater than 0
+            # assign t_c_f_function to c where is greater than 0
             self._assign_values_to_vector(c, t_c_f_function)
         else:
             # collapse subspace
@@ -514,14 +514,14 @@ class TipCellManager:
             t_c_f_function = fenics.interpolate(tip_cells_field_expression, V_collapsed)
             # create assigner to collapsed
             assigner_to_collapsed = fenics.FunctionAssigner(V_collapsed, V)
-            # assign phi to local variable phi_temp
+            # assign c to local variable phi_temp
             phi_temp = fenics.Function(V_collapsed)
             assigner_to_collapsed.assign(phi_temp, c)
             # assign values to phi_temp
             self._assign_values_to_vector(phi_temp, t_c_f_function)
             # create inverse assigner
             assigner_to_sub = fenics.FunctionAssigner(V, V_collapsed)
-            # assign phi_temp to phi
+            # assign phi_temp to c
             assigner_to_sub.assign(c, phi_temp)
 
         # return tip cells field function for monitoring
@@ -558,7 +558,7 @@ class TipCellManager:
         info_adapter.info(f"Called {self.move_tip_cells.__name__}")
         # update tip cell positions
         tip_cells_field_expression = self._update_tip_cell_positions_and_get_field(af, grad_af)
-        # apply tip_cells_field to phi
+        # apply tip_cells_field to c
         t_c_f_fucntion = self._apply_tip_cells_field(c, tip_cells_field_expression, V, is_V_sub_space)
         # return tip cell field function for monitoring
         return t_c_f_fucntion
