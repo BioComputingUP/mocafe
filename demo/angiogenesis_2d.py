@@ -91,7 +91,7 @@ u_curr = fenics.Function(function_space)
 T_old, c_old, mu_old = fenics.split(u_curr)
 u = fenics.Function(function_space)
 T, c, mu = fenics.split(u)
-grad_T = fenics.Function(function_space)
+grad_T = fenics.Function(grad_T_function_space)
 tipcells_field = fenics.Function(function_space.sub(0).collapse())
 
 # define initial condition
