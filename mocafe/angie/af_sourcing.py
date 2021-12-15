@@ -75,11 +75,12 @@ class SourceMap:
         :param source_points: list of positions where to place the tip cells. If this is not None, the sources will be
         not placed randomly.
         """
+        self.mesh = mesh_wrapper.get_local_mesh()
         self.mesh_wrapper = mesh_wrapper
         self.local_box = self._build_local_box(parameters)
         # compute source point
         if source_points is None:
-            global_source_points = self._get_randomy_sorted_mesh_points(n_sources, x_lim, mesh_wrapper)
+            global_source_points = self._get_randomy_sorted_mesh_points(n_sources, x_lim)
         else:
             global_source_points = source_points
         # initialize SourceCells
@@ -88,14 +89,12 @@ class SourceMap:
         self.local_source_cells = self._divide_source_cells()
 
     def _get_randomy_sorted_mesh_points(self, n_sources: int,
-                                        x_lim,
-                                        mesh_wrapper: fu.RectangleMeshWrapper):
+                                        x_lim):
         """
         INTERNAL USE
         Return the source points selected randomly and sorted along the x axis
         :param n_sources: number of sources to select
         :param x_lim: part of the x axis to select
-        :param mesh_wrapper: mesh wrapper
         :return: the ndarray of the selected points
         """
         # get comm size
@@ -103,7 +102,7 @@ class SourceMap:
         # define root proc
         root = 0
         # get global coordinates
-        global_coords = mesh_wrapper.get_global_mesh().coordinates()
+        global_coords = fu.get_global_mesh_coordinates(self.mesh)
         # de
         # divide coordinates among processes
         if rank == root:
