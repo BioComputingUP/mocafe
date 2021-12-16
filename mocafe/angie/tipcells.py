@@ -502,25 +502,35 @@ class TipCellManager:
         :param is_V_sub_space: True if V is a sub-space of a MixedElementFunctionSpace, False otherwise
         :return: the tip cell field as a FEniCS function
         """
+        # get Function Space of af
+        V_c = c.function_space()
+
+        # check if V_c is sub space
+        try:
+            V_c.collapse()
+            is_V_sub_space = True
+        except RuntimeError:
+            is_V_sub_space = False
+
         if not is_V_sub_space:
             # interpolate tip_cells_field
-            t_c_f_function = fenics.interpolate(tip_cells_field_expression, V)
+            t_c_f_function = fenics.interpolate(tip_cells_field_expression, V_c)
             # assign t_c_f_function to c where is greater than 0
             self._assign_values_to_vector(c, t_c_f_function)
         else:
             # collapse subspace
-            V_collapsed = V.collapse()
+            V_collapsed = V_c.collapse()
             # interpolate tip cells field
             t_c_f_function = fenics.interpolate(tip_cells_field_expression, V_collapsed)
             # create assigner to collapsed
-            assigner_to_collapsed = fenics.FunctionAssigner(V_collapsed, V)
+            assigner_to_collapsed = fenics.FunctionAssigner(V_collapsed, V_c)
             # assign c to local variable phi_temp
             phi_temp = fenics.Function(V_collapsed)
             assigner_to_collapsed.assign(phi_temp, c)
             # assign values to phi_temp
             self._assign_values_to_vector(phi_temp, t_c_f_function)
             # create inverse assigner
-            assigner_to_sub = fenics.FunctionAssigner(V, V_collapsed)
+            assigner_to_sub = fenics.FunctionAssigner(V_c, V_collapsed)
             # assign phi_temp to c
             assigner_to_sub.assign(c, phi_temp)
 
