@@ -130,6 +130,35 @@ class MeshWrapper:
         # set geometric dimension
         self.dim = local_mesh.geometric_dimension()
 
+    def __int__(self, mesh_file: str):
+        """
+        inits a mesh wrapper for the mesh in the given file
+
+        :param mesh_file:
+        :return:
+        """
+        # inits empty local mesh
+        local_mesh = fenics.Mesh()
+        # inits local mesh file
+        local_mesh_xdmf = fenics.XDMFFile(mesh_file)
+        # read local mesh from file
+        local_mesh_xdmf.read(local_mesh)
+        # init self local mesh
+        self.local_mesh = local_mesh
+        # inits local bounding box tree
+        self.local_bounding_box_tree = self.local_mesh.bounding_box_tree()
+
+        # inits empty global mesh
+        global_mesh = fenics.Mesh(fenics.MPI.comm_self)
+        # inits global mesh file
+        global_mesh_xdmf = fenics.XDMFFile(fenics.MPI.comm_self, mesh_file)
+        # read global mesh from file
+        global_mesh_xdmf.read(global_mesh)
+        # init self global mesh
+        self.global_mesh = global_mesh
+        # inits global bounding box tree
+        self.global_bounding_box_tree = self.global_mesh.bounding_box_tree()
+
     def get_local_mesh(self):
         """
         get the mesh visible to the local MPI process
