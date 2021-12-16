@@ -51,8 +51,9 @@ fenics.parameters["std_out_all_processes"] = False
 # set log level
 fenics.set_log_level(fenics.LogLevel.ERROR)
 # define data folder
-data_folder = mansimd.setup_data_folder(folder_path=str(file_folder/Path("demo_out/angiogenesis_2d")),
-                                        auto_enumerate=False)
+data_folder = mansimd.setup_data_folder(folder_name="angiogenesis_2d",
+                                        base_location=file_folder/Path("demo_out"),
+                                        enumerate=False)
 
 # define files for fields
 file_names = ["c", "T", "grad_T", "tipcells"]
