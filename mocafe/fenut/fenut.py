@@ -120,12 +120,12 @@ class RectangleMeshWrapper:
         """
         return self.local_mesh
 
-    # def get_global_mesh(self):
-    #     """
-    #     get the global mesh shared among all the MPI processes
-    #     :return: the global mesh shared among all the MPI processes
-    #     """
-    #     return self.global_mesh
+    def get_global_mesh(self):
+        """
+        get the global mesh shared among all the MPI processes
+        :return: the global mesh shared among all the MPI processes
+        """
+        return self.global_mesh
 
     def is_inside_local_mesh(self, point):
         """
@@ -167,39 +167,6 @@ class RectangleMeshWrapper:
         :return: 2 if the mesh is 2 dimensonal.
         """
         return self.dim
-
-
-def get_global_mesh_coordinates(mesh: fenics.Mesh):
-    """
-    Method used for retrieving the global mesh coordinates from the local mesh visible to the single MPI process.
-
-    :param mesh: the local mesh
-    :return: the global coordinates of the mesh as np.ndarray
-    """
-    # MPI data
-    comm = fenics.MPI.comm_world
-    rank = comm.Get_rank()
-    size = comm.Get_size()
-    root = 0
-
-    if size == 1:
-        return mesh.coordinates()
-    else:
-        local_coordinates = mesh.coordinates()
-        gathered_coordinates = comm.gather(local_coordinates, root)
-        if rank == root:
-            # get global coorinates as a list
-            gathered_coordinates = flatten_list_of_lists(gathered_coordinates)
-            # transform the gathered coordinates in a set of unique tuples
-            hashed_gathered_coordinates_clean = set([tuple(elem) for elem in gathered_coordinates])
-            # re-transform the tuples to ndarrays
-            global_coordinates = [np.array(elem) for elem in hashed_gathered_coordinates_clean]
-            # transform the global_coordinates to an ndarray
-            global_coordinates = np.array(global_coordinates)
-        else:
-            global_coordinates = None
-        global_coordinates = comm.bcast(global_coordinates, root)
-        return global_coordinates
 
 
 def get_mixed_function_space(mesh: fenics.Mesh,
