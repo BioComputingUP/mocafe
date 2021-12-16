@@ -1,6 +1,7 @@
 import sys
 import fenics
 import time
+import mshr
 from tqdm import tqdm
 from pathlib import Path
 file_folder = Path(__file__).parent.resolve()
@@ -12,33 +13,6 @@ from mocafe.angie import af_sourcing, tipcells
 from mocafe.angie.forms import angiogenesis_form, angiogenic_factor_form
 from mocafe.fenut.parameters import from_ods_sheet
 from mocafe.expressions import PythonFunctionField
-
-
-class AngiogenesisInitialCondition(fenics.UserExpression):
-    """Initial condition for the vessel field, the tumor field (c) and the angiogenic factor (T)"""
-    def __init__(self, vessel_width, phi_max, phi_min, T0):
-        super(AngiogenesisInitialCondition, self).__init__()
-        self.vessel_width = vessel_width
-        self.phi_max = phi_max
-        self.phi_min = phi_min
-        self.T0 = T0
-
-    def eval(self, values, x):
-        # set initial value to T
-        values[0] = self.T0
-        # set initial value to c
-        if x[0] < self.vessel_width:
-            values[1] = self.phi_max
-        else:
-            values[1] = self.phi_min
-        # set initial value to um
-        values[2] = 0
-
-    def value_shape(self):
-        return (3,)
-
-    def __floordiv__(self, other):
-        pass
 
 
 # get comm and rank
@@ -85,11 +59,13 @@ grad_T_function_space = fenics.VectorFunctionSpace(mesh, "CG", 1)
 
 # define initial conditions for af
 af_0 = fenics.interpolate(fenics.Constant(0.), function_space.sub(0).collapse())
-sources_map = af_sourcing.SourceMap(n_sources,
-                                    initial_vessel_width + parameters.get_value("d"),
-                                    mesh_wrapper,
-                                    0,
-                                    parameters)
+random_sources_domain = mshr.Rectangle(fenics.Point(initial_vessel_width + parameters.get_value("d"), 0),
+                                       fenics.Point(Lx, Ly))
+sources_map = af_sourcing.RandomSourceMap(mesh_wrapper,
+                                          n_sources,
+                                          0,
+                                          parameters,
+                                          where=random_sources_domain)
 sources_manager = af_sourcing.SourcesManager(sources_map, mesh_wrapper, parameters, {"type": "None"})
 sources_manager.apply_sources(af_0, function_space.sub(0), True, 0.)
 

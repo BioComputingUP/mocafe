@@ -96,68 +96,67 @@ class MeshWrapper:
     Wrapper for fenics.Mesh with some utility method. More precisely, it provides easy access to bot the local
     mesh for the current MPI process and the global mesh, shared for all MPI processes.
     """
-    def __init__(self, local_mesh):
+    def __init__(self, input_mesh: fenics.Mesh or str):
         """
         inits a wrapper for the given mesh.
 
-        :param local_mesh: the given mesh.
+        :param input_mesh: the given mesh. Can be both a mesh the path of a ``.xdmf`` file containing a mesh.
         """
-        # get local mesh
-        self.local_mesh = local_mesh
-        # get local bounding box
-        self.local_bounding_box_tree = self.local_mesh.bounding_box_tree()
+        if isinstance(input_mesh, str):
+            # inits empty local mesh
+            local_mesh = fenics.Mesh()
+            # inits local mesh file
+            local_mesh_xdmf = fenics.XDMFFile(input_mesh)
+            # read local mesh from file
+            local_mesh_xdmf.read(local_mesh)
+            # init self local mesh
+            self.local_mesh = local_mesh
+            # inits local bounding box tree
+            self.local_bounding_box_tree = self.local_mesh.bounding_box_tree()
 
-        # create mesh file in temp folder
-        tmp_folder = ".mocafe_tmp"
-        mesh_path_str = tmp_folder + "/mesh.xmdf"
-        # create local mesh file
-        local_mesh_xdmf = fenics.XDMFFile(mesh_path_str)
-        # write mesh to file
-        local_mesh_xdmf.write(local_mesh)
-        # create global mesh file
-        global_mesh_xdmf = fenics.XDMFFile(fenics.MPI.comm_self, mesh_path_str)
-        # create global empty mesh
-        global_mesh = fenics.Mesh(fenics.MPI.comm_self)
-        # load global mesh from file
-        global_mesh_xdmf.read(global_mesh)
-        # remove temp file
-        if fenics.MPI.comm_world.Get_rank() == 0:
-            shutil.rmtree(tmp_folder)
-        # set self global mesh
-        self.global_mesh = global_mesh
-        # set self global bounding box
-        self.global_bounding_box_tree = self.global_mesh.bounding_box_tree()
-        # set geometric dimension
-        self.dim = local_mesh.geometric_dimension()
+            # inits empty global mesh
+            global_mesh = fenics.Mesh(fenics.MPI.comm_self)
+            # inits global mesh file
+            global_mesh_xdmf = fenics.XDMFFile(fenics.MPI.comm_self, input_mesh)
+            # read global mesh from file
+            global_mesh_xdmf.read(global_mesh)
+            # init self global mesh
+            self.global_mesh = global_mesh
+            # inits global bounding box tree
+            self.global_bounding_box_tree = self.global_mesh.bounding_box_tree()
 
-    def __int__(self, mesh_file: str):
-        """
-        inits a mesh wrapper for the mesh in the given file
+        elif isinstance(input_mesh, fenics.Mesh):
+            # get local mesh
+            self.local_mesh = input_mesh
+            # get local bounding box
+            self.local_bounding_box_tree = self.local_mesh.bounding_box_tree()
 
-        :param mesh_file:
-        :return:
-        """
-        # inits empty local mesh
-        local_mesh = fenics.Mesh()
-        # inits local mesh file
-        local_mesh_xdmf = fenics.XDMFFile(mesh_file)
-        # read local mesh from file
-        local_mesh_xdmf.read(local_mesh)
-        # init self local mesh
-        self.local_mesh = local_mesh
-        # inits local bounding box tree
-        self.local_bounding_box_tree = self.local_mesh.bounding_box_tree()
+            # create mesh file in temp folder
+            tmp_folder = ".mocafe_tmp"
+            mesh_path_str = tmp_folder + "/mesh.xmdf"
+            # create local mesh file
+            local_mesh_xdmf = fenics.XDMFFile(mesh_path_str)
+            # write mesh to file
+            local_mesh_xdmf.write(self.local_mesh)
+            # create global mesh file
+            global_mesh_xdmf = fenics.XDMFFile(fenics.MPI.comm_self, mesh_path_str)
+            # create global empty mesh
+            global_mesh = fenics.Mesh(fenics.MPI.comm_self)
+            # load global mesh from file
+            global_mesh_xdmf.read(global_mesh)
+            # remove temp file
+            if fenics.MPI.comm_world.Get_rank() == 0:
+                shutil.rmtree(tmp_folder)
+            fenics.MPI.comm_world.Barrier()
+            # set self global mesh
+            self.global_mesh = global_mesh
+            # set self global bounding box
+            self.global_bounding_box_tree = self.global_mesh.bounding_box_tree()
+            # set geometric dimension
+            self.dim = self.local_mesh.geometric_dimension()
 
-        # inits empty global mesh
-        global_mesh = fenics.Mesh(fenics.MPI.comm_self)
-        # inits global mesh file
-        global_mesh_xdmf = fenics.XDMFFile(fenics.MPI.comm_self, mesh_file)
-        # read global mesh from file
-        global_mesh_xdmf.read(global_mesh)
-        # init self global mesh
-        self.global_mesh = global_mesh
-        # inits global bounding box tree
-        self.global_bounding_box_tree = self.global_mesh.bounding_box_tree()
+        else:
+            raise TypeError(f"input mesh is of type {type(input_mesh)}. Only str and fenics.Mesh are allowed.")
 
     def get_local_mesh(self):
         """

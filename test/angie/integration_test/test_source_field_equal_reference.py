@@ -24,7 +24,7 @@ def test_source_field_equals_reference(parameters):
 
     # define source map
     source_points = [np.array([num, num]) for num in range(0, 310, 10)]
-    sources_map = SourceMap(0, 10, mesh_wrapper, 0, parameters, source_points=source_points)
+    sources_map = SourceMap(mesh_wrapper, source_points, 0, parameters)
 
     # define source field
     T = fenics.interpolate(SourcesField(sources_map, parameters), V)

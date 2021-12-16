@@ -1,5 +1,7 @@
+import types
 import fenics
 import random
+import mshr.cpp
 import numpy as np
 import logging
 import mocafe.fenut.fenut as fu
@@ -55,124 +57,26 @@ class SourceMap:
     Class representing the spatial map of the source cell positions. This class is responsible for keeping the position
     of each source cell at any point of the simulation, providing access to it to other objects and methods.
     """
-
     def __init__(self,
-                 n_sources: int,
-                 x_lim,
                  mesh_wrapper: fu.MeshWrapper,
+                 source_points: list,
                  current_step: int,
-                 parameters: Parameters,
-                 source_points=None):
+                 parameters: Parameters):
         """
         inits a SourceMap, i.e. a class responsible for keeping the current position of each source cell at any point
-        of the simulation. By default, the sources are placed randomly in the spatial domain.
-        :param n_sources: number of random sources to place
-        :param x_lim: defines the x value where to start placing sources. if x_lim is 5, the source cells will be placed
-        at any point of the domain where x[0] > x_lim
-        :param mesh_wrapper: the mesh wrapper
+        of the simulation, with a SourceCell in all the positions listed in source_points.
+
+        :param mesh_wrapper: the mesh wrapper of the simulation mesh
+        :param source_points: list of positions where to place the source cells.
         :param current_step: initialization step of the source map. It is used to initialize tip cells.
         :param parameters: simulation parameters
-        :param source_points: list of positions where to place the tip cells. If this is not None, the sources will be
-        not placed randomly.
         """
-        self.mesh = mesh_wrapper.get_local_mesh()
+        # initialize global SourceCells list in the given points
         self.mesh_wrapper = mesh_wrapper
         self.local_box = self._build_local_box(parameters)
-        # compute source point
-        if source_points is None:
-            global_source_points = self._get_randomy_sorted_mesh_points(n_sources, x_lim)
-        else:
-            global_source_points = source_points
-        # initialize SourceCells
+        global_source_points = source_points
         self.global_source_cells = [SourceCell(point, current_step) for point in global_source_points]
-        # compute local source cells
         self.local_source_cells = self._divide_source_cells()
-
-    def _get_randomy_sorted_mesh_points(self, n_sources: int,
-                                        x_lim):
-        """
-        INTERNAL USE
-        Return the source points selected randomly and sorted along the x axis
-        :param n_sources: number of sources to select
-        :param x_lim: part of the x axis to select
-        :return: the ndarray of the selected points
-        """
-        # get comm size
-        n_procs = comm.Get_size()
-        # define root proc
-        root = 0
-        # get global coordinates
-        global_coords = self.mesh_wrapper.get_global_mesh().coordinates()
-        # de
-        # divide coordinates among processes
-        if rank == root:
-            coords_chunks_list = fu.divide_in_chunks(global_coords, n_procs)
-        else:
-            coords_chunks_list = None
-        local_coords_chunk = comm.scatter(coords_chunks_list, root)
-        # remove points with x[0] less than x_lim
-        pickable_points = [point for point in local_coords_chunk if point[0] > x_lim]
-        # compute n local sources
-        local_n_sources = self._compute_local_n_sources(n_sources, len(pickable_points), root)
-        # pick the source point randomly
-        local_sources_array = random.sample(pickable_points, local_n_sources)
-
-        # gather picked sources and share among processes
-        local_sources_array_list = comm.gather(local_sources_array, root)
-        if rank == root:
-            sources_array = fu.flatten_list_of_lists(local_sources_array_list)
-        else:
-            sources_array = None
-        sources_array = comm.bcast(sources_array, root)
-
-        # sort them along the x axes
-        sources_array.sort(key=lambda x: x[0])
-        return sources_array
-
-    def _compute_local_n_sources(self, global_n_sources, n_local_pickable_points, root):
-        """
-        INTERNAL USE
-        Computes the number of sources to randomly select for the local process, considering that the number
-        of pickable points may differ between different processes and that the global number of sources is fixed.
-        :param global_n_sources: number of global sources
-        :param n_local_pickable_points: number of pickable points
-        :param root: MPI root process
-        """
-        # compute global number of pickable points
-        n_local_pickable_points_array = comm.gather(n_local_pickable_points, root)
-        if rank == root:
-            n_global_pickable_points = sum(n_local_pickable_points_array)
-        else:
-            n_global_pickable_points = None
-        n_global_pickable_points = comm.bcast(n_global_pickable_points, root)
-
-        # compute local process weight
-        loc_w = int(np.floor(global_n_sources * (n_local_pickable_points / n_global_pickable_points)))
-
-        # manage missing sources
-        loc_w_list = comm.gather(loc_w, root)
-        if rank == root:
-            # compute missing_sources
-            missing_sources = global_n_sources - sum(loc_w_list)
-            # pair each process rank with its weight
-            proc_loc_w_pairs = list(enumerate(loc_w_list))
-            # sort for loc_w
-            proc_loc_w_pairs.sort(key=lambda pair: pair[1], reverse=True)
-            # mark processes who should take care of the missing sources
-            marked_procs = []
-            for i in range(int(missing_sources)):
-                marked_procs.append(proc_loc_w_pairs[i][0])
-        else:
-            marked_procs = None
-        # get marked processes
-        marked_procs = comm.bcast(marked_procs, root)
-
-        # compute local n_sources
-        local_n_sources = loc_w
-        if rank in marked_procs:
-            local_n_sources += 1
-
-        return local_n_sources
 
     def _divide_source_cells(self):
         """
@@ -240,6 +144,153 @@ class SourceMap:
             debug_adapter.debug(
                 f"Removed source cell {source_cell.__hash__()} at position {source_cell.get_position()}"
                 f"from the local list")
+
+
+class RandomSourceMap(SourceMap):
+    """
+    A SourceMap of randomly distributed sources in a given spatial domain
+    """
+    def __init__(self,
+                 mesh_wrapper: fu.MeshWrapper,
+                 n_sources: int,
+                 current_step: int,
+                 parameters: fenics.Parameters,
+                 where: types.FunctionType or mshr.cpp.CSGGeometry or fenics.SubDomain or None = None):
+        """
+        inits a SourceMap of randomly distributed source cell in the mesh. One can specify the number of source
+        cells to be initialized (argument ``n_sources``) and where the source cells will be placed
+        (argument ``where``). The argument where can be:
+
+        - None; in this case, any point in the mesh can be picked as a rondom source
+        - a Python function; in this case, only the points for which the function returns True can be picked as
+        random sources. The given Python function must have a single input, x, with:
+            - x[0] corresponding to the x coordinate of the point
+            - x[1] corresponding to the y coordinate of the point
+            - x[2] corresponding to the z coordinate of the point (only if the Mesh is 3D);
+        - a mesh.cpp.Geometry (e.g. mshr.Rectangle or mshr.Circle) or a fenics.SubDomain object; in this case, the
+        point will be selected the defined space.
+
+        :param mesh_wrapper: the mesh wrapper for the given mesh
+        :param n_sources: the number of sources to select
+        :param current_step: the simulation step of the source map. It is used to initialize the Source Cells
+        :param parameters: simulation parameters
+        :param where: where to place the randomly distributed source cells. Default is None.
+        """
+        # compute random points
+        if isinstance(where, types.FunctionType):
+            where_fun = where
+        elif isinstance(where, mshr.cpp.CSGGeometry) \
+                or issubclass(type(where), mshr.cpp.CSGGeometry) \
+                or isinstance(where, fenics.SubDomain):
+            where_fun = where.inside
+        else:
+            raise TypeError(f"Argument 'where' can be only of type {types.FunctionType}, {mshr.cpp.CSGGeometry},"
+                            f"{fenics.SubDomain} or None. "
+                            f"Detected {type(where)} instead")
+
+        # get randomly distributed mesh point
+        self.mesh_wrapper = mesh_wrapper
+        global_source_points_list = self._get_randomy_sorted_mesh_points(n_sources, where_fun)
+        # inits source map
+        super(RandomSourceMap, self).__init__(mesh_wrapper,
+                                              global_source_points_list,
+                                              current_step,
+                                              parameters)
+
+    def _get_randomy_sorted_mesh_points(self, n_sources: int, where_fun):
+        """
+        INTERNAL USE
+        Return the source points selected randomly and sorted along the x axis
+
+        :param n_sources: number of sources to select
+        :param where_fun: the function to use to determine if a point can be picked or not
+        """
+        # get comm size
+        n_procs = comm.Get_size()
+        # define root proc
+        root = 0
+        # get global coordinates
+        global_coords = self.mesh_wrapper.get_global_mesh().coordinates()
+        # divide coordinates among processes
+        if rank == root:
+            coords_chunks_list = fu.divide_in_chunks(global_coords, n_procs)
+        else:
+            coords_chunks_list = None
+        local_coords_chunk = comm.scatter(coords_chunks_list, root)
+        # if where_fun is given
+        if where_fun is not None:
+            # get the pickable points
+            pickable_points = [point for point in local_coords_chunk if where_fun(point)]
+        else:
+            # else all points are pickable
+            pickable_points = [point for point in local_coords_chunk]
+        # compute n local sources
+        n_pickable_points = len(pickable_points)
+        local_n_sources = self._compute_local_n_sources(n_sources, n_pickable_points)
+        # pick the source point randomly
+        if n_pickable_points <= local_n_sources:
+            logger.warning(f"The mesh looks too small for selecting {n_sources} random source, since it was asked"
+                           f"to select {local_n_sources} among {n_pickable_points}"
+                           f"local pickable points. Returning all available pickable points.")
+            local_sources_array = pickable_points
+        else:
+            local_sources_array = random.sample(pickable_points, local_n_sources)
+        # gather picked sources and share among processes
+        local_sources_array_list = comm.gather(local_sources_array, root)
+        if rank == root:
+            sources_array = fu.flatten_list_of_lists(local_sources_array_list)
+        else:
+            sources_array = None
+        sources_array = comm.bcast(sources_array, root)
+
+        # sort them along the x axes
+        sources_array.sort(key=lambda x: x[0])
+        return sources_array
+
+    def _compute_local_n_sources(self, global_n_sources, n_local_pickable_points):
+        """
+        INTERNAL USE
+        Computes the number of sources to randomly select for the local process, considering that the number
+        of pickable points may differ between different processes and that the global number of sources is fixed.
+        :param global_n_sources: number of global sources
+        :param n_local_pickable_points: number of pickable points
+        """
+        root = 0
+        # compute global number of pickable points
+        n_local_pickable_points_array = comm.gather(n_local_pickable_points, root)
+        if rank == root:
+            n_global_pickable_points = sum(n_local_pickable_points_array)
+        else:
+            n_global_pickable_points = None
+        n_global_pickable_points = comm.bcast(n_global_pickable_points, root)
+
+        # compute local process weight
+        loc_w = int(np.floor(global_n_sources * (n_local_pickable_points / n_global_pickable_points)))
+
+        # manage missing sources
+        loc_w_list = comm.gather(loc_w, root)
+        if rank == root:
+            # compute missing_sources
+            missing_sources = global_n_sources - sum(loc_w_list)
+            # pair each process rank with its weight
+            proc_loc_w_pairs = list(enumerate(loc_w_list))
+            # sort for loc_w
+            proc_loc_w_pairs.sort(key=lambda pair: pair[1], reverse=True)
+            # mark processes who should take care of the missing sources
+            marked_procs = []
+            for i in range(int(missing_sources)):
+                marked_procs.append(proc_loc_w_pairs[i][0])
+        else:
+            marked_procs = None
+        # get marked processes
+        marked_procs = comm.bcast(marked_procs, root)
+
+        # compute local n_sources
+        local_n_sources = loc_w
+        if rank in marked_procs:
+            local_n_sources += 1
+
+        return local_n_sources
 
 
 class SourcesManager:
