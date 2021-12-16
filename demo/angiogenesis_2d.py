@@ -11,6 +11,7 @@ import mocafe.fenut.mansimdata as mansimd
 from mocafe.angie import af_sourcing, tipcells
 from mocafe.angie.forms import angiogenesis_form, angiogenic_factor_form
 from mocafe.fenut.parameters import from_ods_sheet
+from mocafe.expressions import PythonFunctionField
 
 
 class AngiogenesisInitialCondition(fenics.UserExpression):
@@ -55,8 +56,8 @@ data_folder = mansimd.setup_data_folder(folder_path=f"{file_folder/Path('demo_ou
                                         auto_enumerate=False)
 
 # define files for fields
-file_names = ["c", "T", "grad_T", "tipcells"]
-file_phi, file_T, file_grad_T, tipcells_xdmf = fu.setup_xdmf_files(file_names, data_folder)
+file_names = ["c", "af", "tipcells"]
+file_c, file_af, tipcells_xdmf = fu.setup_xdmf_files(file_names, data_folder)
 
 # import parametes
 parameters_file = file_folder/Path("demo_in/angiogenesis_2d/parameters.ods")
@@ -82,54 +83,48 @@ function_space = fu.get_mixed_function_space(mesh, 3, "CG", 1)
 # define function space for grad_T
 grad_T_function_space = fenics.VectorFunctionSpace(mesh, "CG", 1)
 
-# define test functions
-v1, v2, v3 = fenics.TestFunctions(function_space)
-
-# define functions
-u_curr = fenics.Function(function_space)
-T_old, c_old, mu_old = fenics.split(u_curr)
-u = fenics.Function(function_space)
-T, c, mu = fenics.split(u)
-grad_T = fenics.Function(grad_T_function_space)
-tipcells_field = fenics.Function(function_space.sub(0).collapse())
-
-# define initial condition
-phi_max = parameters.get_value("phi_max")
-phi_min = parameters.get_value("phi_min")
-T0 = 0.
-u_curr.interpolate(AngiogenesisInitialCondition(initial_vessel_width, phi_max, phi_min, T0))
-
+# define initial conditions for af
+af_0 = fenics.interpolate(fenics.Constant(0.), function_space.sub(0).collapse())
 sources_map = af_sourcing.SourceMap(n_sources,
                                     initial_vessel_width + parameters.get_value("d"),
                                     mesh_wrapper,
                                     0,
                                     parameters)
-
-# init sources manager
 sources_manager = af_sourcing.SourcesManager(sources_map, mesh_wrapper, parameters, {"type": "None"})
+sources_manager.apply_sources(af_0, function_space.sub(0), True, 0.)
 
-# split u_curr
-T_curr, phi_curr, mu_curr = u_curr.split()
+# define initial condition for c
+c_0 = fenics.interpolate(PythonFunctionField(python_fun=lambda x: 1. if x[0] < initial_vessel_width else -1.),
+                         function_space.sub(0).collapse())
 
-# add sources to initial condition of T
-sources_manager.apply_sources(T_curr, function_space.sub(0), True, 0.)
+# define initial condition for mu
+mu_0 =fenics.interpolate(fenics.Constant(0.), function_space.sub(0).collapse())
+
+
+# define test functions
+v1, v2, v3 = fenics.TestFunctions(function_space)
+
+# define functions
+u = fenics.Function(function_space)
+af, c, mu = fenics.split(u)
+grad_af = fenics.Function(grad_T_function_space)
+tipcells_field = fenics.Function(function_space.sub(0).collapse())
 
 # compute gradient of T
-grad_T.assign(fenics.project(fenics.grad(T_curr), grad_T_function_space))
+grad_af.assign(fenics.project(fenics.grad(af_0), grad_T_function_space))
 
 # save to file
-file_T.write(T_curr, 0)
-file_phi.write(phi_curr, 0)
-file_grad_T.write(grad_T, 0)
+file_af.write(af_0, 0)
+file_c.write(c_0, 0)
 
 # define form for angiogenic factor
-form_T = angiogenic_factor_form(T, T_old, c, v1, parameters)
+form_af = angiogenic_factor_form(af, af_0, c, v1, parameters)
 
 # define form for angiogenesis
-form_ang = angiogenesis_form(c, c_old, mu, mu_old, v2, v3, T, parameters)
+form_ang = angiogenesis_form(c, c_0, mu, mu_0, v2, v3, af, parameters)
 
 # define complete form
-F = form_T + form_ang
+F = form_af + form_ang
 
 # define Jacobian
 J = fenics.derivative(F, u)
@@ -152,17 +147,17 @@ for step in range(1, n_steps + 1):
     t += parameters.get_value("dt")
 
     # turn off near sources
-    sources_manager.remove_sources_near_vessels(phi_curr)
+    sources_manager.remove_sources_near_vessels(c_0)
 
     # activate tip cell
-    tip_cell_manager.activate_tip_cell(phi_curr, T_curr, grad_T, step)
+    tip_cell_manager.activate_tip_cell(c_0, af_0, grad_af, step)
 
     # revert tip cells
-    tip_cell_manager.revert_tip_cells(T_curr, grad_T)
+    tip_cell_manager.revert_tip_cells(af_0, grad_af)
 
     # move tip cells
     fenics.assign(tipcells_field,
-                  tip_cell_manager.move_tip_cells(phi_curr, T_curr, grad_T, function_space.sub(1), True))
+                  tip_cell_manager.move_tip_cells(c_0, af_0, grad_af, function_space.sub(0), True))
 
     # update fields
     try:
@@ -177,22 +172,18 @@ for step in range(1, n_steps + 1):
         raise e
 
     # assign u to u_curr
-    u_curr.assign(u)
-
-    # split components of u
-    T_curr, phi_curr, mu_curr = u_curr.split()
+    fenics.assign([af_0, c_0, mu_0], u)
 
     # update source field
-    sources_manager.apply_sources(T_curr, function_space.sub(0), True, t)
+    sources_manager.apply_sources(af_0, function_space.sub(0), True, t)
 
     # compute grad_T
-    grad_T.assign(fenics.project(fenics.grad(T_curr), grad_T_function_space))
+    grad_af.assign(fenics.project(fenics.grad(af_0), grad_T_function_space))
 
     # save data
     if step % parameters.get_value("save_rate") == 0:
-        file_T.write(T_curr, t)
-        file_phi.write(phi_curr, t)
-        file_grad_T.write(grad_T, t)
+        file_af.write(af_0, t)
+        file_c.write(c_0, t)
         tipcells_xdmf.write(tipcells_field, t)
 
     if rank == 0:
