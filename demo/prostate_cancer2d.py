@@ -98,7 +98,7 @@ rank = comm.Get_rank()
 # - first, the folder where to save the result of the simulation. In this case, the folder will be based inside
 #   the current folder (``base_location``) and it's called demo_out/prostate_cancer2d;
 #
-data_folder = setup_data_folder(folder_path=f"{file_folder/Path('demo_out')}prostate_cancer_2d",
+data_folder = setup_data_folder(folder_path=f"{file_folder/Path('demo_out')}/prostate_cancer_2d",
                                 auto_enumerate=False)
 
 # %%
