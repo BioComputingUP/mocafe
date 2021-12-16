@@ -279,9 +279,10 @@ phi, sigma = fenics.split(u)
 # This class allows us to use a python function, such as a lambda function, to define the values of a FEniCS function.
 # In the following, indeed, we make use of a lambda function and of the methods provided by the module ``random``
 # to define the random distribution mentioned above. Indeed, The pyhton function it is used by this class to evaluate
-# the value of the FEniCS function at each point of the mesh
+# the value of the FEniCS function at each point of the mesh. Notice that the function given as imput must always have
+# at least on input (x in this case), representing the spatial point.
 s_expression = PythonFunctionField(
-    python_fun=lambda: parameters.get_value("s_average") + random.uniform(parameters.get_value("s_min"),
+    python_fun=lambda x: parameters.get_value("s_average") + random.uniform(parameters.get_value("s_min"),
                                                                           parameters.get_value("s_max")),
 )
 
