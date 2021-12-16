@@ -102,7 +102,7 @@ class SourceMap:
         # define root proc
         root = 0
         # get global coordinates
-        global_coords = fu.get_global_mesh_coordinates(self.mesh)
+        global_coords = self.mesh_wrapper.get_global_mesh().coordinates()
         # de
         # divide coordinates among processes
         if rank == root:
