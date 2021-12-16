@@ -4,7 +4,7 @@ from mocafe.fenut.parameters import from_ods_sheet
 
 
 def test_save_sim_info(tmpdir, odf_sheet_test2):
-    data_folder = mansim.setup_data_folder(mansim.test_sim_name, base_location=tmpdir)
+    data_folder = mansim.setup_data_folder(folder_path=f"{tmpdir}/{mansim.test_sim_name}")
     parameters = from_ods_sheet(odf_sheet_test2, "SimParams")
     mansim.save_sim_info(data_folder, 1.0, parameters, "test")
     print(str(data_folder / pathlib.Path("sim_info.html")))
@@ -12,7 +12,7 @@ def test_save_sim_info(tmpdir, odf_sheet_test2):
 
 
 def test_save_sim_info_format(tmpdir, odf_sheet_test):
-    data_folder = mansim.setup_data_folder(mansim.test_sim_name, base_location=tmpdir)
+    data_folder = mansim.setup_data_folder(folder_path=f"{tmpdir}/{mansim.test_sim_name}")
     execution_time = 1.0
     parameters = from_ods_sheet(odf_sheet_test, "Sheet1")
     sim_name = mansim.test_sim_name
@@ -39,7 +39,7 @@ def test_save_sim_info_format(tmpdir, odf_sheet_test):
 
 
 def test_save_sim_info_rationale(tmpdir, odf_sheet_test):
-    data_folder = mansim.setup_data_folder(mansim.test_sim_name, base_location=tmpdir)
+    data_folder = mansim.setup_data_folder(folder_path=f"{tmpdir}/{mansim.test_sim_name}")
     execution_time = 1.0
     parameters = from_ods_sheet(odf_sheet_test, "Sheet1")
     sim_name = "another_test"
@@ -68,7 +68,7 @@ def test_save_sim_info_rationale(tmpdir, odf_sheet_test):
 
 
 def test_sim_info_error(tmpdir, odf_sheet_test):
-    data_folder = mansim.setup_data_folder(mansim.test_sim_name, base_location=tmpdir)
+    data_folder = mansim.setup_data_folder(folder_path=f"{tmpdir}/{mansim.test_sim_name}")
     execution_time = 1.0
     parameters = from_ods_sheet(odf_sheet_test, "Sheet1")
     sim_name = "another_test"
