@@ -20,9 +20,10 @@ from mocafe.angie.tipcells import TipCellManager
 def mesh_wrapper():
     # define mesh
     nx = ny = 300
-    mesh_wrapper = fu.RectangleMeshWrapper(fenics.Point(0., 0.),
-                                           fenics.Point(nx, ny),
-                                           nx, ny)
+    mesh = fenics.RectangleMesh(fenics.Point(0., 0.),
+                                fenics.Point(nx, ny),
+                                nx, ny)
+    mesh_wrapper = fu.MeshWrapper(mesh)
     return mesh_wrapper
 
 

@@ -7,8 +7,8 @@ import numpy as np
 def test_apply_sources(parameters):
     # define mesh
     n_x = n_y = 300
-    mesh_wrapper = fu.RectangleMeshWrapper(fenics.Point(0., 0.), fenics.Point(n_x, n_y), n_x, n_y)
-    mesh = mesh_wrapper.get_local_mesh()
+    mesh = fenics.RectangleMesh(fenics.Point(0., 0.), fenics.Point(n_x, n_y), n_x, n_y)
+    mesh_wrapper = fu.MeshWrapper(mesh)
 
     # define function space
     element = fenics.FiniteElement("CG", fenics.triangle, 1)
@@ -39,8 +39,8 @@ def test_apply_sources(parameters):
 def test_apply_sources_mixed_function_space(parameters):
     # define mesh
     n_x = n_y = 300
-    mesh_wrapper = fu.RectangleMeshWrapper(fenics.Point(0., 0.), fenics.Point(n_x, n_y), n_x, n_y)
-    mesh = mesh_wrapper.get_local_mesh()
+    mesh = fenics.RectangleMesh(fenics.Point(0., 0.), fenics.Point(n_x, n_y), n_x, n_y)
+    mesh_wrapper = fu.MeshWrapper(mesh)
 
     # define function space
     element = fenics.FiniteElement("CG", fenics.triangle, 1)

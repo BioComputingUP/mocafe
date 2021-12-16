@@ -1,6 +1,6 @@
 import fenics
 import pytest
-from mocafe.fenut.fenut import RectangleMeshWrapper
+from mocafe.fenut.fenut import MeshWrapper
 from mocafe.angie.af_sourcing import SourceMap
 import pathlib
 from mocafe.fenut.parameters import from_ods_sheet, Parameters
@@ -18,9 +18,11 @@ def parameters() -> Parameters:
 
 @pytest.fixture
 def mesh_wrapper():
-    mesh_wrapper = RectangleMeshWrapper(fenics.Point(0., 0.),
-                                        fenics.Point(300., 300.),
-                                        100, 100)
+    mesh = fenics.RectangleMesh(fenics.Point(0., 0.),
+                                fenics.Point(300., 300.),
+                                100,
+                                100)
+    mesh_wrapper = MeshWrapper(mesh)
     return mesh_wrapper
 
 

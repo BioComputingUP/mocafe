@@ -59,7 +59,7 @@ class SourceMap:
     def __init__(self,
                  n_sources: int,
                  x_lim,
-                 mesh_wrapper: fu.RectangleMeshWrapper,
+                 mesh_wrapper: fu.MeshWrapper,
                  current_step: int,
                  parameters: Parameters,
                  source_points=None):
@@ -248,7 +248,7 @@ class SourcesManager:
     cells when they are near the blood vessels and of translating the source cell map in a FEniCS phase field function
     """
     def __init__(self, source_map: SourceMap,
-                 mesh_wrapper: fu.RectangleMeshWrapper,
+                 mesh_wrapper: fu.MeshWrapper,
                  parameters: Parameters,
                  expression_function_parameters: dict):
         """
@@ -428,7 +428,7 @@ class ClockChecker:
     Class representing a clock checker, i.e. an object that checks if a given condition is met in the surroundings of
     a point of the mesh.
     """
-    def __init__(self, mesh_wrapper: fu.RectangleMeshWrapper, radius, start_point="east"):
+    def __init__(self, mesh_wrapper: fu.MeshWrapper, radius, start_point="east"):
         """
         inits a ClockChecker, which will check if a condition is met inside the given radius
         :param mesh_wrapper: mesh wrapper

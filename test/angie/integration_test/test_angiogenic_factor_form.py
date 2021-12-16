@@ -19,7 +19,7 @@
 #
 #     # define mesh
 #     n_x = n_y = 300
-#     mesh_wrapper = fu.RectangleMeshWrapper(fenics.Point(0., 0.), fenics.Point(n_x, n_y), n_x, n_y)
+#     mesh_wrapper = fu.MeshWrapper(fenics.Point(0., 0.), fenics.Point(n_x, n_y), n_x, n_y)
 #     mesh = mesh_wrapper.get_local_mesh()
 #
 #     # define function space

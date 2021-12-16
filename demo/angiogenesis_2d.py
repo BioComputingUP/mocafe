@@ -68,11 +68,11 @@ Lx = parameters.get_value("Lx")
 Ly = parameters.get_value("Ly")
 nx = int(parameters.get_value("nx"))
 ny = int(parameters.get_value("ny"))
-mesh_wrapper = fu.RectangleMeshWrapper(fenics.Point(0., 0.),
-                                       fenics.Point(Lx, Ly),
-                                       nx,
-                                       ny)
-mesh = mesh_wrapper.get_local_mesh()
+mesh = fenics.RectangleMesh(fenics.Point(0., 0.),
+                            fenics.Point(Lx, Ly),
+                            nx,
+                            ny)
+mesh_wrapper = fu.MeshWrapper(mesh)
 
 # define additional parameters
 initial_vessel_width = parameters.get_value("initial_vessel_width")

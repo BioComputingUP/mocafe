@@ -139,7 +139,7 @@ class TipCellManager:
     """
     Class to manage the tip cells throughout the simulation.
     """
-    def __init__(self, mesh_wrapper: fu.RectangleMeshWrapper,
+    def __init__(self, mesh_wrapper: fu.MeshWrapper,
                  parameters: Parameters):
         """
         inits a TipCellManager

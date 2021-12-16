@@ -1,5 +1,5 @@
 import fenics
-import numpy as np
+import shutil
 import json
 
 """
@@ -91,27 +91,44 @@ def load_parameters(parameters_file="parameters.json"):
     return parameters
 
 
-class RectangleMeshWrapper:
-    """ Wrapper for fenics.RectangleMesh with some utility method """
-    def __init__(self, limit_point1: fenics.Point, limit_point2: fenics.Point, nx, ny):
+class MeshWrapper:
+    """
+    Wrapper for fenics.Mesh with some utility method. More precisely, it provides easy access to bot the local
+    mesh for the current MPI process and the global mesh, shared for all MPI processes.
+    """
+    def __init__(self, local_mesh):
         """
-        inits a wrapper for rectangle mesh that is useful for the parallel implementation of the source cells and
-        the tip cells.
-        :param limit_point1: first point defining the rectangle
-        :param limit_point2: second point defining the rectangle
-        :param nx: number of points in the x direction
-        :param ny: number of points in the y direction
+        inits a wrapper for the given mesh.
+
+        :param local_mesh: the given mesh.
         """
-        self.local_mesh = fenics.RectangleMesh(limit_point1,
-                                               limit_point2,
-                                               nx, ny)
+        # get local mesh
+        self.local_mesh = local_mesh
+        # get local bounding box
         self.local_bounding_box_tree = self.local_mesh.bounding_box_tree()
-        self.global_mesh = fenics.RectangleMesh(fenics.MPI.comm_self,
-                                                limit_point1,
-                                                limit_point2,
-                                                nx, ny)
+
+        # create mesh file in temp folder
+        tmp_folder = ".mocafe_tmp"
+        mesh_path_str = tmp_folder + "/mesh.xmdf"
+        # create local mesh file
+        local_mesh_xdmf = fenics.XDMFFile(mesh_path_str)
+        # write mesh to file
+        local_mesh_xdmf.write(local_mesh)
+        # create global mesh file
+        global_mesh_xdmf = fenics.XDMFFile(fenics.MPI.comm_self, mesh_path_str)
+        # create global empty mesh
+        global_mesh = fenics.Mesh(fenics.MPI.comm_self)
+        # load global mesh from file
+        global_mesh_xdmf.read(global_mesh)
+        # remove temp file
+        if fenics.MPI.comm_world.Get_rank() == 0:
+            shutil.rmtree(tmp_folder)
+        # set self global mesh
+        self.global_mesh = global_mesh
+        # set self global bounding box
         self.global_bounding_box_tree = self.global_mesh.bounding_box_tree()
-        self.dim = 2
+        # set geometric dimension
+        self.dim = local_mesh.geometric_dimension()
 
     def get_local_mesh(self):
         """
