@@ -499,8 +499,6 @@ class TipCellManager:
 
         :param c: the capillaries field
         :param tip_cells_field_expression: the tip cells field expression
-        :param V: the function space for interpolating the tip cells field
-        :param is_V_sub_space: True if V is a sub-space of a MixedElementFunctionSpace, False otherwise
         :return: the tip cell field as a FEniCS function
         """
         # get Function Space of af
@@ -562,8 +560,6 @@ class TipCellManager:
         :param c: capillaries field
         :param af: angiogenic factor field
         :param grad_af: gradient of the angiogenic factor field
-        :param V: FunctionSpace to interpolate the tip cell field
-        :param is_V_sub_space: True if V is the sub space of a MixedElementFunctionSpace. False otherwise.
         :return:
         """
         info_adapter.info(f"Called {self.move_tip_cells.__name__}")
