@@ -131,8 +131,10 @@ for step in range(1, n_steps + 1):
     tip_cell_manager.revert_tip_cells(af_0, grad_af)
 
     # move tip cells
-    fenics.assign(tipcells_field,
-                  tip_cell_manager.move_tip_cells(c_0, af_0, grad_af, function_space.sub(0), True))
+    tip_cell_manager.move_tip_cells(c_0, af_0, grad_af)
+
+    # get tip cells field
+    tipcells_field.assign(tip_cell_manager.get_latest_tip_cell_function())
 
     # update fields
     try:

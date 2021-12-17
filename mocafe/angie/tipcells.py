@@ -161,6 +161,7 @@ class TipCellManager:
         self.min_tipcell_distance = parameters.get_value("min_tipcell_distance")
         self.clock_checker = af_sourcing.ClockChecker(mesh_wrapper, self.cell_radius, start_point="west")
         self.local_box = self._build_local_box(self.cell_radius)
+        self.latest_t_c_f_function = None
 
     def get_global_tip_cells_list(self):
         """
@@ -488,7 +489,7 @@ class TipCellManager:
         c.vector().set_local(phi_loc_values)
         c.vector().update_ghost_values()  # necessary, otherwise errors
 
-    def _apply_tip_cells_field(self, c, tip_cells_field_expression, V, is_V_sub_space):
+    def _apply_tip_cells_field(self, c, tip_cells_field_expression):
         """
         INTERNAL USE.
         Applies the tip cells field in the given ``tip_cells_field_expression`` to the capillaries field ``c``.
@@ -537,7 +538,7 @@ class TipCellManager:
         # return tip cells field function for monitoring
         return t_c_f_function
 
-    def move_tip_cells(self, c, af, grad_af, V, is_V_sub_space) -> fenics.Function:
+    def move_tip_cells(self, c, af, grad_af):
         r"""
         Move the tip cell to follow the gradient of the angiogenic factor, with the velocity computed by the method
         ``compute_tip_cell_velocity``.
@@ -563,15 +564,13 @@ class TipCellManager:
         :param grad_af: gradient of the angiogenic factor field
         :param V: FunctionSpace to interpolate the tip cell field
         :param is_V_sub_space: True if V is the sub space of a MixedElementFunctionSpace. False otherwise.
-        :return: the tip cell field function
+        :return:
         """
         info_adapter.info(f"Called {self.move_tip_cells.__name__}")
         # update tip cell positions
         tip_cells_field_expression = self._update_tip_cell_positions_and_get_field(af, grad_af)
         # apply tip_cells_field to c
-        t_c_f_fucntion = self._apply_tip_cells_field(c, tip_cells_field_expression, V, is_V_sub_space)
-        # return tip cell field function for monitoring
-        return t_c_f_fucntion
+        self.latest_t_c_f_function = self._apply_tip_cells_field(c, tip_cells_field_expression)
 
     def compute_tip_cell_velocity(self, grad_af, chi, tip_cell_position):
         r"""
@@ -604,3 +603,9 @@ class TipCellManager:
             velocity = chi * grad_T_at_point * (self.G_M / G_at_point)
 
         return velocity
+
+    def get_latest_tip_cell_function(self):
+        if self.latest_t_c_f_function is None:
+            raise RuntimeError("Tip cell function has not have been computed yet")
+        else:
+            return self.latest_t_c_f_function
