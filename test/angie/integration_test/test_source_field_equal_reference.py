@@ -1,6 +1,6 @@
 import fenics
 import numpy as np
-from mocafe.angie.af_sourcing import SourceMap, SourcesField
+from mocafe.angie.af_sourcing import SourceMap, SourcesField, ConstantAFExpressionFunction
 import mocafe.fenut.fenut as fu
 import os
 
@@ -27,7 +27,8 @@ def test_source_field_equals_reference(parameters):
     sources_map = SourceMap(mesh_wrapper, source_points, parameters)
 
     # define source field
-    T = fenics.interpolate(SourcesField(sources_map, parameters), V)
+    T = fenics.interpolate(SourcesField(sources_map, parameters,
+                                        ConstantAFExpressionFunction(parameters.get_value("T_s"))), V)
 
     # read
     T_ref = fenics.Function(V)

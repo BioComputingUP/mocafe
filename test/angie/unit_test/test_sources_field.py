@@ -1,13 +1,13 @@
 import numpy as np
 import pytest
 import fenics
-from mocafe.angie.af_sourcing import SourcesField
+from mocafe.angie.af_sourcing import SourcesField, ConstantAFExpressionFunction
 
 
 @pytest.fixture
 def sources_field(source_map, parameters, setup_function_space):
     # init T
-    T_exp = SourcesField(source_map, parameters)
+    T_exp = SourcesField(source_map, parameters, ConstantAFExpressionFunction(parameters.get_value("T_s")))
     # interpolate
     T = fenics.interpolate(T_exp, setup_function_space)
     return T

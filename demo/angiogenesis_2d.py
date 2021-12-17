@@ -65,8 +65,8 @@ sources_map = af_sourcing.RandomSourceMap(mesh_wrapper,
                                           n_sources,
                                           parameters,
                                           where=random_sources_domain)
-sources_manager = af_sourcing.SourcesManager(sources_map, mesh_wrapper, parameters, {"type": "None"})
-sources_manager.apply_sources(af_0, function_space.sub(0), True, 0.)
+sources_manager = af_sourcing.SourcesManager(sources_map, mesh_wrapper, parameters)
+sources_manager.apply_sources(af_0)
 
 # define initial condition for c
 c_0 = fenics.interpolate(PythonFunctionField(python_fun=lambda x: 1. if x[0] < initial_vessel_width else -1.),
@@ -150,7 +150,7 @@ for step in range(1, n_steps + 1):
     fenics.assign([af_0, c_0, mu_0], u)
 
     # update source field
-    sources_manager.apply_sources(af_0, function_space.sub(0), True, t)
+    sources_manager.apply_sources(af_0)
 
     # compute grad_T
     grad_af.assign(fenics.project(fenics.grad(af_0), grad_T_function_space))

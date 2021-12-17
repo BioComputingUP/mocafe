@@ -166,7 +166,6 @@ class RandomSourceMap(SourceMap):
 
         :param mesh_wrapper: the mesh wrapper for the given mesh
         :param n_sources: the number of sources to select
-        :param current_step: the simulation step of the source map. It is used to initialize the Source Cells
         :param parameters: simulation parameters
         :param where: where to place the randomly distributed source cells. Default is None.
         """
@@ -292,25 +291,23 @@ class SourcesManager:
     """
     def __init__(self, source_map: SourceMap,
                  mesh_wrapper: fu.MeshWrapper,
-                 parameters: Parameters,
-                 expression_function_parameters: dict):
+                 parameters: Parameters):
         """
         inits a source cells manager for a given source map.
         :param source_map: the source map (i.e. the source cells) to manage
         :param mesh_wrapper: the mesh wrapper
         :param parameters: the simulation parameters
-        :param expression_function_parameters: the parameters for the expression function, which regulates the
-        expression of the angiogenic factor by the source cells.
         """
         self.source_map = source_map
         self.mesh_wrapper = mesh_wrapper
         self.parameters: Parameters = parameters
         self.clock_checker = ClockChecker(mesh_wrapper, parameters.get_value("d"))
-        if expression_function_parameters["type"] == "rotational":
-            ref_parameters = expression_function_parameters["parameters"]
-            self.expression_function = RotationalExpressionFunction(ref_parameters)
-        else:
-            self.expression_function = None
+        self.default_af_expression_function = ConstantAFExpressionFunction(self.parameters.get_value("T_s"))
+        # if expression_function_parameters["type"] == "rotational":
+        #     ref_parameters = expression_function_parameters["parameters"]
+        #     self.expression_function = RotationalAFExpressionFunction(ref_parameters)
+        # else:
+        #     self.expression_function = None
 
     def remove_sources_near_vessels(self, c: fenics.Function):
         """
@@ -362,19 +359,23 @@ class SourcesManager:
         for source_cell in global_to_remove:
             self.source_map.remove_global_source(source_cell)
 
-    def apply_sources(self, af: fenics.Function, V_af: fenics.FunctionSpace, is_V_sub_space, t):
+    def apply_sources(self, af: fenics.Function,
+                      af_expression_function=None):
         """
         Apply the sources at the current time to the angiogenic factor field af, respecting the expression function.
         :param af: FEniCS function representing the angiogenic factor
-        :param V_af: FEniCS function space for af (necessary to compute the function with the sources)
-        :param is_V_sub_space: must be set to True if V_af is a sub_space of a MixedElement function space
-        :param t: current time
+        :param af_expression_function: an object of type AFExpressionFunction which tells this method the value of
+        the angiogenic factor inside the cells.
         :return: nothing
 
         """
+        current_af_expression_function = self.default_af_expression_function \
+            if af_expression_function is None else af_expression_function
+        if not issubclass(type(current_af_expression_function), AFExpressionFunction):
+            raise TypeError(f"af expression function is of type {type(current_af_expression_function)}. "
+                            f"Must be a subclass of AFExpressionFunction")
         # get Function Space of af
         V_af = af.function_space()
-
         # check if V_af is sub space
         try:
             V_af.collapse()
@@ -382,13 +383,10 @@ class SourcesManager:
         except RuntimeError:
             is_V_sub_space = False
 
-        # update time of expression function
-        if type(self.expression_function) is RotationalExpressionFunction:
-            self.expression_function.set_time(t)
         # get function space
         if not is_V_sub_space:
             # interpolate source field
-            s_f = fenics.interpolate(SourcesField(self.source_map, self.parameters, self.expression_function),
+            s_f = fenics.interpolate(SourcesField(self.source_map, self.parameters, current_af_expression_function),
                                      V_af)
             # assign s_f to T where s_f equals 1
             self._assign_values_to_vector(af, s_f)
@@ -396,7 +394,7 @@ class SourcesManager:
             # collapse subspace
             V_collapsed = V_af.collapse()
             # interpolate source field
-            s_f = fenics.interpolate(SourcesField(self.source_map, self.parameters, self.expression_function),
+            s_f = fenics.interpolate(SourcesField(self.source_map, self.parameters, current_af_expression_function),
                                      V_collapsed)
             # create assigner to collapsed
             assigner_to_collapsed = fenics.FunctionAssigner(V_collapsed, V_af)
@@ -436,29 +434,26 @@ class SourcesField(fenics.UserExpression):
     def __floordiv__(self, other):
         pass
 
-    def __init__(self, source_map: SourceMap, parameters: Parameters, expression_function=None):
+    def __init__(self, source_map: SourceMap, parameters: Parameters, af_expression_function):
         """
         inits a SourceField for the given SourceMap, in respect of the simulation parameters and of the expression
         function
         :param source_map:
         :param parameters:
-        :param expression_function:
+        :param af_expression_function:
         """
         super(SourcesField, self).__init__()
         self.source_map: SourceMap = source_map
         self.value_min = parameters.get_value("T_min")
         self.value_max = parameters.get_value("T_s")
         self.radius = parameters.get_value("R_c")
-        if expression_function is None:
-            self.expression_function = ConstantExpressionFunction(self.value_max)
-        else:
-            self.expression_function = expression_function
+        self.af_expression_function = af_expression_function
 
     def eval(self, values, x):
         point_value = self.value_min
         for source_cell in self.source_map.get_local_source_cells():
             if source_cell.get_distance(x) <= self.radius:
-                point_value = self.expression_function.get_point_value_at_source_cell(source_cell)
+                point_value = self.af_expression_function.get_point_value_at_source_cell(source_cell)
                 break
         values[0] = point_value
 
@@ -518,7 +513,12 @@ class ClockChecker:
         return False
 
 
-class RotationalExpressionFunction:
+class AFExpressionFunction:
+    def __init__(self):
+        pass
+
+
+class RotationalAFExpressionFunction(AFExpressionFunction):
     """
     Defines an angiogenic factor expression function which reproduces a spiral activation of the source cells around a
     center
@@ -527,6 +527,7 @@ class RotationalExpressionFunction:
         """
         :param rotational_expression_function_parameters: parameters of the expression function
         """
+        super(RotationalAFExpressionFunction, self).__init__()
         x_center = rotational_expression_function_parameters["x_center"]
         y_center = rotational_expression_function_parameters["y_center"]
         self.center = np.array([x_center, y_center])
@@ -576,11 +577,12 @@ class RotationalExpressionFunction:
         self.time = t
 
 
-class ConstantExpressionFunction:
+class ConstantAFExpressionFunction(AFExpressionFunction):
     """
     Defines an angiogenic factor expression where each source cell has a constant angiogenic factor expression
     """
     def __init__(self, constant_value):
+        super(ConstantAFExpressionFunction, self).__init__()
         self.constant_value = constant_value
 
     def get_point_value_at_source_cell(self, source_cell):

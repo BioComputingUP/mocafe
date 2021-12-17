@@ -19,13 +19,13 @@ def test_apply_sources(parameters):
     sources_map = SourceMap(mesh_wrapper, source_points, parameters)
 
     # define sources manager
-    sources_manager = SourcesManager(sources_map, mesh_wrapper, parameters, {"type": "None"})
+    sources_manager = SourcesManager(sources_map, mesh_wrapper, parameters)
 
     # define T
     T = fenics.interpolate(fenics.Constant(0.0), V)
 
     # apply sources on T
-    sources_manager.apply_sources(T, V, False, 0)
+    sources_manager.apply_sources(T)
 
     test_result = True
     for source_point in source_points:
@@ -52,7 +52,7 @@ def test_apply_sources_mixed_function_space(parameters):
     sources_map = SourceMap(mesh_wrapper, source_point, parameters)
 
     # define sources manager
-    sources_manager = SourcesManager(sources_map, mesh_wrapper, parameters, {"type": "None"})
+    sources_manager = SourcesManager(sources_map, mesh_wrapper, parameters)
 
     # define T
     exp = fenics.Expression(("0.0", "0."), degree=1)
@@ -60,7 +60,7 @@ def test_apply_sources_mixed_function_space(parameters):
     T, foo = u.split()
 
     # apply sources on T
-    sources_manager.apply_sources(T, V.sub(0), True, 0)
+    sources_manager.apply_sources(T)
 
     # confront
     test_result = True
