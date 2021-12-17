@@ -365,9 +365,9 @@ class TipCellManager:
 
         References:
 
-        .. [Travasso2011] Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., & Hernández-Machado, A.
-           (2011). Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5), e19989.
-           https://doi.org/10.1371/journal.pone.0019989
+        .. [Travasso2011] Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., &
+            Hernández-Machado, A. (2011). Tumor angiogenesis and vascular patterning: A mathematical model.
+            PLoS ONE, 6(5), e19989. https://doi.org/10.1371/journal.pone.0019989
 
         :param af: angiogenic factor field
         :param grad_af: gradient of the angiogenic factor
