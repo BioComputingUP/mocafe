@@ -60,7 +60,6 @@ class SourceMap:
     def __init__(self,
                  mesh_wrapper: fu.MeshWrapper,
                  source_points: list,
-                 current_step: int,
                  parameters: Parameters):
         """
         inits a SourceMap, i.e. a class responsible for keeping the current position of each source cell at any point
@@ -68,14 +67,13 @@ class SourceMap:
 
         :param mesh_wrapper: the mesh wrapper of the simulation mesh
         :param source_points: list of positions where to place the source cells.
-        :param current_step: initialization step of the source map. It is used to initialize tip cells.
         :param parameters: simulation parameters
         """
         # initialize global SourceCells list in the given points
         self.mesh_wrapper = mesh_wrapper
         self.local_box = self._build_local_box(parameters)
         global_source_points = source_points
-        self.global_source_cells = [SourceCell(point, current_step) for point in global_source_points]
+        self.global_source_cells = [SourceCell(point, 0) for point in global_source_points]
         self.local_source_cells = self._divide_source_cells()
 
     def _divide_source_cells(self):
@@ -153,7 +151,6 @@ class RandomSourceMap(SourceMap):
     def __init__(self,
                  mesh_wrapper: fu.MeshWrapper,
                  n_sources: int,
-                 current_step: int,
                  parameters: fenics.Parameters,
                  where: types.FunctionType or mshr.cpp.CSGGeometry or fenics.SubDomain or None = None):
         """
@@ -163,10 +160,7 @@ class RandomSourceMap(SourceMap):
 
         - None; in this case, any point in the mesh can be picked as a rondom source
         - a Python function; in this case, only the points for which the function returns True can be picked as
-        random sources. The given Python function must have a single input, x, with:
-            - x[0] corresponding to the x coordinate of the point
-            - x[1] corresponding to the y coordinate of the point
-            - x[2] corresponding to the z coordinate of the point (only if the Mesh is 3D);
+        random sources. The given Python function must have a single input of the type fenics.Point.
         - a mesh.cpp.Geometry (e.g. mshr.Rectangle or mshr.Circle) or a fenics.SubDomain object; in this case, the
         point will be selected the defined space.
 
@@ -180,8 +174,7 @@ class RandomSourceMap(SourceMap):
         if isinstance(where, types.FunctionType):
             where_fun = where
         elif isinstance(where, mshr.cpp.CSGGeometry) \
-                or issubclass(type(where), mshr.cpp.CSGGeometry) \
-                or isinstance(where, fenics.SubDomain):
+                or issubclass(type(where), mshr.cpp.CSGGeometry):
             where_fun = where.inside
         else:
             raise TypeError(f"Argument 'where' can be only of type {types.FunctionType}, {mshr.cpp.CSGGeometry},"
@@ -194,7 +187,6 @@ class RandomSourceMap(SourceMap):
         # inits source map
         super(RandomSourceMap, self).__init__(mesh_wrapper,
                                               global_source_points_list,
-                                              current_step,
                                               parameters)
 
     def _get_randomy_sorted_mesh_points(self, n_sources: int, where_fun):
@@ -220,7 +212,7 @@ class RandomSourceMap(SourceMap):
         # if where_fun is given
         if where_fun is not None:
             # get the pickable points
-            pickable_points = [point for point in local_coords_chunk if where_fun(point)]
+            pickable_points = [point for point in local_coords_chunk if where_fun(fenics.Point(point))]
         else:
             # else all points are pickable
             pickable_points = [point for point in local_coords_chunk]

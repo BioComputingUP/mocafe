@@ -16,7 +16,7 @@ def test_apply_sources(parameters):
 
     # define source map
     source_points = [np.array([num, num]) for num in range(0, 310, 10)]
-    sources_map = SourceMap(mesh_wrapper, source_points, 0, parameters)
+    sources_map = SourceMap(mesh_wrapper, source_points, parameters)
 
     # define sources manager
     sources_manager = SourcesManager(sources_map, mesh_wrapper, parameters, {"type": "None"})
@@ -49,7 +49,7 @@ def test_apply_sources_mixed_function_space(parameters):
 
     # define source map
     source_point = [np.array([150, 150])]
-    sources_map = SourceMap(mesh_wrapper, source_point, 0, parameters)
+    sources_map = SourceMap(mesh_wrapper, source_point, parameters)
 
     # define sources manager
     sources_manager = SourcesManager(sources_map, mesh_wrapper, parameters, {"type": "None"})

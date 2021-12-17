@@ -63,7 +63,6 @@ random_sources_domain = mshr.Rectangle(fenics.Point(initial_vessel_width + param
                                        fenics.Point(Lx, Ly))
 sources_map = af_sourcing.RandomSourceMap(mesh_wrapper,
                                           n_sources,
-                                          0,
                                           parameters,
                                           where=random_sources_domain)
 sources_manager = af_sourcing.SourcesManager(sources_map, mesh_wrapper, parameters, {"type": "None"})

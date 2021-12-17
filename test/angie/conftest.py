@@ -13,6 +13,7 @@ setup_random_state(load=True, load_path=f"{os.path.dirname(__file__)}")
 
 @pytest.fixture
 def parameters() -> Parameters:
+    # the saved mesh is 300x300
     return from_ods_sheet(pathlib.Path(f"{os.path.dirname(__file__)}/test_parameters.ods"), "SimParams")
 
 
@@ -28,7 +29,6 @@ def source_map(mesh_wrapper, parameters):
     x_lim = 10
     return RandomSourceMap(mesh_wrapper,
                            n_sources,
-                           0,
                            parameters,
                            where=lambda x: x[0] > x_lim)
 
