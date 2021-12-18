@@ -1,8 +1,8 @@
 """
 Angiogenesis phase field model
 ==============================
-In this demo we will reproduce the angiogenesis phase field model describeb by Travasso et al. in 2011
-:cite:`Travasso2011`
+In this demo we will reproduce the angiogenesis phase field model described by Travasso et al. in 2011
+:cite:`Travasso2011a`
 """
 
 import sys
