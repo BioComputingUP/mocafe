@@ -108,7 +108,7 @@ class PythonFunctionField(fenics.UserExpression):
         self.python_fun_params = python_fun_params
 
     def eval(self, values, x):
-        values[0] = self.python_fun(*self.python_fun_params)
+        values[0] = self.python_fun(x, *self.python_fun_params)
 
     def value_shape(self):
         return ()

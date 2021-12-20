@@ -94,3 +94,23 @@ class Parameters:
         :return: the dataframe representing the Parameters object
         """
         return self.param_df
+
+    def is_value_present(self, name):
+        """
+        Check if the parameters object contains a value for the parameter of the given name
+
+        :param name: the name of the given value
+        :return: True if a value is present for the given parameter name; False otherwise.
+        """
+        return pd.isna(self.get_value(name))
+
+    def is_parameter(self, name):
+        """
+        Check if the given parameter name correspond to a parameter inside the parameters object
+
+        :param name: the name of the putative parameter
+        :return: True if there is a reference for the given parameter, False otherwise
+        """
+        return name in self.param_df.index
+
+

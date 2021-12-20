@@ -7,8 +7,8 @@ import numpy as np
 def test_apply_sources(parameters):
     # define mesh
     n_x = n_y = 300
-    mesh_wrapper = fu.RectangleMeshWrapper(fenics.Point(0., 0.), fenics.Point(n_x, n_y), n_x, n_y)
-    mesh = mesh_wrapper.get_local_mesh()
+    mesh = fenics.RectangleMesh(fenics.Point(0., 0.), fenics.Point(n_x, n_y), n_x, n_y)
+    mesh_wrapper = fu.MeshWrapper(mesh)
 
     # define function space
     element = fenics.FiniteElement("CG", fenics.triangle, 1)
@@ -16,16 +16,16 @@ def test_apply_sources(parameters):
 
     # define source map
     source_points = [np.array([num, num]) for num in range(0, 310, 10)]
-    sources_map = SourceMap(0, 10, mesh_wrapper, 0, parameters, source_points=source_points)
+    sources_map = SourceMap(mesh_wrapper, source_points, parameters)
 
     # define sources manager
-    sources_manager = SourcesManager(sources_map, mesh_wrapper, parameters, {"type": "None"})
+    sources_manager = SourcesManager(sources_map, mesh_wrapper, parameters)
 
     # define T
     T = fenics.interpolate(fenics.Constant(0.0), V)
 
     # apply sources on T
-    sources_manager.apply_sources(T, V, False, 0)
+    sources_manager.apply_sources(T)
 
     test_result = True
     for source_point in source_points:
@@ -39,8 +39,8 @@ def test_apply_sources(parameters):
 def test_apply_sources_mixed_function_space(parameters):
     # define mesh
     n_x = n_y = 300
-    mesh_wrapper = fu.RectangleMeshWrapper(fenics.Point(0., 0.), fenics.Point(n_x, n_y), n_x, n_y)
-    mesh = mesh_wrapper.get_local_mesh()
+    mesh = fenics.RectangleMesh(fenics.Point(0., 0.), fenics.Point(n_x, n_y), n_x, n_y)
+    mesh_wrapper = fu.MeshWrapper(mesh)
 
     # define function space
     element = fenics.FiniteElement("CG", fenics.triangle, 1)
@@ -49,10 +49,10 @@ def test_apply_sources_mixed_function_space(parameters):
 
     # define source map
     source_point = [np.array([150, 150])]
-    sources_map = SourceMap(0, 10, mesh_wrapper, 0, parameters, source_points=source_point)
+    sources_map = SourceMap(mesh_wrapper, source_point, parameters)
 
     # define sources manager
-    sources_manager = SourcesManager(sources_map, mesh_wrapper, parameters, {"type": "None"})
+    sources_manager = SourcesManager(sources_map, mesh_wrapper, parameters)
 
     # define T
     exp = fenics.Expression(("0.0", "0."), degree=1)
@@ -60,7 +60,7 @@ def test_apply_sources_mixed_function_space(parameters):
     T, foo = u.split()
 
     # apply sources on T
-    sources_manager.apply_sources(T, V.sub(0), True, 0)
+    sources_manager.apply_sources(T)
 
     # confront
     test_result = True

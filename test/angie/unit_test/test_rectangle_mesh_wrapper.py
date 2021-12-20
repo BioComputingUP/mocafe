@@ -2,7 +2,6 @@ import fenics
 import pytest
 
 
-@pytest.fixture
 def get_n_procs_for_point(point, mesh_wrapper):
     root = 0
     is_in_local = mesh_wrapper.is_inside_local_mesh(point)

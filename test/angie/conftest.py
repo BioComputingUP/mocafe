@@ -1,7 +1,7 @@
 import fenics
 import pytest
-from mocafe.fenut.fenut import RectangleMeshWrapper
-from mocafe.angie.af_sourcing import SourceMap
+from mocafe.fenut.fenut import MeshWrapper
+from mocafe.angie.af_sourcing import RandomSourceMap
 import pathlib
 from mocafe.fenut.parameters import from_ods_sheet, Parameters
 from mocafe.angie import setup_random_state
@@ -13,14 +13,13 @@ setup_random_state(load=True, load_path=f"{os.path.dirname(__file__)}")
 
 @pytest.fixture
 def parameters() -> Parameters:
+    # the saved mesh is 300x300
     return from_ods_sheet(pathlib.Path(f"{os.path.dirname(__file__)}/test_parameters.ods"), "SimParams")
 
 
 @pytest.fixture
 def mesh_wrapper():
-    mesh_wrapper = RectangleMeshWrapper(fenics.Point(0., 0.),
-                                        fenics.Point(300., 300.),
-                                        100, 100)
+    mesh_wrapper = MeshWrapper(str(os.path.dirname(__file__)) + "/test_mesh.xdmf")
     return mesh_wrapper
 
 
@@ -28,11 +27,10 @@ def mesh_wrapper():
 def source_map(mesh_wrapper, parameters):
     n_sources = 10
     x_lim = 10
-    return SourceMap(n_sources,
-                     x_lim,
-                     mesh_wrapper,
-                     0,
-                     parameters)
+    return RandomSourceMap(mesh_wrapper,
+                           n_sources,
+                           parameters,
+                           where=lambda x: x[0] > x_lim)
 
 
 @pytest.fixture
