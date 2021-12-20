@@ -40,7 +40,7 @@ suggest you to refer to the original paper :cite:`Lorenzo2016`. However, we just
 The first equation describes a cancer development driven by both proliferation, and apoptosis. Cancer cells are
 assumed to duplicate in presence of nutrient and their proliferation is, indeed, described by the term
 :math:`\chi \sigma`, which contains the nutrients concentration. Apoptosis is, instead assumed to occurr at a constant
-rate and is rpresented in the equation by the term :math:`-A \varphi`.
+rate and is represented in the equation by the term :math:`-A \varphi`.
 
 The second equation describes the diffusion of the nutrients with the Fick's low of diffusion
 :cite:`enwiki:1058693490`. The equation assumes that the nutrient is supplied constantly in the domain with
