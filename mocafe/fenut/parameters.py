@@ -102,7 +102,7 @@ class Parameters:
         :param name: the name of the given value
         :return: True if a value is present for the given parameter name; False otherwise.
         """
-        return pd.isna(self.get_value(name))
+        return not pd.isna(self.get_value(name))
 
     def is_parameter(self, name):
         """
