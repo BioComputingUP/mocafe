@@ -301,15 +301,22 @@ class SourcesManager:
         self.source_map = source_map
         self.mesh_wrapper = mesh_wrapper
         self.parameters: Parameters = parameters
-        self.clock_checker = ClockChecker(mesh_wrapper, parameters.get_value("d"))
-        self.default_af_expression_function = ConstantAFExpressionFunction(self.parameters.get_value("T_s"))
-        # if expression_function_parameters["type"] == "rotational":
-        #     ref_parameters = expression_function_parameters["parameters"]
-        #     self.expression_function = RotationalAFExpressionFunction(ref_parameters)
-        # else:
-        #     self.expression_function = None
+        if parameters.is_parameter("d") and parameters.is_value_present("d"):
+            self.default_clock_checker = ClockChecker(mesh_wrapper, parameters.get_value("d"))
+            self.default_clock_checker_is_present = True
+        elif not parameters.is_parameter("d"):
+            logger.debug("Reference for the parameter 'd' not found. Can't init the default clock checker.")
+            self.default_clock_checker = None
+            self.default_clock_checker_is_present = False
+        elif not parameters.is_value_present("d"):
+            logger.debug("The parameter 'd' is present in the parameters object but the value is not set. "
+                         "Can't init the default clock checker.")
+            self.default_clock_checker = None
+            self.default_clock_checker_is_present = False
 
-    def remove_sources_near_vessels(self, c: fenics.Function):
+        self.default_af_expression_function = ConstantAFExpressionFunction(self.parameters.get_value("T_s"))
+
+    def remove_sources_near_vessels(self, c: fenics.Function, **kwargs):
         """
         Removes the source cells near the blood vessels
         :param c: blood vessel field
@@ -318,13 +325,24 @@ class SourcesManager:
         # prepare list of cells to remove
         to_remove = []
         debug_adapter.debug(f"Starting to remove source cells")
+        # if distance is specified
+        if "min_distance" in kwargs.keys():
+            clock_checker = ClockChecker(self.mesh_wrapper, kwargs["d"])
+        else:
+            if self.default_clock_checker_is_present:
+                clock_checker = self.default_clock_checker
+            else:
+                raise RuntimeError("The min distance for removing the source cells has not be defined. "
+                                   "Pass it in the constructor of the class through the parameters object or "
+                                   "input it to the method using the key 'd'")
+
         for source_cell in self.source_map.get_local_source_cells():
             source_cell_position = source_cell.get_position()
             debug_adapter.debug(f"Checking cell {source_cell.__hash__()} at position {source_cell_position}")
-            clock_check_test_result = self.clock_checker.clock_check(source_cell_position,
-                                                                     c,
-                                                                     self.parameters.get_value("phi_th"),
-                                                                     lambda val, thr: val > thr)
+            clock_check_test_result = clock_checker.clock_check(source_cell_position,
+                                                                c,
+                                                                self.parameters.get_value("phi_th"),
+                                                                lambda val, thr: val > thr)
             debug_adapter.debug(f"Clock Check test result is {clock_check_test_result}")
             # if the clock test is positive, add the source cells in the list of the cells to remove
             if clock_check_test_result:
