@@ -145,9 +145,9 @@ class MeshWrapper:
             # load global mesh from file
             global_mesh_xdmf.read(global_mesh)
             # remove temp file
+            fenics.MPI.comm_world.Barrier()
             if fenics.MPI.comm_world.Get_rank() == 0:
                 shutil.rmtree(tmp_folder)
-            fenics.MPI.comm_world.Barrier()
             # set self global mesh
             self.global_mesh = global_mesh
             # set self global bounding box
