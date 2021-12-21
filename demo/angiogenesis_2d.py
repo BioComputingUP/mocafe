@@ -8,17 +8,23 @@ as *source cells*, since are the only source of angiogenic factor in this model.
 
 How to run this example on mocafe
 ---------------------------------
-Make sure you have FEniCS and mocafe and download the source script of this page (see above for the link).
+Make sure you have FEniCS and mocafe installed and download the source script of this page (see above for the link).
 Then, simply run it using python:
 
-    python3 prostate_cancer2d.py
+.. code-block:: console
+
+    python3 angiogenesis_2d.py
 
 If you are in a hurry, you can exploit parallelization to run the simulation faster:
 
-    mpirun -n 4 python3 prostate_cancer2d.py
+.. code-block:: console
+
+    mpirun -n 4 python3 angiogenesis_2d.py
 
 Notice that the number following the ``-n`` option is the number of MPI processes you using for parallelizing the
 simulation. You can change it accordingly with your CPU.
+
+.. _angiogenesis_2d_brief_introduction:
 
 Brief introduction to the mathematical model
 --------------------------------------------
@@ -47,7 +53,7 @@ values -1 and +1, where high values represent a part of the domain where the cap
 represent the parts of the domain where the capillaries are not present. The equation reads:
 
 .. math::
-    \frac{\partial \c}{\partial t} = M_c \nabla^2 \cdot [-c + c^3 - \epsilon \nabla^2 c] + \alpha_p(af)c\Theta(c)
+    \frac{\partial c}{\partial t} = M_c \nabla^2 \cdot [-c + c^3 - \epsilon \nabla^2 c] + \alpha_p(af)c\Theta(c)
 
 Again, we have two terms composing the right-hand side of the equation: the first term is a Cahn-Hillard term, which
 is responsible for the interface dynamics of the field; the second just represents the proliferation of endothelial
@@ -55,20 +61,20 @@ cells, which is driven by the angiogenic factor :math:`af`. This dependence, how
 rate :math:`alpha_p(af)` grows linearly with af only up to a certain value of :math:`af`, limiting the growth of
 endothelial cells:
 
-..math::
-    \alpha_p(af) = \alpha_p(af) &= \alpha_p \cdot af_p \quad \textrm{if} \quad af>af_p \\
-                &= \alpha_p \cdot af  \quad \textrm{if} \quad 0<af \le af_p \\
-                &= 0 \quad \textrm{if} \quad af \le 0
+.. math::
+    \alpha_p(af) = \alpha_p \cdot af_p & \quad \textrm{if} \quad af>af_p \\
+                = \alpha_p \cdot af  & \quad \textrm{if} \quad 0<af \le af_p \\
+                = 0 & \quad \textrm{if} \quad af \le 0
 
 Also notice that the last PDE is of total degree 4, which makes the equation not solvable using the finite element
 method (FEM) with standard first-degree elements. For this reason, as we will show below, in this implementation
 the equation is actually splitted into two equations of degree 2, introducing an auxilliary variable :math:`\mu`:
 
 .. math::
-       \frac{\partial c}{\partial t} - \nabla \cdot M \nabla\mu  - \alpha_p(af)c\Theta(c) &= 0 \quad \textrm{in} \\
-       \Omega
+   \frac{\partial c}{\partial t} - \nabla \cdot M \nabla\mu  - \alpha_p(af)c\Theta(c) &= 0 \quad
+   \textrm{in} \quad \Omega
 
-       \mu - [-c + c^3 - \epsilon \nabla^2 c] &= 0 \quad \textrm{ in} \ \Omega.
+   \mu - [-c + c^3 - \epsilon \nabla^2 c] &= 0 \quad \textrm{in} \quad \Omega.
 
 Computational "agent-based" model
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -76,7 +82,7 @@ In this implementation only two discrete cell populations are considered: the so
 
 The source cells are the cells expressing the angiogenic factor. They represent hypoxic cells starving for nutrients
 and thus inducing the angiogenesis to survive. In practice, these are implemented as simple circles, relatively far
-from the original vessel, where the angiogenic factor concentration is constantly equal to :math:`af_s` (which is 1.
+from the original vessel, where the angiogenic factor concentration is constantly equal to :math:`af_s` (which is 1
 in the present implementation). Moreover, to simulate the dependency of the hypoxic signalling on the local oxygen
 concentration, the source cells stop expressing the angiogenic factor when the capillaries are sufficiently near.
 
@@ -93,14 +99,14 @@ Once a tip cell is active, it moves inside the domain following the gradient of 
 vector is indeed computed as follows:
 
 .. math::
-    v = \chi \nabla af \quad \textrm{if} \quad |\nabla af|<G_M \\
-        &= \chi \frac{\nabla af}{|\nabla af|}G_M \quad \textrm{if} \quad |\nabla af|>=G_M
+    v & = \chi \nabla af & \quad \textrm{if} \quad |\nabla af|<G_M \\
+    \; & = \chi \frac{\nabla af}{|\nabla af|}G_M & \quad \textrm{if} \quad |\nabla af| \ge G_M
 
 Notice that the velocity cannot be higher in norm than :math:`G_M`. Once a tip cell moved, the capilllaries
 phase field :math:`c` is updated, adding a circle in the position of the tip cell with a constant value:
 
-..math::
-    c_c = \frac{\alpha_p(af)\pi R_c}{2 |v|}
+.. math::
+    c_c = \frac{\alpha_p(af)\pi R_c}{2 \|v\|}
 
 Where :math:`R_c` is the radius of the tip cell.
 Notice that this is one of the key elements of the model, because it merges the continuous dynamics of the field
@@ -163,7 +169,7 @@ parameters = mpar.from_ods_sheet(parameters_file, "SimParams")
 # %%
 # Notice that it is often useful to keep the parameters separated from the script and then import them as shown above.
 # This makes easier to save additional information together with the parameters (such as the unit of measure, the
-# reference for the value, etc.); moreover, it lowers the risk of making mistake in the revisions of the script.
+# reference for the value, etc.); moreover, it lowers the risk of making mistakes in the revisions of the script.
 
 # %%
 # Definition of the spatial domain and the function space
@@ -209,25 +215,25 @@ grad_af_function_space = fenics.VectorFunctionSpace(mesh, "CG", 1)
 # Since the model is a system of PDEs, we need both initial and boundary conditions to find a unique solution.
 #
 # In this implementation we will consider natural Neumann boundary conditions for both :math:`c` and
-# :math`af`, which means that the derivative in space of the two fields is zero along the entire boundary.
+# :math:`af`, which means that the derivative in space of the two fields is zero along the entire boundary.
 # This is an easy pick for FEniCS, since it will automatically apply this condition for us without requiring any
 # command from the user.
 #
 # The initial condition for :math:`c`, according to the simulations reported in the original paper, is a single vessel
-# in the left part of the domain. The initial vessel width is 37,5 :math:`\mu m and its value is stored in the
+# in the left part of the domain. The initial vessel width is 37,5 :math:`\mu m` and its value is stored in the
 # parameters ``.ods`` file, so we retrieve it as follows:
 initial_vessel_width = parameters.get_value("initial_vessel_width")
 
 # %%
-# Thus, the initial condition for ``c`` is simply a function which is 1. in the left part of the domain, for the x
-# coordinate included in [0, 37.5], and -1. otherwise. We can simply define such a function using the mocafe
+# Thus, the initial condition for ``c`` is simply a function which is 1 in the left part of the domain, for the x
+# coordinate included in [0, 37.5], and -1 otherwise. We can simply define such a function using the mocafe
 # ``PythonFunctionField`` as follows:
 c_0 = fenics.interpolate(PythonFunctionField(python_fun=lambda x: 1. if x[0] < initial_vessel_width else -1.),
                          function_space.sub(0).collapse())
 
 # %%
 # Together with the initial condition for c, we need to define an initial condition for mu. However, this can be
-# simply 0. across all the domain and can be easily defined as follows:
+# simply 0 across all the domain and can be easily defined as follows:
 mu_0 = fenics.interpolate(fenics.Constant(0.), function_space.sub(0).collapse())
 
 # %%
@@ -266,7 +272,7 @@ sources_map = af_sourcing.RandomSourceMap(mesh_wrapper,
 #   sources_map = af_sourcing.RandomSourceMap(mesh_wrapper,
 #                                             n_sources,
 #                                             parameters,
-#                                             where=lambda x: x > initial_vessel_width + parameters.get_value("d"))
+#                                             where=lambda x: x[0] > initial_vessel_width + parameters.get_value("d"))
 #
 # However, the source map is not sufficient to define the initial condition we need. To do so, we need an additional
 # mocafe object, a ``SourcesManager``:
@@ -289,10 +295,11 @@ sources_manager.apply_sources(af_0)
 file_af.write(af_0, 0)
 file_c.write(c_0, 0)
 
+# %%
 # Visualizing the field that we just defined with `Paraview <https://www.paraview.org/>`_, what we get is exactly what
 # we expect: an initial vessel on the left side of the domain and a set of randomly distributed source cells:
 #
-# .. image:: ./demo_in/images/angiogenesis_2d_initial_condition.png
+# .. image:: ./images/angiogenesis_2d/angiogenesis_2d_initial_condition.png
 #   :width: 600
 #
 
@@ -304,7 +311,7 @@ file_c.write(c_0, 0)
 v1, v2, v3 = fenics.TestFunctions(function_space)
 
 # %%
-# Then, we define the three functions involved in the PDE system: :math:`c`, :math:`\mu`, and :math:`af`.
+# Then, we define the three functions involved in the PDE system: :math:`c`, :math:`\mu`, and :math:`af`:
 u = fenics.Function(function_space)
 af, c, mu = fenics.split(u)
 
@@ -318,8 +325,8 @@ tipcells_field = fenics.Function(function_space.sub(0).collapse())
 # Then, since we have already defined the initial condition for :math:`af`, we can already compute its gradient and
 # assign it to the variable defined above. Notice that this is quite simple in FEniCS, because it just requires to call
 # the method ``grad`` on the function and to project it in the function space:
-grad_af.assign(
-    fenics.project(fenics.grad(af_0), grad_af_function_space)
+grad_af.assign(  # assign to grad_af
+    fenics.project(fenics.grad(af_0), grad_af_function_space)  # the projection on the fun space of grad(af_0)
 )
 
 # %%
@@ -340,7 +347,7 @@ weak_form = form_af + form_ang
 # Simulation setup
 # ^^^^^^^^^^^^^^^^
 # Now that everything is set up we can proceed to the actual simulation, which will be different from the one
-# defined for the prostate cancer model since because it will require us to handle the source cells and the tip cells.
+# defined for the prostate cancer model because it will require us to handle the source cells and the tip cells.
 #
 # Just as for the source cells we defined a ``SourceCellsManager``, for the tip cells we need to define a
 # ``TipCellsManager``, which will take care of the job of activating, deactivating and moving the tip cells.
@@ -351,7 +358,7 @@ tip_cell_manager = tipcells.TipCellManager(mesh_wrapper,
 # %%
 # And then we will use iteratively in the time simulation for our needs.
 # Notice that the rules for activating, deactivating and moving the tip cells are already implemented in the object
-# class and all we need to pass to the constructor as arguments are the mesh wrapper and the simulation parameters.
+# class and all we need to do is passing the mesh wrapper and the simulation parameters to the constructor.
 #
 # Then, we can proceed similarly to any other simulation, defining the Jacobian for the weak form:
 jacobian = fenics.derivative(weak_form, u)
@@ -413,6 +420,7 @@ for step in range(1, n_steps + 1):
 # The first thing we did just after the time update is removing the sources near the vessels, calling:
 #
 # .. code-block:: default
+#
 #   sources_manager.remove_sources_near_vessels(c_0)
 #
 # With this single line, we are asking the sources manager to check the field ``c_0``, which represent the vessels,
@@ -424,6 +432,7 @@ for step in range(1, n_steps + 1):
 # The second thing we did is to handle the tip cells using the three statements:
 #
 # .. code-block:: default
+#
 #   # activate tip cell
 #   tip_cell_manager.activate_tip_cell(c_0, af_0, grad_af, step)
 #
@@ -434,15 +443,17 @@ for step in range(1, n_steps + 1):
 #   tip_cell_manager.move_tip_cells(c_0, af_0, grad_af)
 #
 # Which respectively activate, deactivate and move the tip cells according to the algorithm we briefly discussed
-# in the section :ref:`Brief introduction to the mathematical model` and that is extensively explained in the
-# original paper :cite`Travasso2011a`. Notice that, similarly to the methods before, all the default threshold values
-# do not need to be passed in the methods because they are already defined in the parameters file. Also notice that,
-# in case there are no active tip cells in the current time step, the second and the third statement have no effect.
+# in the section :ref:`Brief introduction to the mathematical model<angiogenesis_2d_brief_introduction>` and that
+# is extensively explained in the original paper :cite`Travasso2011a`. Notice that, similarly to the methods before,
+# all the default threshold values do not need to be passed in the methods because they are already defined in the
+# parameters file. Also notice that, in case there are no active tip cells in the current time step,
+# the second and the third statement have no effect.
 #
 # Then, we save the current tip cells in the above-defined tip cells field for visualizing them, using the method
 # ``get_latest_tip_cell_function()``:
 #
 # .. code-block:: default
+#
 #   tipcells_field.assign(tip_cell_manager.get_latest_tip_cell_function())
 #
 # After having took care of all these things, we simply solve the PDE model and assign the computed values of the
@@ -450,6 +461,7 @@ for step in range(1, n_steps + 1):
 # step:
 #
 # .. code-block:: default
+#
 #   fenics.solve(weak_form == 0, u, J=jacobian)
 #
 #   # assign u to the initial conditions functions
@@ -458,17 +470,20 @@ for step in range(1, n_steps + 1):
 # Finally, we apply the remaining sources to the new ``af_0`` function:
 #
 # .. code-block:: default
+#
 #   # update source field
 #   sources_manager.apply_sources(af_0)
 #
 # we compute the new value for the gradient of ``af``:
 #
 # .. code-block:: default
+#
 #   grad_af.assign(fenics.project(fenics.grad(af_0), grad_af_function_space))
 #
 # we write everything on the ``.xdmf files``:
 #
 # .. code-block:: default
+#
 #   # save data
 #   file_af.write(af_0, t)
 #   file_c.write(c_0, t)
@@ -476,6 +491,7 @@ for step in range(1, n_steps + 1):
 #
 # and we update the progress bar, in order to inform the user on the progress of the simulation.
 #
-# ..code-block:: default
+# .. code-block:: default
+#
 #   if rank == 0:
 #     pbar.update(1)
