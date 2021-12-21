@@ -70,7 +70,7 @@ class SourceMap:
         :param parameters: simulation parameters
         """
         # initialize global SourceCells list in the given points
-        self.mesh_wrapper = mesh_wrapper
+        self.mesh_wrapper = mesh_wrapper  # todo:RMW
         self.local_box = self._build_local_box(parameters)
         global_source_points = source_points
         self.global_source_cells = [SourceCell(point, 0) for point in global_source_points]
@@ -100,7 +100,7 @@ class SourceMap:
         :return:
         """
         d = parameters.get_value("d")
-        return fu.build_local_box(self.mesh_wrapper.get_local_mesh(), d)
+        return fu.build_local_box(self.mesh_wrapper.get_local_mesh(), d)  # todo:RMW can be sobsitituted with mesh
 
     def _is_in_local_box(self, position):
         """
@@ -181,7 +181,7 @@ class RandomSourceMap(SourceMap):
                             f"Detected {type(where)} instead")
 
         # get randomly distributed mesh point
-        self.mesh_wrapper = mesh_wrapper
+        self.mesh_wrapper = mesh_wrapper  # todo:RMW
         global_source_points_list = self._get_randomy_sorted_mesh_points(n_sources, where_fun)
         # inits source map
         super(RandomSourceMap, self).__init__(mesh_wrapper,
@@ -201,7 +201,7 @@ class RandomSourceMap(SourceMap):
         # define root proc
         root = 0
         # get global coordinates
-        global_coords = self.mesh_wrapper.get_global_mesh().coordinates()
+        global_coords = self.mesh_wrapper.get_global_mesh().coordinates()  # todo:RMW I can gather global coords without using mesh_wrapper
         # divide coordinates among processes
         if rank == root:
             coords_chunks_list = fu.divide_in_chunks(global_coords, n_procs)
@@ -299,10 +299,10 @@ class SourcesManager:
         :param parameters: the simulation parameters
         """
         self.source_map = source_map
-        self.mesh_wrapper = mesh_wrapper
+        self.mesh_wrapper = mesh_wrapper  # todo:RMW
         self.parameters: Parameters = parameters
         if parameters.is_parameter("d") and parameters.is_value_present("d"):
-            self.default_clock_checker = ClockChecker(mesh_wrapper, parameters.get_value("d"))
+            self.default_clock_checker = ClockChecker(mesh_wrapper, parameters.get_value("d"))  # todo:RMW
             self.default_clock_checker_is_present = True
         elif not parameters.is_parameter("d"):
             logger.debug("Reference for the parameter 'd' not found. Can't init the default clock checker.")
@@ -327,7 +327,7 @@ class SourcesManager:
         debug_adapter.debug(f"Starting to remove source cells")
         # if distance is specified
         if "min_distance" in kwargs.keys():
-            clock_checker = ClockChecker(self.mesh_wrapper, kwargs["d"])
+            clock_checker = ClockChecker(self.mesh_wrapper, kwargs["d"])  # todo:RMW
         else:
             if self.default_clock_checker_is_present:
                 clock_checker = self.default_clock_checker
@@ -504,7 +504,7 @@ class ClockChecker:
         else:
             raise ValueError("ClockChecker can be just 'east' or 'west' type")
         self.circle_vectors = circle_vectors
-        self.mesh_wrapper = mesh_wrapper
+        self.mesh_wrapper = mesh_wrapper  # todo:RMW
 
     def clock_check(self, point, function: fenics.Function, threshold, condition):
         """
@@ -517,12 +517,12 @@ class ClockChecker:
         """
         # cast point to the right type
         if type(point) is fenics.Point:
-            point = np.array([point.array()[i] for i in range(self.mesh_wrapper.get_dim())])
+            point = np.array([point.array()[i] for i in range(self.mesh_wrapper.get_dim())])  # todo:RMW can be replaced with get geometric dimension
         for vector in self.circle_vectors:
             for scale in np.arange(1., 0., -(1 / 20)):
                 ppv = point + (scale * vector)
                 debug_adapter.debug(f"Checking point {ppv}")
-                if self.mesh_wrapper.is_inside_local_mesh(fenics.Point(ppv)):
+                if self.mesh_wrapper.is_inside_local_mesh(fenics.Point(ppv)):  # todo:RMW can be replaced with mesh
                     debug_adapter.debug(f"Point {ppv} is inside local mesh.")
                     if condition(function(list(ppv)), threshold):  # ppv translated to List to avoid FutureWarning
                         return True

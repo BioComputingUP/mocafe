@@ -194,7 +194,7 @@ mesh = fenics.RectangleMesh(fenics.Point(0., 0.),
 # and global mesh data for each MPI process. Indeed, when FEniCS runs in parallel the mesh is by default divided
 # among the processes and the global mesh data are not easy to access. As we will see, this object is necessary to
 # manage tip and source cells.
-mesh_wrapper = fu.MeshWrapper(mesh)
+mesh_wrapper = fu.MeshWrapper(mesh)  # todo:RMW
 
 # %%
 # Finally, we initialize the function space as follows:
@@ -254,7 +254,7 @@ random_sources_domain = mshr.Rectangle(fenics.Point(initial_vessel_width + param
 
 # %%
 # Finally, we initialize a so called ``RandomSourceMap``, which will create the source cells for us:
-sources_map = af_sourcing.RandomSourceMap(mesh_wrapper,
+sources_map = af_sourcing.RandomSourceMap(mesh_wrapper,  # todo:RMW
                                           n_sources,
                                           parameters,
                                           where=random_sources_domain)
@@ -269,14 +269,14 @@ sources_map = af_sourcing.RandomSourceMap(mesh_wrapper,
 #
 # .. code-block:: default
 #
-#   sources_map = af_sourcing.RandomSourceMap(mesh_wrapper,
+#   sources_map = af_sourcing.RandomSourceMap(mesh_wrapper,  # todo:RMW
 #                                             n_sources,
 #                                             parameters,
 #                                             where=lambda x: x[0] > initial_vessel_width + parameters.get_value("d"))
 #
 # However, the source map is not sufficient to define the initial condition we need. To do so, we need an additional
 # mocafe object, a ``SourcesManager``:
-sources_manager = af_sourcing.SourcesManager(sources_map, mesh_wrapper, parameters)
+sources_manager = af_sourcing.SourcesManager(sources_map, mesh_wrapper, parameters)  # todo:RMW
 
 # %%
 # As the name suggests, a ``SourcesManager`` is an object responsible for the actual management of the sources in the
@@ -352,7 +352,7 @@ weak_form = form_af + form_ang
 # Just as for the source cells we defined a ``SourceCellsManager``, for the tip cells we need to define a
 # ``TipCellsManager``, which will take care of the job of activating, deactivating and moving the tip cells.
 # We initialize it simply calling:
-tip_cell_manager = tipcells.TipCellManager(mesh_wrapper,
+tip_cell_manager = tipcells.TipCellManager(mesh_wrapper,  # todo:RMW
                                            parameters)
 
 # %%

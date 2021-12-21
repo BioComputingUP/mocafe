@@ -149,7 +149,7 @@ class TipCellManager:
         """
         self.global_tip_cells_list = []
         self.local_tip_cells_list = []
-        self.mesh_wrapper = mesh_wrapper
+        self.mesh_wrapper = mesh_wrapper  # todo:RMW
         self.parameters = parameters
         self.T_c = parameters.get_value("T_c")
         self.G_m = parameters.get_value("G_m")
@@ -159,7 +159,7 @@ class TipCellManager:
         self.alpha_p = parameters.get_value("alpha_p")
         self.T_p = parameters.get_value("T_p")
         self.min_tipcell_distance = parameters.get_value("min_tipcell_distance")
-        self.clock_checker = af_sourcing.ClockChecker(mesh_wrapper, self.cell_radius, start_point="west")
+        self.clock_checker = af_sourcing.ClockChecker(mesh_wrapper, self.cell_radius, start_point="west")  # todo:RMW
         self.local_box = self._build_local_box(self.cell_radius)
         self.latest_t_c_f_function = None
 
@@ -196,7 +196,7 @@ class TipCellManager:
         :param cell_radius: the tip cell radius, which is used to build the local box
         :return:
         """
-        return fu.build_local_box(self.mesh_wrapper.get_local_mesh(), cell_radius)
+        return fu.build_local_box(self.mesh_wrapper.get_local_mesh(), cell_radius)  # todo:RMW can be replaced with mesh
 
     def _is_in_local_box(self, position):
         """
@@ -262,7 +262,7 @@ class TipCellManager:
         # logging
         info_adapter.info(f"Called {self.activate_tip_cell.__name__}")
         # get local mesh points
-        local_mesh_points = self.mesh_wrapper.get_local_mesh().coordinates()
+        local_mesh_points = self.mesh_wrapper.get_local_mesh().coordinates()  # todo:RMW can be replaced with mesh
         # initialize local possible locations list
         local_possible_locations = []
         # Debug: setup cunters to check which test is not passed
@@ -378,11 +378,11 @@ class TipCellManager:
         local_to_remove = []
         for tip_cell in self.local_tip_cells_list:
             position = tip_cell.get_position()
-            if self.mesh_wrapper.is_inside_local_mesh(position):  # check only if point is in local mesh
+            if self.mesh_wrapper.is_inside_local_mesh(position):  # check only if point is in local mesh  # todo:RMW can be replaced with mesh
                 if (af(position) < self.T_c) or (np.linalg.norm(grad_af(position)) < self.G_m):
                     local_to_remove.append(tip_cell)
             else:
-                if not self.mesh_wrapper.is_inside_global_mesh(position):  # remove tip cell if not in global mesh
+                if not self.mesh_wrapper.is_inside_global_mesh(position):  # remove tip cell if not in global mesh  # todo:RMW
                     local_to_remove.append(tip_cell)
         # if not empty
         self._remove_tip_cells(local_to_remove)
@@ -409,7 +409,7 @@ class TipCellManager:
             # get position
             tip_cell_position = tip_cell.get_position()
             # the process that has access to tip cell position computes the mesh_related values
-            if self.mesh_wrapper.is_inside_local_mesh(tip_cell_position):
+            if self.mesh_wrapper.is_inside_local_mesh(tip_cell_position):  # todo:RMW can be replaced with mesh
                 # compute velocity
                 velocity = self.compute_tip_cell_velocity(grad_af, self.parameters.get_value("chi"), tip_cell_position)
                 # compute value of T in position
@@ -449,7 +449,7 @@ class TipCellManager:
                 debug_adapter.debug(line)
 
             # if new position is not in global mesh
-            if not self.mesh_wrapper.is_inside_global_mesh(new_position):
+            if not self.mesh_wrapper.is_inside_global_mesh(new_position):  # todo:RMW use gather and bcast
                 tip_cells_out_of_mesh.append(tip_cell)  # set cell as to remove
             else:
                 # else update local lists
