@@ -38,7 +38,11 @@ Test it executing the main script:
 
 ```sh
 python3 -m mocafe
+```
 
+I everything is properly working, the output should be:
+
+```
 Your mocafe is ready!
 ```
 
