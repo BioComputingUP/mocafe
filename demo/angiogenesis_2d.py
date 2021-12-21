@@ -291,7 +291,10 @@ file_c.write(c_0, 0)
 
 # Visualizing the field that we just defined with `Paraview <https://www.paraview.org/>`_, what we get is exactly what
 # we expect: an initial vessel on the left side of the domain and a set of randomly distributed source cells:
-# todo
+#
+# .. image:: ./demo_in/images/angiogenesis_2d_initial_condition.png
+#   :width: 600
+#
 
 # %%
 # PDE System definition
