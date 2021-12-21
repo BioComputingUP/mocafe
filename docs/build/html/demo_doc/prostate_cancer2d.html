@@ -20,7 +20,7 @@
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Bibliography" href="../bib.html" />
+    <link rel="next" title="Angiogenesis phase field model" href="angiogenesis_2d.html" />
     <link rel="prev" title="Demo gallery" href="index.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -50,15 +50,15 @@ in 2016 <span id="id1">[<a class="reference internal" href="../bib.html#id2" tit
 continuous mathematical model able to reproduce the growth pattern of prostate cancer at tissue scale.</p>
 <section id="how-to-run-this-example-on-mocafe">
 <h2>How to run this example on mocafe<a class="headerlink" href="#how-to-run-this-example-on-mocafe" title="Permalink to this headline">¶</a></h2>
-<p>Make sure you have FEniCS and mocafe and download the source script of this page (see above for the link).
+<p>Make sure you have FEniCS and mocafe installed and download the source script of this page (see above for the link).
 Then, simply run it using python:</p>
-<blockquote>
-<div><p>python3 prostate_cancer2d.py</p>
-</div></blockquote>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python3 prostate_cancer2d.py</span>
+</pre></div>
+</div>
 <p>If you are in a hurry, you can exploit parallelization to run the simulation faster:</p>
-<blockquote>
-<div><p>mpirun -n 4 python3 prostate_cancer2d.py</p>
-</div></blockquote>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">mpirun -n 4 python3 prostate_cancer2d.py</span>
+</pre></div>
+</div>
 <p>Notice that the number following the <code class="docutils literal notranslate"><span class="pre">-n</span></code> option is the number of MPI processes you using for parallelizing the
 simulation. You can change it accordingly with your CPU.</p>
 </section>
@@ -77,7 +77,7 @@ suggest you to refer to the original paper <span id="id2">[<a class="reference i
 <p>The first equation describes a cancer development driven by both proliferation, and apoptosis. Cancer cells are
 assumed to duplicate in presence of nutrient and their proliferation is, indeed, described by the term
 <span class="math notranslate nohighlight">\(\chi \sigma\)</span>, which contains the nutrients concentration. Apoptosis is, instead assumed to occurr at a constant
-rate and is rpresented in the equation by the term <span class="math notranslate nohighlight">\(-A \varphi\)</span>.</p>
+rate and is represented in the equation by the term <span class="math notranslate nohighlight">\(-A \varphi\)</span>.</p>
 <p>The second equation describes the diffusion of the nutrients with the Fick’s low of diffusion
 <span id="id3">[<a class="reference internal" href="../bib.html#id3" title="Wikipedia contributors. Fick's laws of diffusion — Wikipedia, the free encyclopedia. 2021. [Online; accessed 9-December-2021]. URL: https://en.wikipedia.org/w/index.php?title=Fick%27s_laws_of_diffusion&amp;oldid=1058693490.">Wikipediacontributors21</a>]</span>. The equation assumes that the nutrient is supplied constantly in the domain with
 a distribution <span class="math notranslate nohighlight">\(s\)</span>, and that the nutrient is consumed at a constant rate by the cancer cells (term
@@ -128,9 +128,8 @@ methods for defining:</p>
 <li><p>first, the folder where to save the result of the simulation. In this case, the folder will be based inside
 the current folder (<code class="docutils literal notranslate"><span class="pre">base_location</span></code>) and it’s called demo_out/prostate_cancer2d;</p></li>
 </ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data_folder</span> <span class="o">=</span> <span class="n">setup_data_folder</span><span class="p">(</span><span class="n">folder_name</span><span class="o">=</span><span class="s2">&quot;prostate_cancer_2d&quot;</span><span class="p">,</span>
-                                <span class="n">base_location</span><span class="o">=</span><span class="n">file_folder</span><span class="o">/</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;demo_out&quot;</span><span class="p">),</span>
-                                <span class="nb">enumerate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data_folder</span> <span class="o">=</span> <span class="n">setup_data_folder</span><span class="p">(</span><span class="n">folder_path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;{file_folder/Path(&#39;demo_out&#39;)}/prostate_cancer_2d&quot;</span><span class="p">,</span>
+                                <span class="n">auto_enumerate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -218,7 +217,7 @@ will define an elliptical tumor with the given semiaxes:</p>
 </pre></div>
 </div>
 <p>With FEniCS we can do so by defining an expression which ‘mathematically’ represent our initial condition.
-Indeed, <code class="docutils literal notranslate"><span class="pre">Espression</span></code> s are the FEniCS way to define symbolic mathematical functions, and they can be defined
+Indeed, <a href="#id6"><span class="problematic" id="id7">``</span></a>Espression``s are the FEniCS way to define symbolic mathematical functions and they can be defined
 using simple C++ code as follows:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">phi0_max</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">phi0_min</span> <span class="o">=</span> <span class="mi">0</span>
@@ -265,7 +264,7 @@ collect the values of phi for each time.</p>
 </pre></div>
 </div>
 <p>Finally, after having defined the initial condition for <span class="math notranslate nohighlight">\(\varphi\)</span>, let’s define the initial for
-<span class="math notranslate nohighlight">\(\sigma\)</span>. Following the hypothesis of original author <span id="id6">[<a class="reference internal" href="../bib.html#id5" title="G. Lorenzo, M. A. Scott, K. Tew, T. J.R. Hughes, and H. Gomez. Hierarchically refined and coarsened splines for moving interface problems, with particular application to phase-field models of prostate tumor growth. Computer Methods in Applied Mechanics and Engineering, 319:515–548, jun 2017. doi:10.1016/j.cma.2017.03.009.">LST+17</a>]</span>, we will assume a nutrient
+<span class="math notranslate nohighlight">\(\sigma\)</span>. Following the hypothesis of original author <span id="id8">[<a class="reference internal" href="../bib.html#id5" title="G. Lorenzo, M. A. Scott, K. Tew, T. J.R. Hughes, and H. Gomez. Hierarchically refined and coarsened splines for moving interface problems, with particular application to phase-field models of prostate tumor growth. Computer Methods in Applied Mechanics and Engineering, 319:515–548, jun 2017. doi:10.1016/j.cma.2017.03.009.">LST+17</a>]</span>, we will assume a nutrient
 distribution that is 0.2 inside the cancer and 1. outside. So, we can define this distribution similarly to
 what we just did for <code class="docutils literal notranslate"><span class="pre">phi0</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sigma0</span> <span class="o">=</span> <span class="n">EllipseField</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">]),</span>
@@ -300,9 +299,10 @@ simplier by the mocafe <code class="docutils literal notranslate"><span class="p
 <p>This class allows us to use a python function, such as a lambda function, to define the values of a FEniCS function.
 In the following, indeed, we make use of a lambda function and of the methods provided by the module <code class="docutils literal notranslate"><span class="pre">random</span></code>
 to define the random distribution mentioned above. Indeed, The pyhton function it is used by this class to evaluate
-the value of the FEniCS function at each point of the mesh</p>
+the value of the FEniCS function at each point of the mesh. Notice that the function given as imput must always have
+at least on input (x in this case), representing the spatial point.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">s_expression</span> <span class="o">=</span> <span class="n">PythonFunctionField</span><span class="p">(</span>
-    <span class="n">python_fun</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;s_average&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;s_min&quot;</span><span class="p">),</span>
+    <span class="n">python_fun</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;s_average&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;s_min&quot;</span><span class="p">),</span>
                                                                           <span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;s_max&quot;</span><span class="p">)),</span>
 <span class="p">)</span>
 </pre></div>
@@ -310,7 +310,7 @@ the value of the FEniCS function at each point of the mesh</p>
 <p>Now, we have everything in place to define our PDE system. Since FEniCS uses the Finite Element Method (FEM) to
 approximate the solution we need to define the so called ‘weak form’ of our system. This operation is not difficult
 to do with the Unified Form Language (UFL) of FEniCS and, if you’re not experienced with that, you are encouraged to
-have a look to The Fenics Tutorial to start <span id="id7">[<a class="reference internal" href="../bib.html#id4" title="Hans Petter Langtangen and Anders Logg. Solving PDEs in Python. Springer, 2017. ISBN 978-3-319-52461-0. doi:10.1007/978-3-319-52462-7.">LL17</a>]</span>. However, the weak form of this system
+have a look to The Fenics Tutorial to start <span id="id9">[<a class="reference internal" href="../bib.html#id4" title="Hans Petter Langtangen and Anders Logg. Solving PDEs in Python. Springer, 2017. ISBN 978-3-319-52461-0. doi:10.1007/978-3-319-52462-7.">LL17</a>]</span>. However, the weak form of this system
 is already defined in mocefe, so we can exploit that without wondering too much about weak form construction:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">TestFunctions</span><span class="p">(</span><span class="n">function_space</span><span class="p">)</span>
 <span class="n">weak_form</span> <span class="o">=</span> <span class="n">pc_model</span><span class="o">.</span><span class="n">prostate_cancer_form</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">phi0</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span> <span class="o">+</span> \
@@ -327,7 +327,7 @@ exactly like the equations defined above</p></li>
 </ul>
 <p>This was just to give you a taste of how simple it is to use UFL do define systems of differential equation, and how
 well is integrated in Python. If you want to know more about it, you’re again invited to have a look to The FEniCS
-Tutorial <span id="id8">[<a class="reference internal" href="../bib.html#id4" title="Hans Petter Langtangen and Anders Logg. Solving PDEs in Python. Springer, 2017. ISBN 978-3-319-52461-0. doi:10.1007/978-3-319-52462-7.">LL17</a>]</span>.</p>
+Tutorial <span id="id10">[<a class="reference internal" href="../bib.html#id4" title="Hans Petter Langtangen and Anders Logg. Solving PDEs in Python. Springer, 2017. ISBN 978-3-319-52461-0. doi:10.1007/978-3-319-52462-7.">LL17</a>]</span>.</p>
 </section>
 <section id="simulation-setup">
 <h3>Simulation setup<a class="headerlink" href="#simulation-setup" title="Permalink to this headline">¶</a></h3>
@@ -376,7 +376,7 @@ the system of PDEs we are solving is non-linear and thus it requires this class 
 implementation we are asking to PETSc to solve our system with a Krylov solver of type ‘gmres’
 (<code class="docutils literal notranslate"><span class="pre">&quot;ksp_type&quot;:</span> <span class="pre">&quot;gmres&quot;</span></code>) using a preconditioner called “asm” (<code class="docutils literal notranslate"><span class="pre">&quot;pc_type&quot;:</span> <span class="pre">&quot;asm&quot;</span></code>). For further details, you
 are suggested to have a look to chapter 9 of the book “The Finite Element Method: Theory, Implementation,
-and Applications”, by Larson and Bengzon <span id="id9">[<a class="reference internal" href="../bib.html#id6" title="Mats G. Larson and Fredrik Bengzon. Non-linear Problems, pages 225–239. Springer Berlin Heidelberg, Berlin, Heidelberg, 2013. URL: https://doi.org/10.1007/978-3-642-33287-6_9, doi:10.1007/978-3-642-33287-6_9.">LB13</a>]</span></p>
+and Applications”, by Larson and Bengzon <span id="id11">[<a class="reference internal" href="../bib.html#id6" title="Mats G. Larson and Fredrik Bengzon. Non-linear Problems, pages 225–239. Springer Berlin Heidelberg, Berlin, Heidelberg, 2013. URL: https://doi.org/10.1007/978-3-642-33287-6_9, doi:10.1007/978-3-642-33287-6_9.">LB13</a>]</span></p>
 </section>
 <section id="simulation">
 <h3>Simulation<a class="headerlink" href="#simulation" title="Permalink to this headline">¶</a></h3>
@@ -436,6 +436,7 @@ and Applications”, by Larson and Bengzon <span id="id9">[<a class="reference i
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Demo gallery</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Prostate cancer phase field model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="angiogenesis_2d.html">Angiogenesis phase field model</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../bib.html">Bibliography</a></li>
@@ -447,7 +448,7 @@ and Applications”, by Larson and Bengzon <span id="id9">[<a class="reference i
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="index.html">Demo gallery</a><ul>
       <li>Previous: <a href="index.html" title="previous chapter">Demo gallery</a></li>
-      <li>Next: <a href="../bib.html" title="next chapter">Bibliography</a></li>
+      <li>Next: <a href="angiogenesis_2d.html" title="next chapter">Angiogenesis phase field model</a></li>
   </ul></li>
   </ul></li>
 </ul>

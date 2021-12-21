@@ -8,12 +8,16 @@ continuous mathematical model able to reproduce the growth pattern of prostate c
 
 How to run this example on mocafe
 ---------------------------------
-Make sure you have FEniCS and mocafe and download the source script of this page (see above for the link).
+Make sure you have FEniCS and mocafe installed and download the source script of this page (see above for the link).
 Then, simply run it using python:
+
+.. code-block:: console
 
     python3 prostate_cancer2d.py
 
 If you are in a hurry, you can exploit parallelization to run the simulation faster:
+
+.. code-block:: console
 
     mpirun -n 4 python3 prostate_cancer2d.py
 

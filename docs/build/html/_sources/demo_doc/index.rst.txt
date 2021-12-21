@@ -32,6 +32,27 @@ Below my examples:
    :hidden:
 
    /demo_doc/prostate_cancer2d
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="How to run this example on mocafe --------------------------------- Make sure you have FEniCS a...">
+
+.. only:: html
+
+ .. figure:: /demo_doc/images/thumb/sphx_glr_angiogenesis_2d_thumb.png
+     :alt: Angiogenesis phase field model
+
+     :ref:`sphx_glr_demo_doc_angiogenesis_2d.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /demo_doc/angiogenesis_2d
 .. raw:: html
 
     <div class="sphx-glr-clear"></div>
