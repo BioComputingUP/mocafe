@@ -52,7 +52,15 @@ as <em>source cells</em>, since are the only source of angiogenic factor in this
 <section id="how-to-run-this-example-on-mocafe">
 <h2>How to run this example on mocafe<a class="headerlink" href="#how-to-run-this-example-on-mocafe" title="Permalink to this headline">¶</a></h2>
 <p>Make sure you have FEniCS and mocafe installed and download the source script of this page (see above for the link).
-Then, simply run it using python:</p>
+Then, download the parameters file for the simulation from
+<a class="reference download internal" download="" href="../_downloads/6131c614d7c7b7316338d040d69f499b/parameters.ods"><code class="xref download docutils literal notranslate"><span class="pre">this</span> <span class="pre">link</span></code></a> and place it inside the folder
+demo_in/angiogenesis_2d:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">mkdir demo_in</span>
+<span class="go">mkdir demo_in/angiogenesis_2d</span>
+<span class="go">mv parameters.ods demo_in/angiogenesis_2d/</span>
+</pre></div>
+</div>
+<p>Then, simply run it using python:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python3 angiogenesis_2d.py</span>
 </pre></div>
 </div>
@@ -208,7 +216,7 @@ initialize a FEniCS <code class="docutils literal notranslate"><span class="pre"
 and global mesh data for each MPI process. Indeed, when FEniCS runs in parallel the mesh is by default divided
 among the processes and the global mesh data are not easy to access. As we will see, this object is necessary to
 manage tip and source cells.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mesh_wrapper</span> <span class="o">=</span> <span class="n">fu</span><span class="o">.</span><span class="n">MeshWrapper</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mesh_wrapper</span> <span class="o">=</span> <span class="n">fu</span><span class="o">.</span><span class="n">MeshWrapper</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>  <span class="c1"># todo:RMW</span>
 </pre></div>
 </div>
 <p>Finally, we initialize the function space as follows:</p>
@@ -263,7 +271,7 @@ including all the mesh except the initial vessel and a part of width <span class
 </pre></div>
 </div>
 <p>Finally, we initialize a so called <code class="docutils literal notranslate"><span class="pre">RandomSourceMap</span></code>, which will create the source cells for us:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sources_map</span> <span class="o">=</span> <span class="n">af_sourcing</span><span class="o">.</span><span class="n">RandomSourceMap</span><span class="p">(</span><span class="n">mesh_wrapper</span><span class="p">,</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sources_map</span> <span class="o">=</span> <span class="n">af_sourcing</span><span class="o">.</span><span class="n">RandomSourceMap</span><span class="p">(</span><span class="n">mesh_wrapper</span><span class="p">,</span>  <span class="c1"># todo:RMW</span>
                                           <span class="n">n_sources</span><span class="p">,</span>
                                           <span class="n">parameters</span><span class="p">,</span>
                                           <span class="n">where</span><span class="o">=</span><span class="n">random_sources_domain</span><span class="p">)</span>
@@ -275,7 +283,7 @@ and where you want the sources to be placed. In this implementation, we defined 
 needed the source cell as <code class="docutils literal notranslate"><span class="pre">mshr.Rectangle</span></code>, but the <code class="docutils literal notranslate"><span class="pre">where</span></code> argument can take as input also a function which
 return a boolean for each point of the domain (True if the point can host a source cell, False otherwise).
 For instance we could have initialized the same source map as above simply doing:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sources_map</span> <span class="o">=</span> <span class="n">af_sourcing</span><span class="o">.</span><span class="n">RandomSourceMap</span><span class="p">(</span><span class="n">mesh_wrapper</span><span class="p">,</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sources_map</span> <span class="o">=</span> <span class="n">af_sourcing</span><span class="o">.</span><span class="n">RandomSourceMap</span><span class="p">(</span><span class="n">mesh_wrapper</span><span class="p">,</span>  <span class="c1"># todo:RMW</span>
                                           <span class="n">n_sources</span><span class="p">,</span>
                                           <span class="n">parameters</span><span class="p">,</span>
                                           <span class="n">where</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">initial_vessel_width</span> <span class="o">+</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">))</span>
@@ -283,7 +291,7 @@ For instance we could have initialized the same source map as above simply doing
 </div>
 <p>However, the source map is not sufficient to define the initial condition we need. To do so, we need an additional
 mocafe object, a <code class="docutils literal notranslate"><span class="pre">SourcesManager</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sources_manager</span> <span class="o">=</span> <span class="n">af_sourcing</span><span class="o">.</span><span class="n">SourcesManager</span><span class="p">(</span><span class="n">sources_map</span><span class="p">,</span> <span class="n">mesh_wrapper</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sources_manager</span> <span class="o">=</span> <span class="n">af_sourcing</span><span class="o">.</span><span class="n">SourcesManager</span><span class="p">(</span><span class="n">sources_map</span><span class="p">,</span> <span class="n">mesh_wrapper</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>  <span class="c1"># todo:RMW</span>
 </pre></div>
 </div>
 <p>As the name suggests, a <code class="docutils literal notranslate"><span class="pre">SourcesManager</span></code> is an object responsible for the actual management of the sources in the
@@ -355,7 +363,7 @@ defined for the prostate cancer model because it will require us to handle the s
 <p>Just as for the source cells we defined a <code class="docutils literal notranslate"><span class="pre">SourceCellsManager</span></code>, for the tip cells we need to define a
 <code class="docutils literal notranslate"><span class="pre">TipCellsManager</span></code>, which will take care of the job of activating, deactivating and moving the tip cells.
 We initialize it simply calling:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tip_cell_manager</span> <span class="o">=</span> <span class="n">tipcells</span><span class="o">.</span><span class="n">TipCellManager</span><span class="p">(</span><span class="n">mesh_wrapper</span><span class="p">,</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tip_cell_manager</span> <span class="o">=</span> <span class="n">tipcells</span><span class="o">.</span><span class="n">TipCellManager</span><span class="p">(</span><span class="n">mesh_wrapper</span><span class="p">,</span>  <span class="c1"># todo:RMW</span>
                                            <span class="n">parameters</span><span class="p">)</span>
 </pre></div>
 </div>

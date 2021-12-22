@@ -28,6 +28,16 @@ as *source cells*, since are the only source of angiogenic factor in this model.
 How to run this example on mocafe
 ---------------------------------
 Make sure you have FEniCS and mocafe installed and download the source script of this page (see above for the link).
+Then, download the parameters file for the simulation from
+:download:`this link<./demo_in/angiogenesis_2d/parameters.ods>` and place it inside the folder
+demo_in/angiogenesis_2d:
+
+.. code-block:: console
+
+    mkdir demo_in
+    mkdir demo_in/angiogenesis_2d
+    mv parameters.ods demo_in/angiogenesis_2d/
+
 Then, simply run it using python:
 
 .. code-block:: console
@@ -134,7 +144,7 @@ Notice that this is one of the key elements of the model, because it merges the 
 Finally, the tip cells deactivate when :math`af` or the norm of its gradient drop below the above-mentioned thresholds
 values.
 
-.. GENERATED FROM PYTHON SOURCE LINES 120-127
+.. GENERATED FROM PYTHON SOURCE LINES 130-137
 
 Implementation
 --------------
@@ -144,7 +154,7 @@ Setup
 With mocafe, the implementation of the model is not very different from any other FEniCS script. Let's start
 importing everything we need:
 
-.. GENERATED FROM PYTHON SOURCE LINES 127-142
+.. GENERATED FROM PYTHON SOURCE LINES 137-152
 
 .. code-block:: default
 
@@ -164,11 +174,11 @@ importing everything we need:
     from mocafe.expressions import PythonFunctionField
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 143-144
+.. GENERATED FROM PYTHON SOURCE LINES 153-154
 
 Then, as seen in previous examples, we initialize the MPI comm, the process root, the log level and the data folder
 
-.. GENERATED FROM PYTHON SOURCE LINES 144-154
+.. GENERATED FROM PYTHON SOURCE LINES 154-164
 
 .. code-block:: default
 
@@ -183,7 +193,7 @@ Then, as seen in previous examples, we initialize the MPI comm, the process root
                                             auto_enumerate=False)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 155-160
+.. GENERATED FROM PYTHON SOURCE LINES 165-170
 
 Then we initialize the xdmf files for the capillaries and the angiogenic factor. Notice that we also initialize
 a file for the tip cells, since is often useful to visualize how tip cells behave during the simulation.
@@ -191,7 +201,7 @@ However, this is just for visualization purposes and it is not necessary for the
 mentioned above, the tip cells dynamics is merged to the capillaries dynamics thorugh the update of the field
 :math:`c`.
 
-.. GENERATED FROM PYTHON SOURCE LINES 160-163
+.. GENERATED FROM PYTHON SOURCE LINES 170-173
 
 .. code-block:: default
 
@@ -199,12 +209,12 @@ mentioned above, the tip cells dynamics is merged to the capillaries dynamics th
     file_c, file_af, tipcells_xdmf = fu.setup_xdmf_files(file_names, data_folder)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 164-166
+.. GENERATED FROM PYTHON SOURCE LINES 174-176
 
 Finally, we need the parameters of the model. This time we exploit one of the functions of ``mocafe`` to retrieve
 them from an ods sheet:
 
-.. GENERATED FROM PYTHON SOURCE LINES 166-169
+.. GENERATED FROM PYTHON SOURCE LINES 176-179
 
 .. code-block:: default
 
@@ -212,13 +222,13 @@ them from an ods sheet:
     parameters = mpar.from_ods_sheet(parameters_file, "SimParams")
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 170-173
+.. GENERATED FROM PYTHON SOURCE LINES 180-183
 
 Notice that it is often useful to keep the parameters separated from the script and then import them as shown above.
 This makes easier to save additional information together with the parameters (such as the unit of measure, the
 reference for the value, etc.); moreover, it lowers the risk of making mistakes in the revisions of the script.
 
-.. GENERATED FROM PYTHON SOURCE LINES 175-183
+.. GENERATED FROM PYTHON SOURCE LINES 185-193
 
 Definition of the spatial domain and the function space
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -229,7 +239,7 @@ The mesh is a square of side Lx = Ly = 375 :math:`\mu m`, divided in nx = ny = 3
 These values are stored inside the parameters ods file, and in the following we retrieve them and use them to
 initialize a FEniCS ``RectangleMesh``:
 
-.. GENERATED FROM PYTHON SOURCE LINES 183-192
+.. GENERATED FROM PYTHON SOURCE LINES 193-202
 
 .. code-block:: default
 
@@ -243,25 +253,25 @@ initialize a FEniCS ``RectangleMesh``:
                                 ny)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 193-197
+.. GENERATED FROM PYTHON SOURCE LINES 203-207
 
 Then, we define a ``MeshWrapper`` for the mesh. This is a mocafe object created to allow easy access to both local
 and global mesh data for each MPI process. Indeed, when FEniCS runs in parallel the mesh is by default divided
 among the processes and the global mesh data are not easy to access. As we will see, this object is necessary to
 manage tip and source cells.
 
-.. GENERATED FROM PYTHON SOURCE LINES 197-199
+.. GENERATED FROM PYTHON SOURCE LINES 207-209
 
 .. code-block:: default
 
-    mesh_wrapper = fu.MeshWrapper(mesh)
+    mesh_wrapper = fu.MeshWrapper(mesh)  # todo:RMW
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 200-201
+.. GENERATED FROM PYTHON SOURCE LINES 210-211
 
 Finally, we initialize the function space as follows:
 
-.. GENERATED FROM PYTHON SOURCE LINES 201-207
+.. GENERATED FROM PYTHON SOURCE LINES 211-217
 
 .. code-block:: default
 
@@ -272,13 +282,13 @@ Finally, we initialize the function space as follows:
     grad_af_function_space = fenics.VectorFunctionSpace(mesh, "CG", 1)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 208-211
+.. GENERATED FROM PYTHON SOURCE LINES 218-221
 
 Notice that the function space for c and af is actually composed of 3 subspaces, since we also need to count the
 above-mentioned auxiliary variable :math:`\mu`, that we will introduce soon. Also, notice that, since the gradient
 of :math:`af` is a vector, we need a different function space to handle it, called ``VectorFunctionSpace``.
 
-.. GENERATED FROM PYTHON SOURCE LINES 213-225
+.. GENERATED FROM PYTHON SOURCE LINES 223-235
 
 Initial & boundary conditions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -293,20 +303,20 @@ The initial condition for :math:`c`, according to the simulations reported in th
 in the left part of the domain. The initial vessel width is 37,5 :math:`\mu m` and its value is stored in the
 parameters ``.ods`` file, so we retrieve it as follows:
 
-.. GENERATED FROM PYTHON SOURCE LINES 225-227
+.. GENERATED FROM PYTHON SOURCE LINES 235-237
 
 .. code-block:: default
 
     initial_vessel_width = parameters.get_value("initial_vessel_width")
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 228-231
+.. GENERATED FROM PYTHON SOURCE LINES 238-241
 
 Thus, the initial condition for ``c`` is simply a function which is 1 in the left part of the domain, for the x
 coordinate included in [0, 37.5], and -1 otherwise. We can simply define such a function using the mocafe
 ``PythonFunctionField`` as follows:
 
-.. GENERATED FROM PYTHON SOURCE LINES 231-234
+.. GENERATED FROM PYTHON SOURCE LINES 241-244
 
 .. code-block:: default
 
@@ -314,19 +324,19 @@ coordinate included in [0, 37.5], and -1 otherwise. We can simply define such a 
                              function_space.sub(0).collapse())
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 235-237
+.. GENERATED FROM PYTHON SOURCE LINES 245-247
 
 Together with the initial condition for c, we need to define an initial condition for mu. However, this can be
 simply 0 across all the domain and can be easily defined as follows:
 
-.. GENERATED FROM PYTHON SOURCE LINES 237-239
+.. GENERATED FROM PYTHON SOURCE LINES 247-249
 
 .. code-block:: default
 
     mu_0 = fenics.interpolate(fenics.Constant(0.), function_space.sub(0).collapse())
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 240-247
+.. GENERATED FROM PYTHON SOURCE LINES 250-257
 
 Finally, we need to define an initial condition of the angiogenic factor :math:`af`. According to the original paper,
 initially :math:`af` is 0. everywhere, except for the points inside the source cells where the value is
@@ -336,19 +346,19 @@ In the original paper, the source cells where placed randomly in the right part 
 from the initial vessel. Creating this set up in mocafe is relatively easy. We start by defining the number
 of source cells we want:
 
-.. GENERATED FROM PYTHON SOURCE LINES 247-249
+.. GENERATED FROM PYTHON SOURCE LINES 257-259
 
 .. code-block:: default
 
     n_sources = parameters.get_value("n_sources")
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 250-252
+.. GENERATED FROM PYTHON SOURCE LINES 260-262
 
 Then, we define the part of the domain where we want the source cells to be placed; in this case, it is a rectangle
 including all the mesh except the initial vessel and a part of width :math:`d`:
 
-.. GENERATED FROM PYTHON SOURCE LINES 252-255
+.. GENERATED FROM PYTHON SOURCE LINES 262-265
 
 .. code-block:: default
 
@@ -356,21 +366,21 @@ including all the mesh except the initial vessel and a part of width :math:`d`:
                                            fenics.Point(Lx, Ly))
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 256-257
+.. GENERATED FROM PYTHON SOURCE LINES 266-267
 
 Finally, we initialize a so called ``RandomSourceMap``, which will create the source cells for us:
 
-.. GENERATED FROM PYTHON SOURCE LINES 257-262
+.. GENERATED FROM PYTHON SOURCE LINES 267-272
 
 .. code-block:: default
 
-    sources_map = af_sourcing.RandomSourceMap(mesh_wrapper,
+    sources_map = af_sourcing.RandomSourceMap(mesh_wrapper,  # todo:RMW
                                               n_sources,
                                               parameters,
                                               where=random_sources_domain)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 263-279
+.. GENERATED FROM PYTHON SOURCE LINES 273-289
 
 A ``SourceMap`` is a mocafe object which contains the position of all the source cells at a given time throughout
 the entire simulation. As you can see, you just need to input the mesh wrapper, the parameters, the number of sources
@@ -381,7 +391,7 @@ For instance we could have initialized the same source map as above simply doing
 
 .. code-block:: default
 
-  sources_map = af_sourcing.RandomSourceMap(mesh_wrapper,
+  sources_map = af_sourcing.RandomSourceMap(mesh_wrapper,  # todo:RMW
                                             n_sources,
                                             parameters,
                                             where=lambda x: x[0] > initial_vessel_width + parameters.get_value("d"))
@@ -389,44 +399,44 @@ For instance we could have initialized the same source map as above simply doing
 However, the source map is not sufficient to define the initial condition we need. To do so, we need an additional
 mocafe object, a ``SourcesManager``:
 
-.. GENERATED FROM PYTHON SOURCE LINES 279-281
+.. GENERATED FROM PYTHON SOURCE LINES 289-291
 
 .. code-block:: default
 
-    sources_manager = af_sourcing.SourcesManager(sources_map, mesh_wrapper, parameters)
+    sources_manager = af_sourcing.SourcesManager(sources_map, mesh_wrapper, parameters)  # todo:RMW
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 282-286
+.. GENERATED FROM PYTHON SOURCE LINES 292-296
 
 As the name suggests, a ``SourcesManager`` is an object responsible for the actual management of the sources in the
 given source map. One of the function it provides is exactly what we need, that is to apply the sources to a given
 FEniCS function. Thus, to define the initial condition we need, is sufficient to define a function which is zero
 everywhere:
 
-.. GENERATED FROM PYTHON SOURCE LINES 286-288
+.. GENERATED FROM PYTHON SOURCE LINES 296-298
 
 .. code-block:: default
 
     af_0 = fenics.interpolate(fenics.Constant(0.), function_space.sub(0).collapse())
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 289-291
+.. GENERATED FROM PYTHON SOURCE LINES 299-301
 
 And to call the method ``apply_sources`` on it, which will take care of modifying the value of the function in
 the points inside the source cells.
 
-.. GENERATED FROM PYTHON SOURCE LINES 291-293
+.. GENERATED FROM PYTHON SOURCE LINES 301-303
 
 .. code-block:: default
 
     sources_manager.apply_sources(af_0)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 294-295
+.. GENERATED FROM PYTHON SOURCE LINES 304-305
 
 Finally, we can save the initial conditions to the xdmf files defined above:
 
-.. GENERATED FROM PYTHON SOURCE LINES 295-298
+.. GENERATED FROM PYTHON SOURCE LINES 305-308
 
 .. code-block:: default
 
@@ -434,7 +444,7 @@ Finally, we can save the initial conditions to the xdmf files defined above:
     file_c.write(c_0, 0)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 299-305
+.. GENERATED FROM PYTHON SOURCE LINES 309-315
 
 Visualizing the field that we just defined with `Paraview <https://www.paraview.org/>`_, what we get is exactly what
 we expect: an initial vessel on the left side of the domain and a set of randomly distributed source cells:
@@ -443,25 +453,25 @@ we expect: an initial vessel on the left side of the domain and a set of randoml
   :width: 600
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 307-311
+.. GENERATED FROM PYTHON SOURCE LINES 317-321
 
 PDE System definition
 ^^^^^^^^^^^^^^^^^^^^^
 After having defined the initial conditions for the system, we continue with the definition of the system
 itself. As usual, we define the test functions necessary for computing the solution with the finite element method:
 
-.. GENERATED FROM PYTHON SOURCE LINES 311-313
+.. GENERATED FROM PYTHON SOURCE LINES 321-323
 
 .. code-block:: default
 
     v1, v2, v3 = fenics.TestFunctions(function_space)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 314-315
+.. GENERATED FROM PYTHON SOURCE LINES 324-325
 
 Then, we define the three functions involved in the PDE system: :math:`c`, :math:`\mu`, and :math:`af`:
 
-.. GENERATED FROM PYTHON SOURCE LINES 315-318
+.. GENERATED FROM PYTHON SOURCE LINES 325-328
 
 .. code-block:: default
 
@@ -469,12 +479,12 @@ Then, we define the three functions involved in the PDE system: :math:`c`, :math
     af, c, mu = fenics.split(u)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 319-321
+.. GENERATED FROM PYTHON SOURCE LINES 329-331
 
 Moreover, we define two additional functions: one for the gradient of the angiogenic factor and one for the tip cells.
 Again, remember that the latter is defined just for visualization purposes and is not necessary for the simulation.
 
-.. GENERATED FROM PYTHON SOURCE LINES 321-324
+.. GENERATED FROM PYTHON SOURCE LINES 331-334
 
 .. code-block:: default
 
@@ -482,13 +492,13 @@ Again, remember that the latter is defined just for visualization purposes and i
     tipcells_field = fenics.Function(function_space.sub(0).collapse())
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 325-328
+.. GENERATED FROM PYTHON SOURCE LINES 335-338
 
 Then, since we have already defined the initial condition for :math:`af`, we can already compute its gradient and
 assign it to the variable defined above. Notice that this is quite simple in FEniCS, because it just requires to call
 the method ``grad`` on the function and to project it in the function space:
 
-.. GENERATED FROM PYTHON SOURCE LINES 328-332
+.. GENERATED FROM PYTHON SOURCE LINES 338-342
 
 .. code-block:: default
 
@@ -497,42 +507,42 @@ the method ``grad`` on the function and to project it in the function space:
     )
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 333-336
+.. GENERATED FROM PYTHON SOURCE LINES 343-346
 
 Finally, we proceed to the definition of the weak from for the system. As in the case of the prostate cancer, one
 could define the weak form using the FEniCS UFL, but for your convenience we already defined it for you and
 we wrapped the form in two methods: one for the angiogenic factor equation:
 
-.. GENERATED FROM PYTHON SOURCE LINES 336-338
+.. GENERATED FROM PYTHON SOURCE LINES 346-348
 
 .. code-block:: default
 
     form_af = angiogenic_factor_form(af, af_0, c, v1, parameters)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 339-340
+.. GENERATED FROM PYTHON SOURCE LINES 349-350
 
 and one for the :math:`c` field equation:
 
-.. GENERATED FROM PYTHON SOURCE LINES 340-342
+.. GENERATED FROM PYTHON SOURCE LINES 350-352
 
 .. code-block:: default
 
     form_ang = angiogenesis_form(c, c_0, mu, mu_0, v2, v3, af, parameters)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 343-344
+.. GENERATED FROM PYTHON SOURCE LINES 353-354
 
 which can be composed together simply summing them, as follows:
 
-.. GENERATED FROM PYTHON SOURCE LINES 344-346
+.. GENERATED FROM PYTHON SOURCE LINES 354-356
 
 .. code-block:: default
 
     weak_form = form_af + form_ang
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 347-355
+.. GENERATED FROM PYTHON SOURCE LINES 357-365
 
 Simulation setup
 ^^^^^^^^^^^^^^^^
@@ -543,15 +553,15 @@ Just as for the source cells we defined a ``SourceCellsManager``, for the tip ce
 ``TipCellsManager``, which will take care of the job of activating, deactivating and moving the tip cells.
 We initialize it simply calling:
 
-.. GENERATED FROM PYTHON SOURCE LINES 355-358
+.. GENERATED FROM PYTHON SOURCE LINES 365-368
 
 .. code-block:: default
 
-    tip_cell_manager = tipcells.TipCellManager(mesh_wrapper,
+    tip_cell_manager = tipcells.TipCellManager(mesh_wrapper,  # todo:RMW
                                                parameters)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 359-364
+.. GENERATED FROM PYTHON SOURCE LINES 369-374
 
 And then we will use iteratively in the time simulation for our needs.
 Notice that the rules for activating, deactivating and moving the tip cells are already implemented in the object
@@ -559,18 +569,18 @@ class and all we need to do is passing the mesh wrapper and the simulation param
 
 Then, we can proceed similarly to any other simulation, defining the Jacobian for the weak form:
 
-.. GENERATED FROM PYTHON SOURCE LINES 364-366
+.. GENERATED FROM PYTHON SOURCE LINES 374-376
 
 .. code-block:: default
 
     jacobian = fenics.derivative(weak_form, u)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 367-368
+.. GENERATED FROM PYTHON SOURCE LINES 377-378
 
 And initializing the time iteration
 
-.. GENERATED FROM PYTHON SOURCE LINES 368-375
+.. GENERATED FROM PYTHON SOURCE LINES 378-385
 
 .. code-block:: default
 
@@ -582,11 +592,11 @@ And initializing the time iteration
         pbar = None
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 376-377
+.. GENERATED FROM PYTHON SOURCE LINES 386-387
 
 Now, we can start iterating
 
-.. GENERATED FROM PYTHON SOURCE LINES 377-416
+.. GENERATED FROM PYTHON SOURCE LINES 387-426
 
 .. code-block:: default
 
@@ -630,7 +640,7 @@ Now, we can start iterating
             pbar.update(1)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 417-498
+.. GENERATED FROM PYTHON SOURCE LINES 427-508
 
 Notice that additionally to the system solution a number of operations are performed at each time stem which require
 a bit of clarification. Let's see the code step by step then.
