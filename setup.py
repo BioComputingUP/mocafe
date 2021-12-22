@@ -19,7 +19,7 @@ setup(
     license="MIT",
     packages=find_packages(exclude=("test", "demo", "docs", "projects", ".cache")),
     include_package_data=True,
-    install_requires=["numpy>=1.15.4",
+    install_requires=["numpy>=1.15.4",  # for pandas
                       "pandas",
                       "pandas-ods-reader",
                       "tqdm"]
