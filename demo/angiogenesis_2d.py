@@ -9,6 +9,16 @@ as *source cells*, since are the only source of angiogenic factor in this model.
 How to run this example on mocafe
 ---------------------------------
 Make sure you have FEniCS and mocafe installed and download the source script of this page (see above for the link).
+Then, download the parameters file for the simulation from
+:download:`this link <./demo_in/angiogenesis_2d/parameters.ods>` and place it inside the folder
+demo_in/angiogenesis_2d:
+
+.. code-block:: console
+
+    mkdir demo_in
+    mkdir demo_in/angiogenesis_2d
+    mv parameters.ods demo_in/angiogenesis_2d/
+
 Then, simply run it using python:
 
 .. code-block:: console
