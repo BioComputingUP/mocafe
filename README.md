@@ -8,10 +8,42 @@ Todo
 
 ## Installation
 
-Linux:
+### Linux quick setup (_not_ recommended)
+
+Install FEniCS using `apt`:
 
 ```sh
-Todo
+sudo apt-get install software-properties-common
+sudo add-apt-repository ppa:fenics-packages/fenics
+sudo apt-get update
+sudo apt-get install fenics
+```
+
+Test if FEniCS has been correctly installed trying to import it on IPython:
+
+```sh
+python3
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import fenics
+>>>
+```
+
+Install _mocafe_ using `pip`:
+
+```sh
+pip3 install git+https://github.com/fpradelli94/mocafe#egg=mocafe
+```
+
+Test it executing the main script:
+
+```sh
+python3 -m mocafe
+```
+
+I everything is properly working, the output should be:
+
+```
+Your mocafe is ready!
 ```
 
 ## Usage example
