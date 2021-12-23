@@ -1,12 +1,12 @@
-import fenics
-import shutil
-import json
-
 """
 Module containing some useful methods and Classes to work with FEniCS.
 Requires FEniCS 2019.1 to work.
 
 """
+
+import fenics
+import shutil
+import json
 
 
 def setup_pvd_files(file_names: list, data_folder):
