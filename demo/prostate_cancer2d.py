@@ -191,7 +191,7 @@ semiax_y = 150  # um
 
 # %%
 # With FEniCS we can do so by defining an expression which 'mathematically' represent our initial condition.
-# Indeed, ``Espression``s are the FEniCS way to define symbolic mathematical functions and they can be defined
+# Indeed, an ``Expression`` is the FEniCS way to define symbolic mathematical function and they can be defined
 # using simple C++ code as follows:
 #
 # .. code-block:: default
