@@ -388,7 +388,7 @@ class SourcesManager:
 
         :param af: FEniCS function representing the angiogenic factor
         :param af_expression_function: an object of type AFExpressionFunction which tells this method the value of
-        the angiogenic factor inside the cells.
+            the angiogenic factor inside the cells.
         :return: nothing
 
         """

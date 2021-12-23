@@ -110,7 +110,7 @@ class TipCellsField(fenics.UserExpression):
         :param tip_cell: the tip cell to add.
         :param velocity: the velocity of the tip cell, that is used for computing the field value.
         :param af_at_point: the angiogenic factor concentration at the tip cell center, that is used for computing the
-        field value.
+            field value.
         :return:
         """
         self.tip_cells.append(tip_cell)
