@@ -19,6 +19,8 @@
     <script src="../../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="mocafe.fenut.parameters" href="parameters.html" />
+    <link rel="prev" title="mocafe.fenut.log" href="log.html" />
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
   
@@ -37,6 +39,7 @@
             
   <section id="module-mocafe.fenut.mansimdata">
 <span id="mocafe-fenut-mansimdata"></span><h1><code class="docutils literal notranslate"><span class="pre">mocafe.fenut.mansimdata</span></code><a class="headerlink" href="#module-mocafe.fenut.mansimdata" title="Permalink to this headline">¶</a></h1>
+<p>Useful methods to manage simulation data</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mocafe.fenut.mansimdata.save_sim_info">
 <span class="sig-prename descclassname"><span class="pre">mocafe.fenut.mansimdata.</span></span><span class="sig-name descname"><span class="pre">save_sim_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">mocafe.fenut.parameters.Parameters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'sim_data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dateandtime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_rationale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'input'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mocafe.fenut.mansimdata.save_sim_info" title="Permalink to this definition">¶</a></dt>
@@ -90,12 +93,14 @@ to decide a new folder path for each simulation. Indeed, if you call:</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>folder_path</strong> – the path of the folder to generate</p></li>
-<li><p><strong>auto_enumerate</strong> – if set to True, this method will create coded folder under the given <code class="docutils literal notranslate"><span class="pre">folder_path</span></code> in the</p></li>
+<li><p><strong>auto_enumerate</strong> – if set to True, this method will create coded folder under the given <code class="docutils literal notranslate"><span class="pre">folder_path</span></code> in the
+order: 0000, 0001, …, and so on.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the generated folder</p>
+</dd>
 </dl>
-<p>order: 0000, 0001, …, and so on.
-:return: the generated folder</p>
 </dd></dl>
 
 </section>
@@ -118,9 +123,13 @@ to decide a new folder path for each simulation. Indeed, if you call:</p>
 
 <h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../demo_doc/index.html">Demo gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../code_documentation.html">Code documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../code_documentation.html">Code documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../angie.html"><code class="docutils literal notranslate"><span class="pre">mocafe.angie</span></code></a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../fenut.html"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../bib.html">Bibliography</a></li>
 </ul>
 
@@ -128,6 +137,12 @@ to decide a new folder path for each simulation. Indeed, if you call:</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../../code_documentation.html">Code documentation</a><ul>
+  <li><a href="../fenut.html"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut</span></code></a><ul>
+      <li>Previous: <a href="log.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut.log</span></code></a></li>
+      <li>Next: <a href="parameters.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut.parameters</span></code></a></li>
+  </ul></li>
+  </ul></li>
   </ul></li>
 </ul>
 </div>

@@ -1,5 +1,5 @@
 ``mocafe.fenut.parameters``
 ===========================
 
-.. automodule:: mocafe.fenut.mansimdata
+.. automodule:: mocafe.fenut.parameters
     :members:

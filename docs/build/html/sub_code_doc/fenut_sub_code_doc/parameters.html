@@ -19,6 +19,8 @@
     <script src="../../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="mocafe.fenut.solvers" href="solvers.html" />
+    <link rel="prev" title="mocafe.fenut.mansimdata" href="mansimdata.html" />
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
   
@@ -35,67 +37,126 @@
 
           <div class="body" role="main">
             
-  <section id="module-mocafe.fenut.mansimdata">
-<span id="mocafe-fenut-parameters"></span><h1><code class="docutils literal notranslate"><span class="pre">mocafe.fenut.parameters</span></code><a class="headerlink" href="#module-mocafe.fenut.mansimdata" title="Permalink to this headline">¶</a></h1>
-<dl class="py function">
-<dt class="sig sig-object py" id="mocafe.fenut.mansimdata.save_sim_info">
-<span class="sig-prename descclassname"><span class="pre">mocafe.fenut.mansimdata.</span></span><span class="sig-name descname"><span class="pre">save_sim_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">mocafe.fenut.parameters.Parameters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'sim_data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dateandtime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_rationale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'input'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mocafe.fenut.mansimdata.save_sim_info" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save simulation infos as html file. The simulation infos will be stored in the provided data_folder.</p>
+  <section id="module-mocafe.fenut.parameters">
+<span id="mocafe-fenut-parameters"></span><h1><code class="docutils literal notranslate"><span class="pre">mocafe.fenut.parameters</span></code><a class="headerlink" href="#module-mocafe.fenut.parameters" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="mocafe.fenut.parameters.Parameters">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.fenut.parameters.</span></span><span class="sig-name descname"><span class="pre">Parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.parameters.Parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class representing the simulation parameters.</p>
+<p>It is basically a wrapper for a pandas.DataFrame, which contains everything about the simulation parameters.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mocafe.fenut.parameters.Parameters.as_dataframe">
+<span class="sig-name descname"><span class="pre">as_dataframe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.parameters.Parameters.as_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> representing the Parameters object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the dataframe representing the Parameters object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mocafe.fenut.parameters.Parameters.get_value">
+<span class="sig-name descname"><span class="pre">get_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.parameters.Parameters.get_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the parameter value from the given name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> – parameter name</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the value of the parameter with the given name.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mocafe.fenut.parameters.Parameters.is_parameter">
+<span class="sig-name descname"><span class="pre">is_parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.parameters.Parameters.is_parameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the given parameter name correspond to a parameter inside the parameters object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> – the name of the putative parameter</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if there is a reference for the given parameter, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mocafe.fenut.parameters.Parameters.is_value_present">
+<span class="sig-name descname"><span class="pre">is_value_present</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.parameters.Parameters.is_value_present" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the parameters object contains a value for the parameter of the given name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> – the name of the given value</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if a value is present for the given parameter name; False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mocafe.fenut.parameters.Parameters.set_value">
+<span class="sig-name descname"><span class="pre">set_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.parameters.Parameters.set_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a value for the parameter of the given name.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data_folder</strong> – the data folder containing the simulation files</p></li>
-<li><p><strong>execution_time</strong> – the execution time of the simulation</p></li>
-<li><p><strong>parameters</strong> – the parameters used for the simulation (can be a dict of parameters files, each identified
-by a name)</p></li>
-<li><p><strong>sim_name</strong> – the simulation name</p></li>
-<li><p><strong>dateandtime</strong> – date and time of the simulation. If it is equal to “auto” the time and date are automatically
-added by the method</p></li>
-<li><p><strong>sim_rationale</strong> – rationale of the simulation. If set to input the method will ask the user to type the
-rationale in the command line; otherwise the given rationale will be set in the “rationale” field of the
-sim_info.html file. Default is “input”.</p></li>
-<li><p><strong>error_msg</strong> – if an error occurred during the simulation, save the error message</p></li>
+<li><p><strong>name</strong> – parameter name</p></li>
+<li><p><strong>new_value</strong> – the new value for the parameter</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>nothing</p>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mocafe.fenut.parameters.from_dict">
+<span class="sig-prename descclassname"><span class="pre">mocafe.fenut.parameters.</span></span><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.parameters.from_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a mocafe Parameters object from a Python dictionary.</p>
+<p>The structure of the Python dictionary must be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">param_dict</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;name_param_a&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value_param_a</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="s2">&quot;name_param_b&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">value_param_b</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="o">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>parameters</strong> – the parameters dictionary</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the Parameters object</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="mocafe.fenut.mansimdata.setup_data_folder">
-<span class="sig-prename descclassname"><span class="pre">mocafe.fenut.mansimdata.</span></span><span class="sig-name descname"><span class="pre">setup_data_folder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_enumerate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pathlib.Path</span></span></span><a class="headerlink" href="#mocafe.fenut.mansimdata.setup_data_folder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a folder at the given folder path and returns it as pathlib.Path object to use for the simulation
-files.</p>
-<p>If just the folder path is specified the folder will be simply created. For instance, calling the following:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">setup_data_folder</span><span class="p">(</span><span class="n">folder_name</span><span class="o">=</span><span class="s2">&quot;my_sim_data&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Will just create the folder “my_sim_data” in the current root directory.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">auto_enumerate</span></code> argument can be used to specify if you need coded folders for the same simulation. This
-is useful especially when one needs to save multiple simulation results under the same folder without having
-to decide a new folder path for each simulation. Indeed, if you call:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">setup_data_folder</span><span class="p">(</span><span class="n">folder_path</span><span class="o">=</span><span class="s2">&quot;my_sim_data&quot;</span><span class="p">,</span> <span class="n">auto_enumerate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>This method will return:</p>
-<ul class="simple">
-<li><p>the folder <code class="docutils literal notranslate"><span class="pre">./my_sim_data/0000</span></code> the first time the method is called</p></li>
-<li><p>the folder <code class="docutils literal notranslate"><span class="pre">./my_sim_data/0001</span></code> the second time the method is called</p></li>
-<li><p>… and so on</p></li>
-</ul>
-<p>Works in parallel with MPI.</p>
+<dt class="sig sig-object py" id="mocafe.fenut.parameters.from_ods_sheet">
+<span class="sig-prename descclassname"><span class="pre">mocafe.fenut.parameters.</span></span><span class="sig-name descname"><span class="pre">from_ods_sheet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sheet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.parameters.from_ods_sheet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a mocafe Parameters object form a sheet of an <code class="docutils literal notranslate"><span class="pre">.odf</span></code> file.</p>
+<p>The given sheet must have at least to columns: <code class="docutils literal notranslate"><span class="pre">name</span></code>, with the parameters’ names; and <code class="docutils literal notranslate"><span class="pre">sim_value</span></code>, with the
+value of the parameters. Any other column, for instance containing the measure units, the reference of the
+parameters, or other informations, will be stored inside the Parameters object and used for reporting informations,
+but are not compulsory.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>folder_path</strong> – the path of the folder to generate</p></li>
-<li><p><strong>auto_enumerate</strong> – if set to True, this method will create coded folder under the given <code class="docutils literal notranslate"><span class="pre">folder_path</span></code> in the</p></li>
+<li><p><strong>file</strong> – file path</p></li>
+<li><p><strong>sheet</strong> – sheet of the file to be used to load parameters</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the Parameters object</p>
+</dd>
 </dl>
-<p>order: 0000, 0001, …, and so on.
-:return: the generated folder</p>
 </dd></dl>
 
 </section>
@@ -118,9 +179,13 @@ to decide a new folder path for each simulation. Indeed, if you call:</p>
 
 <h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../demo_doc/index.html">Demo gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../code_documentation.html">Code documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../code_documentation.html">Code documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../angie.html"><code class="docutils literal notranslate"><span class="pre">mocafe.angie</span></code></a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../fenut.html"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../bib.html">Bibliography</a></li>
 </ul>
 
@@ -128,6 +193,12 @@ to decide a new folder path for each simulation. Indeed, if you call:</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../../code_documentation.html">Code documentation</a><ul>
+  <li><a href="../fenut.html"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut</span></code></a><ul>
+      <li>Previous: <a href="mansimdata.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut.mansimdata</span></code></a></li>
+      <li>Next: <a href="solvers.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut.solvers</span></code></a></li>
+  </ul></li>
+  </ul></li>
   </ul></li>
 </ul>
 </div>
