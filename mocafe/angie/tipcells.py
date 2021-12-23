@@ -1,3 +1,8 @@
+"""
+This module contains classes and methods to manage the tip cells in ``mocafe``. More precisely, it provides useful
+tools to activate, remove, and move the tip cell in the spatial domain.
+"""
+
 import fenics
 import numpy as np
 import mocafe.fenut.fenut as fu
@@ -7,11 +12,6 @@ import random
 import logging
 from mocafe.fenut.parameters import Parameters
 from mocafe.fenut.log import InfoCsvAdapter, DebugAdapter
-
-"""
-This module contains classes and methods to manage the tip cells in ``mocafe``. More precisely, it provides useful
-tools to activate, remove, and move the tip cell in the spatial domain.
-"""
 
 # get rank
 comm = fenics.MPI.comm_world
@@ -30,6 +30,7 @@ class TipCell(BaseCell):
     def __init__(self, position, radius, creation_step):
         """
         inits a TipCell in the given position for the given radius.
+
         :param position: tip cell position
         :param radius: tip cell radius
         :param creation_step: the simulation step when the tip cell have been created. It is used for internal purposes.
@@ -40,6 +41,7 @@ class TipCell(BaseCell):
     def move(self, new_position):
         """
         Move the tip cell to the new position.
+
         :param new_position: the new position where to move the tip cell.
         :return: nothing
         """
@@ -48,6 +50,7 @@ class TipCell(BaseCell):
     def get_radius(self):
         """
         Get the radius of the tip cell
+
         :return: the radius of the tip cell
         """
         return self.radius
@@ -55,6 +58,7 @@ class TipCell(BaseCell):
     def is_point_inside(self, x):
         """
         Check if the given point is inside the tip cell
+
         :param x: point to check
         :return: True if the point is inside; False otherwise
         """
@@ -66,7 +70,7 @@ class TipCellsField(fenics.UserExpression):
     Expression representing the capillary field value inside the tip cells.
 
     In this implementation, the value is coherent with the one used by Travasso et al (2011) in their Phase Field
-    angiogenesis model [Travasso2011] _, that is:
+    angiogenesis model :cite:`Travasso2011a`, that is:
 
     .. math::
        \frac{\alpha_p(af) \cdot \pi \cdot R_c}{2 \cdot |v|}
@@ -80,11 +84,6 @@ class TipCellsField(fenics.UserExpression):
                     &= \alpha_p \cdot af  \quad \textrm{if} \quad 0<af \le af_p \\
                     & = 0 \quad \textrm{if} \quad af \le 0
 
-    References:
-
-    .. [Travasso2011] Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., & Hernández-Machado, A.
-       (2011). Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5), e19989.
-       https://doi.org/10.1371/journal.pone.0019989
     """
     def __floordiv__(self, other):
         pass
@@ -92,6 +91,7 @@ class TipCellsField(fenics.UserExpression):
     def __init__(self, parameters: Parameters):
         """
         inits the TipCellField for the given simulation parameters
+
         :param parameters: simulation parameters
         """
         super(TipCellsField, self).__init__()
@@ -106,6 +106,7 @@ class TipCellsField(fenics.UserExpression):
     def add_tip_cell(self, tip_cell, velocity, af_at_point):
         """
         Add a tip cell to the field.
+
         :param tip_cell: the tip cell to add.
         :param velocity: the velocity of the tip cell, that is used for computing the field value.
         :param af_at_point: the angiogenic factor concentration at the tip cell center, that is used for computing the
@@ -119,6 +120,7 @@ class TipCellsField(fenics.UserExpression):
     def eval(self, values, x):
         """
         evaluate the field value for the given point
+
         :param values: internal FEniCS parameter
         :param x: given point
         :return: nothing
@@ -227,7 +229,7 @@ class TipCellManager:
         its gradient, grad_af, are met.
 
         In this implementation the conditions are coherent with the one used by Travasso et al. (2011)
-        [Travasso2011] _, which are reported in the following pseudo-code::
+        :cite:`Travasso2011a`, which are reported in the following pseudo-code::
 
             p = possible new tip cell center
             if distance(p, closest_tip_cell) > min_tipcell_distance:
@@ -244,12 +246,6 @@ class TipCellManager:
 
         If more than two point are found as possible new tip cell positions, only one is randomly selected. Thus, in
         this implementation only one tip cell can be activated at each call of the method.
-
-        References:
-
-        .. [Travasso2011] Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., & Hernández-Machado,
-           A. (2011). Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5), e19989.
-           https://doi.org/10.1371/journal.pone.0019989
 
         :param c: capillaries field
         :param af: angiogenic factor field
@@ -352,7 +348,7 @@ class TipCellManager:
         Deactivate the tip cells when the right conditions are met.
 
         In this implementation the conditions are coherent with the one used by Travasso et al. (2011)
-        [Travasso2011] _, which are reported in the following pseudo-code::
+        :cite:`Travasso2011a`, which are reported in the following pseudo-code::
 
             tc_p = a tip cell position
             if (af(tc_p) < T_c or norm(grad_af(tc_p)) < G_m):
@@ -363,12 +359,6 @@ class TipCellManager:
         Where ``T_c`` and ``G_m`` are constants defined in the simulation parameter.
 
         The procedure above is applied to all the active tip cells.
-
-        References:
-
-        .. [Travasso2011] Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., &
-            Hernández-Machado, A. (2011). Tumor angiogenesis and vascular patterning: A mathematical model.
-            PLoS ONE, 6(5), e19989. https://doi.org/10.1371/journal.pone.0019989
 
         :param af: angiogenic factor field
         :param grad_af: gradient of the angiogenic factor
@@ -544,18 +534,12 @@ class TipCellManager:
         The method also updates the tip cell field and returns it.
 
         The tip cells field is a FEniCS function which inside each tip cell has the value defined by Travasso et al.
-        (2011) [Travasso2011] _, which is:
+        (2011) :cite:`Travasso2011a`, which is:
 
         .. math::
            \frac{\alpha_p(af) \cdot \pi \cdot R_c}{2 \cdot |v|}
 
         In every other point, the function has value 0.
-
-        References:
-
-        .. [Travasso2011] Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., & Hernández-Machado,
-           A. (2011). Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5), e19989.
-           https://doi.org/10.1371/journal.pone.0019989
 
         :param c: capillaries field
         :param af: angiogenic factor field
@@ -573,18 +557,12 @@ class TipCellManager:
         Compute the tip cell velocity given its position, the gradient of the angiogenic factor, and the constant chi.
 
         In this implementation the velocity is computed according to the model presented by Travasso et al. (2011)
-        [Travasso2011] _. The formula is:
+        :cite:`Travasso2011a`. The formula is:
 
         .. math::
            v = \chi \nabla af [1 + (\frac{G_M}{G})\cdot (G - G_M)]
 
         Where :math:`G` is the norm of the angiogenic factor gradient (:math:`\nabla af`).
-
-        References:
-
-        .. [Travasso2011] Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., & Hernández-Machado,
-           A. (2011). Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5), e19989.
-           https://doi.org/10.1371/journal.pone.0019989
 
         :param grad_af:
         :param chi:
