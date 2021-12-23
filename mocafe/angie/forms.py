@@ -31,7 +31,7 @@ def vascular_proliferation_form(alpha_p, af, af_p, c, v):
     :param alpha_p: costant of the proliferation rate function for the capillaries
     :param af: FEniCS function representing the angiogenic factor distribution
     :param af_p: maximum concentration of angiogenic factor leading to proliferation. If af > af_p, the proliferation
-    rate remains alpha_p * af_p
+        rate remains alpha_p * af_p
     :param c: FEniCS function representing the capillaries
     :param v: FEniCS test function
     :return: the UFL form for the proliferation term
