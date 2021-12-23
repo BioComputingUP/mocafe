@@ -1,4 +1,4 @@
-Code documentation
+Code Documentation
 ===================
 
 In the following you can find the complete documentation of *mocafe* code.
@@ -22,3 +22,6 @@ Submodules:
 
     sub_code_doc/angie
     sub_code_doc/fenut
+    sub_code_doc/litforms
+    sub_code_doc/math
+    sub_code_doc/expressions
