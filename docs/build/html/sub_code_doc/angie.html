@@ -191,12 +191,14 @@ cells when they are near the blood vessels and of translating the source cell ma
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>af</strong> – FEniCS function representing the angiogenic factor</p></li>
-<li><p><strong>af_expression_function</strong> – an object of type AFExpressionFunction which tells this method the value of</p></li>
+<li><p><strong>af_expression_function</strong> – an object of type AFExpressionFunction which tells this method the value of
+the angiogenic factor inside the cells.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>nothing</p>
+</dd>
 </dl>
-<p>the angiogenic factor inside the cells.
-:return: nothing</p>
 </dd></dl>
 
 <dl class="py method">
@@ -367,14 +369,16 @@ following:</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>alpha_p</strong> – costant of the proliferation rate function for the capillaries</p></li>
 <li><p><strong>af</strong> – FEniCS function representing the angiogenic factor distribution</p></li>
-<li><p><strong>af_p</strong> – maximum concentration of angiogenic factor leading to proliferation. If af &gt; af_p, the proliferation</p></li>
+<li><p><strong>af_p</strong> – maximum concentration of angiogenic factor leading to proliferation. If af &gt; af_p, the proliferation
+rate remains alpha_p * af_p</p></li>
+<li><p><strong>c</strong> – FEniCS function representing the capillaries</p></li>
+<li><p><strong>v</strong> – FEniCS test function</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the UFL form for the proliferation term</p>
+</dd>
 </dl>
-<p>rate remains alpha_p * af_p
-:param c: FEniCS function representing the capillaries
-:param v: FEniCS test function
-:return: the UFL form for the proliferation term</p>
 </dd></dl>
 
 <span class="target" id="module-mocafe.angie.tipcells"></span><p>This module contains classes and methods to manage the tip cells in <code class="docutils literal notranslate"><span class="pre">mocafe</span></code>. More precisely, it provides useful
@@ -577,12 +581,14 @@ factor concentration (<span class="math notranslate nohighlight">\(af\)</span>) 
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>tip_cell</strong> – the tip cell to add.</p></li>
 <li><p><strong>velocity</strong> – the velocity of the tip cell, that is used for computing the field value.</p></li>
-<li><p><strong>af_at_point</strong> – the angiogenic factor concentration at the tip cell center, that is used for computing the</p></li>
+<li><p><strong>af_at_point</strong> – the angiogenic factor concentration at the tip cell center, that is used for computing the
+field value.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
 </dl>
-<p>field value.
-:return:</p>
 </dd></dl>
 
 <dl class="py method">
