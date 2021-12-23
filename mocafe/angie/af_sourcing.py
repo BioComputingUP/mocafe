@@ -1,3 +1,12 @@
+"""
+This module contains classes and methods to manage discrete angiogenic factor sources in ``mocafe``. More precisely,
+it provides useful tools to create cells (described as circles with a given radius) which act as angiogenic factor
+sources, inducing angiogenesis.
+
+This module have been implemented to reproduce the results given by the angiogenesis model presented by Travasso et al.
+:cite:`Travasso2011a`, where they where testing their model using multiple sources in random positions.
+"""
+
 import types
 import fenics
 import random
@@ -8,21 +17,6 @@ import mocafe.fenut.fenut as fu
 from mocafe.angie import base_classes
 from mocafe.fenut.parameters import Parameters
 from mocafe.fenut.log import InfoCsvAdapter, DebugAdapter
-
-"""
-This module contains classes and methods to manage discrete angiogenic factor sources in ``mocafe``. More precisely, 
-it provides useful tools to create cells (described as circles with a given radius) which act as angiogenic factor
-sources, inducing angiogenesis.
-
-This module have been implemented to reproduce the results given by the angiogenesis model presented by Travasso et al. 
-(2011) [Travasso2011] _, where they where testing their model using multiple sources in random positions.
-
-References:
-
-.. [Travasso2011] Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., & Hernández-Machado, A. 
-   (2011). Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5), e19989. 
-   https://doi.org/10.1371/journal.pone.0019989
-"""
 
 # Get MPI communicator and rank to be used in the module
 comm = fenics.MPI.comm_world
@@ -45,6 +39,7 @@ class SourceCell(base_classes.BaseCell):
                  creation_step):
         """
         inits a source cell centered in a given point.
+
         :param point: center of the tip cell, as ndarray
         :param creation_step: the step of the simulation at which the cell is created. It is used together with the
         position to generate an unique identifier of the cell.
@@ -81,6 +76,7 @@ class SourceMap:
         INTERNAL USE
         Divides the source cells among the MPI process. Each process has to take care of the source cells inside its
         local box
+
         :return: the list of source cell which has to be handled by the current MPI process
         """
         competence_source_cells = []
@@ -106,6 +102,7 @@ class SourceMap:
         """
         INTERNAL USE
         Determines if the given position is inside the local box.
+
         :param position: position to check
         :return: True if the position is inside the local box. False otherwise
         """
@@ -114,6 +111,7 @@ class SourceMap:
     def get_global_source_cells(self):
         """
         Get the global list of source cell (equal for each MPI process)
+
         :return: the global list of source cells
         """
         return self.global_source_cells
@@ -121,6 +119,7 @@ class SourceMap:
     def get_local_source_cells(self):
         """
         Get the local list of source cells (for the current MPI process)
+
         :return:
         """
         return self.local_source_cells
@@ -129,6 +128,7 @@ class SourceMap:
         """
         Remove a source cell from the global source cell list. If the cell is part of the local source cells,
         it is removed also from that list.
+
         :param source_cell: the source cell to remove
         :return:
         """
@@ -160,9 +160,9 @@ class RandomSourceMap(SourceMap):
 
         - None; in this case, any point in the mesh can be picked as a rondom source
         - a Python function; in this case, only the points for which the function returns True can be picked as
-        random sources. The given Python function must have a single input of the type fenics.Point.
+            random sources. The given Python function must have a single input of the type fenics.Point.
         - a mesh.cpp.Geometry (e.g. mshr.Rectangle or mshr.Circle) or a fenics.SubDomain object; in this case, the
-        point will be selected the defined space.
+            point will be selected the defined space.
 
         :param mesh_wrapper: the mesh wrapper for the given mesh
         :param n_sources: the number of sources to select
@@ -243,6 +243,7 @@ class RandomSourceMap(SourceMap):
         INTERNAL USE
         Computes the number of sources to randomly select for the local process, considering that the number
         of pickable points may differ between different processes and that the global number of sources is fixed.
+
         :param global_n_sources: number of global sources
         :param n_local_pickable_points: number of pickable points
         """
@@ -294,6 +295,7 @@ class SourcesManager:
                  parameters: Parameters):
         """
         inits a source cells manager for a given source map.
+
         :param source_map: the source map (i.e. the source cells) to manage
         :param mesh_wrapper: the mesh wrapper
         :param parameters: the simulation parameters
@@ -319,6 +321,7 @@ class SourcesManager:
     def remove_sources_near_vessels(self, c: fenics.Function, **kwargs):
         """
         Removes the source cells near the blood vessels
+
         :param c: blood vessel field
         :return:
         """
@@ -356,6 +359,7 @@ class SourcesManager:
         """
         INTERNAL USE
         Given a list of source cells to remove, it takes care that those cells will be removed from the SourceMap
+
         :param local_to_remove:
         :return:
         """
@@ -381,6 +385,7 @@ class SourcesManager:
                       af_expression_function=None):
         """
         Apply the sources at the current time to the angiogenic factor field af, respecting the expression function.
+
         :param af: FEniCS function representing the angiogenic factor
         :param af_expression_function: an object of type AFExpressionFunction which tells this method the value of
         the angiogenic factor inside the cells.
@@ -430,6 +435,7 @@ class SourcesManager:
         """
         INTERNAL USE
         Assign the positive values of the source field function to the angiogenic factor field.
+
         :param af: angiogenic factor function
         :param s_f: source field function
         :return: nothing
@@ -456,6 +462,7 @@ class SourcesField(fenics.UserExpression):
         """
         inits a SourceField for the given SourceMap, in respect of the simulation parameters and of the expression
         function
+
         :param source_map:
         :param parameters:
         :param af_expression_function:
@@ -487,6 +494,7 @@ class ClockChecker:
     def __init__(self, mesh_wrapper: fu.MeshWrapper, radius, start_point="east"):
         """
         inits a ClockChecker, which will check if a condition is met inside the given radius
+
         :param mesh_wrapper: mesh wrapper
         :param radius: radius where to check if the condition is met
         :param start_point: starting point where to start checking. If the point is `east`, the clock checker will
@@ -509,6 +517,7 @@ class ClockChecker:
     def clock_check(self, point, function: fenics.Function, threshold, condition):
         """
         clock-check the given function in the surrounding of the given point
+
         :param point: center of the clock-check
         :param function: function to check
         :param threshold: threshold that the function has to surpass
@@ -560,6 +569,7 @@ class RotationalAFExpressionFunction(AFExpressionFunction):
     def get_point_value_at_source_cell(self, source_cell):
         """
         Returns the concentration of the angiogenic factor expressed for the given source cell.
+
         :param source_cell: the source cell considered
         :return:
         """
@@ -606,6 +616,7 @@ class ConstantAFExpressionFunction(AFExpressionFunction):
     def get_point_value_at_source_cell(self, source_cell):
         """
         Returns the concentration of the angiogenic factor expressed for the given source cell.
+
         :param source_cell: the source cell considered
         :return:
         """
@@ -616,6 +627,7 @@ def sources_in_circle_points(center: np.ndarray, circle_radius, cell_radius):
     """
     Generate the points where to place the source cells to place the source cells in a circle. The circle is full of
     source cells.
+
     :param center: center of the circle
     :param circle_radius: radius of the circle
     :param cell_radius: radius of the cells

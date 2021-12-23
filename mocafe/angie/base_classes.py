@@ -1,8 +1,8 @@
-import numpy as np
-
 """
 Base classes used only by mocafe.angie
 """
+
+import numpy as np
 
 
 class BaseCell:
@@ -11,6 +11,7 @@ class BaseCell:
                  creation_step):
         """
         inits a BaseCell in a given point, the base class used for both source cells and tip cells
+
         :param point: position of the cell
         :param creation_step: creation step of the cell, used for internal purposes
         """
@@ -29,6 +30,7 @@ class BaseCell:
     def get_position(self):
         """
         get cell position
+
         :return: tip cell position as numpy.ndarray
         """
         return self.position
@@ -36,6 +38,7 @@ class BaseCell:
     def get_dimension(self):
         """
         get dimension (2D or 3D) for the cell.
+
         :return: 2 for 2D, 3 for 3D
         """
         return len(self.position)
@@ -43,6 +46,7 @@ class BaseCell:
     def get_distance(self, point):
         """
         get the distance of the given point from the the cell
+
         :param point: the point to check the distance with
         :return: the distance
         """

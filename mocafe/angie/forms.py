@@ -1,16 +1,16 @@
-import fenics
-from mocafe.fenut.parameters import Parameters
-
 """
-Weak forms of the Phase-Field models related to angiogenesis. Each weak form is a FEniCS UFL Form which can be used 
+Weak forms of the Phase-Field models related to angiogenesis. Each weak form is a FEniCS UFL Form which can be used
 calling a specific method, that returns the form itself.
 """
+
+import fenics
+from mocafe.fenut.parameters import Parameters
 
 
 def vascular_proliferation_form(alpha_p, af, af_p, c, v):
     r"""
     Returns the UFL Form for the proliferation term of the vascular tissue as defined by the paper of Travasso et al.
-    (2011) [Travasso2011] _.
+    (2011) :cite:`Travasso2011a`.
 
     The corresponding term of the equation is (H is the Heaviside function):
 
@@ -27,12 +27,6 @@ def vascular_proliferation_form(alpha_p, af, af_p, c, v):
                     & = 0 \quad \textrm{if} \quad af \le 0
 
     Where :math: `\alpha-p` and :math: `af_p` are constants.
-
-    References:
-
-    .. [Travasso2011] Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., & Hernández-Machado, A.
-       (2011). Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5), e19989.
-       https://doi.org/10.1371/journal.pone.0019989
 
     :param alpha_p: costant of the proliferation rate function for the capillaries
     :param af: FEniCS function representing the angiogenic factor distribution
@@ -75,7 +69,7 @@ def cahn_hillard_form(c: fenics.Variable,
                       M):
     r"""
     Returns the UFL form of a for a general Cahn-Hillard equation, discretized in time using the theta method. The
-    method is the same reported by the FEniCS team in one of their demo `1. Cahn-Hillard equation` _ and is briefly
+    method is the same reported by the FEniCS team in one of their demo `1. Cahn-Hillard equation`_ and is briefly
     discussed below for your conveneince.
 
     .. _1. Cahn-Hillard equation:
@@ -138,10 +132,11 @@ def angiogenesis_form(c: fenics.Function,
                       af: fenics.Function,
                       parameters: Parameters):
     r"""
-    Returns the UFL form for the Phase-Field model for angiogenesis reported by Travasso et al. (2011) [Travasso2011] _.
+    Returns the UFL form for the Phase-Field model for angiogenesis reported by Travasso et al. (2011)
+    :cite:`Travasso2011a`.
 
     The equation reads simply as the sum of a Cahn-Hillard term and a proliferation term (for further details see
-    [Travasso2011] _):
+    the original paper):
 
     .. math::
        \frac{\partial c}{\partial t} = M \cdot \nabla^2 [\frac{df}{dc}\ - \epsilon \nabla^2 c]
@@ -162,12 +157,6 @@ def angiogenesis_form(c: fenics.Function,
     .. math::
        \frac{\partial c}{\partial t} &= M \nabla^2 \cdot \mu + \alpha_p(T) \cdot c H(c) \\
        \mu &= \frac{d f}{d c} - \epsilon \nabla^{2}c
-
-    References:
-
-    .. [Travasso2011] Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., & Hernández-Machado, A.
-       (2011). Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5), e19989.
-       https://doi.org/10.1371/journal.pone.0019989
 
     :param c: capillaries field
     :param c0: initial condition for the capillaries field
@@ -202,22 +191,17 @@ def angiogenic_factor_form(af: fenics.Function,
                            v: fenics.TestFunction,
                            parameters: Parameters):
     r"""
-    Returns the UFL form for the equation for the angiogenic factor reported by Travasso et al. (2011) [Travasso2011] _.
+    Returns the UFL form for the equation for the angiogenic factor reported by Travasso et al. (2011)
+    :cite:`Travasso2011a`.
 
     The equation simply considers the diffusion of the angiogenic factor and its consumption by the capillaries
-    (for further details see [Travasso2011] _):
+    (for further details see the original paper):
 
     .. math::
        \frac{\partial af}{\partial t} = D \nabla^2 af - \alpha_T \cdot af \cdot c \cdot H(c)
 
     Where :math: `af` is the angiogenic factor field, :math: `c` is the capillaries field, and :math: `H(c)` is the
     Heaviside function
-
-    References:
-
-    .. [Travasso2011] Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., & Hernández-Machado, A.
-       (2011). Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5), e19989.
-       https://doi.org/10.1371/journal.pone.0019989
 
     :param af: angiogenic factor field
     :param af_0: initial condition for the angiogenic factor field

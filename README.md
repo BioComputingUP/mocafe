@@ -1,8 +1,14 @@
 # _mocafe_: modeling cancer with FEniCS
 
-> A Python package based on [FEniCS](https://fenicsproject.org/) to model and simulate Phase Field models for cancer
+> A Python package based on [FEniCS](https://fenicsproject.org/) to develop and simulate 
+> Phase Field mathematical models for cancer
 
-Todo 
+The purpose of _mocafe_ is to provide an open source and efficient implementation of legacy Phase Field mathematical 
+models of cancer development and angiogenesis. Use _mocafe_ to:
+
+* reproduce legacy cancer phase field model (also in parallel with `MPI`);
+* understand them better inspecting the code, and changing the parameters;
+* integrate these models in yours [FEniCS](https://fenicsproject.org/) scripts.
 
 ![](header.png)
 
@@ -10,7 +16,21 @@ Todo
 
 ### Linux quick setup (_not_ recommended)
 
-Install FEniCS using `apt`:
+To have access to parallel computation, first install MPI:
+
+```sh
+sudo apt install openmpi-bin
+```
+
+And test it using `mpirun --version`. If everything worked out well, you should get something like:
+
+```sh
+mpirun (Open MPI) 4.0.3
+
+Report bugs to http://www.open-mpi.org/community/help/
+```
+
+Then, install FEniCS using `apt-get`:
 
 ```sh
 sudo apt-get install software-properties-common
