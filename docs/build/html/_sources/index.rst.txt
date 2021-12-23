@@ -11,6 +11,7 @@ Welcome to mocafe's documentation!
    :caption: Contents:
 
    demo_doc/index
+   code_documentation
    bib
 
 
