@@ -1,10 +1,11 @@
+"""
+Useful methods to manage simulation data
+"""
+
 import datetime
 import fenics
 from mocafe.fenut.parameters import Parameters
 import pathlib
-"""
-Useful methods to manage simulation data
-"""
 
 comm = fenics.MPI.comm_world
 rank = comm.Get_rank()
@@ -49,7 +50,7 @@ def setup_data_folder(folder_path: str,
 
     :param folder_path: the path of the folder to generate
     :param auto_enumerate: if set to True, this method will create coded folder under the given ``folder_path`` in the
-    order: 0000, 0001, ..., and so on.
+        order: 0000, 0001, ..., and so on.
     :return: the generated folder
     """
     if rank == 0:
@@ -89,7 +90,7 @@ def save_sim_info(data_folder: pathlib.Path,
     :param data_folder: the data folder containing the simulation files
     :param execution_time: the execution time of the simulation
     :param parameters: the parameters used for the simulation (can be a dict of parameters files, each identified
-                       by a name)
+        by a name)
     :param sim_name: the simulation name
     :param dateandtime: date and time of the simulation. If it is equal to "auto" the time and date are automatically
         added by the method
