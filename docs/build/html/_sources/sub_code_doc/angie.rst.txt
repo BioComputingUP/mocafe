@@ -12,3 +12,6 @@ Travasso and collaborators :cite:`Travasso2011a`.
 
 .. automodule:: mocafe.angie.tipcells
     :members:
+
+.. automodule:: mocafe.angie.base_classes
+    :members:

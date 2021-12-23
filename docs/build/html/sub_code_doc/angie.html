@@ -43,7 +43,12 @@
 <p>This subpackage contains all the modules to simulate an angiogenesis model in FEniCS,
 using an hybrid Phase-Field/agent approach. By default, the algorithms used are the same presented by
 Travasso and collaborators <span id="id1">[<a class="reference internal" href="../bib.html#id7" title="Rui D.M. Travasso, Eugenia Corvera Poiré, Mario Castro, Juan Carlos Rodrguez-Manzaneque, and A. Hernández-Machado. Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5):e19989, 2011. URL: http://www.fct.mctes.pt http://www.gulbenkian.pt/ http://www.conacyt.mx/ http://www.isciii.es/ http://www.micinn.es/, doi:10.1371/journal.pone.0019989.">TPoireC+11</a>]</span>.</p>
-<span class="target" id="module-mocafe.angie.af_sourcing"></span><dl class="py class">
+<span class="target" id="module-mocafe.angie.af_sourcing"></span><p>This module contains classes and methods to manage discrete angiogenic factor sources in <code class="docutils literal notranslate"><span class="pre">mocafe</span></code>. More precisely,
+it provides useful tools to create cells (described as circles with a given radius) which act as angiogenic factor
+sources, inducing angiogenesis.</p>
+<p>This module have been implemented to reproduce the results given by the angiogenesis model presented by Travasso et al.
+<span id="id2">[<a class="reference internal" href="../bib.html#id7" title="Rui D.M. Travasso, Eugenia Corvera Poiré, Mario Castro, Juan Carlos Rodrguez-Manzaneque, and A. Hernández-Machado. Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5):e19989, 2011. URL: http://www.fct.mctes.pt http://www.gulbenkian.pt/ http://www.conacyt.mx/ http://www.isciii.es/ http://www.micinn.es/, doi:10.1371/journal.pone.0019989.">TPoireC+11</a>]</span>, where they where testing their model using multiple sources in random positions.</p>
+<dl class="py class">
 <dt class="sig sig-object py" id="mocafe.angie.af_sourcing.ClockChecker">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.angie.af_sourcing.</span></span><span class="sig-name descname"><span class="pre">ClockChecker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh_wrapper</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">mocafe.fenut.fenut.MeshWrapper</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_point</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'east'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.af_sourcing.ClockChecker" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class representing a clock checker, i.e. an object that checks if a given condition is met in the surroundings of
@@ -51,12 +56,20 @@ a point of the mesh.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mocafe.angie.af_sourcing.ClockChecker.clock_check">
 <span class="sig-name descname"><span class="pre">clock_check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.af_sourcing.ClockChecker.clock_check" title="Permalink to this definition">¶</a></dt>
-<dd><p>clock-check the given function in the surrounding of the given point
-:param point: center of the clock-check
-:param function: function to check
-:param threshold: threshold that the function has to surpass
-:param condition: lambda function representing the condition to be met
-:return: True if the condition is met; False otherwise</p>
+<dd><p>clock-check the given function in the surrounding of the given point</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>point</strong> – center of the clock-check</p></li>
+<li><p><strong>function</strong> – function to check</p></li>
+<li><p><strong>threshold</strong> – threshold that the function has to surpass</p></li>
+<li><p><strong>condition</strong> – lambda function representing the condition to be met</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if the condition is met; False otherwise</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -68,9 +81,15 @@ a point of the mesh.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mocafe.angie.af_sourcing.ConstantAFExpressionFunction.get_point_value_at_source_cell">
 <span class="sig-name descname"><span class="pre">get_point_value_at_source_cell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_cell</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.af_sourcing.ConstantAFExpressionFunction.get_point_value_at_source_cell" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the concentration of the angiogenic factor expressed for the given source cell.
-:param source_cell: the source cell considered
-:return:</p>
+<dd><p>Returns the concentration of the angiogenic factor expressed for the given source cell.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>source_cell</strong> – the source cell considered</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -89,9 +108,15 @@ center</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mocafe.angie.af_sourcing.RotationalAFExpressionFunction.get_point_value_at_source_cell">
 <span class="sig-name descname"><span class="pre">get_point_value_at_source_cell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_cell</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.af_sourcing.RotationalAFExpressionFunction.get_point_value_at_source_cell" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the concentration of the angiogenic factor expressed for the given source cell.
-:param source_cell: the source cell considered
-:return:</p>
+<dd><p>Returns the concentration of the angiogenic factor expressed for the given source cell.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>source_cell</strong> – the source cell considered</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -111,24 +136,38 @@ of each source cell at any point of the simulation, providing access to it to ot
 <dl class="py method">
 <dt class="sig sig-object py" id="mocafe.angie.af_sourcing.SourceMap.get_global_source_cells">
 <span class="sig-name descname"><span class="pre">get_global_source_cells</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.af_sourcing.SourceMap.get_global_source_cells" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the global list of source cell (equal for each MPI process)
-:return: the global list of source cells</p>
+<dd><p>Get the global list of source cell (equal for each MPI process)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the global list of source cells</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mocafe.angie.af_sourcing.SourceMap.get_local_source_cells">
 <span class="sig-name descname"><span class="pre">get_local_source_cells</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.af_sourcing.SourceMap.get_local_source_cells" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the local list of source cells (for the current MPI process)
-:return:</p>
+<dd><p>Get the local list of source cells (for the current MPI process)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mocafe.angie.af_sourcing.SourceMap.remove_global_source">
 <span class="sig-name descname"><span class="pre">remove_global_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_cell</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mocafe.angie.af_sourcing.SourceCell" title="mocafe.angie.af_sourcing.SourceCell"><span class="pre">mocafe.angie.af_sourcing.SourceCell</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.af_sourcing.SourceMap.remove_global_source" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove a source cell from the global source cell list. If the cell is part of the local source cells,
-it is removed also from that list.
-:param source_cell: the source cell to remove
-:return:</p>
+it is removed also from that list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>source_cell</strong> – the source cell to remove</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -147,19 +186,31 @@ cells when they are near the blood vessels and of translating the source cell ma
 <dl class="py method">
 <dt class="sig sig-object py" id="mocafe.angie.af_sourcing.SourcesManager.apply_sources">
 <span class="sig-name descname"><span class="pre">apply_sources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">af</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">af_expression_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.af_sourcing.SourcesManager.apply_sources" title="Permalink to this definition">¶</a></dt>
-<dd><p>Apply the sources at the current time to the angiogenic factor field af, respecting the expression function.
-:param af: FEniCS function representing the angiogenic factor
-:param af_expression_function: an object of type AFExpressionFunction which tells this method the value of
-the angiogenic factor inside the cells.
+<dd><p>Apply the sources at the current time to the angiogenic factor field af, respecting the expression function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>af</strong> – FEniCS function representing the angiogenic factor</p></li>
+<li><p><strong>af_expression_function</strong> – an object of type AFExpressionFunction which tells this method the value of</p></li>
+</ul>
+</dd>
+</dl>
+<p>the angiogenic factor inside the cells.
 :return: nothing</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mocafe.angie.af_sourcing.SourcesManager.remove_sources_near_vessels">
 <span class="sig-name descname"><span class="pre">remove_sources_near_vessels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.af_sourcing.SourcesManager.remove_sources_near_vessels" title="Permalink to this definition">¶</a></dt>
-<dd><p>Removes the source cells near the blood vessels
-:param c: blood vessel field
-:return:</p>
+<dd><p>Removes the source cells near the blood vessels</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>c</strong> – blood vessel field</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -168,19 +219,30 @@ the angiogenic factor inside the cells.
 <dt class="sig sig-object py" id="mocafe.angie.af_sourcing.sources_in_circle_points">
 <span class="sig-prename descclassname"><span class="pre">mocafe.angie.af_sourcing.</span></span><span class="sig-name descname"><span class="pre">sources_in_circle_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">center</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circle_radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_radius</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.af_sourcing.sources_in_circle_points" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate the points where to place the source cells to place the source cells in a circle. The circle is full of
-source cells.
-:param center: center of the circle
-:param circle_radius: radius of the circle
-:param cell_radius: radius of the cells
-:return: the list of source cells positions</p>
+source cells.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>center</strong> – center of the circle</p></li>
+<li><p><strong>circle_radius</strong> – radius of the circle</p></li>
+<li><p><strong>cell_radius</strong> – radius of the cells</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the list of source cells positions</p>
+</dd>
+</dl>
 </dd></dl>
 
-<span class="target" id="module-mocafe.angie.forms"></span><dl class="py function">
+<span class="target" id="module-mocafe.angie.forms"></span><p>Weak forms of the Phase-Field models related to angiogenesis. Each weak form is a FEniCS UFL Form which can be used
+calling a specific method, that returns the form itself.</p>
+<dl class="py function">
 <dt class="sig sig-object py" id="mocafe.angie.forms.angiogenesis_form">
 <span class="sig-prename descclassname"><span class="pre">mocafe.angie.forms.</span></span><span class="sig-name descname"><span class="pre">angiogenesis_form</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.argument.TestFunction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.argument.TestFunction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">af</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">mocafe.fenut.parameters.Parameters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.forms.angiogenesis_form" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the UFL form for the Phase-Field model for angiogenesis reported by Travasso et al. (2011) [Travasso2011] _.</p>
+<dd><p>Returns the UFL form for the Phase-Field model for angiogenesis reported by Travasso et al. (2011)
+<span id="id3">[<a class="reference internal" href="../bib.html#id7" title="Rui D.M. Travasso, Eugenia Corvera Poiré, Mario Castro, Juan Carlos Rodrguez-Manzaneque, and A. Hernández-Machado. Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5):e19989, 2011. URL: http://www.fct.mctes.pt http://www.gulbenkian.pt/ http://www.conacyt.mx/ http://www.isciii.es/ http://www.micinn.es/, doi:10.1371/journal.pone.0019989.">TPoireC+11</a>]</span>.</p>
 <p>The equation reads simply as the sum of a Cahn-Hillard term and a proliferation term (for further details see
-[Travasso2011] _):</p>
+the original paper):</p>
 <div class="math notranslate nohighlight">
 \[\frac{\partial c}{\partial t} = M \cdot \nabla^2 [\frac{df}{dc}\ - \epsilon \nabla^2 c]
 + \alpha_p(T) \cdot c H(c)\]</div>
@@ -196,14 +258,6 @@ solvable using standard Lagrange finite elements:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\frac{\partial c}{\partial t} &amp;= M \nabla^2 \cdot \mu + \alpha_p(T) \cdot c H(c) \\
 \mu &amp;= \frac{d f}{d c} - \epsilon \nabla^{2}c\end{split}\]</div>
-<p>References:</p>
-<dl class="citation">
-<dt class="label" id="travasso2011"><span class="brackets">Travasso2011</span></dt>
-<dd><p>Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., &amp; Hernández-Machado, A.
-(2011). Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5), e19989.
-<a class="reference external" href="https://doi.org/10.1371/journal.pone.0019989">https://doi.org/10.1371/journal.pone.0019989</a></p>
-</dd>
-</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -226,21 +280,14 @@ solvable using standard Lagrange finite elements:</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mocafe.angie.forms.angiogenic_factor_form">
 <span class="sig-prename descclassname"><span class="pre">mocafe.angie.forms.</span></span><span class="sig-name descname"><span class="pre">angiogenic_factor_form</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">af</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">af_0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.argument.TestFunction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">mocafe.fenut.parameters.Parameters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.forms.angiogenic_factor_form" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the UFL form for the equation for the angiogenic factor reported by Travasso et al. (2011) [Travasso2011] _.</p>
+<dd><p>Returns the UFL form for the equation for the angiogenic factor reported by Travasso et al. (2011)
+<span id="id4">[<a class="reference internal" href="../bib.html#id7" title="Rui D.M. Travasso, Eugenia Corvera Poiré, Mario Castro, Juan Carlos Rodrguez-Manzaneque, and A. Hernández-Machado. Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5):e19989, 2011. URL: http://www.fct.mctes.pt http://www.gulbenkian.pt/ http://www.conacyt.mx/ http://www.isciii.es/ http://www.micinn.es/, doi:10.1371/journal.pone.0019989.">TPoireC+11</a>]</span>.</p>
 <p>The equation simply considers the diffusion of the angiogenic factor and its consumption by the capillaries
-(for further details see [Travasso2011] _):</p>
+(for further details see the original paper):</p>
 <div class="math notranslate nohighlight">
 \[\frac{\partial af}{\partial t} = D \nabla^2 af - \alpha_T \cdot af \cdot c \cdot H(c)\]</div>
 <p>Where :math: <cite>af</cite> is the angiogenic factor field, :math: <cite>c</cite> is the capillaries field, and :math: <cite>H(c)</cite> is the
 Heaviside function</p>
-<p>References:</p>
-<dl class="citation">
-<dt class="label" id="id2"><span class="brackets">Travasso2011</span></dt>
-<dd><p>Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., &amp; Hernández-Machado, A.
-(2011). Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5), e19989.
-<a class="reference external" href="https://doi.org/10.1371/journal.pone.0019989">https://doi.org/10.1371/journal.pone.0019989</a></p>
-</dd>
-</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -261,7 +308,7 @@ Heaviside function</p>
 <dt class="sig sig-object py" id="mocafe.angie.forms.cahn_hillard_form">
 <span class="sig-prename descclassname"><span class="pre">mocafe.angie.forms.</span></span><span class="sig-name descname"><span class="pre">cahn_hillard_form</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.cpp.common.Variable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.argument.TestFunction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.argument.TestFunction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chem_potential</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lmbda</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.forms.cahn_hillard_form" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the UFL form of a for a general Cahn-Hillard equation, discretized in time using the theta method. The
-method is the same reported by the FEniCS team in one of their demo <cite>1. Cahn-Hillard equation</cite> _ and is briefly
+method is the same reported by the FEniCS team in one of their demo <a class="reference external" href="https://fenicsproject.org/olddocs/dolfin/2016.2.0/cpp/demo/documented/cahn-hilliard/cpp/documentation.html">1. Cahn-Hillard equation</a> and is briefly
 discussed below for your conveneince.</p>
 <p>The Cahn-Hillard equation reads as follows:</p>
 <div class="math notranslate nohighlight">
@@ -303,7 +350,7 @@ implementation uses this form.</p>
 <dt class="sig sig-object py" id="mocafe.angie.forms.vascular_proliferation_form">
 <span class="sig-prename descclassname"><span class="pre">mocafe.angie.forms.</span></span><span class="sig-name descname"><span class="pre">vascular_proliferation_form</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">af</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">af_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.forms.vascular_proliferation_form" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the UFL Form for the proliferation term of the vascular tissue as defined by the paper of Travasso et al.
-(2011) [Travasso2011] _.</p>
+(2011) <span id="id5">[<a class="reference internal" href="../bib.html#id7" title="Rui D.M. Travasso, Eugenia Corvera Poiré, Mario Castro, Juan Carlos Rodrguez-Manzaneque, and A. Hernández-Machado. Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5):e19989, 2011. URL: http://www.fct.mctes.pt http://www.gulbenkian.pt/ http://www.conacyt.mx/ http://www.isciii.es/ http://www.micinn.es/, doi:10.1371/journal.pone.0019989.">TPoireC+11</a>]</span>.</p>
 <p>The corresponding term of the equation is (H is the Heaviside function):</p>
 <div class="math notranslate nohighlight">
 \[\alpha_p(af_p) \cdot c \cdot H(c)\]</div>
@@ -315,14 +362,6 @@ following:</p>
              &amp;= \alpha_p \cdot af  \quad \textrm{if} \quad 0&lt;af \le af_p \\
              &amp; = 0 \quad \textrm{if} \quad af \le 0\end{split}\]</div>
 <p>Where :math: <cite>alpha-p</cite> and :math: <cite>af_p</cite> are constants.</p>
-<p>References:</p>
-<dl class="citation">
-<dt class="label" id="id3"><span class="brackets">Travasso2011</span></dt>
-<dd><p>Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., &amp; Hernández-Machado, A.
-(2011). Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5), e19989.
-<a class="reference external" href="https://doi.org/10.1371/journal.pone.0019989">https://doi.org/10.1371/journal.pone.0019989</a></p>
-</dd>
-</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -338,31 +377,49 @@ following:</p>
 :return: the UFL form for the proliferation term</p>
 </dd></dl>
 
-<span class="target" id="module-mocafe.angie.tipcells"></span><dl class="py class">
+<span class="target" id="module-mocafe.angie.tipcells"></span><p>This module contains classes and methods to manage the tip cells in <code class="docutils literal notranslate"><span class="pre">mocafe</span></code>. More precisely, it provides useful
+tools to activate, remove, and move the tip cell in the spatial domain.</p>
+<dl class="py class">
 <dt class="sig sig-object py" id="mocafe.angie.tipcells.TipCell">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.angie.tipcells.</span></span><span class="sig-name descname"><span class="pre">TipCell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">creation_step</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCell" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class representing a tip cell. The tip cells are represented as a circle with a given radius.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mocafe.angie.tipcells.TipCell.get_radius">
 <span class="sig-name descname"><span class="pre">get_radius</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCell.get_radius" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the radius of the tip cell
-:return: the radius of the tip cell</p>
+<dd><p>Get the radius of the tip cell</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the radius of the tip cell</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mocafe.angie.tipcells.TipCell.is_point_inside">
 <span class="sig-name descname"><span class="pre">is_point_inside</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCell.is_point_inside" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if the given point is inside the tip cell
-:param x: point to check
-:return: True if the point is inside; False otherwise</p>
+<dd><p>Check if the given point is inside the tip cell</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> – point to check</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if the point is inside; False otherwise</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mocafe.angie.tipcells.TipCell.move">
 <span class="sig-name descname"><span class="pre">move</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_position</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCell.move" title="Permalink to this definition">¶</a></dt>
-<dd><p>Move the tip cell to the new position.
-:param new_position: the new position where to move the tip cell.
-:return: nothing</p>
+<dd><p>Move the tip cell to the new position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_position</strong> – the new position where to move the tip cell.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>nothing</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -377,7 +434,7 @@ following:</p>
 <dd><p>Activates a tip cell if the right conditions on the capillaries field c, the angiogenic factor field af and
 its gradient, grad_af, are met.</p>
 <p>In this implementation the conditions are coherent with the one used by Travasso et al. (2011)
-[Travasso2011] _, which are reported in the following pseudo-code:</p>
+<span id="id6">[<a class="reference internal" href="../bib.html#id7" title="Rui D.M. Travasso, Eugenia Corvera Poiré, Mario Castro, Juan Carlos Rodrguez-Manzaneque, and A. Hernández-Machado. Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5):e19989, 2011. URL: http://www.fct.mctes.pt http://www.gulbenkian.pt/ http://www.conacyt.mx/ http://www.isciii.es/ http://www.micinn.es/, doi:10.1371/journal.pone.0019989.">TPoireC+11</a>]</span>, which are reported in the following pseudo-code:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">p</span> <span class="o">=</span> <span class="n">possible</span> <span class="n">new</span> <span class="n">tip</span> <span class="n">cell</span> <span class="n">center</span>
 <span class="k">if</span> <span class="n">distance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">closest_tip_cell</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">min_tipcell_distance</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">c</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">phi_th</span><span class="p">:</span>
@@ -392,14 +449,6 @@ its gradient, grad_af, are met.</p>
 <p>The procedure above is applied to every point of the mesh.</p>
 <p>If more than two point are found as possible new tip cell positions, only one is randomly selected. Thus, in
 this implementation only one tip cell can be activated at each call of the method.</p>
-<p>References:</p>
-<dl class="citation">
-<dt class="label" id="id4"><span class="brackets">Travasso2011</span></dt>
-<dd><p>Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., &amp; Hernández-Machado,
-A. (2011). Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5), e19989.
-<a class="reference external" href="https://doi.org/10.1371/journal.pone.0019989">https://doi.org/10.1371/journal.pone.0019989</a></p>
-</dd>
-</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -420,18 +469,10 @@ A. (2011). Tumor angiogenesis and vascular patterning: A mathematical model. PLo
 <span class="sig-name descname"><span class="pre">compute_tip_cell_velocity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grad_af</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tip_cell_position</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCellManager.compute_tip_cell_velocity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the tip cell velocity given its position, the gradient of the angiogenic factor, and the constant chi.</p>
 <p>In this implementation the velocity is computed according to the model presented by Travasso et al. (2011)
-[Travasso2011] _. The formula is:</p>
+<span id="id7">[<a class="reference internal" href="../bib.html#id7" title="Rui D.M. Travasso, Eugenia Corvera Poiré, Mario Castro, Juan Carlos Rodrguez-Manzaneque, and A. Hernández-Machado. Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5):e19989, 2011. URL: http://www.fct.mctes.pt http://www.gulbenkian.pt/ http://www.conacyt.mx/ http://www.isciii.es/ http://www.micinn.es/, doi:10.1371/journal.pone.0019989.">TPoireC+11</a>]</span>. The formula is:</p>
 <div class="math notranslate nohighlight">
 \[v = \chi \nabla af [1 + (\frac{G_M}{G})\cdot (G - G_M)]\]</div>
 <p>Where <span class="math notranslate nohighlight">\(G\)</span> is the norm of the angiogenic factor gradient (<span class="math notranslate nohighlight">\(\nabla af\)</span>).</p>
-<p>References:</p>
-<dl class="citation">
-<dt class="label" id="id5"><span class="brackets">Travasso2011</span></dt>
-<dd><p>Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., &amp; Hernández-Machado,
-A. (2011). Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5), e19989.
-<a class="reference external" href="https://doi.org/10.1371/journal.pone.0019989">https://doi.org/10.1371/journal.pone.0019989</a></p>
-</dd>
-</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -464,18 +505,10 @@ A. (2011). Tumor angiogenesis and vascular patterning: A mathematical model. PLo
 <code class="docutils literal notranslate"><span class="pre">compute_tip_cell_velocity</span></code>.</p>
 <p>The method also updates the tip cell field and returns it.</p>
 <p>The tip cells field is a FEniCS function which inside each tip cell has the value defined by Travasso et al.
-(2011) [Travasso2011] _, which is:</p>
+(2011) <span id="id8">[<a class="reference internal" href="../bib.html#id7" title="Rui D.M. Travasso, Eugenia Corvera Poiré, Mario Castro, Juan Carlos Rodrguez-Manzaneque, and A. Hernández-Machado. Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5):e19989, 2011. URL: http://www.fct.mctes.pt http://www.gulbenkian.pt/ http://www.conacyt.mx/ http://www.isciii.es/ http://www.micinn.es/, doi:10.1371/journal.pone.0019989.">TPoireC+11</a>]</span>, which is:</p>
 <div class="math notranslate nohighlight">
 \[\frac{\alpha_p(af) \cdot \pi \cdot R_c}{2 \cdot |v|}\]</div>
 <p>In every other point, the function has value 0.</p>
-<p>References:</p>
-<dl class="citation">
-<dt class="label" id="id6"><span class="brackets">Travasso2011</span></dt>
-<dd><p>Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., &amp; Hernández-Machado,
-A. (2011). Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5), e19989.
-<a class="reference external" href="https://doi.org/10.1371/journal.pone.0019989">https://doi.org/10.1371/journal.pone.0019989</a></p>
-</dd>
-</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -495,7 +528,7 @@ A. (2011). Tumor angiogenesis and vascular patterning: A mathematical model. PLo
 <span class="sig-name descname"><span class="pre">revert_tip_cells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">af</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grad_af</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCellManager.revert_tip_cells" title="Permalink to this definition">¶</a></dt>
 <dd><p>Deactivate the tip cells when the right conditions are met.</p>
 <p>In this implementation the conditions are coherent with the one used by Travasso et al. (2011)
-[Travasso2011] _, which are reported in the following pseudo-code:</p>
+<span id="id9">[<a class="reference internal" href="../bib.html#id7" title="Rui D.M. Travasso, Eugenia Corvera Poiré, Mario Castro, Juan Carlos Rodrguez-Manzaneque, and A. Hernández-Machado. Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5):e19989, 2011. URL: http://www.fct.mctes.pt http://www.gulbenkian.pt/ http://www.conacyt.mx/ http://www.isciii.es/ http://www.micinn.es/, doi:10.1371/journal.pone.0019989.">TPoireC+11</a>]</span>, which are reported in the following pseudo-code:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tc_p</span> <span class="o">=</span> <span class="n">a</span> <span class="n">tip</span> <span class="n">cell</span> <span class="n">position</span>
 <span class="k">if</span> <span class="p">(</span><span class="n">af</span><span class="p">(</span><span class="n">tc_p</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">T_c</span> <span class="ow">or</span> <span class="n">norm</span><span class="p">(</span><span class="n">grad_af</span><span class="p">(</span><span class="n">tc_p</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">G_m</span><span class="p">):</span>
     <span class="n">deactivate</span> <span class="n">tip</span> <span class="n">cell</span> <span class="n">at</span> <span class="n">position</span> <span class="n">tc_p</span>
@@ -505,14 +538,6 @@ A. (2011). Tumor angiogenesis and vascular patterning: A mathematical model. PLo
 </div>
 <p>Where <code class="docutils literal notranslate"><span class="pre">T_c</span></code> and <code class="docutils literal notranslate"><span class="pre">G_m</span></code> are constants defined in the simulation parameter.</p>
 <p>The procedure above is applied to all the active tip cells.</p>
-<p>References:</p>
-<dl class="citation">
-<dt class="label" id="id7"><span class="brackets">Travasso2011</span></dt>
-<dd><p>Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., &amp;
-Hernández-Machado, A. (2011). Tumor angiogenesis and vascular patterning: A mathematical model.
-PLoS ONE, 6(5), e19989. <a class="reference external" href="https://doi.org/10.1371/journal.pone.0019989">https://doi.org/10.1371/journal.pone.0019989</a></p>
-</dd>
-</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -533,7 +558,7 @@ PLoS ONE, 6(5), e19989. <a class="reference external" href="https://doi.org/10.1
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.angie.tipcells.</span></span><span class="sig-name descname"><span class="pre">TipCellsField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">mocafe.fenut.parameters.Parameters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCellsField" title="Permalink to this definition">¶</a></dt>
 <dd><p>Expression representing the capillary field value inside the tip cells.</p>
 <p>In this implementation, the value is coherent with the one used by Travasso et al (2011) in their Phase Field
-angiogenesis model [Travasso2011] _, that is:</p>
+angiogenesis model <span id="id10">[<a class="reference internal" href="../bib.html#id7" title="Rui D.M. Travasso, Eugenia Corvera Poiré, Mario Castro, Juan Carlos Rodrguez-Manzaneque, and A. Hernández-Machado. Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5):e19989, 2011. URL: http://www.fct.mctes.pt http://www.gulbenkian.pt/ http://www.conacyt.mx/ http://www.isciii.es/ http://www.micinn.es/, doi:10.1371/journal.pone.0019989.">TPoireC+11</a>]</span>, that is:</p>
 <div class="math notranslate nohighlight">
 \[\frac{\alpha_p(af) \cdot \pi \cdot R_c}{2 \cdot |v|}\]</div>
 <p>Where <span class="math notranslate nohighlight">\(R_c\)</span> is the radius of the tip cell, <span class="math notranslate nohighlight">\(v\)</span> is the velocity of the tip cell, and
@@ -543,36 +568,43 @@ factor concentration (<span class="math notranslate nohighlight">\(af\)</span>) 
 \[\begin{split}\alpha_p(af) &amp;= \alpha_p \cdot af_p \quad \textrm{if} \quad af&gt;af_p \\
              &amp;= \alpha_p \cdot af  \quad \textrm{if} \quad 0&lt;af \le af_p \\
              &amp; = 0 \quad \textrm{if} \quad af \le 0\end{split}\]</div>
-<p>References:</p>
-<dl class="citation">
-<dt class="label" id="id8"><span class="brackets">Travasso2011</span></dt>
-<dd><p>Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., &amp; Hernández-Machado, A.
-(2011). Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5), e19989.
-<a class="reference external" href="https://doi.org/10.1371/journal.pone.0019989">https://doi.org/10.1371/journal.pone.0019989</a></p>
-</dd>
-</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="mocafe.angie.tipcells.TipCellsField.add_tip_cell">
 <span class="sig-name descname"><span class="pre">add_tip_cell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tip_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">velocity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">af_at_point</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCellsField.add_tip_cell" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a tip cell to the field.
-:param tip_cell: the tip cell to add.
-:param velocity: the velocity of the tip cell, that is used for computing the field value.
-:param af_at_point: the angiogenic factor concentration at the tip cell center, that is used for computing the
-field value.
+<dd><p>Add a tip cell to the field.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tip_cell</strong> – the tip cell to add.</p></li>
+<li><p><strong>velocity</strong> – the velocity of the tip cell, that is used for computing the field value.</p></li>
+<li><p><strong>af_at_point</strong> – the angiogenic factor concentration at the tip cell center, that is used for computing the</p></li>
+</ul>
+</dd>
+</dl>
+<p>field value.
 :return:</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mocafe.angie.tipcells.TipCellsField.eval">
 <span class="sig-name descname"><span class="pre">eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCellsField.eval" title="Permalink to this definition">¶</a></dt>
-<dd><p>evaluate the field value for the given point
-:param values: internal FEniCS parameter
-:param x: given point
-:return: nothing</p>
+<dd><p>evaluate the field value for the given point</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>values</strong> – internal FEniCS parameter</p></li>
+<li><p><strong>x</strong> – given point</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>nothing</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
 
+<span class="target" id="module-mocafe.angie.base_classes"></span><p>Base classes used only by mocafe.angie</p>
 </section>
 
 
