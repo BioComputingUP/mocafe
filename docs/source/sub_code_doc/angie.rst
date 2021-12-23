@@ -4,14 +4,12 @@ This subpackage contains all the modules to simulate an angiogenesis model in FE
 using an hybrid Phase-Field/agent approach. By default, the algorithms used are the same presented by
 Travasso and collaborators :cite:`Travasso2011a`.
 
-.. automodule:: mocafe.angie.af_sourcing
-    :members:
+.. toctree::
+    :maxdepth: 2
+    :caption: The full documentation for each submodule is provided below:
 
-.. automodule:: mocafe.angie.forms
-    :members:
+    angie_sub_code_doc/af_sourcing
+    angie_sub_code_doc/forms
+    angie_sub_code_doc/tipcells
+    angie_sub_code_doc/base_classes
 
-.. automodule:: mocafe.angie.tipcells
-    :members:
-
-.. automodule:: mocafe.angie.base_classes
-    :members:

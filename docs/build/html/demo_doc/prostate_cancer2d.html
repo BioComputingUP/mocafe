@@ -217,7 +217,7 @@ will define an elliptical tumor with the given semiaxes:</p>
 </pre></div>
 </div>
 <p>With FEniCS we can do so by defining an expression which ‘mathematically’ represent our initial condition.
-Indeed, <a href="#id6"><span class="problematic" id="id7">``</span></a>Espression``s are the FEniCS way to define symbolic mathematical functions and they can be defined
+Indeed, an <code class="docutils literal notranslate"><span class="pre">Expression</span></code> is the FEniCS way to define symbolic mathematical function and they can be defined
 using simple C++ code as follows:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">phi0_max</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">phi0_min</span> <span class="o">=</span> <span class="mi">0</span>
@@ -264,7 +264,7 @@ collect the values of phi for each time.</p>
 </pre></div>
 </div>
 <p>Finally, after having defined the initial condition for <span class="math notranslate nohighlight">\(\varphi\)</span>, let’s define the initial for
-<span class="math notranslate nohighlight">\(\sigma\)</span>. Following the hypothesis of original author <span id="id8">[<a class="reference internal" href="../bib.html#id5" title="G. Lorenzo, M. A. Scott, K. Tew, T. J.R. Hughes, and H. Gomez. Hierarchically refined and coarsened splines for moving interface problems, with particular application to phase-field models of prostate tumor growth. Computer Methods in Applied Mechanics and Engineering, 319:515–548, jun 2017. doi:10.1016/j.cma.2017.03.009.">LST+17</a>]</span>, we will assume a nutrient
+<span class="math notranslate nohighlight">\(\sigma\)</span>. Following the hypothesis of original author <span id="id6">[<a class="reference internal" href="../bib.html#id5" title="G. Lorenzo, M. A. Scott, K. Tew, T. J.R. Hughes, and H. Gomez. Hierarchically refined and coarsened splines for moving interface problems, with particular application to phase-field models of prostate tumor growth. Computer Methods in Applied Mechanics and Engineering, 319:515–548, jun 2017. doi:10.1016/j.cma.2017.03.009.">LST+17</a>]</span>, we will assume a nutrient
 distribution that is 0.2 inside the cancer and 1. outside. So, we can define this distribution similarly to
 what we just did for <code class="docutils literal notranslate"><span class="pre">phi0</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sigma0</span> <span class="o">=</span> <span class="n">EllipseField</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">]),</span>
@@ -310,7 +310,7 @@ at least on input (x in this case), representing the spatial point.</p>
 <p>Now, we have everything in place to define our PDE system. Since FEniCS uses the Finite Element Method (FEM) to
 approximate the solution we need to define the so called ‘weak form’ of our system. This operation is not difficult
 to do with the Unified Form Language (UFL) of FEniCS and, if you’re not experienced with that, you are encouraged to
-have a look to The Fenics Tutorial to start <span id="id9">[<a class="reference internal" href="../bib.html#id4" title="Hans Petter Langtangen and Anders Logg. Solving PDEs in Python. Springer, 2017. ISBN 978-3-319-52461-0. doi:10.1007/978-3-319-52462-7.">LL17</a>]</span>. However, the weak form of this system
+have a look to The Fenics Tutorial to start <span id="id7">[<a class="reference internal" href="../bib.html#id4" title="Hans Petter Langtangen and Anders Logg. Solving PDEs in Python. Springer, 2017. ISBN 978-3-319-52461-0. doi:10.1007/978-3-319-52462-7.">LL17</a>]</span>. However, the weak form of this system
 is already defined in mocefe, so we can exploit that without wondering too much about weak form construction:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">TestFunctions</span><span class="p">(</span><span class="n">function_space</span><span class="p">)</span>
 <span class="n">weak_form</span> <span class="o">=</span> <span class="n">pc_model</span><span class="o">.</span><span class="n">prostate_cancer_form</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">phi0</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span> <span class="o">+</span> \
@@ -327,7 +327,7 @@ exactly like the equations defined above</p></li>
 </ul>
 <p>This was just to give you a taste of how simple it is to use UFL do define systems of differential equation, and how
 well is integrated in Python. If you want to know more about it, you’re again invited to have a look to The FEniCS
-Tutorial <span id="id10">[<a class="reference internal" href="../bib.html#id4" title="Hans Petter Langtangen and Anders Logg. Solving PDEs in Python. Springer, 2017. ISBN 978-3-319-52461-0. doi:10.1007/978-3-319-52462-7.">LL17</a>]</span>.</p>
+Tutorial <span id="id8">[<a class="reference internal" href="../bib.html#id4" title="Hans Petter Langtangen and Anders Logg. Solving PDEs in Python. Springer, 2017. ISBN 978-3-319-52461-0. doi:10.1007/978-3-319-52462-7.">LL17</a>]</span>.</p>
 </section>
 <section id="simulation-setup">
 <h3>Simulation setup<a class="headerlink" href="#simulation-setup" title="Permalink to this headline">¶</a></h3>
@@ -376,7 +376,7 @@ the system of PDEs we are solving is non-linear and thus it requires this class 
 implementation we are asking to PETSc to solve our system with a Krylov solver of type ‘gmres’
 (<code class="docutils literal notranslate"><span class="pre">&quot;ksp_type&quot;:</span> <span class="pre">&quot;gmres&quot;</span></code>) using a preconditioner called “asm” (<code class="docutils literal notranslate"><span class="pre">&quot;pc_type&quot;:</span> <span class="pre">&quot;asm&quot;</span></code>). For further details, you
 are suggested to have a look to chapter 9 of the book “The Finite Element Method: Theory, Implementation,
-and Applications”, by Larson and Bengzon <span id="id11">[<a class="reference internal" href="../bib.html#id6" title="Mats G. Larson and Fredrik Bengzon. Non-linear Problems, pages 225–239. Springer Berlin Heidelberg, Berlin, Heidelberg, 2013. URL: https://doi.org/10.1007/978-3-642-33287-6_9, doi:10.1007/978-3-642-33287-6_9.">LB13</a>]</span></p>
+and Applications”, by Larson and Bengzon <span id="id9">[<a class="reference internal" href="../bib.html#id6" title="Mats G. Larson and Fredrik Bengzon. Non-linear Problems, pages 225–239. Springer Berlin Heidelberg, Berlin, Heidelberg, 2013. URL: https://doi.org/10.1007/978-3-642-33287-6_9, doi:10.1007/978-3-642-33287-6_9.">LB13</a>]</span></p>
 </section>
 <section id="simulation">
 <h3>Simulation<a class="headerlink" href="#simulation" title="Permalink to this headline">¶</a></h3>

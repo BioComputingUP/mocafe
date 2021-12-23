@@ -1,0 +1,352 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>mocafe.angie.tipcells &#8212; mocafe 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="mocafe.angie.base_classes" href="base_classes.html" />
+    <link rel="prev" title="mocafe.angie.forms" href="forms.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-mocafe.angie.tipcells">
+<span id="mocafe-angie-tipcells"></span><h1><code class="docutils literal notranslate"><span class="pre">mocafe.angie.tipcells</span></code><a class="headerlink" href="#module-mocafe.angie.tipcells" title="Permalink to this headline">¶</a></h1>
+<p>This module contains classes and methods to manage the tip cells in <code class="docutils literal notranslate"><span class="pre">mocafe</span></code>. More precisely, it provides useful
+tools to activate, remove, and move the tip cell in the spatial domain.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mocafe.angie.tipcells.TipCell">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.angie.tipcells.</span></span><span class="sig-name descname"><span class="pre">TipCell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">creation_step</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class representing a tip cell. The tip cells are represented as a circle with a given radius.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mocafe.angie.tipcells.TipCell.get_radius">
+<span class="sig-name descname"><span class="pre">get_radius</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCell.get_radius" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the radius of the tip cell</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the radius of the tip cell</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mocafe.angie.tipcells.TipCell.is_point_inside">
+<span class="sig-name descname"><span class="pre">is_point_inside</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCell.is_point_inside" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the given point is inside the tip cell</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> – point to check</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if the point is inside; False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mocafe.angie.tipcells.TipCell.move">
+<span class="sig-name descname"><span class="pre">move</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_position</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCell.move" title="Permalink to this definition">¶</a></dt>
+<dd><p>Move the tip cell to the new position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_position</strong> – the new position where to move the tip cell.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>nothing</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mocafe.angie.tipcells.TipCellManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.angie.tipcells.</span></span><span class="sig-name descname"><span class="pre">TipCellManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh_wrapper</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">mocafe.fenut.fenut.MeshWrapper</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">mocafe.fenut.parameters.Parameters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCellManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to manage the tip cells throughout the simulation.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mocafe.angie.tipcells.TipCellManager.activate_tip_cell">
+<span class="sig-name descname"><span class="pre">activate_tip_cell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">af</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grad_af</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_step</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCellManager.activate_tip_cell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Activates a tip cell if the right conditions on the capillaries field c, the angiogenic factor field af and
+its gradient, grad_af, are met.</p>
+<p>In this implementation the conditions are coherent with the one used by Travasso et al. (2011)
+<span id="id1">[<a class="reference internal" href="../../bib.html#id7" title="Rui D.M. Travasso, Eugenia Corvera Poiré, Mario Castro, Juan Carlos Rodrguez-Manzaneque, and A. Hernández-Machado. Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5):e19989, 2011. URL: http://www.fct.mctes.pt http://www.gulbenkian.pt/ http://www.conacyt.mx/ http://www.isciii.es/ http://www.micinn.es/, doi:10.1371/journal.pone.0019989.">TPoireC+11</a>]</span>, which are reported in the following pseudo-code:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">p</span> <span class="o">=</span> <span class="n">possible</span> <span class="n">new</span> <span class="n">tip</span> <span class="n">cell</span> <span class="n">center</span>
+<span class="k">if</span> <span class="n">distance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">closest_tip_cell</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">min_tipcell_distance</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">c</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">phi_th</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">af</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">T_c</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">norm</span><span class="p">(</span><span class="n">grad_af</span><span class="p">(</span><span class="n">c</span><span class="p">))</span> <span class="o">&gt;</span> <span class="n">G_m</span>
+                <span class="n">create</span> <span class="n">new</span> <span class="n">tip</span> <span class="n">cell</span> <span class="n">at</span> <span class="n">point</span> <span class="n">p</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">do</span> <span class="n">nothing</span>
+</pre></div>
+</div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">min_tipcell_distance</span></code>, <code class="docutils literal notranslate"><span class="pre">phi_th</span></code>, <code class="docutils literal notranslate"><span class="pre">T_c</span></code>, and <code class="docutils literal notranslate"><span class="pre">G_m</span></code> are defined in the simulation parameters.</p>
+<p>The procedure above is applied to every point of the mesh.</p>
+<p>If more than two point are found as possible new tip cell positions, only one is randomly selected. Thus, in
+this implementation only one tip cell can be activated at each call of the method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>c</strong> – capillaries field</p></li>
+<li><p><strong>af</strong> – angiogenic factor field</p></li>
+<li><p><strong>grad_af</strong> – gradient of the angiogenic factor field</p></li>
+<li><p><strong>current_step</strong> – current simulation step. it is used for internal purpose</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mocafe.angie.tipcells.TipCellManager.compute_tip_cell_velocity">
+<span class="sig-name descname"><span class="pre">compute_tip_cell_velocity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grad_af</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tip_cell_position</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCellManager.compute_tip_cell_velocity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the tip cell velocity given its position, the gradient of the angiogenic factor, and the constant chi.</p>
+<p>In this implementation the velocity is computed according to the model presented by Travasso et al. (2011)
+<span id="id2">[<a class="reference internal" href="../../bib.html#id7" title="Rui D.M. Travasso, Eugenia Corvera Poiré, Mario Castro, Juan Carlos Rodrguez-Manzaneque, and A. Hernández-Machado. Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5):e19989, 2011. URL: http://www.fct.mctes.pt http://www.gulbenkian.pt/ http://www.conacyt.mx/ http://www.isciii.es/ http://www.micinn.es/, doi:10.1371/journal.pone.0019989.">TPoireC+11</a>]</span>. The formula is:</p>
+<div class="math notranslate nohighlight">
+\[v = \chi \nabla af [1 + (\frac{G_M}{G})\cdot (G - G_M)]\]</div>
+<p>Where <span class="math notranslate nohighlight">\(G\)</span> is the norm of the angiogenic factor gradient (<span class="math notranslate nohighlight">\(\nabla af\)</span>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>grad_af</strong> – </p></li>
+<li><p><strong>chi</strong> – </p></li>
+<li><p><strong>tip_cell_position</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mocafe.angie.tipcells.TipCellManager.get_global_tip_cells_list">
+<span class="sig-name descname"><span class="pre">get_global_tip_cells_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCellManager.get_global_tip_cells_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the global tip cell list, i.e. all the tip cells for all the MPI processes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a list of the tip cells</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mocafe.angie.tipcells.TipCellManager.move_tip_cells">
+<span class="sig-name descname"><span class="pre">move_tip_cells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">af</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grad_af</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCellManager.move_tip_cells" title="Permalink to this definition">¶</a></dt>
+<dd><p>Move the tip cell to follow the gradient of the angiogenic factor, with the velocity computed by the method
+<code class="docutils literal notranslate"><span class="pre">compute_tip_cell_velocity</span></code>.</p>
+<p>The method also updates the tip cell field and returns it.</p>
+<p>The tip cells field is a FEniCS function which inside each tip cell has the value defined by Travasso et al.
+(2011) <span id="id3">[<a class="reference internal" href="../../bib.html#id7" title="Rui D.M. Travasso, Eugenia Corvera Poiré, Mario Castro, Juan Carlos Rodrguez-Manzaneque, and A. Hernández-Machado. Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5):e19989, 2011. URL: http://www.fct.mctes.pt http://www.gulbenkian.pt/ http://www.conacyt.mx/ http://www.isciii.es/ http://www.micinn.es/, doi:10.1371/journal.pone.0019989.">TPoireC+11</a>]</span>, which is:</p>
+<div class="math notranslate nohighlight">
+\[\frac{\alpha_p(af) \cdot \pi \cdot R_c}{2 \cdot |v|}\]</div>
+<p>In every other point, the function has value 0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>c</strong> – capillaries field</p></li>
+<li><p><strong>af</strong> – angiogenic factor field</p></li>
+<li><p><strong>grad_af</strong> – gradient of the angiogenic factor field</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mocafe.angie.tipcells.TipCellManager.revert_tip_cells">
+<span class="sig-name descname"><span class="pre">revert_tip_cells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">af</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grad_af</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCellManager.revert_tip_cells" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deactivate the tip cells when the right conditions are met.</p>
+<p>In this implementation the conditions are coherent with the one used by Travasso et al. (2011)
+<span id="id4">[<a class="reference internal" href="../../bib.html#id7" title="Rui D.M. Travasso, Eugenia Corvera Poiré, Mario Castro, Juan Carlos Rodrguez-Manzaneque, and A. Hernández-Machado. Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5):e19989, 2011. URL: http://www.fct.mctes.pt http://www.gulbenkian.pt/ http://www.conacyt.mx/ http://www.isciii.es/ http://www.micinn.es/, doi:10.1371/journal.pone.0019989.">TPoireC+11</a>]</span>, which are reported in the following pseudo-code:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tc_p</span> <span class="o">=</span> <span class="n">a</span> <span class="n">tip</span> <span class="n">cell</span> <span class="n">position</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">af</span><span class="p">(</span><span class="n">tc_p</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">T_c</span> <span class="ow">or</span> <span class="n">norm</span><span class="p">(</span><span class="n">grad_af</span><span class="p">(</span><span class="n">tc_p</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">G_m</span><span class="p">):</span>
+    <span class="n">deactivate</span> <span class="n">tip</span> <span class="n">cell</span> <span class="n">at</span> <span class="n">position</span> <span class="n">tc_p</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">do</span> <span class="n">nothing</span>
+</pre></div>
+</div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">T_c</span></code> and <code class="docutils literal notranslate"><span class="pre">G_m</span></code> are constants defined in the simulation parameter.</p>
+<p>The procedure above is applied to all the active tip cells.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>af</strong> – angiogenic factor field</p></li>
+<li><p><strong>grad_af</strong> – gradient of the angiogenic factor</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>nothing</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mocafe.angie.tipcells.TipCellsField">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.angie.tipcells.</span></span><span class="sig-name descname"><span class="pre">TipCellsField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">mocafe.fenut.parameters.Parameters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCellsField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Expression representing the capillary field value inside the tip cells.</p>
+<p>In this implementation, the value is coherent with the one used by Travasso et al (2011) in their Phase Field
+angiogenesis model <span id="id5">[<a class="reference internal" href="../../bib.html#id7" title="Rui D.M. Travasso, Eugenia Corvera Poiré, Mario Castro, Juan Carlos Rodrguez-Manzaneque, and A. Hernández-Machado. Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5):e19989, 2011. URL: http://www.fct.mctes.pt http://www.gulbenkian.pt/ http://www.conacyt.mx/ http://www.isciii.es/ http://www.micinn.es/, doi:10.1371/journal.pone.0019989.">TPoireC+11</a>]</span>, that is:</p>
+<div class="math notranslate nohighlight">
+\[\frac{\alpha_p(af) \cdot \pi \cdot R_c}{2 \cdot |v|}\]</div>
+<p>Where <span class="math notranslate nohighlight">\(R_c\)</span> is the radius of the tip cell, <span class="math notranslate nohighlight">\(v\)</span> is the velocity of the tip cell, and
+<span class="math notranslate nohighlight">\(\alpha_p(af)\)</span> is the proliferation rate for the capillaries’ cells, defined as a function of the angiogenic
+factor concentration (<span class="math notranslate nohighlight">\(af\)</span>) which reads:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\alpha_p(af) &amp;= \alpha_p \cdot af_p \quad \textrm{if} \quad af&gt;af_p \\
+             &amp;= \alpha_p \cdot af  \quad \textrm{if} \quad 0&lt;af \le af_p \\
+             &amp; = 0 \quad \textrm{if} \quad af \le 0\end{split}\]</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="mocafe.angie.tipcells.TipCellsField.add_tip_cell">
+<span class="sig-name descname"><span class="pre">add_tip_cell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tip_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">velocity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">af_at_point</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCellsField.add_tip_cell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a tip cell to the field.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tip_cell</strong> – the tip cell to add.</p></li>
+<li><p><strong>velocity</strong> – the velocity of the tip cell, that is used for computing the field value.</p></li>
+<li><p><strong>af_at_point</strong> – the angiogenic factor concentration at the tip cell center, that is used for computing the
+field value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mocafe.angie.tipcells.TipCellsField.eval">
+<span class="sig-name descname"><span class="pre">eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCellsField.eval" title="Permalink to this definition">¶</a></dt>
+<dd><p>evaluate the field value for the given point</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>values</strong> – internal FEniCS parameter</p></li>
+<li><p><strong>x</strong> – given point</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>nothing</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">mocafe</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../demo_doc/index.html">Demo gallery</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../code_documentation.html">Code documentation index</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../angie.html"><code class="docutils literal notranslate"><span class="pre">mocafe.angie</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../bib.html">Bibliography</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../../code_documentation.html">Code documentation index</a><ul>
+  <li><a href="../angie.html"><code class="docutils literal notranslate"><span class="pre">mocafe.angie</span></code></a><ul>
+      <li>Previous: <a href="forms.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">mocafe.angie.forms</span></code></a></li>
+      <li>Next: <a href="base_classes.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">mocafe.angie.base_classes</span></code></a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Franco Pradelli.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../_sources/sub_code_doc/angie_sub_code_doc/tipcells.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

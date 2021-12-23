@@ -1,0 +1,268 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>mocafe.angie.forms &#8212; mocafe 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="mocafe.angie.tipcells" href="tipcells.html" />
+    <link rel="prev" title="mocafe.angie.af_sourcing" href="af_sourcing.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-mocafe.angie.forms">
+<span id="mocafe-angie-forms"></span><h1><code class="docutils literal notranslate"><span class="pre">mocafe.angie.forms</span></code><a class="headerlink" href="#module-mocafe.angie.forms" title="Permalink to this headline">¶</a></h1>
+<p>Weak forms of the Phase-Field models related to angiogenesis. Each weak form is a FEniCS UFL Form which can be used
+calling a specific method, that returns the form itself.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mocafe.angie.forms.angiogenesis_form">
+<span class="sig-prename descclassname"><span class="pre">mocafe.angie.forms.</span></span><span class="sig-name descname"><span class="pre">angiogenesis_form</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.argument.TestFunction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.argument.TestFunction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">af</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">mocafe.fenut.parameters.Parameters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.forms.angiogenesis_form" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the UFL form for the Phase-Field model for angiogenesis reported by Travasso et al. (2011)
+<span id="id1">[<a class="reference internal" href="../../bib.html#id7" title="Rui D.M. Travasso, Eugenia Corvera Poiré, Mario Castro, Juan Carlos Rodrguez-Manzaneque, and A. Hernández-Machado. Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5):e19989, 2011. URL: http://www.fct.mctes.pt http://www.gulbenkian.pt/ http://www.conacyt.mx/ http://www.isciii.es/ http://www.micinn.es/, doi:10.1371/journal.pone.0019989.">TPoireC+11</a>]</span>.</p>
+<p>The equation reads simply as the sum of a Cahn-Hillard term and a proliferation term (for further details see
+the original paper):</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial c}{\partial t} = M \cdot \nabla^2 [\frac{df}{dc}\ - \epsilon \nabla^2 c]
++ \alpha_p(T) \cdot c H(c)\]</div>
+<p>Where :math: <cite>c</cite> is the unknown field representing the capillaries, and :</p>
+<div class="math notranslate nohighlight">
+\[f = \frac{1}{4} \cdot c^4 - \frac{1}{2} \cdot c^2\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\alpha_p(af) &amp;= \alpha_p \cdot af_p \quad \textrm{if} \quad af&gt;af_p \\
+             &amp;= \alpha_p \cdot af  \quad \textrm{if} \quad 0&lt;af \le af_p \\
+             &amp; = 0 \quad \textrm{if} \quad af \le 0\end{split}\]</div>
+<p>In this implementation, the equation is splitted in two equations of lower order, in order to make the weak form
+solvable using standard Lagrange finite elements:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\frac{\partial c}{\partial t} &amp;= M \nabla^2 \cdot \mu + \alpha_p(T) \cdot c H(c) \\
+\mu &amp;= \frac{d f}{d c} - \epsilon \nabla^{2}c\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>c</strong> – capillaries field</p></li>
+<li><p><strong>c0</strong> – initial condition for the capillaries field</p></li>
+<li><p><strong>mu</strong> – auxiliary field</p></li>
+<li><p><strong>mu0</strong> – initial condition for the auxiliary field</p></li>
+<li><p><strong>v1</strong> – test function for c</p></li>
+<li><p><strong>v2</strong> – test function  for mu</p></li>
+<li><p><strong>af</strong> – angiogenic factor field</p></li>
+<li><p><strong>parameters</strong> – simulation parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mocafe.angie.forms.angiogenic_factor_form">
+<span class="sig-prename descclassname"><span class="pre">mocafe.angie.forms.</span></span><span class="sig-name descname"><span class="pre">angiogenic_factor_form</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">af</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">af_0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.argument.TestFunction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">mocafe.fenut.parameters.Parameters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.forms.angiogenic_factor_form" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the UFL form for the equation for the angiogenic factor reported by Travasso et al. (2011)
+<span id="id2">[<a class="reference internal" href="../../bib.html#id7" title="Rui D.M. Travasso, Eugenia Corvera Poiré, Mario Castro, Juan Carlos Rodrguez-Manzaneque, and A. Hernández-Machado. Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5):e19989, 2011. URL: http://www.fct.mctes.pt http://www.gulbenkian.pt/ http://www.conacyt.mx/ http://www.isciii.es/ http://www.micinn.es/, doi:10.1371/journal.pone.0019989.">TPoireC+11</a>]</span>.</p>
+<p>The equation simply considers the diffusion of the angiogenic factor and its consumption by the capillaries
+(for further details see the original paper):</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial af}{\partial t} = D \nabla^2 af - \alpha_T \cdot af \cdot c \cdot H(c)\]</div>
+<p>Where :math: <cite>af</cite> is the angiogenic factor field, :math: <cite>c</cite> is the capillaries field, and :math: <cite>H(c)</cite> is the
+Heaviside function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>af</strong> – angiogenic factor field</p></li>
+<li><p><strong>af_0</strong> – initial condition for the angiogenic factor field</p></li>
+<li><p><strong>c</strong> – capillaries field</p></li>
+<li><p><strong>v</strong> – test function for the equation</p></li>
+<li><p><strong>parameters</strong> – simulation parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mocafe.angie.forms.cahn_hillard_form">
+<span class="sig-prename descclassname"><span class="pre">mocafe.angie.forms.</span></span><span class="sig-name descname"><span class="pre">cahn_hillard_form</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.cpp.common.Variable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.argument.TestFunction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.argument.TestFunction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chem_potential</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lmbda</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.forms.cahn_hillard_form" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the UFL form of a for a general Cahn-Hillard equation, discretized in time using the theta method. The
+method is the same reported by the FEniCS team in one of their demo <a class="reference external" href="https://fenicsproject.org/olddocs/dolfin/2016.2.0/cpp/demo/documented/cahn-hilliard/cpp/documentation.html">1. Cahn-Hillard equation</a> and is briefly
+discussed below for your conveneince.</p>
+<p>The Cahn-Hillard equation reads as follows:</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial c}{\partial t} - \nabla \cdot M (\nabla(\frac{d f}{d c}
+      - \lambda \nabla^{2}c)) = 0 \quad \textrm{in} \ \Omega\]</div>
+<p>Where :math: <cite>c</cite> is the unknown field to find, :math: <cite>f</cite> is some kind of energetic potential which defines the
+phase separation, and :math: <cite>M</cite> is a scalar parameter.</p>
+<p>The equation involves 4th order derivatives, so its weak form could not be handled with the standard Lagrange
+finite element basis. However, the equation can be splitted in two second-order equations adding a second unknown
+auxiliary field :math: <cite>mu</cite>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\frac{\partial c}{\partial t} - \nabla \cdot M \nabla\mu  &amp;= 0 \quad \textrm{in} \ \Omega, \\
+\mu -  \frac{d f}{d c} + \lambda \nabla^{2}c &amp;= 0 \quad \textrm{ in} \ \Omega.\end{split}\]</div>
+<p>In this way, it is possible to solve this equation using the standard Lagrange basis and, indeed, this
+implementation uses this form.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>c</strong> – main Cahn-Hillard field</p></li>
+<li><p><strong>c0</strong> – initial condition for the main Cahn-Hillard field</p></li>
+<li><p><strong>mu</strong> – auxiliary field for the Cahn-Hillard equation</p></li>
+<li><p><strong>mu0</strong> – initial condition for the auxiliary field</p></li>
+<li><p><strong>q</strong> – test function for c</p></li>
+<li><p><strong>v</strong> – test function for mu</p></li>
+<li><p><strong>dt</strong> – time step</p></li>
+<li><p><strong>theta</strong> – theta value for theta method</p></li>
+<li><p><strong>chem_potential</strong> – UFL form for the Cahn-Hillard potential</p></li>
+<li><p><strong>lmbda</strong> – energetic weight for the gradient of c</p></li>
+<li><p><strong>M</strong> – scalar parameter</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the UFL form of the Cahn-Hillard Equation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mocafe.angie.forms.vascular_proliferation_form">
+<span class="sig-prename descclassname"><span class="pre">mocafe.angie.forms.</span></span><span class="sig-name descname"><span class="pre">vascular_proliferation_form</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">af</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">af_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.forms.vascular_proliferation_form" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the UFL Form for the proliferation term of the vascular tissue as defined by the paper of Travasso et al.
+(2011) <span id="id3">[<a class="reference internal" href="../../bib.html#id7" title="Rui D.M. Travasso, Eugenia Corvera Poiré, Mario Castro, Juan Carlos Rodrguez-Manzaneque, and A. Hernández-Machado. Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5):e19989, 2011. URL: http://www.fct.mctes.pt http://www.gulbenkian.pt/ http://www.conacyt.mx/ http://www.isciii.es/ http://www.micinn.es/, doi:10.1371/journal.pone.0019989.">TPoireC+11</a>]</span>.</p>
+<p>The corresponding term of the equation is (H is the Heaviside function):</p>
+<div class="math notranslate nohighlight">
+\[\alpha_p(af_p) \cdot c \cdot H(c)\]</div>
+<p>Where :math: <cite>af</cite> is the angiogenic factor concentration, and :math: <cite>alpha_p(af)</cite> represents the proliferation
+rate, that is defined as the follwing function of :math: <cite>af</cite>. The definition of the latter function is the
+following:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\alpha_p(af) &amp;= \alpha_p \cdot af_p \quad \textrm{if} \quad af&gt;af_p \\
+             &amp;= \alpha_p \cdot af  \quad \textrm{if} \quad 0&lt;af \le af_p \\
+             &amp; = 0 \quad \textrm{if} \quad af \le 0\end{split}\]</div>
+<p>Where :math: <cite>alpha-p</cite> and :math: <cite>af_p</cite> are constants.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alpha_p</strong> – costant of the proliferation rate function for the capillaries</p></li>
+<li><p><strong>af</strong> – FEniCS function representing the angiogenic factor distribution</p></li>
+<li><p><strong>af_p</strong> – maximum concentration of angiogenic factor leading to proliferation. If af &gt; af_p, the proliferation
+rate remains alpha_p * af_p</p></li>
+<li><p><strong>c</strong> – FEniCS function representing the capillaries</p></li>
+<li><p><strong>v</strong> – FEniCS test function</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the UFL form for the proliferation term</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">mocafe</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../demo_doc/index.html">Demo gallery</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../code_documentation.html">Code documentation index</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../angie.html"><code class="docutils literal notranslate"><span class="pre">mocafe.angie</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../bib.html">Bibliography</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../../code_documentation.html">Code documentation index</a><ul>
+  <li><a href="../angie.html"><code class="docutils literal notranslate"><span class="pre">mocafe.angie</span></code></a><ul>
+      <li>Previous: <a href="af_sourcing.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">mocafe.angie.af_sourcing</span></code></a></li>
+      <li>Next: <a href="tipcells.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">mocafe.angie.tipcells</span></code></a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Franco Pradelli.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../_sources/sub_code_doc/angie_sub_code_doc/forms.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
