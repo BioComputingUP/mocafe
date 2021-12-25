@@ -141,17 +141,17 @@ class TipCellManager:
     """
     Class to manage the tip cells throughout the simulation.
     """
-    def __init__(self, mesh_wrapper: fu.MeshWrapper,
+    def __init__(self, mesh: fenics.Mesh,
                  parameters: Parameters):
         """
         inits a TipCellManager
 
-        :param mesh_wrapper: mesh wrapper
+        :param mesh: mesh
         :param parameters: simulation parameters
         """
         self.global_tip_cells_list = []
         self.local_tip_cells_list = []
-        self.mesh_wrapper = mesh_wrapper  # todo:RMW
+        self.mesh = mesh
         self.parameters = parameters
         self.T_c = parameters.get_value("T_c")
         self.G_m = parameters.get_value("G_m")
@@ -161,7 +161,7 @@ class TipCellManager:
         self.alpha_p = parameters.get_value("alpha_p")
         self.T_p = parameters.get_value("T_p")
         self.min_tipcell_distance = parameters.get_value("min_tipcell_distance")
-        self.clock_checker = af_sourcing.ClockChecker(mesh_wrapper, self.cell_radius, start_point="west")  # todo:RMW
+        self.clock_checker = af_sourcing.ClockChecker(mesh, self.cell_radius, start_point="west")
         self.local_box = self._build_local_box(self.cell_radius)
         self.latest_t_c_f_function = None
 
@@ -198,7 +198,7 @@ class TipCellManager:
         :param cell_radius: the tip cell radius, which is used to build the local box
         :return:
         """
-        return fu.build_local_box(self.mesh_wrapper.get_local_mesh(), cell_radius)  # todo:RMW can be replaced with mesh
+        return fu.build_local_box(self.mesh, cell_radius)
 
     def _is_in_local_box(self, position):
         """
@@ -258,7 +258,7 @@ class TipCellManager:
         # logging
         info_adapter.info(f"Called {self.activate_tip_cell.__name__}")
         # get local mesh points
-        local_mesh_points = self.mesh_wrapper.get_local_mesh().coordinates()  # todo:RMW can be replaced with mesh
+        local_mesh_points = self.mesh.coordinates()
         # initialize local possible locations list
         local_possible_locations = []
         # Debug: setup cunters to check which test is not passed
@@ -365,16 +365,38 @@ class TipCellManager:
         :return: nothing
         """
         info_adapter.info(f"Called {self.revert_tip_cells.__name__}")
+        # init lists
         local_to_remove = []
+        local_to_check_if_outside_global_mesh = []
+
         for tip_cell in self.local_tip_cells_list:
             position = tip_cell.get_position()
-            if self.mesh_wrapper.is_inside_local_mesh(position):  # check only if point is in local mesh  # todo:RMW can be replaced with mesh
+            # check if tip cell is inside local mesh
+            if fu.is_point_inside_mesh(self.mesh, position):
+                # check if conditions are met
                 if (af(position) < self.T_c) or (np.linalg.norm(grad_af(position)) < self.G_m):
                     local_to_remove.append(tip_cell)
             else:
-                if not self.mesh_wrapper.is_inside_global_mesh(position):  # remove tip cell if not in global mesh  # todo:RMW
-                    local_to_remove.append(tip_cell)
-        # if not empty
+                # else add to the list for checking if in global mesh
+                local_to_check_if_outside_global_mesh.append(tip_cell)
+
+        # check if in global mesh
+        global_to_check_if_outside_global_mesh = comm.gather(local_to_check_if_outside_global_mesh, 0)
+        if rank == 0:
+            global_to_check_if_outside_global_mesh = fu.flatten_list_of_lists(global_to_check_if_outside_global_mesh)
+        global_to_check_if_outside_global_mesh = comm.bcast(global_to_check_if_outside_global_mesh, 0)
+        for tip_cell in global_to_check_if_outside_global_mesh:
+            is_inside_local_mesh = fu.is_point_inside_mesh(self.mesh, tip_cell.get_position())
+            is_inside_local_mesh_array = comm.gather(is_inside_local_mesh, 0)
+            if rank == 0:
+                is_inside_global_mesh = any(is_inside_local_mesh_array)
+            else:
+                is_inside_global_mesh = None
+            is_inside_global_mesh = comm.bcast(is_inside_global_mesh, 0)
+            if is_inside_global_mesh:
+                local_to_remove.append(tip_cell)
+
+        # remove local cells to remove
         self._remove_tip_cells(local_to_remove)
 
     def _update_tip_cell_positions_and_get_field(self, af, grad_af):
@@ -399,7 +421,7 @@ class TipCellManager:
             # get position
             tip_cell_position = tip_cell.get_position()
             # the process that has access to tip cell position computes the mesh_related values
-            if self.mesh_wrapper.is_inside_local_mesh(tip_cell_position):  # todo:RMW can be replaced with mesh
+            if fu.is_point_inside_mesh(self.mesh, tip_cell_position):
                 # compute velocity
                 velocity = self.compute_tip_cell_velocity(grad_af, self.parameters.get_value("chi"), tip_cell_position)
                 # compute value of T in position
@@ -438,8 +460,18 @@ class TipCellManager:
             for line in debug_msg.split("\n"):
                 debug_adapter.debug(line)
 
+            # check if new position is local mesh
+            is_new_position_in_local_mesh = fu.is_point_inside_mesh(self.mesh, new_position)
+            # check if new position is in global mesh
+            is_new_position_in_local_mesh_array = comm.gather(is_new_position_in_local_mesh, 0)
+            if rank == 0:
+                is_new_position_in_global_mesh = any(is_new_position_in_local_mesh_array)
+            else:
+                is_new_position_in_global_mesh = None
+            is_new_position_in_global_mesh = comm.bcast(is_new_position_in_global_mesh, 0)
+
             # if new position is not in global mesh
-            if not self.mesh_wrapper.is_inside_global_mesh(new_position):  # todo:RMW use gather and bcast
+            if not is_new_position_in_global_mesh:
                 tip_cells_out_of_mesh.append(tip_cell)  # set cell as to remove
             else:
                 # else update local lists

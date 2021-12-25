@@ -53,19 +53,19 @@ class SourceMap:
     of each source cell at any point of the simulation, providing access to it to other objects and methods.
     """
     def __init__(self,
-                 mesh_wrapper: fu.MeshWrapper,
+                 mesh: fenics.Mesh,
                  source_points: list,
                  parameters: Parameters):
         """
         inits a SourceMap, i.e. a class responsible for keeping the current position of each source cell at any point
         of the simulation, with a SourceCell in all the positions listed in source_points.
 
-        :param mesh_wrapper: the mesh wrapper of the simulation mesh
+        :param mesh: the simulation mesh
         :param source_points: list of positions where to place the source cells.
         :param parameters: simulation parameters
         """
         # initialize global SourceCells list in the given points
-        self.mesh_wrapper = mesh_wrapper  # todo:RMW
+        self.mesh = mesh
         self.local_box = self._build_local_box(parameters)
         global_source_points = source_points
         self.global_source_cells = [SourceCell(point, 0) for point in global_source_points]
@@ -96,7 +96,7 @@ class SourceMap:
         :return:
         """
         d = parameters.get_value("d")
-        return fu.build_local_box(self.mesh_wrapper.get_local_mesh(), d)  # todo:RMW can be sobsitituted with mesh
+        return fu.build_local_box(self.mesh, d)
 
     def _is_in_local_box(self, position):
         """
@@ -149,7 +149,7 @@ class RandomSourceMap(SourceMap):
     A SourceMap of randomly distributed sources in a given spatial domain
     """
     def __init__(self,
-                 mesh_wrapper: fu.MeshWrapper,
+                 mesh: fenics.Mesh,
                  n_sources: int,
                  parameters: fenics.Parameters,
                  where: types.FunctionType or mshr.cpp.CSGGeometry or fenics.SubDomain or None = None):
@@ -164,12 +164,12 @@ class RandomSourceMap(SourceMap):
         - a mesh.cpp.Geometry (e.g. mshr.Rectangle or mshr.Circle) or a fenics.SubDomain object; in this case, the
             point will be selected the defined space.
 
-        :param mesh_wrapper: the mesh wrapper for the given mesh
+        :param mesh: the given mesh
         :param n_sources: the number of sources to select
         :param parameters: simulation parameters
         :param where: where to place the randomly distributed source cells. Default is None.
         """
-        # compute random points
+        # check type of function
         if isinstance(where, types.FunctionType):
             where_fun = where
         elif isinstance(where, mshr.cpp.CSGGeometry) \
@@ -180,109 +180,60 @@ class RandomSourceMap(SourceMap):
                             f"{fenics.SubDomain} or None. "
                             f"Detected {type(where)} instead")
 
+        # check type of n_sources
+        if not isinstance(n_sources, int):
+            raise TypeError(f"n_sources must be of type int. Found {type(n_sources)} instead.")
+
         # get randomly distributed mesh point
-        self.mesh_wrapper = mesh_wrapper  # todo:RMW
-        global_source_points_list = self._get_randomy_sorted_mesh_points(n_sources, where_fun)
+        self.mesh = mesh
+        global_source_points_list = self._pick_n_global_vertices_where_asked(n_sources, where_fun)
         # inits source map
-        super(RandomSourceMap, self).__init__(mesh_wrapper,
+        super(RandomSourceMap, self).__init__(mesh,
                                               global_source_points_list,
                                               parameters)
 
-    def _get_randomy_sorted_mesh_points(self, n_sources: int, where_fun):
-        """
-        INTERNAL USE
-        Return the source points selected randomly and sorted along the x axis
+    def _pick_n_global_vertices_where_asked(self, n_points, where_fun):
+        # get mesh topology
+        topology = self.mesh.topology()
+        # get global vertex index (unique for all the procs)
+        global_vertex_indices = topology.global_indices(0)
+        # get number of global vertex
+        n_global_vertices = self.mesh.num_entities_global(0)
+        # get local mesh coordinates
+        lmc = self.mesh.coordinates()
+        # gather them in proc 0
+        lmc_arrays = comm.gather(lmc, 0)
+        # gather indices in proc 0
+        vertex_maps = comm.gather(global_vertex_indices, 0)
 
-        :param n_sources: number of sources to select
-        :param where_fun: the function to use to determine if a point can be picked or not
-        """
-        # get comm size
-        n_procs = comm.Get_size()
-        # define root proc
-        root = 0
-        # get global coordinates
-        global_coords = self.mesh_wrapper.get_global_mesh().coordinates()  # todo:RMW I can gather global coords without using mesh_wrapper
-        # divide coordinates among processes
-        if rank == root:
-            coords_chunks_list = fu.divide_in_chunks(global_coords, n_procs)
+        if rank == 0:
+            # init global coordinates array
+            global_coordinates = np.zeros((n_global_vertices, lmc.shape[1]))
+            # get global coordinates
+            for coordinates, indices in zip(lmc_arrays, vertex_maps):
+                global_coordinates[indices] = coordinates
+
+            # select only the pickable coordinates
+            if where_fun is not None:
+                # get the pickable points
+                pickable_points = [point for point in global_coordinates if where_fun(fenics.Point(point))]
+            else:
+                # else all points are pickable
+                pickable_points = [point for point in global_coordinates]
+
+            # pick n of them (if available)
+            n_pickable_points = len(pickable_points)
+            if n_pickable_points <= n_points:
+                logger.warning(f"The mesh looks too small for selecting {n_points} random source, since it was asked"
+                               f"to select {n_points} among {n_pickable_points}"
+                               f"pickable points. Returning all available pickable points.")
+                global_sources_coordinates = pickable_points
+            else:
+                global_sources_coordinates = random.sample(pickable_points, n_points)
         else:
-            coords_chunks_list = None
-        local_coords_chunk = comm.scatter(coords_chunks_list, root)
-        # if where_fun is given
-        if where_fun is not None:
-            # get the pickable points
-            pickable_points = [point for point in local_coords_chunk if where_fun(fenics.Point(point))]
-        else:
-            # else all points are pickable
-            pickable_points = [point for point in local_coords_chunk]
-        # compute n local sources
-        n_pickable_points = len(pickable_points)
-        local_n_sources = self._compute_local_n_sources(n_sources, n_pickable_points)
-        # pick the source point randomly
-        if n_pickable_points <= local_n_sources:
-            logger.warning(f"The mesh looks too small for selecting {n_sources} random source, since it was asked"
-                           f"to select {local_n_sources} among {n_pickable_points}"
-                           f"local pickable points. Returning all available pickable points.")
-            local_sources_array = pickable_points
-        else:
-            local_sources_array = random.sample(pickable_points, local_n_sources)
-        # gather picked sources and share among processes
-        local_sources_array_list = comm.gather(local_sources_array, root)
-        if rank == root:
-            sources_array = fu.flatten_list_of_lists(local_sources_array_list)
-        else:
-            sources_array = None
-        sources_array = comm.bcast(sources_array, root)
-
-        # sort them along the x axes
-        sources_array.sort(key=lambda x: x[0])
-        return sources_array
-
-    def _compute_local_n_sources(self, global_n_sources, n_local_pickable_points):
-        """
-        INTERNAL USE
-        Computes the number of sources to randomly select for the local process, considering that the number
-        of pickable points may differ between different processes and that the global number of sources is fixed.
-
-        :param global_n_sources: number of global sources
-        :param n_local_pickable_points: number of pickable points
-        """
-        root = 0
-        # compute global number of pickable points
-        n_local_pickable_points_array = comm.gather(n_local_pickable_points, root)
-        if rank == root:
-            n_global_pickable_points = sum(n_local_pickable_points_array)
-        else:
-            n_global_pickable_points = None
-        n_global_pickable_points = comm.bcast(n_global_pickable_points, root)
-
-        # compute local process weight
-        loc_w = int(np.floor(global_n_sources * (n_local_pickable_points / n_global_pickable_points)))
-
-        # manage missing sources
-        loc_w_list = comm.gather(loc_w, root)
-        if rank == root:
-            # compute missing_sources
-            missing_sources = global_n_sources - sum(loc_w_list)
-            # pair each process rank with its weight
-            proc_loc_w_pairs = list(enumerate(loc_w_list))
-            # sort for loc_w
-            proc_loc_w_pairs.sort(key=lambda pair: pair[1], reverse=True)
-            # mark processes who should take care of the missing sources
-            marked_procs = []
-            for i in range(int(missing_sources)):
-                marked_procs.append(proc_loc_w_pairs[i][0])
-        else:
-            marked_procs = None
-        # get marked processes
-        marked_procs = comm.bcast(marked_procs, root)
-
-        # compute local n_sources
-        local_n_sources = loc_w
-        if rank in marked_procs:
-            local_n_sources += 1
-
-        return local_n_sources
+            global_sources_coordinates = None
+        global_sources_coordinates = comm.bcast(global_sources_coordinates, 0)
+        return global_sources_coordinates
 
 
 class SourcesManager:
@@ -291,20 +242,20 @@ class SourcesManager:
     cells when they are near the blood vessels and of translating the source cell map in a FEniCS phase field function
     """
     def __init__(self, source_map: SourceMap,
-                 mesh_wrapper: fu.MeshWrapper,
+                 mesh: fenics.Mesh,
                  parameters: Parameters):
         """
         inits a source cells manager for a given source map.
 
         :param source_map: the source map (i.e. the source cells) to manage
-        :param mesh_wrapper: the mesh wrapper
+        :param mesh: the mesh
         :param parameters: the simulation parameters
         """
         self.source_map = source_map
-        self.mesh_wrapper = mesh_wrapper  # todo:RMW
+        self.mesh = mesh
         self.parameters: Parameters = parameters
         if parameters.is_parameter("d") and parameters.is_value_present("d"):
-            self.default_clock_checker = ClockChecker(mesh_wrapper, parameters.get_value("d"))  # todo:RMW
+            self.default_clock_checker = ClockChecker(mesh, parameters.get_value("d"))
             self.default_clock_checker_is_present = True
         elif not parameters.is_parameter("d"):
             logger.debug("Reference for the parameter 'd' not found. Can't init the default clock checker.")
@@ -330,7 +281,7 @@ class SourcesManager:
         debug_adapter.debug(f"Starting to remove source cells")
         # if distance is specified
         if "min_distance" in kwargs.keys():
-            clock_checker = ClockChecker(self.mesh_wrapper, kwargs["d"])  # todo:RMW
+            clock_checker = ClockChecker(self.mesh, kwargs["d"])
         else:
             if self.default_clock_checker_is_present:
                 clock_checker = self.default_clock_checker
@@ -491,11 +442,11 @@ class ClockChecker:
     Class representing a clock checker, i.e. an object that checks if a given condition is met in the surroundings of
     a point of the mesh.
     """
-    def __init__(self, mesh_wrapper: fu.MeshWrapper, radius, start_point="east"):
+    def __init__(self, mesh: fenics.Mesh, radius, start_point="east"):
         """
         inits a ClockChecker, which will check if a condition is met inside the given radius
 
-        :param mesh_wrapper: mesh wrapper
+        :param mesh: mesh
         :param radius: radius where to check if the condition is met
         :param start_point: starting point where to start checking. If the point is `east`, the clock checker will
         start checking from the point with the lower value of x[0]; if the point is `west` the clock cheker will start
@@ -512,7 +463,7 @@ class ClockChecker:
         else:
             raise ValueError("ClockChecker can be just 'east' or 'west' type")
         self.circle_vectors = circle_vectors
-        self.mesh_wrapper = mesh_wrapper  # todo:RMW
+        self.mesh = mesh
 
     def clock_check(self, point, function: fenics.Function, threshold, condition):
         """
@@ -526,12 +477,14 @@ class ClockChecker:
         """
         # cast point to the right type
         if type(point) is fenics.Point:
-            point = np.array([point.array()[i] for i in range(self.mesh_wrapper.get_dim())])  # todo:RMW can be replaced with get geometric dimension
+            point = np.array([point.array()[i] for i in range(self.mesh.geometric_dimension())])
+        # check if point is inside local mesh
+
         for vector in self.circle_vectors:
             for scale in np.arange(1., 0., -(1 / 20)):
                 ppv = point + (scale * vector)
                 debug_adapter.debug(f"Checking point {ppv}")
-                if self.mesh_wrapper.is_inside_local_mesh(fenics.Point(ppv)):  # todo:RMW can be replaced with mesh
+                if fu.is_point_inside_mesh(self.mesh, fenics.Point(ppv)):
                     debug_adapter.debug(f"Point {ppv} is inside local mesh.")
                     if condition(function(list(ppv)), threshold):  # ppv translated to List to avoid FutureWarning
                         return True

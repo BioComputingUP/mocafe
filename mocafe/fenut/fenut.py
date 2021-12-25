@@ -7,6 +7,10 @@ Requires FEniCS 2019.1 to work.
 import fenics
 import shutil
 import json
+import numpy as np
+
+comm_world = fenics.MPI.comm_world
+rank = comm_world.Get_rank()
 
 
 def setup_pvd_files(file_names: list, data_folder):
@@ -268,7 +272,7 @@ def is_in_local_box(local_box, position):
     :return: True if the position is inside the local box. False otherwise
     """
     return (local_box["x_min"] < position[0] < local_box["x_max"]) \
-           and (local_box["y_min"] < position[1] < local_box["y_max"])
+        and (local_box["y_min"] < position[1] < local_box["y_max"])
 
 
 def flatten_list_of_lists(list_of_lists):
@@ -278,3 +282,23 @@ def flatten_list_of_lists(list_of_lists):
     :return: the flat list
     """
     return [elem for sublist in list_of_lists for elem in sublist]
+
+
+def is_point_inside_mesh(mesh: fenics.Mesh,
+                         point):
+    """
+    Check if the given point is inside the given mesh. In parallel, checks if the point is inside the local mesh.
+
+    :param mesh: the given Mesh
+    :param point: the given point
+    :return: True if the point is inside the mesh; False otherwise
+    """
+    if not isinstance(point, fenics.Point):
+        if isinstance(point, np.ndarray):
+            # convert in fenics point
+            point = fenics.Point(point)
+        else:
+            raise TypeError(f"given point of unknown type {type(point)}")
+    bbt = mesh.bounding_box_tree()
+    is_point_inside = bbt.compute_first_entity_collision(point) <= mesh.num_cells()
+    return is_point_inside
