@@ -8,7 +8,6 @@ def test_apply_sources(parameters):
     # define mesh
     n_x = n_y = 300
     mesh = fenics.RectangleMesh(fenics.Point(0., 0.), fenics.Point(n_x, n_y), n_x, n_y)
-    mesh_wrapper = fu.MeshWrapper(mesh)
 
     # define function space
     element = fenics.FiniteElement("CG", fenics.triangle, 1)
@@ -16,10 +15,10 @@ def test_apply_sources(parameters):
 
     # define source map
     source_points = [np.array([num, num]) for num in range(0, 310, 10)]
-    sources_map = SourceMap(mesh_wrapper, source_points, parameters)
+    sources_map = SourceMap(mesh, source_points, parameters)
 
     # define sources manager
-    sources_manager = SourcesManager(sources_map, mesh_wrapper, parameters)
+    sources_manager = SourcesManager(sources_map, mesh, parameters)
 
     # define T
     T = fenics.interpolate(fenics.Constant(0.0), V)
@@ -29,7 +28,7 @@ def test_apply_sources(parameters):
 
     test_result = True
     for source_point in source_points:
-        if mesh_wrapper.is_inside_local_mesh(source_point):
+        if fu.is_point_inside_mesh(mesh, source_point):
             test_result = np.isclose(T(source_point), parameters.get_value("T_s"))
 
     # confront
@@ -40,7 +39,6 @@ def test_apply_sources_mixed_function_space(parameters):
     # define mesh
     n_x = n_y = 300
     mesh = fenics.RectangleMesh(fenics.Point(0., 0.), fenics.Point(n_x, n_y), n_x, n_y)
-    mesh_wrapper = fu.MeshWrapper(mesh)
 
     # define function space
     element = fenics.FiniteElement("CG", fenics.triangle, 1)
@@ -49,10 +47,10 @@ def test_apply_sources_mixed_function_space(parameters):
 
     # define source map
     source_point = [np.array([150, 150])]
-    sources_map = SourceMap(mesh_wrapper, source_point, parameters)
+    sources_map = SourceMap(mesh, source_point, parameters)
 
     # define sources manager
-    sources_manager = SourcesManager(sources_map, mesh_wrapper, parameters)
+    sources_manager = SourcesManager(sources_map, mesh, parameters)
 
     # define T
     exp = fenics.Expression(("0.0", "0."), degree=1)
@@ -64,7 +62,7 @@ def test_apply_sources_mixed_function_space(parameters):
 
     # confront
     test_result = True
-    if mesh_wrapper.is_inside_local_mesh(source_point[0]):
+    if fu.is_point_inside_mesh(mesh, source_point[0]):
         test_result = np.isclose(T(source_point[0]), parameters.get_value("T_s"))
 
     assert test_result, "It should be 1"
