@@ -89,7 +89,7 @@ tools to activate, remove, and move the tip cell in the spatial domain.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="mocafe.angie.tipcells.TipCellManager">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.angie.tipcells.</span></span><span class="sig-name descname"><span class="pre">TipCellManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh_wrapper</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../fenut_sub_code_doc/fenut.html#mocafe.fenut.fenut.MeshWrapper" title="mocafe.fenut.fenut.MeshWrapper"><span class="pre">mocafe.fenut.fenut.MeshWrapper</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">mocafe.fenut.parameters.Parameters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCellManager" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.angie.tipcells.</span></span><span class="sig-name descname"><span class="pre">TipCellManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.cpp.mesh.Mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../fenut_sub_code_doc/parameters.html#mocafe.fenut.parameters.Parameters" title="mocafe.fenut.parameters.Parameters"><span class="pre">mocafe.fenut.parameters.Parameters</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCellManager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to manage the tip cells throughout the simulation.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mocafe.angie.tipcells.TipCellManager.activate_tip_cell">
@@ -218,7 +218,7 @@ this implementation only one tip cell can be activated at each call of the metho
 
 <dl class="py class">
 <dt class="sig sig-object py" id="mocafe.angie.tipcells.TipCellsField">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.angie.tipcells.</span></span><span class="sig-name descname"><span class="pre">TipCellsField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">mocafe.fenut.parameters.Parameters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCellsField" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.angie.tipcells.</span></span><span class="sig-name descname"><span class="pre">TipCellsField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../fenut_sub_code_doc/parameters.html#mocafe.fenut.parameters.Parameters" title="mocafe.fenut.parameters.Parameters"><span class="pre">mocafe.fenut.parameters.Parameters</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCellsField" title="Permalink to this definition">¶</a></dt>
 <dd><p>Expression representing the capillary field value inside the tip cells.</p>
 <p>In this implementation, the value is coherent with the one used by Travasso et al (2011) in their Phase Field
 angiogenesis model <span id="id5">[<a class="reference internal" href="../../bib.html#id7" title="Rui D.M. Travasso, Eugenia Corvera Poiré, Mario Castro, Juan Carlos Rodrguez-Manzaneque, and A. Hernández-Machado. Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5):e19989, 2011. URL: http://www.fct.mctes.pt http://www.gulbenkian.pt/ http://www.conacyt.mx/ http://www.isciii.es/ http://www.micinn.es/, doi:10.1371/journal.pone.0019989.">TPoireC+11</a>]</span>, that is:</p>
@@ -288,12 +288,15 @@ field value.</p></li>
 
 
 <h3>Navigation</h3>
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<p class="caption" role="heading"><span class="caption-text">In the following, you can find the complete package documentation, including demos and bibliography:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../demo_doc/index.html">Demo gallery</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../../code_documentation.html">Code documentation</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../demo_doc/index.html">Demo Gallery</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../code_documentation.html">Code Documentation</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../angie.html"><code class="docutils literal notranslate"><span class="pre">mocafe.angie</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../fenut.html"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../litforms.html"><code class="docutils literal notranslate"><span class="pre">mocafe.litforms</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../math.html"><code class="docutils literal notranslate"><span class="pre">mocafe.math</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../expressions.html"><code class="docutils literal notranslate"><span class="pre">mocafe.expressions</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../bib.html">Bibliography</a></li>
@@ -303,7 +306,7 @@ field value.</p></li>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../../code_documentation.html">Code documentation</a><ul>
+  <li><a href="../../code_documentation.html">Code Documentation</a><ul>
   <li><a href="../angie.html"><code class="docutils literal notranslate"><span class="pre">mocafe.angie</span></code></a><ul>
       <li>Previous: <a href="forms.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">mocafe.angie.forms</span></code></a></li>
       <li>Next: <a href="base_classes.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">mocafe.angie.base_classes</span></code></a></li>

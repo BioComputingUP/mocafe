@@ -20,7 +20,7 @@
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Code documentation" href="../code_documentation.html" />
+    <link rel="next" title="Code Documentation" href="../code_documentation.html" />
     <link rel="prev" title="Prostate cancer phase field model" href="prostate_cancer2d.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -212,14 +212,7 @@ initialize a FEniCS <code class="docutils literal notranslate"><span class="pre"
                             <span class="n">ny</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Then, we define a <code class="docutils literal notranslate"><span class="pre">MeshWrapper</span></code> for the mesh. This is a mocafe object created to allow easy access to both local
-and global mesh data for each MPI process. Indeed, when FEniCS runs in parallel the mesh is by default divided
-among the processes and the global mesh data are not easy to access. As we will see, this object is necessary to
-manage tip and source cells.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mesh_wrapper</span> <span class="o">=</span> <span class="n">fu</span><span class="o">.</span><span class="n">MeshWrapper</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>  <span class="c1"># todo:RMW</span>
-</pre></div>
-</div>
-<p>Finally, we initialize the function space as follows:</p>
+<p>Then, we initialize the function space as follows:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># define function space for c and af</span>
 <span class="n">function_space</span> <span class="o">=</span> <span class="n">fu</span><span class="o">.</span><span class="n">get_mixed_function_space</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="c1"># define function space for grad_T</span>
@@ -261,7 +254,7 @@ initially <span class="math notranslate nohighlight">\(af\)</span> is 0. everywh
 <p>In the original paper, the source cells where placed randomly in the right part of the domain, relatively far
 from the initial vessel. Creating this set up in mocafe is relatively easy. We start by defining the number
 of source cells we want:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">n_sources</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;n_sources&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">n_sources</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;n_sources&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>Then, we define the part of the domain where we want the source cells to be placed; in this case, it is a rectangle
@@ -271,19 +264,19 @@ including all the mesh except the initial vessel and a part of width <span class
 </pre></div>
 </div>
 <p>Finally, we initialize a so called <code class="docutils literal notranslate"><span class="pre">RandomSourceMap</span></code>, which will create the source cells for us:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sources_map</span> <span class="o">=</span> <span class="n">af_sourcing</span><span class="o">.</span><span class="n">RandomSourceMap</span><span class="p">(</span><span class="n">mesh_wrapper</span><span class="p">,</span>  <span class="c1"># todo:RMW</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sources_map</span> <span class="o">=</span> <span class="n">af_sourcing</span><span class="o">.</span><span class="n">RandomSourceMap</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span>
                                           <span class="n">n_sources</span><span class="p">,</span>
                                           <span class="n">parameters</span><span class="p">,</span>
                                           <span class="n">where</span><span class="o">=</span><span class="n">random_sources_domain</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>A <code class="docutils literal notranslate"><span class="pre">SourceMap</span></code> is a mocafe object which contains the position of all the source cells at a given time throughout
-the entire simulation. As you can see, you just need to input the mesh wrapper, the parameters, the number of sources
+the entire simulation. As you can see, you just need to input the mesh, the parameters, the number of sources
 and where you want the sources to be placed. In this implementation, we defined the part of the domain where we
 needed the source cell as <code class="docutils literal notranslate"><span class="pre">mshr.Rectangle</span></code>, but the <code class="docutils literal notranslate"><span class="pre">where</span></code> argument can take as input also a function which
 return a boolean for each point of the domain (True if the point can host a source cell, False otherwise).
 For instance we could have initialized the same source map as above simply doing:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sources_map</span> <span class="o">=</span> <span class="n">af_sourcing</span><span class="o">.</span><span class="n">RandomSourceMap</span><span class="p">(</span><span class="n">mesh_wrapper</span><span class="p">,</span>  <span class="c1"># todo:RMW</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sources_map</span> <span class="o">=</span> <span class="n">af_sourcing</span><span class="o">.</span><span class="n">RandomSourceMap</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span>
                                           <span class="n">n_sources</span><span class="p">,</span>
                                           <span class="n">parameters</span><span class="p">,</span>
                                           <span class="n">where</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">initial_vessel_width</span> <span class="o">+</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">))</span>
@@ -291,7 +284,7 @@ For instance we could have initialized the same source map as above simply doing
 </div>
 <p>However, the source map is not sufficient to define the initial condition we need. To do so, we need an additional
 mocafe object, a <code class="docutils literal notranslate"><span class="pre">SourcesManager</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sources_manager</span> <span class="o">=</span> <span class="n">af_sourcing</span><span class="o">.</span><span class="n">SourcesManager</span><span class="p">(</span><span class="n">sources_map</span><span class="p">,</span> <span class="n">mesh_wrapper</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>  <span class="c1"># todo:RMW</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sources_manager</span> <span class="o">=</span> <span class="n">af_sourcing</span><span class="o">.</span><span class="n">SourcesManager</span><span class="p">(</span><span class="n">sources_map</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>As the name suggests, a <code class="docutils literal notranslate"><span class="pre">SourcesManager</span></code> is an object responsible for the actual management of the sources in the
@@ -363,13 +356,13 @@ defined for the prostate cancer model because it will require us to handle the s
 <p>Just as for the source cells we defined a <code class="docutils literal notranslate"><span class="pre">SourceCellsManager</span></code>, for the tip cells we need to define a
 <code class="docutils literal notranslate"><span class="pre">TipCellsManager</span></code>, which will take care of the job of activating, deactivating and moving the tip cells.
 We initialize it simply calling:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tip_cell_manager</span> <span class="o">=</span> <span class="n">tipcells</span><span class="o">.</span><span class="n">TipCellManager</span><span class="p">(</span><span class="n">mesh_wrapper</span><span class="p">,</span>  <span class="c1"># todo:RMW</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tip_cell_manager</span> <span class="o">=</span> <span class="n">tipcells</span><span class="o">.</span><span class="n">TipCellManager</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span>
                                            <span class="n">parameters</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>And then we will use iteratively in the time simulation for our needs.
 Notice that the rules for activating, deactivating and moving the tip cells are already implemented in the object
-class and all we need to do is passing the mesh wrapper and the simulation parameters to the constructor.</p>
+class and all we need to do is passing the mesh and the simulation parameters to the constructor.</p>
 <p>Then, we can proceed similarly to any other simulation, defining the Jacobian for the weak form:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jacobian</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">derivative</span><span class="p">(</span><span class="n">weak_form</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>
 </pre></div>
@@ -518,14 +511,14 @@ step:</p>
 
 
 <h3>Navigation</h3>
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<p class="caption" role="heading"><span class="caption-text">In the following, you can find the complete package documentation, including demos and bibliography:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">Demo gallery</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Demo Gallery</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="prostate_cancer2d.html">Prostate cancer phase field model</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Angiogenesis phase field model</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../code_documentation.html">Code documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code_documentation.html">Code Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bib.html">Bibliography</a></li>
 </ul>
 
@@ -533,9 +526,9 @@ step:</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="index.html">Demo gallery</a><ul>
+  <li><a href="index.html">Demo Gallery</a><ul>
       <li>Previous: <a href="prostate_cancer2d.html" title="previous chapter">Prostate cancer phase field model</a></li>
-      <li>Next: <a href="../code_documentation.html" title="next chapter">Code documentation</a></li>
+      <li>Next: <a href="../code_documentation.html" title="next chapter">Code Documentation</a></li>
   </ul></li>
   </ul></li>
 </ul>

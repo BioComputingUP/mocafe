@@ -41,64 +41,6 @@
 <span id="mocafe-fenut-fenut"></span><h1><code class="docutils literal notranslate"><span class="pre">mocafe.fenut.fenut</span></code><a class="headerlink" href="#module-mocafe.fenut.fenut" title="Permalink to this headline">¶</a></h1>
 <p>Module containing some useful methods and Classes to work with FEniCS.
 Requires FEniCS 2019.1 to work.</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="mocafe.fenut.fenut.MeshWrapper">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.fenut.fenut.</span></span><span class="sig-name descname"><span class="pre">MeshWrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_mesh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.cpp.mesh.Mesh</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.MeshWrapper" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wrapper for fenics.Mesh with some utility method. More precisely, it provides easy access to bot the local
-mesh for the current MPI process and the global mesh, shared for all MPI processes.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="mocafe.fenut.fenut.MeshWrapper.get_dim">
-<span class="sig-name descname"><span class="pre">get_dim</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.MeshWrapper.get_dim" title="Permalink to this definition">¶</a></dt>
-<dd><p>get the number of dimensions of the mesh
-:return: 2 if the mesh is 2 dimensonal.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mocafe.fenut.fenut.MeshWrapper.get_global_mesh">
-<span class="sig-name descname"><span class="pre">get_global_mesh</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.MeshWrapper.get_global_mesh" title="Permalink to this definition">¶</a></dt>
-<dd><p>get the global mesh shared among all the MPI processes
-:return: the global mesh shared among all the MPI processes</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mocafe.fenut.fenut.MeshWrapper.get_local_mesh">
-<span class="sig-name descname"><span class="pre">get_local_mesh</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.MeshWrapper.get_local_mesh" title="Permalink to this definition">¶</a></dt>
-<dd><p>get the mesh visible to the local MPI process
-:return: the local Mesh object</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mocafe.fenut.fenut.MeshWrapper.is_inside_global_mesh">
-<span class="sig-name descname"><span class="pre">is_inside_global_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.MeshWrapper.is_inside_global_mesh" title="Permalink to this definition">¶</a></dt>
-<dd><p>check if the given point is inside the global mesh
-:param point: the point to check
-:return: True if the point is inside the local mesh. False otherwise</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mocafe.fenut.fenut.MeshWrapper.is_inside_local_mesh">
-<span class="sig-name descname"><span class="pre">is_inside_local_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.MeshWrapper.is_inside_local_mesh" title="Permalink to this definition">¶</a></dt>
-<dd><p>check if the given point is inside the local mesh
-:param point: the point to check
-:return: True if the point is inside the local mesh. False otherwise.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mocafe.fenut.fenut.MeshWrapper.n_global_mesh_vertices">
-<span class="sig-name descname"><span class="pre">n_global_mesh_vertices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.MeshWrapper.n_global_mesh_vertices" title="Permalink to this definition">¶</a></dt>
-<dd><p>get the number of points in the global mesh
-:return: the number of points in the global mesh</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mocafe.fenut.fenut.MeshWrapper.n_local_mesh_vertices">
-<span class="sig-name descname"><span class="pre">n_local_mesh_vertices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.MeshWrapper.n_local_mesh_vertices" title="Permalink to this definition">¶</a></dt>
-<dd><p>get the number of points in the local mesh
-:return: the number of points in the local mesh</p>
-</dd></dl>
-
-</dd></dl>
-
 <dl class="py function">
 <dt class="sig sig-object py" id="mocafe.fenut.fenut.build_local_box">
 <span class="sig-prename descclassname"><span class="pre">mocafe.fenut.fenut.</span></span><span class="sig-name descname"><span class="pre">build_local_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">local_mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">border_width</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.build_local_box" title="Permalink to this definition">¶</a></dt>
@@ -173,6 +115,23 @@ Glaerkin, ‘CG’.
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="mocafe.fenut.fenut.is_point_inside_mesh">
+<span class="sig-prename descclassname"><span class="pre">mocafe.fenut.fenut.</span></span><span class="sig-name descname"><span class="pre">is_point_inside_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.cpp.mesh.Mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.is_point_inside_mesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the given point is inside the given mesh. In parallel, checks if the point is inside the local mesh.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mesh</strong> – the given Mesh</p></li>
+<li><p><strong>point</strong> – the given point</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if the point is inside the mesh; False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="mocafe.fenut.fenut.load_parameters">
 <span class="sig-prename descclassname"><span class="pre">mocafe.fenut.fenut.</span></span><span class="sig-name descname"><span class="pre">load_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameters_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'parameters.json'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.load_parameters" title="Permalink to this definition">¶</a></dt>
 <dd><p>DEPRECATED: use Parameters class instead
@@ -238,12 +197,15 @@ FEniCS functions for elaboration and visualization.</p>
 
 
 <h3>Navigation</h3>
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<p class="caption" role="heading"><span class="caption-text">In the following, you can find the complete package documentation, including demos and bibliography:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../demo_doc/index.html">Demo gallery</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../../code_documentation.html">Code documentation</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../demo_doc/index.html">Demo Gallery</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../code_documentation.html">Code Documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../angie.html"><code class="docutils literal notranslate"><span class="pre">mocafe.angie</span></code></a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../fenut.html"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../litforms.html"><code class="docutils literal notranslate"><span class="pre">mocafe.litforms</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../math.html"><code class="docutils literal notranslate"><span class="pre">mocafe.math</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../expressions.html"><code class="docutils literal notranslate"><span class="pre">mocafe.expressions</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../bib.html">Bibliography</a></li>
@@ -253,7 +215,7 @@ FEniCS functions for elaboration and visualization.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../../code_documentation.html">Code documentation</a><ul>
+  <li><a href="../../code_documentation.html">Code Documentation</a><ul>
   <li><a href="../fenut.html"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut</span></code></a><ul>
       <li>Previous: <a href="../fenut.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut</span></code></a></li>
       <li>Next: <a href="log.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut.log</span></code></a></li>
