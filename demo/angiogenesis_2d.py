@@ -201,14 +201,7 @@ mesh = fenics.RectangleMesh(fenics.Point(0., 0.),
                             ny)
 
 # %%
-# Then, we define a ``MeshWrapper`` for the mesh. This is a mocafe object created to allow easy access to both local
-# and global mesh data for each MPI process. Indeed, when FEniCS runs in parallel the mesh is by default divided
-# among the processes and the global mesh data are not easy to access. As we will see, this object is necessary to
-# manage tip and source cells.
-mesh_wrapper = fu.MeshWrapper(mesh)  # todo:RMW
-
-# %%
-# Finally, we initialize the function space as follows:
+# Then, we initialize the function space as follows:
 
 # define function space for c and af
 function_space = fu.get_mixed_function_space(mesh, 3, "CG", 1)
@@ -255,7 +248,7 @@ mu_0 = fenics.interpolate(fenics.Constant(0.), function_space.sub(0).collapse())
 # In the original paper, the source cells where placed randomly in the right part of the domain, relatively far
 # from the initial vessel. Creating this set up in mocafe is relatively easy. We start by defining the number
 # of source cells we want:
-n_sources = parameters.get_value("n_sources")
+n_sources = int(parameters.get_value("n_sources"))
 
 # %%
 # Then, we define the part of the domain where we want the source cells to be placed; in this case, it is a rectangle
@@ -265,14 +258,14 @@ random_sources_domain = mshr.Rectangle(fenics.Point(initial_vessel_width + param
 
 # %%
 # Finally, we initialize a so called ``RandomSourceMap``, which will create the source cells for us:
-sources_map = af_sourcing.RandomSourceMap(mesh_wrapper,  # todo:RMW
+sources_map = af_sourcing.RandomSourceMap(mesh,
                                           n_sources,
                                           parameters,
                                           where=random_sources_domain)
 
 # %%
 # A ``SourceMap`` is a mocafe object which contains the position of all the source cells at a given time throughout
-# the entire simulation. As you can see, you just need to input the mesh wrapper, the parameters, the number of sources
+# the entire simulation. As you can see, you just need to input the mesh, the parameters, the number of sources
 # and where you want the sources to be placed. In this implementation, we defined the part of the domain where we
 # needed the source cell as ``mshr.Rectangle``, but the ``where`` argument can take as input also a function which
 # return a boolean for each point of the domain (True if the point can host a source cell, False otherwise).
@@ -280,14 +273,14 @@ sources_map = af_sourcing.RandomSourceMap(mesh_wrapper,  # todo:RMW
 #
 # .. code-block:: default
 #
-#   sources_map = af_sourcing.RandomSourceMap(mesh_wrapper,  # todo:RMW
+#   sources_map = af_sourcing.RandomSourceMap(mesh,
 #                                             n_sources,
 #                                             parameters,
 #                                             where=lambda x: x[0] > initial_vessel_width + parameters.get_value("d"))
 #
 # However, the source map is not sufficient to define the initial condition we need. To do so, we need an additional
 # mocafe object, a ``SourcesManager``:
-sources_manager = af_sourcing.SourcesManager(sources_map, mesh_wrapper, parameters)  # todo:RMW
+sources_manager = af_sourcing.SourcesManager(sources_map, mesh, parameters)
 
 # %%
 # As the name suggests, a ``SourcesManager`` is an object responsible for the actual management of the sources in the
@@ -363,13 +356,13 @@ weak_form = form_af + form_ang
 # Just as for the source cells we defined a ``SourceCellsManager``, for the tip cells we need to define a
 # ``TipCellsManager``, which will take care of the job of activating, deactivating and moving the tip cells.
 # We initialize it simply calling:
-tip_cell_manager = tipcells.TipCellManager(mesh_wrapper,  # todo:RMW
+tip_cell_manager = tipcells.TipCellManager(mesh,
                                            parameters)
 
 # %%
 # And then we will use iteratively in the time simulation for our needs.
 # Notice that the rules for activating, deactivating and moving the tip cells are already implemented in the object
-# class and all we need to do is passing the mesh wrapper and the simulation parameters to the constructor.
+# class and all we need to do is passing the mesh and the simulation parameters to the constructor.
 #
 # Then, we can proceed similarly to any other simulation, defining the Jacobian for the weak form:
 jacobian = fenics.derivative(weak_form, u)

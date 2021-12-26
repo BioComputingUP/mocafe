@@ -1,7 +1,6 @@
 import fenics
 import numpy as np
 import pytest
-import mocafe.fenut.fenut as fu
 from mocafe.angie.tipcells import TipCellManager
 
 
@@ -17,19 +16,13 @@ from mocafe.angie.tipcells import TipCellManager
 
 
 @pytest.fixture
-def mesh_wrapper():
+def mesh():
     # define mesh
     nx = ny = 300
     mesh = fenics.RectangleMesh(fenics.Point(0., 0.),
                                 fenics.Point(nx, ny),
                                 nx, ny)
-    mesh_wrapper = fu.MeshWrapper(mesh)
-    return mesh_wrapper
-
-
-@pytest.fixture
-def mesh(mesh_wrapper):
-    return mesh_wrapper.get_local_mesh()
+    return mesh
 
 
 @pytest.fixture
@@ -68,8 +61,8 @@ def gradT0(mesh, T0):
 
 
 @pytest.fixture
-def tip_cell_manager(mesh_wrapper, parameters):
-    return TipCellManager(mesh_wrapper, parameters)
+def tip_cell_manager(mesh, parameters):
+    return TipCellManager(mesh, parameters)
 
 
 def test_activate_tip_cell(T0, phi0, gradT0, tip_cell_manager):

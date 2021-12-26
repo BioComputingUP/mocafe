@@ -3,8 +3,8 @@ from mocafe.angie.af_sourcing import SourcesManager
 
 
 @pytest.fixture
-def sources_manager(source_map, mesh_wrapper, parameters):
-    return SourcesManager(source_map, mesh_wrapper, parameters)
+def sources_manager(source_map, mesh, parameters):
+    return SourcesManager(source_map, mesh, parameters)
 
 
 def test_remove_source_near_vessels_total(sources_manager, phi_vessel_total):
