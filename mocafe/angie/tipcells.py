@@ -393,7 +393,7 @@ class TipCellManager:
             else:
                 is_inside_global_mesh = None
             is_inside_global_mesh = comm.bcast(is_inside_global_mesh, 0)
-            if is_inside_global_mesh:
+            if not is_inside_global_mesh:
                 local_to_remove.append(tip_cell)
 
         # remove local cells to remove
