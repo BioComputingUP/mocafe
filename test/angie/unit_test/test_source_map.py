@@ -43,16 +43,16 @@ def test_remove_source_cell(source_map):
     assert (first_source_cell in source_map.get_global_source_cells()) is False, "This cell should not be in list"
 
 
-def test_random_source_map_where_function_CSCG_Geometry(mesh_wrapper, parameters):
+def test_random_source_map_where_function_CSCG_Geometry(mesh, parameters):
     source_cells_domain = mshr.Circle(fenics.Point(0, 0), 150.)
-    source_map = RandomSourceMap(mesh_wrapper, 10, parameters, where=source_cells_domain)
+    source_map = RandomSourceMap(mesh, 10, parameters, where=source_cells_domain)
     for source_cell in source_map.get_global_source_cells():
         assert source_cells_domain.inside(fenics.Point(source_cell.get_position()))
 
 
-def test_random_source_map_where_function_CSCG_Geometry_union(mesh_wrapper, parameters):
+def test_random_source_map_where_function_CSCG_Geometry_union(mesh, parameters):
     source_cells_domain = mshr.Circle(fenics.Point(0, 0), 100.) + mshr.Circle(fenics.Point(300, 300), 100)
-    source_map = RandomSourceMap(mesh_wrapper, 10, parameters, where=source_cells_domain)
+    source_map = RandomSourceMap(mesh, 10, parameters, where=source_cells_domain)
     for source_cell in source_map.get_global_source_cells():
         assert source_cells_domain.inside(fenics.Point(source_cell.get_position()))
 

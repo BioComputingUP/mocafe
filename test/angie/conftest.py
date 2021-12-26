@@ -26,18 +26,17 @@ def mesh():
 
 
 @pytest.fixture
-def source_map(mesh_wrapper, parameters):
+def source_map(mesh, parameters):
     n_sources = 10
     x_lim = 10
-    return RandomSourceMap(mesh_wrapper,
+    return RandomSourceMap(mesh,
                            n_sources,
                            parameters,
                            where=lambda x: x[0] > x_lim)
 
 
 @pytest.fixture
-def setup_function_space(mesh_wrapper):
-    mesh = mesh_wrapper.get_local_mesh()
+def setup_function_space(mesh):
     V = fenics.FunctionSpace(mesh, "CG", 1)
     return V
 
