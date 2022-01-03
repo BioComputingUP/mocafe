@@ -201,26 +201,28 @@ class RandomSourceMap(SourceMap):
         n_global_vertices = self.mesh.num_entities_global(0)
         # get local mesh coordinates
         lmc = self.mesh.coordinates()
-        # gather them in proc 0
+        # extract the index of the pickable points
+        global_pickable_vertex_index = \
+            [index for index, coordinate in zip(global_vertex_indices, lmc) if where_fun(fenics.Point(coordinate))]
+        # gather lmc in proc 0
         lmc_arrays = comm.gather(lmc, 0)
         # gather indices in proc 0
         vertex_maps = comm.gather(global_vertex_indices, 0)
+        # gather pickable coordinats indices in proc 0
+        pickable_vertex_maps = comm.gather(global_pickable_vertex_index, 0)
 
         if rank == 0:
             # init global coordinates array
             global_coordinates = np.zeros((n_global_vertices, lmc.shape[1]))
-            # get global coordinates
+            # get global pickable coordinates
             for coordinates, indices in zip(lmc_arrays, vertex_maps):
                 global_coordinates[indices] = coordinates
-
-            # select only the pickable coordinates
-            if where_fun is not None:
-                # get the pickable points
-                pickable_points = [point for point in global_coordinates if where_fun(fenics.Point(point))]
-            else:
-                # else all points are pickable
-                pickable_points = [point for point in global_coordinates]
-
+            # get pickable points indices (removing duplicates)
+            pickable_vertex_indices = list(set(fu.flatten_list_of_lists(pickable_vertex_maps)))
+            # select pickable points
+            pickable_points = global_coordinates[pickable_vertex_indices]
+            # convert in list
+            pickable_points = list(pickable_points)
             # pick n of them (if available)
             n_pickable_points = len(pickable_points)
             if n_pickable_points <= n_points:
