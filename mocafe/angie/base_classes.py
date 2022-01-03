@@ -50,8 +50,5 @@ class BaseCell:
         :param point: the point to check the distance with
         :return: the distance
         """
-        distance_squared = 0.
-        for i in range(self.get_dimension()):
-            distance_squared += (point[i] - self.position[i]) ** 2
-        distance = np.sqrt(distance_squared)
+        distance = np.sqrt(np.sum((point - self.position) ** 2))
         return distance
