@@ -1,7 +1,7 @@
 """
 Base classes used only by mocafe.angie
 """
-
+import math
 import numpy as np
 
 
@@ -52,3 +52,25 @@ class BaseCell:
         """
         distance = np.sqrt(np.sum((point - self.position) ** 2))
         return distance
+
+
+def fibonacci_sphere(n_points):
+    """
+    Returns ``n_points`` points evely distributed on a sphere of radius 1 using the fibonacci algorithm.
+
+    :param n_points: number of points to spread on a sphere.
+    """
+    points = []
+    phi = math.pi * (3. - math.sqrt(5.))  # golden angle in radians
+    for i in range(n_points):
+        y = 1 - (i / float(n_points - 1)) * 2  # y goes from 1 to -1
+        radius = math.sqrt(1 - y * y)  # radius at y
+
+        theta = phi * i  # golden angle increment
+
+        x = math.cos(theta) * radius
+        z = math.sin(theta) * radius
+
+        points.append(np.array([x, y, z]))
+
+    return points
