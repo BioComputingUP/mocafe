@@ -68,6 +68,8 @@ class SourceMap:
         self.mesh = mesh
         self.local_box = self._build_local_box(parameters)
         global_source_points = source_points
+        # sort global source point for distance from origin
+        global_source_points.sort(key=lambda x: np.sqrt(sum(x**2)))
         self.global_source_cells = [SourceCell(point, 0) for point in global_source_points]
         self.local_source_cells = self._divide_source_cells()
 
