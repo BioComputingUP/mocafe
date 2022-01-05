@@ -140,7 +140,7 @@ class TipCellsField(fenics.UserExpression):
                 radius = self.tip_cells_radiuses[is_inside_array]
                 velocity_norm = self.velocity_norms[is_inside_array]
                 T_value = self.T_values[is_inside_array]
-                phi_c = ((self.alpha_p * T_value * np.pi * radius) / (2 * velocity_norm)) + 1
+                phi_c = ((self.alpha_p * T_value * np.pi * radius) / (2 * velocity_norm))
                 point_value = np.max(phi_c)
         # for tip_cell, velocity, T_value in zip(self.tip_cells_positions, self.velocity_norms, self.T_values):
         #     if tip_cell.is_point_inside(x):
