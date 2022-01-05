@@ -281,8 +281,9 @@ class SourcesManager:
         # prepare list of cells to remove
         to_remove = []
         debug_adapter.debug(f"Starting to remove source cells")
+
         # if distance is specified
-        if "min_distance" in kwargs.keys():
+        if "d" in kwargs.keys():
             clock_checker = ClockChecker(self.mesh, kwargs["d"])
         else:
             if self.default_clock_checker_is_present:
@@ -418,11 +419,11 @@ class ConstantSourcesField(fenics.UserExpression):
 
     def eval(self, values, x):
         # check if point is inside any cell
-        is_inside_array = np.sum((x - self.sources_positions) ** 2, axis=1) < (self.radius ** 2)
-        if any(is_inside_array):
-            point_value = self.value_max
-        else:
-            point_value = self.value_min
+        point_value = self.value_min
+        if self.sources_positions:
+            is_inside_array = np.sum((x - self.sources_positions) ** 2, axis=1) < (self.radius ** 2)
+            if any(is_inside_array):
+                point_value = self.value_max
         values[0] = point_value
 
     def value_shape(self):

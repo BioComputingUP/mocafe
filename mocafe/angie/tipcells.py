@@ -99,11 +99,12 @@ class TipCellsField(fenics.UserExpression):
         self.T_p = parameters.get_value("T_p")
         self.phi_min = parameters.get_value("phi_min")
         self.phi_max = parameters.get_value("phi_max")
-        self.tip_cells = []
-        self.velocities = []
-        self.T_values = []
+        self.tip_cells_positions = []
+        self.tip_cells_radiuses = np.array([])
+        self.velocity_norms = np.array([])
+        self.T_values = np.array([])
 
-    def add_tip_cell(self, tip_cell, velocity, af_at_point):
+    def add_tip_cell(self, tip_cell: TipCell, velocity, af_at_point):
         """
         Add a tip cell to the field.
 
@@ -113,9 +114,10 @@ class TipCellsField(fenics.UserExpression):
             field value.
         :return:
         """
-        self.tip_cells.append(tip_cell)
-        self.velocities.append(velocity)
-        self.T_values.append(self.T_p if af_at_point > self.T_p else af_at_point)
+        self.tip_cells_positions.append(tip_cell.get_position())
+        self.tip_cells_radiuses = np.append(self.tip_cells_radiuses, tip_cell.get_radius())
+        self.velocity_norms = np.append(self.velocity_norms, np.linalg.norm(velocity))
+        self.T_values = np.append(self.T_values, self.T_p if af_at_point > self.T_p else af_at_point)
 
     def eval(self, values, x):
         """
@@ -126,11 +128,25 @@ class TipCellsField(fenics.UserExpression):
         :return: nothing
         """
         point_value = self.phi_min
-        for tip_cell, velocity, T_value in zip(self.tip_cells, self.velocities, self.T_values):
-            if tip_cell.is_point_inside(x):
-                phi_c = ((self.alpha_p * T_value * np.pi * tip_cell.get_radius()) / (2 * np.linalg.norm(velocity))) + 1
-                point_value = phi_c
-                break
+        if self.tip_cells_positions:
+            try:
+                is_inside_array = np.sum((x - self.tip_cells_positions) ** 2, axis=1) < (self.tip_cells_radiuses ** 2)
+            except ValueError as e:
+                raise ValueError(f"Found error with the following params: \n"
+                                 f"* {self.tip_cells_positions} \n"
+                                 f"* {x} \n"
+                                 f"* {self.tip_cells_radiuses} \n")
+            if any(is_inside_array):
+                radius = self.tip_cells_radiuses[is_inside_array]
+                velocity_norm = self.velocity_norms[is_inside_array]
+                T_value = self.T_values[is_inside_array]
+                phi_c = ((self.alpha_p * T_value * np.pi * radius) / (2 * velocity_norm)) + 1
+                point_value = np.max(phi_c)
+        # for tip_cell, velocity, T_value in zip(self.tip_cells_positions, self.velocity_norms, self.T_values):
+        #     if tip_cell.is_point_inside(x):
+        #         phi_c = ((self.alpha_p * T_value * np.pi * tip_cell.get_radius()) / (2 * np.linalg.norm(velocity))) + 1
+        #         point_value = phi_c
+        #         break
         values[0] = point_value
 
     def value_shape(self):
