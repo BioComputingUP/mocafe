@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Installation &#8212; mocafe 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Code Documentation" href="code_documentation.html" />
+    <link rel="prev" title="Angiogenesis phase field model" href="demo_doc/angiogenesis_2d.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>Currently, <em>mocafe</em> has been tested only on Linux and on Windows, using the Windows Subsystem for Linux (WSL). In both
+cases the installation instructions are identical.</p>
+<p><em>Notice:</em> WSL is available for Windows 10 onwards.</p>
+<section id="installing-mocafe-in-singularity-container-recommended">
+<h2>Installing <em>mocafe</em> in Singularity container (<strong>recommended</strong>)<a class="headerlink" href="#installing-mocafe-in-singularity-container-recommended" title="Permalink to this headline">¶</a></h2>
+<p>A FEniCS Docker container is available at <a class="reference external" href="quay.io/fenicsproject/stable">quay.io/fenicsproject/stable</a>; however,
+Docker does not provide a full support to MPI. Thus, the best way to use FEniCS and <em>mocafe</em> in a container is to use
+<a class="reference external" href="https://github.com/sylabs/singularity">Singularity</a>.</p>
+<p>If you don’t have Singularity installed, just follow the instruction provided at the official <a class="reference external" href="https://github.com/sylabs/singularity">GitHub repository
+for SingularityCE</a>.</p>
+<p>If you have Singularity, just build a FEniCS container typing:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">singularity build fenics.sif docker:quay.io/fenicsproject/stable:latest</span>
+</pre></div>
+</div>
+<p>It may take some time to do all the necessary operations.
+Then enter the Singularity container using the <code class="docutils literal notranslate"><span class="pre">shell</span></code> command:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">singularity shell fenics.sif</span>
+</pre></div>
+</div>
+<p>Now you are inside a container with FEniCS and MPI installed. So, you just require to install mocafe
+using pip:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip3 install git+https://github.com/fpradelli94/mocafe#egg=mocafe</span>
+</pre></div>
+</div>
+<p><em>Note</em>: you may require the option <code class="docutils literal notranslate"><span class="pre">--user</span></code> to install mocafe inside the container.</p>
+<p>Now <em>mocafe</em> with all its dependencies is installed on your container! Test it typing:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python3 -m mocafe</span>
+</pre></div>
+</div>
+<p>If everything is working properly, you should see the output message:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Your mocafe is ready!</span>
+</pre></div>
+</div>
+</section>
+<section id="installing-mocafe-on-your-linux-system-not-recommended">
+<h2>Installing <em>mocafe</em> on your Linux system (<strong>not recommended</strong>)<a class="headerlink" href="#installing-mocafe-on-your-linux-system-not-recommended" title="Permalink to this headline">¶</a></h2>
+<p>An alternative way to have FEniCS and <em>mocafe</em> on your PC is to install both FEniCS and <em>mocafe</em> directly on your
+system. The following procedure is currently supported but not recommended, since FEniCS is transitioning from
+its version 2019 to FEniCSx and the apt package might not be supported in the future.</p>
+<p>First of all, if you don’t already have it on your system, is recommended to install MPI:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo apt install openmpi-bin</span>
+</pre></div>
+</div>
+<p>And test it using <code class="docutils literal notranslate"><span class="pre">mpirun</span> <span class="pre">--version</span></code>. If everything worked out well, you should get something like:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">mpirun (Open MPI) 4.0.3</span>
+
+<span class="go">Report bugs to http://www.open-mpi.org/community/help/</span>
+</pre></div>
+</div>
+<p>Then, install FEniCS using <code class="docutils literal notranslate"><span class="pre">apt-get</span></code>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo apt-get install software-properties-common</span>
+<span class="go">sudo add-apt-repository ppa:fenics-packages/fenics</span>
+<span class="go">sudo apt-get update</span>
+<span class="go">sudo apt-get install fenics</span>
+</pre></div>
+</div>
+<p>Test if FEniCS has been correctly installed trying to import it on IPython:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python3</span>
+<span class="go">Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.</span>
+<span class="gp">&gt;</span>&gt;&gt; import fenics
+<span class="gp">&gt;</span>&gt;&gt;
+</pre></div>
+</div>
+<p>If FEniCS works, you can proceed to installing <em>mocafe</em> using <code class="docutils literal notranslate"><span class="pre">pip</span></code>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip3 install git+https://github.com/fpradelli94/mocafe#egg=mocafe</span>
+</pre></div>
+</div>
+<p>Test it executing the main script:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python3 -m mocafe</span>
+</pre></div>
+</div>
+<p>I everything is properly working, the output should be:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Your mocafe is ready!</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">mocafe</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">In the following, you can find the complete package documentation, including demos and bibliography:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="demo_doc/index.html">Demo Gallery</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installing-mocafe-in-singularity-container-recommended">Installing <em>mocafe</em> in Singularity container (<strong>recommended</strong>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installing-mocafe-on-your-linux-system-not-recommended">Installing <em>mocafe</em> on your Linux system (<strong>not recommended</strong>)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="code_documentation.html">Code Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bib.html">Bibliography</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="demo_doc/angiogenesis_2d.html" title="previous chapter">Angiogenesis phase field model</a></li>
+      <li>Next: <a href="code_documentation.html" title="next chapter">Code Documentation</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Franco Pradelli.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/installation.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

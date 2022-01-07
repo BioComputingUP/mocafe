@@ -20,6 +20,7 @@ models of cancer development and angiogenesis. You can use *mocafe* to:
    :caption: In the following, you can find the complete package documentation, including demos and bibliography:
 
    demo_doc/index
+   installation
    code_documentation
    bib
 
