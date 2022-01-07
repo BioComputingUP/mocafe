@@ -42,6 +42,8 @@ sphinx_gallery_conf = {
      'gallery_dirs': 'demo_doc',  # path to where to save gallery generated output
 }
 
+# add logo
+html_logo = '200mocafe_logo.png'
 # configure bibfile
 bibtex_bibfiles = ['ref.bib']
 
