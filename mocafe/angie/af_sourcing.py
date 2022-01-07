@@ -413,6 +413,7 @@ class ConstantSourcesField(fenics.UserExpression):
         """
         super(ConstantSourcesField, self).__init__()
         self.sources_positions = [source_cell.get_position() for source_cell in source_map.get_local_source_cells()]
+        self.sources_positions_not_empty = len(self.sources_positions) != 0
         self.value_min = parameters.get_value("T_min")
         self.value_max = parameters.get_value("T_s")
         self.radius = parameters.get_value("R_c")
@@ -420,7 +421,7 @@ class ConstantSourcesField(fenics.UserExpression):
     def eval(self, values, x):
         # check if point is inside any cell
         point_value = self.value_min
-        if self.sources_positions:
+        if self.sources_positions_not_empty:
             is_inside_array = np.sum((x - self.sources_positions) ** 2, axis=1) < (self.radius ** 2)
             if any(is_inside_array):
                 point_value = self.value_max
