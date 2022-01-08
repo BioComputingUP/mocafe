@@ -194,7 +194,7 @@ jacobian = fenics.derivative(weak_form, u)
 
 print_p0(f"5/{n} Starting iteration... ")
 t = 0.
-n_steps = int(parameters.get_value("n_steps"))
+n_steps = 200
 if rank == 0:
     pbar = tqdm(total=n_steps, ncols=100, position=1, desc="angiogenesis_3d")
 else:
