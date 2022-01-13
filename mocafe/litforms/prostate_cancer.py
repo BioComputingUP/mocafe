@@ -32,9 +32,8 @@ def prostate_cancer_nutrient_form(sigma: fenics.Function,
                                   sigma_old: fenics.Function,
                                   phi: fenics.Function,
                                   v: fenics.TestFunction,
-                                  s_expression: fenics.Expression,
+                                  s: fenics.Function,
                                   parameters: mcfp.Parameters):
-    s = fenics.interpolate(s_expression, sigma_old.function_space())
     F = (((sigma - sigma_old) / parameters.get_value("dt")) * v * fenics.dx) \
         + (parameters.get_value("epsilon") * fenics.dot(fenics.grad(sigma), fenics.grad(v)) * fenics.dx) \
         + (- s * v * fenics.dx) \
