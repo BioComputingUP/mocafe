@@ -59,6 +59,7 @@ a distribution :math:`s`, and that the nutrient is consumed at a constant rate b
 # After the math, let's see the code. To reproduce this model we need first to import everything we need throughout
 # the simulation. Notice that while most of the packages are provided by mocafe, we also use some other stuff.
 import sys
+import time
 import numpy as np
 import fenics
 import random
@@ -286,10 +287,22 @@ phi, sigma = fenics.split(u)
 # to define the random distribution mentioned above. Indeed, The pyhton function it is used by this class to evaluate
 # the value of the FEniCS function at each point of the mesh. Notice that the function given as imput must always have
 # at least on input (x in this case), representing the spatial point.
-s_expression = PythonFunctionField(
-    python_fun=lambda x: parameters.get_value("s_average") + random.uniform(parameters.get_value("s_min"),
-                                                                            parameters.get_value("s_max")),
+# init_time = time.time()
+s = fenics.Function(function_space.sub(0).collapse())
+local_vertex_shape = s.vector().get_local().shape
+s.vector().set_local(
+    (parameters.get_value("s_average") - parameters.get_value("s_min")) +
+    ((parameters.get_value("s_max") - parameters.get_value("s_min")) * np.random.random_sample(local_vertex_shape))
 )
+s.vector().update_ghost_values()
+# s_expression = PythonFunctionField(
+#     python_fun=lambda x: parameters.get_value("s_average") + random.uniform(parameters.get_value("s_min"),
+#                                                                             parameters.get_value("s_max")),
+# )
+# s = fenics.interpolate(s_expression, function_space.sub(0).collapse())
+# total_time = time.time() - init_time
+# print(f"Interpolation time: {total_time}")
+# exit(0)
 
 # %%
 # Now, we have everything in place to define our PDE system. Since FEniCS uses the Finite Element Method (FEM) to
@@ -300,7 +313,7 @@ s_expression = PythonFunctionField(
 #
 v1, v2 = fenics.TestFunctions(function_space)
 weak_form = pc_model.prostate_cancer_form(phi, phi0, sigma, v1, parameters) + \
-    pc_model.prostate_cancer_nutrient_form(sigma, sigma0, phi, v2, s_expression, parameters)
+    pc_model.prostate_cancer_nutrient_form(sigma, sigma0, phi, v2, s, parameters)
 
 # %%
 # Still, you are invited to notice a couple of interesting things:
@@ -337,7 +350,7 @@ else:
 # mocafe, which are necessary to set up the right solver for our problem:
 jacobian = fenics.derivative(weak_form, u)
 problem = PETScProblem(jacobian, weak_form, [])
-solver = PETScNewtonSolver({"ksp_type": "gmres", "pc_type": "asm"},
+solver = PETScNewtonSolver({"ksp_type": "gmres", "pc_type": "hypre"},
                            mesh.mpi_comm())
 
 # %%
