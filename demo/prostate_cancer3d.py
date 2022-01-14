@@ -62,13 +62,13 @@ import sys
 import time
 import numpy as np
 import fenics
-import random
+import pandas as pd
 from tqdm import tqdm
 from pathlib import Path
 file_folder = Path(__file__).parent.resolve()
 mocafe_folder = file_folder.parent
 sys.path.append(str(mocafe_folder))  # appending mocafe path. Must be removed
-from mocafe.fenut.solvers import PETScProblem, PETScNewtonSolver
+from mocafe.fenut.solvers import PETScProblem, PETScNewtonSolver, BestSolverFinder
 from mocafe.fenut.fenut import get_mixed_function_space, setup_xdmf_files
 from mocafe.fenut.mansimdata import setup_data_folder
 from mocafe.expressions import EllipsoidField, PythonFunctionField
@@ -349,9 +349,14 @@ else:
 # Then, we need to define how we want FEniCS to solve or PDE system. This can be done with just a few lines of code in
 # mocafe, which are necessary to set up the right solver for our problem:
 jacobian = fenics.derivative(weak_form, u)
-problem = PETScProblem(jacobian, weak_form, [])
-solver = PETScNewtonSolver({"ksp_type": "gmres", "pc_type": "hypre"},
-                           mesh.mpi_comm())
+# problem = PETScProblem(jacobian, weak_form, [])
+# solver = PETScNewtonSolver({"ksp_type": "gmres", "pc_type": "hypre"},
+#                            mesh.mpi_comm())
+bsf = BestSolverFinder()
+performance_dict = bsf.find_quicker_nonlinear_solver(weak_form, u, jacobian)
+df = pd.DataFrame(performance_dict)
+df.to_csv(str(data_folder / Path("default_solver_performances.csv")))
+
 
 # %%
 # The few lines above might look a bit obscure if you're not experienced with FEM and numerical methods in general,
@@ -384,21 +389,22 @@ solver = PETScNewtonSolver({"ksp_type": "gmres", "pc_type": "hypre"},
 # Simulation
 # ^^^^^^^^^^
 # Finally, we can iterate in time to solve the system with the given solver at each time step.
-t = 0
-for current_step in range(n_steps):
-    # update time
-    t += parameters.get_value("dt")
 
-    # solve the problem with the solver defined by the given parameters
-    solver.solve(problem, u.vector())
-
-    # save new values to phi0 and sigma0, in order for them to be the initial condition for the next step
-    fenics.assign([phi0, sigma0], u)
-
-    # save current solutions to file
-    phi_xdmf.write(phi0, t)  # write the value of phi at time t
-    sigma_xdmf.write(sigma0, t)  # write the value of sigma at time t
-
-    # update progress bar
-    if rank == 0:
-        progress_bar.update(1)
+# t = 0
+# for current_step in range(n_steps):
+#     # update time
+#     t += parameters.get_value("dt")
+#
+#     # solve the problem with the solver defined by the given parameters
+#     solver.solve(problem, u.vector())
+#
+#     # save new values to phi0 and sigma0, in order for them to be the initial condition for the next step
+#     fenics.assign([phi0, sigma0], u)
+#
+#     # save current solutions to file
+#     phi_xdmf.write(phi0, t)  # write the value of phi at time t
+#     sigma_xdmf.write(sigma0, t)  # write the value of sigma at time t
+#
+#     # update progress bar
+#     if rank == 0:
+#         progress_bar.update(1)

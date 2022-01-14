@@ -1,4 +1,10 @@
 import fenics
+import time
+from tqdm import tqdm
+from itertools import product
+
+comm = fenics.MPI.comm_world
+rank = comm.Get_rank()
 
 
 class PETScProblem(fenics.NonlinearProblem):
@@ -46,3 +52,75 @@ class PETScNewtonSolver(fenics.NewtonSolver):
                 fenics.PETScOptions.set(option, self.solver_parameters[option])
 
         self.linear_solver().set_from_options()
+
+
+class BestSolverFinder:
+    def __init__(self):
+        self.default_lu_methods: dict = fenics.lu_solver_methods()
+        self.default_krylov_methods: dict = fenics.krylov_solver_methods()
+        self.default_pc: dict = fenics.krylov_solver_preconditioners()
+
+    def _run_default_solver_with_parameters(self, weak_form, function, jacobian, lsp):
+        init_time = time.time()
+        fenics.solve(weak_form == 0, function, J=jacobian, solver_parameters=lsp)
+        # try:
+        #     fenics.solve(weak_form == 0, function, J=jacobian, solver_parameters=lsp)
+        #     error_occurred = False
+        # except RuntimeError as e:
+        #     error_occurred = True
+        error_occurred = False
+        total_time = time.time() - init_time
+        return error_occurred, total_time
+
+    def find_quicker_nonlinear_solver(self, weak_form, function, jacobian):
+        # init dict
+        performance_dict = {
+            "solver": [],  # solver type
+            "preconditioner": [],  # preconditioner (None if not krylov solver)
+            "error": [],
+            "duration": []
+        }
+        # set progress bar
+        if rank == 0:
+            pbar = tqdm(iterable=[*list(product(self.default_lu_methods, [None])),
+                              *list(product(self.default_krylov_methods, self.default_pc))])
+            pbar.set_description("testing lu solvers:")
+        else:
+            pbar = None
+        # measure performance for lu methods
+        for method in self.default_lu_methods:
+            lsp = {"newton_solver": {"linear_solver": method}}
+            error_occurred, total_time = self._run_default_solver_with_parameters(weak_form, function, jacobian, lsp)
+            # update dict
+            performance_dict["solver"].append(method)
+            performance_dict["preconditioner"].append(None)
+            performance_dict["error"] = error_occurred
+            performance_dict["duration"] = None if error_occurred else total_time
+            # update pbar
+            if rank == 0:
+                pbar.update(1)
+
+        # measure performance for krylov solvers
+        if rank == 0:
+            pbar.set_description("testing krylov solvers:")
+        for method in self.default_krylov_methods:
+            for pc in self.default_pc:
+                lsp = {"newton_solver": {"linear_solver": method, "preconditioner": pc}}
+                error_occurred, total_time = self._run_default_solver_with_parameters(weak_form, function, jacobian,
+                                                                                      lsp)
+                # update dict
+                performance_dict["solver"].append(method)
+                performance_dict["preconditioner"].append(pc)
+                performance_dict["error"] = error_occurred
+                performance_dict["duration"] = None if error_occurred else total_time
+                # update pbar
+                if rank == 0:
+                    pbar.update(1)
+
+        return performance_dict
+
+
+
+
+
+
