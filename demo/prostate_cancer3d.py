@@ -144,7 +144,7 @@ parameters = from_dict({
 # More precisely, in the following we are going to define a mesh of the dimension described above, with 512
 # points for each side.
 #
-nx = 130
+nx = 100
 nz = ny = nx
 x_max = 1000  # um
 x_min = -1000  # um
@@ -340,22 +340,23 @@ n_steps = 10
 # Then, we define a progress bar with ``tqdm`` in order to monitor the iteration progress. Notice that the progress
 # bar is defined only if the rank of the process is 0. This is necessary to avoid every process to print out a
 # different progress bar.
-if rank == 0:
-    progress_bar = tqdm(total=n_steps, ncols=100)
-else:
-    progress_bar = None
+
+# if rank == 0:
+#     progress_bar = tqdm(total=n_steps, ncols=100)
+# else:
+#     progress_bar = None
 
 # %%
 # Then, we need to define how we want FEniCS to solve or PDE system. This can be done with just a few lines of code in
 # mocafe, which are necessary to set up the right solver for our problem:
 jacobian = fenics.derivative(weak_form, u)
-# problem = PETScProblem(jacobian, weak_form, [])
+problem = PETScProblem(jacobian, weak_form, [])
 # solver = PETScNewtonSolver({"ksp_type": "gmres", "pc_type": "hypre"},
 #                            mesh.mpi_comm())
 bsf = BestSolverFinder()
-performance_dict = bsf.find_quicker_nonlinear_solver(weak_form, u, jacobian)
+performance_dict = bsf.find_qucker_snes_solver(weak_form, u)
 df = pd.DataFrame(performance_dict)
-df.to_csv(str(data_folder / Path("default_solver_performances.csv")))
+df.to_csv(str(data_folder / Path("petsc_snes_performances.csv")))
 
 
 # %%

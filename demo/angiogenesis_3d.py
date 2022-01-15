@@ -16,34 +16,11 @@ import mocafe.fenut.mansimdata as mansimd
 from mocafe.angie import af_sourcing, tipcells
 from mocafe.angie.forms import angiogenesis_form, angiogenic_factor_form
 import mocafe.fenut.parameters as mpar
-from mocafe.fenut.solvers import PETScProblem, PETScNewtonSolver
+from mocafe.fenut.solvers import PETScProblem, PETScNewtonSolver, SNESProblem
 
 # initial setup
 comm = fenics.MPI.comm_world
 rank = comm.Get_rank()
-
-
-class SNESProblem:
-    def __init__(self, F, u, bcs):
-        V = u.function_space()
-        du = fenics.TrialFunction(V)
-        self.L = F
-        self.a = fenics.derivative(F, u, du)
-        self.bcs = bcs
-        self.u = u
-
-    def F(self, snes, x, F):
-        x = fenics.PETScVector(x)
-        F  = fenics.PETScVector(F)
-        fenics.assemble(self.L, tensor=F)
-        for bc in self.bcs:
-            bc.apply(F, x)
-
-    def J(self, snes, x, J, P):
-        J = fenics.PETScMatrix(J)
-        fenics.assemble(self.a, tensor=J)
-        for bc in self.bcs:
-            bc.apply(J)
 
 
 def print_p0(msg: str):
