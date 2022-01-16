@@ -288,13 +288,12 @@ phi, sigma = fenics.split(u)
 # at least on input (x in this case), representing the spatial point.
 # init_time = time.time()
 
-# s = fenics.Function(function_space.sub(0).collapse())
-# local_vertex_shape = s.vector().get_local().shape
-# s.vector().set_local(
-#     (parameters.get_value("s_average") - parameters.get_value("s_min")) +
-#     ((parameters.get_value("s_max") - parameters.get_value("s_min")) * np.random.random_sample(local_vertex_shape))
-# )
-# s.vector().update_ghost_values()
+s = fenics.Function(function_space.sub(0).collapse())
+local_vertex_shape = s.vector().get_local().shape
+random_vector = (parameters.get_value("s_average") - parameters.get_value("s_min")) + \
+    ((parameters.get_value("s_max") - parameters.get_value("s_min")) * np.random.random_sample(local_vertex_shape))
+s.vector().set_local(random_vector)
+s.vector().update_ghost_values()
 
 # s_expression = PythonFunctionField(
 #     python_fun=lambda x: parameters.get_value("s_average") + random.uniform(parameters.get_value("s_min"),
@@ -305,7 +304,7 @@ phi, sigma = fenics.split(u)
 # print(f"Interpolation time: {total_time}")
 # exit(0)
 
-s = fenics.Constant(parameters.get_value("s_average"))
+# s = fenics.Constant(parameters.get_value("s_average"))
 
 # %%
 # Now, we have everything in place to define our PDE system. Since FEniCS uses the Finite Element Method (FEM) to
@@ -409,6 +408,13 @@ for current_step in range(n_steps):
 
     # save new values to phi0 and sigma0, in order for them to be the initial condition for the next step
     fenics.assign([phi0, sigma0], u)
+
+    # generate new random values for s
+    random_vector = (parameters.get_value("s_average") + parameters.get_value("s_min")) + \
+                    ((parameters.get_value("s_max") + parameters.get_value("s_min")) *
+                     np.random.random_sample(local_vertex_shape))
+    s.vector().set_local(random_vector)
+    s.vector().update_ghost_values()
 
     # save current solutions to file
     phi_xdmf.write(phi0, t)  # write the value of phi at time t
