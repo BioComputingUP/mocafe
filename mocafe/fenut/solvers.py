@@ -46,13 +46,18 @@ class SNESProblem:
 
     def F(self, snes, x, F):
         x = fenics.PETScVector(x)
-        F  = fenics.PETScVector(F)
+        F = fenics.PETScVector(F)
+        x.vec().copy(self.u.vector().vec())
+        self.u.vector().apply("")
         fenics.assemble(self.L, tensor=F)
         for bc in self.bcs:
             bc.apply(F, x)
+            bc.apply(F, self.u.vector())
 
     def J(self, snes, x, J, P):
         J = fenics.PETScMatrix(J)
+        x.copy(self.u.vector().vec())
+        self.u.vector().apply("")
         fenics.assemble(self.a, tensor=J)
         for bc in self.bcs:
             bc.apply(J)
