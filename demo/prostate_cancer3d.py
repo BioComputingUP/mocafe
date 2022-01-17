@@ -125,11 +125,11 @@ parameters = from_dict({
     "chi": 600.0,  # Liters / (gram * years)
     "A": 600.0,  # 1 / years
     "epsilon": 5.0E6,  # (um^2) / years
-    "delta": 1003.75,  # grams / (Liters * years)
+    "delta": 2.75 * 365.,  # 1003.75 grams / (Liters * years)
     "gamma": 1000.0,  # grams / (Liters * years)
-    "s_average": 961.2,  # grams / (Liters * years)
-    "s_max": 73.,
-    "s_min": -73.
+    "s_average": 2.75 * 365.,  # grams / (Liters * years)
+    "s_max": 0.2 * 365.,  # grams / (Liters * years)
+    "s_min": -0.2 * 365.  # grams / (Liters * years)
 })
 
 # %%
@@ -143,7 +143,7 @@ parameters = from_dict({
 # More precisely, in the following we are going to define a mesh of the dimension described above, with 512
 # points for each side.
 #
-nx = 100
+nx = 130
 nz = ny = nx
 x_max = 1000  # um
 x_min = -1000  # um
