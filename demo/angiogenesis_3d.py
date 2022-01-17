@@ -177,18 +177,13 @@ if rank == 0:
 else:
     pbar = None
 
-# problem = SNESProblem(weak_form, u, [])
-#
-# b = fenics.PETScVector()
-# J_mat = fenics.PETScMatrix()
-#
-# snes = PETSc.SNES().create(comm)
-# snes.setFromOptions()
-# snes.setFunction(problem.F, b.vec())
-# snes.setJacobian(problem.J, J_mat.mat())
-problem = PETScProblem(jacobian, weak_form, [])
-solver = PETScNewtonSolver({"ksp_type": "gmres", "pc_type": "asm"},
-                           mesh.mpi_comm())
+# init PETSc with parameters
+petsc4py.init([__name__, "-snes_type", "newtonls"])
+from petsc4py import PETSc
+
+# create snes solver
+snes_solver = PETSc.SNES().create(comm)
+snes_solver.setFromOptions()
 
 for step in range(1, n_steps + 1):
     # update time
@@ -219,9 +214,14 @@ for step in range(1, n_steps + 1):
     tipcells_field.assign(tip_cell_manager.get_latest_tip_cell_function())
     op_counter.end_op("assign_latest_tip_cell_function")
 
-    # update fields
+    # solve the problem with the solver defined by the given parameters
     op_counter.start_op("solution")
-    solver.solve(problem, u.vector())
+    problem = SNESProblem(weak_form, u, [])
+    b = fenics.PETScVector()
+    J_mat = fenics.PETScMatrix()
+    snes_solver.setFunction(problem.F, b.vec())
+    snes_solver.setJacobian(problem.J, J_mat.mat())
+    snes_solver.solve(None, u.vector().vec())
     op_counter.end_op("solution")
 
     # assign u to the initial conditions functions
