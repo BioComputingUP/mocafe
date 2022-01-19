@@ -272,19 +272,20 @@ phi, sigma = fenics.split(u)
 # After having defined phi and sigma, we defined the :math:`s` function, which represent the distribution of
 # nutrient that is supplied to the system.
 #
-# In the original paper they simulated the model for both a constant distibution and for a randomic one. In
-# this implementation we chose to do the the latter, which is slightly more complex, even though made
-# simplier by the mocafe ``Expression`` ``PythonFunctionField``.
+# In the original paper they simulated the model for both a constant distibution and for a 'capillary-like'
+# distribution based on an image.
+# todo Maybe add also capillary like distribution?
+# In this implementation we just chose a to simulate the model with a random distribution of nutrients, with
+# values included in the range :math:`[s_{average} + s_{min}, s_{average} + s_{max}]`, where :math:`s_{average}
+# = 961.2` and :math`s_{max} = - s_{min} = 73`. todo add unit of measure
 #
-# This class allows us to use a python function, such as a lambda function, to define the values of a FEniCS function.
-# In the following, indeed, we make use of a lambda function and of the methods provided by the module ``random``
-# to define the random distribution mentioned above. Indeed, The pyhton function it is used by this class to evaluate
-# the value of the FEniCS function at each point of the mesh. Notice that the function given as imput must always have
-# at least on input (x in this case), representing the spatial point.
-s_expression = PythonFunctionField(
-    python_fun=lambda x: parameters.get_value("s_average") + random.uniform(parameters.get_value("s_min"),
-                                                                          parameters.get_value("s_max")),
-)
+# The most efficient way to do so in FEniCS is to use the ``Expression`` class:
+s_exp = fenics.Expression("(s_av + s_min) + ((s_max - s_min)*(random()/((double)RAND_MAX)))",
+                          degree=2,
+                          s_av=parameters.get_value("s_average"),
+                          s_min=parameters.get_value("s_min"),
+                          s_max=parameters.get_value("s_max"))
+s = fenics.interpolate(s_exp, function_space.sub(0).collapse())
 
 # %%
 # Now, we have everything in place to define our PDE system. Since FEniCS uses the Finite Element Method (FEM) to
@@ -295,7 +296,7 @@ s_expression = PythonFunctionField(
 #
 v1, v2 = fenics.TestFunctions(function_space)
 weak_form = pc_model.prostate_cancer_form(phi, phi0, sigma, v1, parameters) + \
-    pc_model.prostate_cancer_nutrient_form(sigma, sigma0, phi, v2, s_expression, parameters)
+    pc_model.prostate_cancer_nutrient_form(sigma, sigma0, phi, v2, s, parameters)
 
 # %%
 # Still, you are invited to notice a couple of interesting things:
