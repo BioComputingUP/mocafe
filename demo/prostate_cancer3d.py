@@ -67,7 +67,8 @@ from pathlib import Path
 file_folder = Path(__file__).parent.resolve()
 mocafe_folder = file_folder.parent
 sys.path.append(str(mocafe_folder))  # appending mocafe path. Must be removed
-from mocafe.fenut.solvers import SNESProblem
+# from mocafe.fenut.solvers import SNESProblem
+from mocafe.fenut.solvers import PETScProblem, PETScNewtonSolver, SNESProblem
 from mocafe.fenut.fenut import get_mixed_function_space, setup_xdmf_files
 from mocafe.fenut.mansimdata import setup_data_folder
 from mocafe.expressions import EllipsoidField
@@ -79,7 +80,7 @@ import mocafe.litforms.prostate_cancer as pc_model
 #
 # First of all, we shut down the logging messages from FEniCS, leaving only the error messages in case something goes
 # *really* wrong. If you want to check out the FEniCS messages, you can comment this line.
-fenics.set_log_level(fenics.LogLevel.ERROR)
+# fenics.set_log_level(fenics.LogLevel.ERROR)
 
 # %%
 # Then, we define the MPI rank for each process. Generally speaking, this is necessary for running the simulation in
@@ -118,18 +119,18 @@ parameters = from_dict({
     "phi0_out": 0.,  # adimdimentional
     "sigma0_in": 0.2,  # adimentional
     "sigma0_out": 1.,  # adimentional
-    "dt": 0.01,  # years
+    "dt": 0.001,  # years
     "lambda": 1.6E5,  # (um^2) / years
     "tau": 0.01,  # years
     "chempot_constant": 16,  # adimensional
     "chi": 600.0,  # Liters / (gram * years)
     "A": 600.0,  # 1 / years
     "epsilon": 5.0E6,  # (um^2) / years
-    "delta": 2.75 * 365.,  # 1003.75 grams / (Liters * years)
+    "delta": 1003.75,  # grams / (Liters * years)
     "gamma": 1000.0,  # grams / (Liters * years)
-    "s_average": 2.75 * 365.,  # grams / (Liters * years)
-    "s_max": 0.2 * 365.,  # grams / (Liters * years)
-    "s_min": -0.2 * 365.  # grams / (Liters * years)
+    "s_average": 961.2,  # grams / (Liters * years)
+    "s_max": 73.,
+    "s_min": -73.
 })
 
 # %%
@@ -277,34 +278,20 @@ phi, sigma = fenics.split(u)
 # After having defined phi and sigma, we defined the :math:`s` function, which represent the distribution of
 # nutrient that is supplied to the system.
 #
-# In the original paper they simulated the model for both a constant distibution and for a randomic one. In
-# this implementation we chose to do the the latter, which is slightly more complex, even though made
-# simplier by the mocafe ``Expression`` ``PythonFunctionField``.
+# In the original paper they simulated the model for both a constant distibution and for a 'capillary-like'
+# distribution based on an image.
+# todo Maybe add also capillary like distribution?
+# In this implementation we just chose a to simulate the model with a random distribution of nutrients, with
+# values included in the range :math:`[s_{average} + s_{min}, s_{average} + s_{max}]`, where :math:`s_{average}
+# = 961.2` and :math`s_{max} = - s_{min} = 73`. todo add unit of measure
 #
-# This class allows us to use a python function, such as a lambda function, to define the values of a FEniCS function.
-# In the following, indeed, we make use of a lambda function and of the methods provided by the module ``random``
-# to define the random distribution mentioned above. Indeed, The pyhton function it is used by this class to evaluate
-# the value of the FEniCS function at each point of the mesh. Notice that the function given as imput must always have
-# at least on input (x in this case), representing the spatial point.
-# init_time = time.time()
-
-s = fenics.Function(function_space.sub(0).collapse())
-local_vertex_shape = s.vector().get_local().shape
-random_vector = (parameters.get_value("s_average") - parameters.get_value("s_min")) + \
-    ((parameters.get_value("s_max") - parameters.get_value("s_min")) * np.random.random_sample(local_vertex_shape))
-s.vector().set_local(random_vector)
-s.vector().update_ghost_values()
-
-# s_expression = PythonFunctionField(
-#     python_fun=lambda x: parameters.get_value("s_average") + random.uniform(parameters.get_value("s_min"),
-#                                                                             parameters.get_value("s_max")),
-# )
-# s = fenics.interpolate(s_expression, function_space.sub(0).collapse())
-# total_time = time.time() - init_time
-# print(f"Interpolation time: {total_time}")
-# exit(0)
-
-# s = fenics.Constant(parameters.get_value("s_average"))
+# The most efficient way to do so in FEniCS is to use the ``Expression`` class:
+s_exp = fenics.Expression("(s_av + s_min) + ((s_max - s_min)*(random()/((double)RAND_MAX)))",
+                          degree=2,
+                          s_av=parameters.get_value("s_average"),
+                          s_min=parameters.get_value("s_min"),
+                          s_max=parameters.get_value("s_max"))
+s = fenics.interpolate(s_exp, function_space.sub(0).collapse())
 
 # %%
 # Now, we have everything in place to define our PDE system. Since FEniCS uses the Finite Element Method (FEM) to
@@ -337,12 +324,11 @@ weak_form = pc_model.prostate_cancer_form(phi, phi0, sigma, v1, parameters) + \
 # above for each time step.
 #
 # To do so, we start defining the total number of steps to simulate:
-n_steps = 100
+n_steps = 500
 # %%
 # Then, we define a progress bar with ``tqdm`` in order to monitor the iteration progress. Notice that the progress
 # bar is defined only if the rank of the process is 0. This is necessary to avoid every process to print out a
 # different progress bar.
-
 if rank == 0:
     progress_bar = tqdm(total=n_steps, ncols=100)
 else:
@@ -353,12 +339,21 @@ else:
 # mocafe, which are necessary to set up the right solver for our problem:
 
 # init PETSc with parameters
-petsc4py.init([__name__, "-snes_type", "newtonls"])
+petsc4py.init([__name__,
+               "-snes_type", "newtonls",
+               "-ksp_type", "gmres",
+               "-pc_type", "gamg",
+               "-snes_monitor"])
 from petsc4py import PETSc
 
 # create snes solver
 snes_solver = PETSc.SNES().create(comm)
 snes_solver.setFromOptions()
+
+# jacobian = fenics.derivative(weak_form, u)
+# problem = PETScProblem(jacobian, weak_form, [])
+# solver = PETScNewtonSolver({"ksp_type": "gmres", "pc_type": "asm"},
+#                            mesh.mpi_comm())
 
 
 # %%
@@ -392,7 +387,6 @@ snes_solver.setFromOptions()
 # Simulation
 # ^^^^^^^^^^
 # Finally, we can iterate in time to solve the system with the given solver at each time step.
-
 t = 0
 for current_step in range(n_steps):
     # update time
@@ -405,16 +399,10 @@ for current_step in range(n_steps):
     snes_solver.setFunction(problem.F, b.vec())
     snes_solver.setJacobian(problem.J, J_mat.mat())
     snes_solver.solve(None, u.vector().vec())
+    # solver.solve(problem, u.vector())
 
     # save new values to phi0 and sigma0, in order for them to be the initial condition for the next step
     fenics.assign([phi0, sigma0], u)
-
-    # generate new random values for s
-    random_vector = (parameters.get_value("s_average") + parameters.get_value("s_min")) + \
-                    ((parameters.get_value("s_max") + parameters.get_value("s_min")) *
-                     np.random.random_sample(local_vertex_shape))
-    s.vector().set_local(random_vector)
-    s.vector().update_ghost_values()
 
     # save current solutions to file
     phi_xdmf.write(phi0, t)  # write the value of phi at time t

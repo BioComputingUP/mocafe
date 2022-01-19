@@ -63,10 +63,11 @@ import numpy as np
 import fenics
 from tqdm import tqdm
 from pathlib import Path
+import petsc4py
 file_folder = Path(__file__).parent.resolve()
 mocafe_folder = file_folder.parent
 sys.path.append(str(mocafe_folder))  # appending mocafe path. Must be removed
-from mocafe.fenut.solvers import PETScProblem, PETScNewtonSolver
+from mocafe.fenut.solvers import PETScProblem, PETScNewtonSolver, SNESProblem
 from mocafe.fenut.fenut import get_mixed_function_space, setup_xdmf_files
 from mocafe.fenut.mansimdata import setup_data_folder
 from mocafe.expressions import EllipseField
@@ -119,7 +120,7 @@ parameters = from_dict({
     "phi0_out": 0.,  # adimdimentional
     "sigma0_in": 0.2,  # adimentional
     "sigma0_out": 1.,  # adimentional
-    "dt": 0.01,  # years
+    "dt": 0.001,  # years
     "lambda": 1.6E5,  # (um^2) / years
     "tau": 0.01,  # years
     "chempot_constant": 16,  # adimensional
@@ -128,7 +129,7 @@ parameters = from_dict({
     "epsilon": 5.0E6,  # (um^2) / years
     "delta": 1003.75,  # grams / (Liters * years)
     "gamma": 1000.0,  # grams / (Liters * years)
-    "s_average": 961.2,  # grams / (Liters * years)
+    "s_average": 2.75 * 365,  # 961.2,  # grams / (Liters * years)
     "s_max": 73.,
     "s_min": -73.
 })
@@ -319,7 +320,7 @@ weak_form = pc_model.prostate_cancer_form(phi, phi0, sigma, v1, parameters) + \
 # above for each time step.
 #
 # To do so, we start defining the total number of steps to simulate:
-n_steps = 100
+n_steps = 1000
 # %%
 # Then, we define a progress bar with ``tqdm`` in order to monitor the iteration progress. Notice that the progress
 # bar is defined only if the rank of the process is 0. This is necessary to avoid every process to print out a
@@ -332,10 +333,22 @@ else:
 # %%
 # Then, we need to define how we want FEniCS to solve or PDE system. This can be done with just a few lines of code in
 # mocafe, which are necessary to set up the right solver for our problem:
+
 jacobian = fenics.derivative(weak_form, u)
-problem = PETScProblem(jacobian, weak_form, [])
-solver = PETScNewtonSolver({"ksp_type": "gmres", "pc_type": "asm"},
-                           mesh.mpi_comm())
+# problem = PETScProblem(jacobian, weak_form, [])
+# solver = PETScNewtonSolver({"ksp_type": "gmres", "pc_type": "cholesky"},
+#                            mesh.mpi_comm())
+
+petsc4py.init([__name__,
+               "-snes_type", "newtonls",
+               "-ksp_type", "gmres",
+               "-pc_type", "gamg"])  # to init from command line use petsc4py.init(sys.argv)
+from petsc4py import PETSc
+
+# define solver
+snes_solver = PETSc.SNES().create(comm)
+
+
 
 # %%
 # The few lines above might look a bit obscure if you're not experienced with FEM and numerical methods in general,
@@ -374,7 +387,14 @@ for current_step in range(n_steps):
     t += parameters.get_value("dt")
 
     # solve the problem with the solver defined by the given parameters
-    solver.solve(problem, u.vector())
+    # solver.solve(problem, u.vector())
+
+    problem = SNESProblem(weak_form, u, [])
+    b = fenics.PETScVector()
+    J_mat = fenics.PETScMatrix()
+    snes_solver.setFunction(problem.F, b.vec())
+    snes_solver.setJacobian(problem.J, J_mat.mat())
+    snes_solver.solve(None, u.vector().vec())
 
     # save new values to phi0 and sigma0, in order for them to be the initial condition for the next step
     fenics.assign([phi0, sigma0], u)
