@@ -6,8 +6,6 @@ from pathlib import Path
 from mpi4py import MPI
 import pandas as pd
 import petsc4py
-petsc4py.init(sys.argv)
-from petsc4py import PETSc
 file_folder = Path(__file__).parent.resolve()
 mocafe_folder = file_folder.parent
 sys.path.append(str(mocafe_folder))
@@ -60,7 +58,7 @@ class OpCounter:
 n = 5
 print_p0(f"1/{n} Setting up...")
 # only process 0 logs
-fenics.parameters["std_out_all_processes"] = False
+# fenics.parameters["std_out_all_processes"] = False
 # set log level ERROR
 # fenics.set_log_level(fenics.LogLevel.ERROR)
 # define data folder
@@ -73,7 +71,7 @@ file_names = ["c", "af", "tipcells", "mesh"]
 file_c, file_af, tipcells_xdmf, mesh_xdmf = fu.setup_xdmf_files(file_names, data_folder)
 
 # setup parameters
-parameters_file = file_folder/Path("demo_in/angiogenesis_2d/parameters.ods")
+parameters_file = file_folder/Path("demo_in/angiogenesis_3d/parameters.ods")
 parameters = mpar.from_ods_sheet(parameters_file, "SimParams")
 
 # create mesh
@@ -178,7 +176,11 @@ else:
     pbar = None
 
 # init PETSc with parameters
-petsc4py.init([__name__, "-snes_type", "newtonls"])
+petsc4py.init([__name__,
+               "-snes_type", "newtonls",
+               "-ksp_type", "gmres",
+               "-pc_type", "gamg",
+               "-snes_monitor"])
 from petsc4py import PETSc
 
 # create snes solver
