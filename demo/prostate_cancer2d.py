@@ -77,7 +77,7 @@ import mocafe.litforms.prostate_cancer as pc_model
 # Then, it is useful (even though not necessary) to do a number of operations before running our simulation.
 #
 # First of all, we shut down the logging messages from FEniCS, leaving only the error messages in case something goes
-# *really* wrong. If you want to check out the FEniCS messages, you can comment this line.
+# *really* wrong. If you want to see the FEniCS logging messages, you can comment this line.
 fenics.set_log_level(fenics.LogLevel.ERROR)
 
 # %%
@@ -87,7 +87,7 @@ comm = fenics.MPI.comm_world
 rank = comm.Get_rank()
 
 # %%
-# Then, we can define the files where to save our result for visualization and post-processing. The suggested format
+# Then, we can define the files where to save our result for visualization and post-processing. The recommended format
 # for saving FEniCS simulations is using ``.xdmf`` files, which can easily be visualized in
 # `Paraview <https://www.paraview.org/>`_.
 #
@@ -111,7 +111,9 @@ phi_xdmf, sigma_xdmf = setup_xdmf_files(["phi", "sigma"], data_folder)
 # for this purpose.
 #
 # A Parameters object can be initialized in several ways. In the following, we define it from a
-# dictionary where each key is the parameter name and the value is the actual value of the parameter.
+# dictionary where each key is the parameter name and the value is the actual value of the parameter. The values
+# chosen for this simulation are in agreement with those reported by Lorenzo et al. by two papers regarding this
+# model :cite:`Lorenzo2016` :cite:`Lorenzo2017`.
 parameters = from_dict({
     "phi0_in": 1.,  # adimentional
     "phi0_out": 0.,  # adimdimentional
