@@ -61,7 +61,6 @@ a distribution :math:`s`, and that the nutrient is consumed at a constant rate b
 import sys
 import numpy as np
 import fenics
-import random
 from tqdm import tqdm
 from pathlib import Path
 file_folder = Path(__file__).parent.resolve()
@@ -70,7 +69,7 @@ sys.path.append(str(mocafe_folder))  # appending mocafe path. Must be removed
 from mocafe.fenut.solvers import PETScProblem, PETScNewtonSolver
 from mocafe.fenut.fenut import get_mixed_function_space, setup_xdmf_files
 from mocafe.fenut.mansimdata import setup_data_folder
-from mocafe.expressions import EllipseField, PythonFunctionField
+from mocafe.expressions import EllipseField
 from mocafe.fenut.parameters import from_dict
 import mocafe.litforms.prostate_cancer as pc_model
 
