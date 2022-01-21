@@ -276,7 +276,7 @@ phi, sigma = fenics.split(u)
 #
 # In the original paper they simulated the model for both a constant distribution and for a 'capillary-like'
 # distribution based on an picture :cite:`Lorenzo2016`.
-# todo Maybe add also capillary like distribution?
+#
 # In this implementation we just chose a to simulate the model with a random distribution of the nutrient, with
 # values included in the range :math:`[s_{average} + s_{min}, s_{average} + s_{max}]`, where :math`s_{max} = - s_{min}`.
 # The specific values we need are specified in the parameters object we created above, so we use that to retrieve the
