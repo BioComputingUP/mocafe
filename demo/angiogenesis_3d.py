@@ -14,7 +14,7 @@ import mocafe.fenut.mansimdata as mansimd
 from mocafe.angie import af_sourcing, tipcells
 from mocafe.angie.forms import angiogenesis_form, angiogenic_factor_form
 import mocafe.fenut.parameters as mpar
-from mocafe.fenut.solvers import PETScProblem, PETScNewtonSolver, SNESProblem
+from mocafe.fenut.solvers import SNESProblem
 
 # initial setup
 comm = fenics.MPI.comm_world
@@ -81,7 +81,7 @@ Ly = parameters.get_value("Ly")
 Lz = 40  # 1/3 of Ly and Lx
 nx = int(parameters.get_value("nx"))
 ny = int(parameters.get_value("ny"))
-nz = 40  # 1/3 of nx and ny
+nz = int(parameters.get_value("nz"))
 mesh_file = data_folder / Path("mesh.xdmf")
 if mesh_file.exists():
     print_p0(f"2/{n} Detected mesh file, reading mesh data...")
@@ -179,8 +179,7 @@ else:
 petsc4py.init([__name__,
                "-snes_type", "newtonls",
                "-ksp_type", "gmres",
-               "-pc_type", "gamg",
-               "-snes_monitor"])
+               "-pc_type", "gamg"])
 from petsc4py import PETSc
 
 # create snes solver
