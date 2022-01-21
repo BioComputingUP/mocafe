@@ -78,7 +78,7 @@ parameters = mpar.from_ods_sheet(parameters_file, "SimParams")
 op_counter.start_op("Mesh_creation")
 Lx = parameters.get_value("Lx")
 Ly = parameters.get_value("Ly")
-Lz = 40  # 1/3 of Ly and Lx
+Lz = parameters.get_value("Lz")
 nx = int(parameters.get_value("nx"))
 ny = int(parameters.get_value("ny"))
 nz = int(parameters.get_value("nz"))
