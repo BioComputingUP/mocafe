@@ -55,6 +55,48 @@ Just click on the demo you'd like to see:
    :hidden:
 
    /demo_doc/angiogenesis_2d
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="In this short demo we will show you how to simulate a phase field model described by G. Lorenzo...">
+
+.. only:: html
+
+ .. figure:: /demo_doc/images/thumb/sphx_glr_prostate_cancer3d_thumb.png
+     :alt: Prostate cancer phase field 3D model
+
+     :ref:`sphx_glr_demo_doc_prostate_cancer3d.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /demo_doc/prostate_cancer3d
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="In this short demo we will show you how to simulate a phase field model described by Travasso e...">
+
+.. only:: html
+
+ .. figure:: /demo_doc/images/thumb/sphx_glr_angiogenesis_3d_thumb.png
+     :alt: Angiogenesis Phase Field Model in 3D
+
+     :ref:`sphx_glr_demo_doc_angiogenesis_3d.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /demo_doc/angiogenesis_3d
 .. raw:: html
 
     <div class="sphx-glr-clear"></div>

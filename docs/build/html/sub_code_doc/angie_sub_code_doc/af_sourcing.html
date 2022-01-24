@@ -71,50 +71,15 @@ a point of the mesh.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="mocafe.angie.af_sourcing.ConstantAFExpressionFunction">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.angie.af_sourcing.</span></span><span class="sig-name descname"><span class="pre">ConstantAFExpressionFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constant_value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.af_sourcing.ConstantAFExpressionFunction" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines an angiogenic factor expression where each source cell has a constant angiogenic factor expression</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="mocafe.angie.af_sourcing.ConstantAFExpressionFunction.get_point_value_at_source_cell">
-<span class="sig-name descname"><span class="pre">get_point_value_at_source_cell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_cell</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.af_sourcing.ConstantAFExpressionFunction.get_point_value_at_source_cell" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the concentration of the angiogenic factor expressed for the given source cell.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>source_cell</strong> – the source cell considered</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-</dl>
-</dd></dl>
-
+<dt class="sig sig-object py" id="mocafe.angie.af_sourcing.ConstantSourcesField">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.angie.af_sourcing.</span></span><span class="sig-name descname"><span class="pre">ConstantSourcesField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mocafe.angie.af_sourcing.SourceMap" title="mocafe.angie.af_sourcing.SourceMap"><span class="pre">mocafe.angie.af_sourcing.SourceMap</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../fenut_sub_code_doc/parameters.html#mocafe.fenut.parameters.Parameters" title="mocafe.fenut.parameters.Parameters"><span class="pre">mocafe.fenut.parameters.Parameters</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.af_sourcing.ConstantSourcesField" title="Permalink to this definition">¶</a></dt>
+<dd><p>FEniCS Expression representing the distribution of the angiogenic factor expressed by the source cells.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="mocafe.angie.af_sourcing.RandomSourceMap">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.angie.af_sourcing.</span></span><span class="sig-name descname"><span class="pre">RandomSourceMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.cpp.mesh.Mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_sources</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.cpp.parameter.Parameters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">function</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.af_sourcing.RandomSourceMap" title="Permalink to this definition">¶</a></dt>
 <dd><p>A SourceMap of randomly distributed sources in a given spatial domain</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="mocafe.angie.af_sourcing.RotationalAFExpressionFunction">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.angie.af_sourcing.</span></span><span class="sig-name descname"><span class="pre">RotationalAFExpressionFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rotational_expression_function_parameters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.af_sourcing.RotationalAFExpressionFunction" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines an angiogenic factor expression function which reproduces a spiral activation of the source cells around a
-center</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="mocafe.angie.af_sourcing.RotationalAFExpressionFunction.get_point_value_at_source_cell">
-<span class="sig-name descname"><span class="pre">get_point_value_at_source_cell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_cell</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.af_sourcing.RotationalAFExpressionFunction.get_point_value_at_source_cell" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the concentration of the angiogenic factor expressed for the given source cell.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>source_cell</strong> – the source cell considered</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-</dl>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -169,27 +134,17 @@ it is removed also from that list.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="mocafe.angie.af_sourcing.SourcesField">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.angie.af_sourcing.</span></span><span class="sig-name descname"><span class="pre">SourcesField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mocafe.angie.af_sourcing.SourceMap" title="mocafe.angie.af_sourcing.SourceMap"><span class="pre">mocafe.angie.af_sourcing.SourceMap</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../fenut_sub_code_doc/parameters.html#mocafe.fenut.parameters.Parameters" title="mocafe.fenut.parameters.Parameters"><span class="pre">mocafe.fenut.parameters.Parameters</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">af_expression_function</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.af_sourcing.SourcesField" title="Permalink to this definition">¶</a></dt>
-<dd><p>FEniCS Expression representing the distribution of the angiogenic factor expressed by the source cells.</p>
-</dd></dl>
-
-<dl class="py class">
 <dt class="sig sig-object py" id="mocafe.angie.af_sourcing.SourcesManager">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.angie.af_sourcing.</span></span><span class="sig-name descname"><span class="pre">SourcesManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mocafe.angie.af_sourcing.SourceMap" title="mocafe.angie.af_sourcing.SourceMap"><span class="pre">mocafe.angie.af_sourcing.SourceMap</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.cpp.mesh.Mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../fenut_sub_code_doc/parameters.html#mocafe.fenut.parameters.Parameters" title="mocafe.fenut.parameters.Parameters"><span class="pre">mocafe.fenut.parameters.Parameters</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.af_sourcing.SourcesManager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class representing the manager of the position of the source cells. This class takes care of removing the source
 cells when they are near the blood vessels and of translating the source cell map in a FEniCS phase field function</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mocafe.angie.af_sourcing.SourcesManager.apply_sources">
-<span class="sig-name descname"><span class="pre">apply_sources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">af</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">af_expression_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.af_sourcing.SourcesManager.apply_sources" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">apply_sources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">af</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.af_sourcing.SourcesManager.apply_sources" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply the sources at the current time to the angiogenic factor field af, respecting the expression function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>af</strong> – FEniCS function representing the angiogenic factor</p></li>
-<li><p><strong>af_expression_function</strong> – an object of type AFExpressionFunction which tells this method the value of
-the angiogenic factor inside the cells.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>af</strong> – FEniCS function representing the angiogenic factor</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>nothing</p>
@@ -308,7 +263,7 @@ source cells.</p>
       &copy;2021, Franco Pradelli.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -47,6 +47,13 @@ the semiaxes and the center.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="mocafe.expressions.EllipsoidField">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.expressions.</span></span><span class="sig-name descname"><span class="pre">EllipsoidField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">center</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">semiax_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">semiax_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">semiax_z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inside_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outside_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.expressions.EllipsoidField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Expression representing an ellipsoid with a given value inside and a given value outside. The user can set
+the semiaxes and the center.</p>
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="mocafe.expressions.PythonFunctionField">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.expressions.</span></span><span class="sig-name descname"><span class="pre">PythonFunctionField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">python_fun</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">python_fun_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.expressions.PythonFunctionField" title="Permalink to this definition">¶</a></dt>
 <dd><p>Expression representing a field with values determined on the basis of the given python function.</p>
@@ -140,7 +147,7 @@ the circle and 0. outside. The border of the circle is a smooth sigmoidal functi
       &copy;2021, Franco Pradelli.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

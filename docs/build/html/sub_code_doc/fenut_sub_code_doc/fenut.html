@@ -43,13 +43,21 @@
 Requires FEniCS 2019.1 to work.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mocafe.fenut.fenut.build_local_box">
-<span class="sig-prename descclassname"><span class="pre">mocafe.fenut.fenut.</span></span><span class="sig-name descname"><span class="pre">build_local_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">local_mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">border_width</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.build_local_box" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mocafe.fenut.fenut.</span></span><span class="sig-name descname"><span class="pre">build_local_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">local_mesh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.cpp.mesh.Mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">border_width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.build_local_box" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds a local box for a given mesh.</p>
 <p>A local box is useful for parallel computation and might be useful for different purposes. In general, defines
-a square space, bigger than the local mesh, which may contain elements of interest for the local mesh
-:param local_mesh: the local mesh for the current MPI process
-:param border_width: the width of the border of the local box
-:return: the local box</p>
+a square space, bigger than the local mesh, which may contain elements of interest for the local mesh</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>local_mesh</strong> – the local mesh for the current MPI process</p></li>
+<li><p><strong>border_width</strong> – the width of the border of the local box</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the local box</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -108,10 +116,18 @@ Glaerkin, ‘CG’.
 <dl class="py function">
 <dt class="sig sig-object py" id="mocafe.fenut.fenut.is_in_local_box">
 <span class="sig-prename descclassname"><span class="pre">mocafe.fenut.fenut.</span></span><span class="sig-name descname"><span class="pre">is_in_local_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">local_box</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.is_in_local_box" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given a local box, checks if the given point is inside that local box.
-:param local_box: the local box
-:param position: the position to check
-:return: True if the position is inside the local box. False otherwise</p>
+<dd><p>Given a local box, checks if the given point is inside that local box.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>local_box</strong> – the local box</p></li>
+<li><p><strong>position</strong> – the position to check</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if the position is inside the local box. False otherwise</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -254,7 +270,7 @@ FEniCS functions for elaboration and visualization.</p>
       &copy;2021, Franco Pradelli.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
