@@ -59,15 +59,10 @@ a powerful desktop computer or an HPC to simulate the system.
 # data. Also, notice that the parameters file is different. However, if you compare the file 
 # with the one we provided you for the 2d examples, you'll notice that there are just small
 # variations.
-
-import sys
 import fenics
 from tqdm import tqdm
 from pathlib import Path
 import petsc4py
-file_folder = Path(__file__).parent.resolve()
-mocafe_folder = file_folder.parent
-sys.path.append(str(mocafe_folder))
 import mocafe.fenut.fenut as fu
 import mocafe.fenut.mansimdata as mansimd
 from mocafe.angie import af_sourcing, tipcells
@@ -90,6 +85,7 @@ fenics.parameters["std_out_all_processes"] = False
 # set log level ERROR
 fenics.set_log_level(fenics.LogLevel.ERROR)
 # define data folder
+file_folder = Path(__file__).parent.resolve()
 data_folder = mansimd.setup_data_folder(folder_path=f"{file_folder/Path('demo_out')}/angiogenesis_3d",
                                         auto_enumerate=False)
 
@@ -98,6 +94,7 @@ file_names = ["c", "af", "tipcells", "mesh"]
 file_c, file_af, tipcells_xdmf, mesh_xdmf = fu.setup_xdmf_files(file_names, data_folder)
 
 # setup parameters
+file_folder = Path(__file__).parent.resolve()
 parameters_file = file_folder/Path("demo_in/angiogenesis_3d/parameters.ods")
 parameters = mpar.from_ods_sheet(parameters_file, "SimParams")
 

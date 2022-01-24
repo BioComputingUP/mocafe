@@ -40,15 +40,11 @@ a powerful desktop computer or an HPC to simulate the system.
 # ^^^^^
 # The setup is just the same as before; we can even use the same parameters. Of course, the data folder changed, in
 # order to store the 2D and 3D simulation result in different locations.
-import sys
 import numpy as np
 import fenics
 import petsc4py
 from tqdm import tqdm
 from pathlib import Path
-file_folder = Path(__file__).parent.resolve()
-mocafe_folder = file_folder.parent
-sys.path.append(str(mocafe_folder))  # todo appending mocafe path. Must be removed
 from mocafe.fenut.solvers import SNESProblem
 from mocafe.fenut.fenut import get_mixed_function_space, setup_xdmf_files
 from mocafe.fenut.mansimdata import setup_data_folder
@@ -59,6 +55,7 @@ import mocafe.litforms.prostate_cancer as pc_model
 comm = fenics.MPI.comm_world
 rank = comm.Get_rank()
 
+file_folder = Path(__file__).parent.resolve()
 data_folder = setup_data_folder(folder_path=f"{file_folder/Path('demo_out')}/prostate_cancer_3d",
                                 auto_enumerate=False)
 

@@ -135,14 +135,10 @@ values.
 # ^^^^^
 # With mocafe, the implementation of the model is not very different from any other FEniCS script. Let's start
 # importing everything we need:
-import sys
 import fenics
 import mshr
 from tqdm import tqdm
 from pathlib import Path
-file_folder = Path(__file__).parent.resolve()
-mocafe_folder = file_folder.parent
-sys.path.append(str(mocafe_folder))
 import mocafe.fenut.fenut as fu
 import mocafe.fenut.mansimdata as mansimd
 from mocafe.angie import af_sourcing, tipcells
@@ -158,6 +154,7 @@ fenics.parameters["std_out_all_processes"] = False
 # set log level ERROR
 fenics.set_log_level(fenics.LogLevel.ERROR)
 # define data folder
+file_folder = Path(__file__).parent.resolve()
 data_folder = mansimd.setup_data_folder(folder_path=f"{file_folder/Path('demo_out')}/angiogenesis_2d",
                                         auto_enumerate=False)
 
@@ -173,6 +170,7 @@ file_c, file_af, tipcells_xdmf = fu.setup_xdmf_files(file_names, data_folder)
 # %%
 # Finally, we need the parameters of the model. This time we exploit one of the functions of ``mocafe`` to retrieve
 # them from an ods sheet:
+file_folder = Path(__file__).parent.resolve()
 parameters_file = file_folder/Path("demo_in/angiogenesis_2d/parameters.ods")
 parameters = mpar.from_ods_sheet(parameters_file, "SimParams")
 
