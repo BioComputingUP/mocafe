@@ -68,6 +68,8 @@ class SourceMap:
         self.mesh = mesh
         self.local_box = self._build_local_box(parameters)
         global_source_points = source_points
+        # sort global source point for distance from origin
+        global_source_points.sort(key=lambda x: np.sqrt(sum(x**2)))
         self.global_source_cells = [SourceCell(point, 0) for point in global_source_points]
         self.local_source_cells = self._divide_source_cells()
 
@@ -201,26 +203,28 @@ class RandomSourceMap(SourceMap):
         n_global_vertices = self.mesh.num_entities_global(0)
         # get local mesh coordinates
         lmc = self.mesh.coordinates()
-        # gather them in proc 0
+        # extract the index of the pickable points
+        global_pickable_vertex_index = \
+            [index for index, coordinate in zip(global_vertex_indices, lmc) if where_fun(fenics.Point(coordinate))]
+        # gather lmc in proc 0
         lmc_arrays = comm.gather(lmc, 0)
         # gather indices in proc 0
         vertex_maps = comm.gather(global_vertex_indices, 0)
+        # gather pickable coordinats indices in proc 0
+        pickable_vertex_maps = comm.gather(global_pickable_vertex_index, 0)
 
         if rank == 0:
             # init global coordinates array
             global_coordinates = np.zeros((n_global_vertices, lmc.shape[1]))
-            # get global coordinates
+            # get global pickable coordinates
             for coordinates, indices in zip(lmc_arrays, vertex_maps):
                 global_coordinates[indices] = coordinates
-
-            # select only the pickable coordinates
-            if where_fun is not None:
-                # get the pickable points
-                pickable_points = [point for point in global_coordinates if where_fun(fenics.Point(point))]
-            else:
-                # else all points are pickable
-                pickable_points = [point for point in global_coordinates]
-
+            # get pickable points indices (removing duplicates)
+            pickable_vertex_indices = list(set(fu.flatten_list_of_lists(pickable_vertex_maps)))
+            # select pickable points
+            pickable_points = global_coordinates[pickable_vertex_indices]
+            # convert in list
+            pickable_points = list(pickable_points)
             # pick n of them (if available)
             n_pickable_points = len(pickable_points)
             if n_pickable_points <= n_points:
@@ -267,8 +271,6 @@ class SourcesManager:
             self.default_clock_checker = None
             self.default_clock_checker_is_present = False
 
-        self.default_af_expression_function = ConstantAFExpressionFunction(self.parameters.get_value("T_s"))
-
     def remove_sources_near_vessels(self, c: fenics.Function, **kwargs):
         """
         Removes the source cells near the blood vessels
@@ -279,8 +281,9 @@ class SourcesManager:
         # prepare list of cells to remove
         to_remove = []
         debug_adapter.debug(f"Starting to remove source cells")
+
         # if distance is specified
-        if "min_distance" in kwargs.keys():
+        if "d" in kwargs.keys():
             clock_checker = ClockChecker(self.mesh, kwargs["d"])
         else:
             if self.default_clock_checker_is_present:
@@ -332,22 +335,14 @@ class SourcesManager:
         for source_cell in global_to_remove:
             self.source_map.remove_global_source(source_cell)
 
-    def apply_sources(self, af: fenics.Function,
-                      af_expression_function=None):
+    def apply_sources(self, af: fenics.Function):
         """
         Apply the sources at the current time to the angiogenic factor field af, respecting the expression function.
 
         :param af: FEniCS function representing the angiogenic factor
-        :param af_expression_function: an object of type AFExpressionFunction which tells this method the value of
-            the angiogenic factor inside the cells.
         :return: nothing
 
         """
-        current_af_expression_function = self.default_af_expression_function \
-            if af_expression_function is None else af_expression_function
-        if not issubclass(type(current_af_expression_function), AFExpressionFunction):
-            raise TypeError(f"af expression function is of type {type(current_af_expression_function)}. "
-                            f"Must be a subclass of AFExpressionFunction")
         # get Function Space of af
         V_af = af.function_space()
         # check if V_af is sub space
@@ -356,11 +351,10 @@ class SourcesManager:
             is_V_sub_space = True
         except RuntimeError:
             is_V_sub_space = False
-
-        # get function space
+        # interpolate according to V_af
         if not is_V_sub_space:
             # interpolate source field
-            s_f = fenics.interpolate(SourcesField(self.source_map, self.parameters, current_af_expression_function),
+            s_f = fenics.interpolate(ConstantSourcesField(self.source_map, self.parameters),
                                      V_af)
             # assign s_f to T where s_f equals 1
             self._assign_values_to_vector(af, s_f)
@@ -368,7 +362,7 @@ class SourcesManager:
             # collapse subspace
             V_collapsed = V_af.collapse()
             # interpolate source field
-            s_f = fenics.interpolate(SourcesField(self.source_map, self.parameters, current_af_expression_function),
+            s_f = fenics.interpolate(ConstantSourcesField(self.source_map, self.parameters),
                                      V_collapsed)
             # create assigner to collapsed
             assigner_to_collapsed = fenics.FunctionAssigner(V_collapsed, V_af)
@@ -402,35 +396,35 @@ class SourcesManager:
         af.vector().update_ghost_values()  # necessary, otherwise I get errors
 
 
-class SourcesField(fenics.UserExpression):
+class ConstantSourcesField(fenics.UserExpression):
     """
     FEniCS Expression representing the distribution of the angiogenic factor expressed by the source cells.
     """
     def __floordiv__(self, other):
         pass
 
-    def __init__(self, source_map: SourceMap, parameters: Parameters, af_expression_function):
+    def __init__(self, source_map: SourceMap, parameters: Parameters):
         """
         inits a SourceField for the given SourceMap, in respect of the simulation parameters and of the expression
         function
 
         :param source_map:
         :param parameters:
-        :param af_expression_function:
         """
-        super(SourcesField, self).__init__()
-        self.source_map: SourceMap = source_map
+        super(ConstantSourcesField, self).__init__()
+        self.sources_positions = [source_cell.get_position() for source_cell in source_map.get_local_source_cells()]
+        self.sources_positions_not_empty = len(self.sources_positions) != 0
         self.value_min = parameters.get_value("T_min")
         self.value_max = parameters.get_value("T_s")
         self.radius = parameters.get_value("R_c")
-        self.af_expression_function = af_expression_function
 
     def eval(self, values, x):
+        # check if point is inside any cell
         point_value = self.value_min
-        for source_cell in self.source_map.get_local_source_cells():
-            if source_cell.get_distance(x) <= self.radius:
-                point_value = self.af_expression_function.get_point_value_at_source_cell(source_cell)
-                break
+        if self.sources_positions_not_empty:
+            is_inside_array = np.sum((x - self.sources_positions) ** 2, axis=1) < (self.radius ** 2)
+            if any(is_inside_array):
+                point_value = self.value_max
         values[0] = point_value
 
     def value_shape(self):
@@ -449,21 +443,84 @@ class ClockChecker:
         :param mesh: mesh
         :param radius: radius where to check if the condition is met
         :param start_point: starting point where to start checking. If the point is `east`, the clock checker will
-        start checking from the point with the lower value of x[0]; if the point is `west` the clock cheker will start
-        from the point with higher value of x[0]
+            start checking from the point with the lower value of x[0]; if the point is `west` the clock cheker will
+            start from the point with higher value of x[0]
         """
         self.radius = radius
-        # define vectors to check
-        angles = np.arange(0, 2 * np.pi, (2 * np.pi) / 30)
-        circle_vectors = [np.array([radius * np.cos(angle), radius * np.sin(angle)]) for angle in angles]
-        if start_point == "east":
-            circle_vectors.sort(key=lambda x: x[0])
-        elif start_point == "west":
-            circle_vectors.sort(key=lambda x: x[0], reverse=True)
+        self.mesh = mesh
+        self.mesh_dim = mesh.geometric_dimension()
+        if (start_point == "east") or (start_point == "west"):
+            self.check_points = self._build_surrounding_points(start_point)
         else:
             raise ValueError("ClockChecker can be just 'east' or 'west' type")
-        self.circle_vectors = circle_vectors
-        self.mesh = mesh
+
+    def _build_surrounding_points(self, start_point):
+        """
+        Internal use.
+
+        Builds the points that need to be checked in the surrounding of the given point during the clock check.
+        The points are already given in an order that should optimize the search, namely from the further to
+        the closer.
+
+        In 2D, the points are evenly distributed around n circles surrounding the given point. n is computed as the
+        closest integer to self.radius / self.hmin. For each circle, the number of p
+
+        :param start_point: east or west
+        """
+        # init points list
+        points_list = []
+
+        if self.mesh_dim == 2:
+            # compute number of circles
+            n_circles = int(np.round(self.radius / self.mesh.hmin()))
+            if n_circles == 0:
+                n_circles = 1
+            # compute number of points for circles, from the largest to the shortest (the order is for optimization)
+            n_points_for_circle = \
+                [int(np.round(2 * np.pi * circle_number)) for circle_number in range(n_circles, 0, -1)]
+            # compute radiuses of circles, from the largest to the shortest
+            shortest_radius = self.radius / n_circles
+            circles_radiuses = [circle_number * shortest_radius for circle_number in range(n_circles, 0, -1)]
+            # create points for each circle and append them to the list
+            reverse = (start_point == "west")
+            for n_points, radius in zip(n_points_for_circle, circles_radiuses):
+                angle_step = (2 * np.pi) / n_points
+                angles = np.arange(0, (2 * np.pi) + angle_step, angle_step)
+                circle_points = [radius * np.array([np.cos(angle), np.sin(angle)]) for angle in angles]
+                circle_points.sort(key=lambda x: x[0], reverse=reverse)
+                points_list.extend(circle_points)
+            # append origin
+            points_list.append(np.array([0., 0.]))
+
+        elif self.mesh_dim == 3:
+            # compute number of spheres
+            n_spheres = int(np.round(self.radius / self.mesh.hmin()))
+            if n_spheres == 0:
+                n_spheres = 1
+            # compute sphere radiuses, from largest to shortest
+            shortest_radius = self.radius / n_spheres
+            sphere_radiuses = [sphere_number * shortest_radius for sphere_number in range(n_spheres, 0, -1)]
+            # compute the number of points for each sphere, from the largest to the shortest
+            sqrt_pi = np.sqrt(np.pi)
+            hmin = self.mesh.hmin()
+            n_points_for_sphere = \
+                [int(np.round(np.round(((2 * sqrt_pi * rad) / hmin)) + 1)) ** 2 for rad in sphere_radiuses]
+            # evaluate points
+            reverse = (start_point == "west")
+            for n_points, radius in zip(n_points_for_sphere, sphere_radiuses):
+                # evaluate points with fibonacci algorithm
+                fibonacci_points = base_classes.fibonacci_sphere(n_points)
+                # rescale points
+                sphere_points = [radius * point for point in fibonacci_points]
+                # sort points
+                sphere_points.sort(key=lambda x: x[0], reverse=reverse)
+                points_list.extend(sphere_points)
+            # append origin
+            points_list.append(np.array([0., 0., 0.]))
+        else:
+            raise NotImplementedError(f"Clock checker is not implemented for meshes of dim {self.mesh_dim}. "
+                                      f"Only for dim 2 and 3.")
+        return points_list
 
     def clock_check(self, point, function: fenics.Function, threshold, condition):
         """
@@ -477,103 +534,97 @@ class ClockChecker:
         """
         # cast point to the right type
         if type(point) is fenics.Point:
-            point = np.array([point.array()[i] for i in range(self.mesh.geometric_dimension())])
+            point = np.array([point.array()[i] for i in range(self.mesh_dim)])
         # check if point is inside local mesh
-
-        for vector in self.circle_vectors:
-            for scale in np.arange(1., 0., -(1 / 20)):
-                ppv = point + (scale * vector)
-                debug_adapter.debug(f"Checking point {ppv}")
-                if fu.is_point_inside_mesh(self.mesh, fenics.Point(ppv)):
-                    debug_adapter.debug(f"Point {ppv} is inside local mesh.")
-                    if condition(function(list(ppv)), threshold):  # ppv translated to List to avoid FutureWarning
-                        return True
-                else:
-                    pass
+        for check_point in self.check_points:
+            current_check_point = point + check_point
+            if fu.is_point_inside_mesh(self.mesh, fenics.Point(current_check_point)):
+                if condition(function(current_check_point), threshold):
+                    return True
         return False
 
 
-class AFExpressionFunction:
-    def __init__(self):
-        pass
+# class AFExpressionFunction:
+#     def __init__(self):
+#         pass
+#
+#
+# class RotationalAFExpressionFunction(AFExpressionFunction):
+#     """
+#     Defines an angiogenic factor expression function which reproduces a spiral activation of the source cells around a
+#     center
+#     """
+#     def __init__(self, rotational_expression_function_parameters):
+#         """
+#         :param rotational_expression_function_parameters: parameters of the expression function
+#         """
+#         super(RotationalAFExpressionFunction, self).__init__()
+#         x_center = rotational_expression_function_parameters["x_center"]
+#         y_center = rotational_expression_function_parameters["y_center"]
+#         self.center = np.array([x_center, y_center])
+#         self.radius = rotational_expression_function_parameters["radius"]
+#         self.time = 0.
+#         self.period = rotational_expression_function_parameters["period"]
+#         self.reference_point = self.center + np.array([self.radius, 0.])
+#         self.mean_value = rotational_expression_function_parameters["mean_value"]
+#         self.amplitude = rotational_expression_function_parameters["amplitude"]
+#         self.value_out_of_rotational_loop = rotational_expression_function_parameters["value_out_of_rotational_loop"]
+#
+#     def get_point_value_at_source_cell(self, source_cell):
+#         """
+#         Returns the concentration of the angiogenic factor expressed for the given source cell.
+#
+#         :param source_cell: the source cell considered
+#         :return:
+#         """
+#         # get position of the source cell
+#         cell_position = source_cell.get_position()
+#
+#         # if cell is inside the rotational loop
+#         if source_cell.get_distance(self.center) <= self.radius:
+#             # evaluate cos phase based on position with carnot theorem
+#             if np.allclose(cell_position, self.center):
+#                 cos_phase = 1.
+#             else:
+#                 cos_phase = ((np.linalg.norm(cell_position - self.center) ** 2) +
+#                              (np.linalg.norm(self.reference_point - self.center) ** 2) -
+#                              (np.linalg.norm(cell_position - self.reference_point) ** 2)) / \
+#                             (2 *
+#                              np.linalg.norm(cell_position - self.center) *
+#                              np.linalg.norm(self.reference_point - self.center))
+#
+#             # evaluate phase
+#             if cell_position[1] < self.center[1]:
+#                 phase = - np.arccos(cos_phase)
+#             else:
+#                 phase = np.arccos(cos_phase)
+#
+#             # set point value
+#             point_value = self.mean_value + self.amplitude * np.sin(2 * np.pi * (self.time / self.period) + phase)
+#         else:
+#             point_value = self.value_out_of_rotational_loop
+#         return point_value
+#
+#     def set_time(self, t):
+#         self.time = t
 
 
-class RotationalAFExpressionFunction(AFExpressionFunction):
-    """
-    Defines an angiogenic factor expression function which reproduces a spiral activation of the source cells around a
-    center
-    """
-    def __init__(self, rotational_expression_function_parameters):
-        """
-        :param rotational_expression_function_parameters: parameters of the expression function
-        """
-        super(RotationalAFExpressionFunction, self).__init__()
-        x_center = rotational_expression_function_parameters["x_center"]
-        y_center = rotational_expression_function_parameters["y_center"]
-        self.center = np.array([x_center, y_center])
-        self.radius = rotational_expression_function_parameters["radius"]
-        self.time = 0.
-        self.period = rotational_expression_function_parameters["period"]
-        self.reference_point = self.center + np.array([self.radius, 0.])
-        self.mean_value = rotational_expression_function_parameters["mean_value"]
-        self.amplitude = rotational_expression_function_parameters["amplitude"]
-        self.value_out_of_rotational_loop = rotational_expression_function_parameters["value_out_of_rotational_loop"]
-
-    def get_point_value_at_source_cell(self, source_cell):
-        """
-        Returns the concentration of the angiogenic factor expressed for the given source cell.
-
-        :param source_cell: the source cell considered
-        :return:
-        """
-        # get position of the source cell
-        cell_position = source_cell.get_position()
-
-        # if cell is inside the rotational loop
-        if source_cell.get_distance(self.center) <= self.radius:
-            # evaluate cos phase based on position with carnot theorem
-            if np.allclose(cell_position, self.center):
-                cos_phase = 1.
-            else:
-                cos_phase = ((np.linalg.norm(cell_position - self.center) ** 2) +
-                             (np.linalg.norm(self.reference_point - self.center) ** 2) -
-                             (np.linalg.norm(cell_position - self.reference_point) ** 2)) / \
-                            (2 *
-                             np.linalg.norm(cell_position - self.center) *
-                             np.linalg.norm(self.reference_point - self.center))
-
-            # evaluate phase
-            if cell_position[1] < self.center[1]:
-                phase = - np.arccos(cos_phase)
-            else:
-                phase = np.arccos(cos_phase)
-
-            # set point value
-            point_value = self.mean_value + self.amplitude * np.sin(2 * np.pi * (self.time / self.period) + phase)
-        else:
-            point_value = self.value_out_of_rotational_loop
-        return point_value
-
-    def set_time(self, t):
-        self.time = t
-
-
-class ConstantAFExpressionFunction(AFExpressionFunction):
-    """
-    Defines an angiogenic factor expression where each source cell has a constant angiogenic factor expression
-    """
-    def __init__(self, constant_value):
-        super(ConstantAFExpressionFunction, self).__init__()
-        self.constant_value = constant_value
-
-    def get_point_value_at_source_cell(self, source_cell):
-        """
-        Returns the concentration of the angiogenic factor expressed for the given source cell.
-
-        :param source_cell: the source cell considered
-        :return:
-        """
-        return self.constant_value
+# class ConstantAFExpressionFunction(AFExpressionFunction):
+#     """
+#     Defines an angiogenic factor expression where each source cell has a constant angiogenic factor expression
+#     """
+#     def __init__(self, constant_value):
+#         super(ConstantAFExpressionFunction, self).__init__()
+#         self.constant_value = constant_value
+#
+#     def get_point_value_at_source_cell(self, source_cell):
+#         """
+#         Returns the concentration of the angiogenic factor expressed for the given source cell.
+#
+#         :param source_cell: the source cell considered
+#         :return:
+#         """
+#         return self.constant_value
 
 
 def sources_in_circle_points(center: np.ndarray, circle_radius, cell_radius):

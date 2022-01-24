@@ -109,47 +109,79 @@ def get_mixed_function_space(mesh: fenics.Mesh,
     :param degree: the degree of the elements you want to use. Default is 1.
     :return: the function space for the given mesh.
     """
-    element = fenics.FiniteElement(element_type, fenics.triangle, degree)
+    if mesh.geometric_dimension() == 2:
+        element = fenics.FiniteElement(element_type, fenics.triangle, degree)
+    elif mesh.geometric_dimension() == 3:
+        element = fenics.FiniteElement(element_type, fenics.tetrahedron, degree)
+    else:
+        raise RuntimeError
     mixed_element = fenics.MixedElement([element] * n_variables)
     function_space = fenics.FunctionSpace(mesh, mixed_element)
     return function_space
 
 
-def build_local_box(local_mesh, border_width):
+def build_local_box(local_mesh: fenics.Mesh,
+                    border_width: float):
     """
     Builds a local box for a given mesh.
 
     A local box is useful for parallel computation and might be useful for different purposes. In general, defines
     a square space, bigger than the local mesh, which may contain elements of interest for the local mesh
+
     :param local_mesh: the local mesh for the current MPI process
     :param border_width: the width of the border of the local box
     :return: the local box
     """
-    x_list = []
-    y_list = []
-    for point in local_mesh.coordinates():
-        x_list.append(point[0])
-        y_list.append(point[1])
-    x_min = min(x_list) - border_width
-    x_max = max(x_list) + border_width
-    y_min = min(y_list) - border_width
-    y_max = max(y_list) + border_width
-    local_box = {"x_min": x_min,
-                 "x_max": x_max,
-                 "y_min": y_min,
-                 "y_max": y_max}
+    local_coordinates = local_mesh.coordinates()
+    max_values = np.max(local_coordinates, axis=0) + border_width
+    min_values = np.min(local_coordinates, axis=0) - border_width
+    if len(max_values) == 2:
+        local_box = {
+            "dim": 2,
+            "x_min": min_values[0],
+            "x_max": max_values[0],
+            "y_min": min_values[1],
+            "y_max": max_values[1]
+        }
+    elif len(max_values) == 3:
+        local_box = {
+            "dim": 3,
+            "x_min": min_values[0],
+            "x_max": max_values[0],
+            "y_min": min_values[1],
+            "y_max": max_values[1],
+            "z_min": min_values[2],
+            "z_max": max_values[2]
+        }
+    else:
+        raise RuntimeError("Found a geometric dimension different than 2 or 3. Local box cannot be defined.")
     return local_box
 
 
 def is_in_local_box(local_box, position):
     """
     Given a local box, checks if the given point is inside that local box.
+
     :param local_box: the local box
     :param position: the position to check
     :return: True if the position is inside the local box. False otherwise
     """
-    return (local_box["x_min"] < position[0] < local_box["x_max"]) \
-        and (local_box["y_min"] < position[1] < local_box["y_max"])
+    if local_box["dim"] == 2:
+        try:
+            is_inside = (local_box["x_min"] < position[0] < local_box["x_max"]) \
+                and (local_box["y_min"] < position[1] < local_box["y_max"])
+        except IndexError as e:
+            print(position, type(position))
+            raise e
+    else:
+        try:
+            is_inside = (local_box["x_min"] < position[0] < local_box["x_max"]) \
+                and (local_box["y_min"] < position[1] < local_box["y_max"]) \
+                and (local_box["z_min"] < position[2] < local_box["z_max"])
+        except IndexError as e:
+            print(position, type(position))
+            raise e
+    return is_inside
 
 
 def flatten_list_of_lists(list_of_lists):
