@@ -58,15 +58,11 @@ a distribution :math:`s`, and that the nutrient is consumed at a constant rate b
 # ^^^^^
 # After the math, let's see the code. To reproduce this model we need first to import everything we need throughout
 # the simulation. Notice that while most of the packages are provided by mocafe, we also use some other stuff.
-import sys
 import numpy as np
 import fenics
 from tqdm import tqdm
 from pathlib import Path
 import petsc4py
-file_folder = Path(__file__).parent.resolve()
-mocafe_folder = file_folder.parent
-sys.path.append(str(mocafe_folder))  # todo appending mocafe path. Must be removed
 from mocafe.fenut.solvers import SNESProblem
 from mocafe.fenut.fenut import get_mixed_function_space, setup_xdmf_files
 from mocafe.fenut.mansimdata import setup_data_folder
@@ -98,6 +94,7 @@ rank = comm.Get_rank()
 # - first, the folder where to save the result of the simulation. In this case, the folder will be based inside
 #   the current folder (``base_location``) and it's called demo_out/prostate_cancer2d;
 #
+file_folder = Path(__file__).parent.resolve()
 data_folder = setup_data_folder(folder_path=f"{file_folder/Path('demo_out')}/prostate_cancer_2d",
                                 auto_enumerate=False)
 
