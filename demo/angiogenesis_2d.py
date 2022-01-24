@@ -3,7 +3,7 @@ Angiogenesis phase field model
 ==============================
 In this demo we will reproduce the angiogenesis phase field model described by Travasso et al. in 2011
 :cite:`Travasso2011a`. In this implementation, we will simulate a set of discrete cells expressing a generic angiogenic
-factor (e.g. VEGF), which lead to the sprouting of a 2D vascular network. In the following, we will refer to this cells
+factor (e.g. VEGF), which lead to the sprouting of a 2D vascular network. In the following, we will refer to these cells
 as *source cells*, since are the only source of angiogenic factor in this model.
 
 How to run this example on mocafe
@@ -26,13 +26,13 @@ Then, simply run it using python:
 
     python3 angiogenesis_2d.py
 
-If you are in a hurry, you can exploit parallelization to run the simulation faster:
+However, it is recommended to exploit parallelization to save simulation time:
 
 .. code-block:: console
 
     mpirun -n 4 python3 angiogenesis_2d.py
 
-Notice that the number following the ``-n`` option is the number of MPI processes you using for parallelizing the
+Notice that the number following the ``-n`` option is the number of MPI processes you using for parallelize the
 simulation. You can change it accordingly with your CPU.
 
 .. _angiogenesis_2d_brief_introduction:
@@ -148,7 +148,6 @@ import mocafe.fenut.mansimdata as mansimd
 from mocafe.angie import af_sourcing, tipcells
 from mocafe.angie.forms import angiogenesis_form, angiogenic_factor_form
 import mocafe.fenut.parameters as mpar
-from mocafe.expressions import PythonFunctionField
 
 # %%
 # Then, as seen in previous examples, we initialize the MPI comm, the process root, the log level and the data folder
@@ -180,7 +179,7 @@ parameters = mpar.from_ods_sheet(parameters_file, "SimParams")
 # %%
 # Notice that it is often useful to keep the parameters separated from the script and then import them as shown above.
 # This makes easier to save additional information together with the parameters (such as the unit of measure, the
-# reference for the value, etc.); moreover, it lowers the risk of making mistakes in the revisions of the script.
+# reference for the value, etc.); moreover, it reduces the risk of making mistakes in the revisions of the script.
 
 # %%
 # Definition of the spatial domain and the function space
@@ -230,10 +229,12 @@ initial_vessel_width = parameters.get_value("initial_vessel_width")
 
 # %%
 # Thus, the initial condition for ``c`` is simply a function which is 1 in the left part of the domain, for the x
-# coordinate included in [0, 37.5], and -1 otherwise. We can simply define such a function using the mocafe
-# ``PythonFunctionField`` as follows:
-c_0 = fenics.interpolate(PythonFunctionField(python_fun=lambda x: 1. if x[0] < initial_vessel_width else -1.),
-                         function_space.sub(0).collapse())
+# coordinate included in [0, 37.5], and -1 otherwise. We can simply define such a function using the FEniCS interface
+# for expressions as follows:
+c_0_exp = fenics.Expression("(x[0] < i_v_w) ? 1 : -1",
+                            degree=2,
+                            i_v_w=initial_vessel_width)
+c_0 = fenics.interpolate(c_0_exp, function_space.sub(0).collapse())
 
 # %%
 # Together with the initial condition for c, we need to define an initial condition for mu. However, this can be

@@ -1,10 +1,69 @@
+r"""
+Angiogenesis Phase Field Model in 3D
+====================================
+
+In this short demo we will show you how to simulate a phase field model described by Travasso et al. in 2011
+:cite:`Travasso2011a` using FEniCS and mocafe in 3D. You'll notice that the script is just the same of the 2D
+demo: you just need to change the spatial domain!
+
+How to run this example on mocafe
+---------------------------------
+Make sure you have FEniCS and mocafe and download the source script of this page (see above for the link).
+
+Then, download the parameters file for the simulation from
+:download:`this link<./demo_in/angiogenesis_3d/parameters.ods>` and place it inside the folder
+``demo_in/angiogenesis_2d``:
+
+.. code-block:: console
+
+    mkdir demo_in
+    mkdir demo_in/angiogenesis_2d
+    mv parameters.ods demo_in/angiogenesis_2d/
+
+Then, simply run it using python:
+
+.. code-block:: console
+
+    python3 angiogenesis_3d.py
+
+However, it is recommended to exploit parallelization to save simulation time:
+
+.. code-block:: console
+
+    mpirun -n 4 python3 angiogenesis_3d.py
+
+Notice that the number following the ``-n`` option is the number of MPI processes you using for parallelizing the
+simulation. You can change it accordingly with your CPU.
+
+Note on 3D simulations
+----------------------
+The computational effort required to solve a system in 3D is of orders of magnitude higher than to solve the same
+system in 2D. Thus, a normal laptop might be not able to compute the solution in reasonable time. Consider using
+a powerful desktop computer or an HPC to simulate the system.
+"""
+
+# %%
+# Implementation
+# --------------
+#
+# One of the great things of differential equations is that they are not really constrained to a specific space
+# dimension. With appropriate initial and boundary conditions, you can possibly find the solution of a differential
+# equation in any possible space. This is not always true for the software implementations of such differential
+# equations; however, FEniCS and *mocafe* are designed to follow just the same philosophy. So, you'll notice this
+# script is extremely similar to the one used for the 2D simulation.
+
+# Setup
+# ^^^^^
+# The setup is just the same as before; we just added a progress bar to follow the setup
+# (that might take a while) and we changed the data folder, in order to separate the generated
+# data. Also, notice that the parameters file is different. However, if you compare the file 
+# with the one we provided you for the 2d examples, you'll notice that there are just small
+# variations.
+
 import sys
-import time
 import fenics
 from tqdm import tqdm
 from pathlib import Path
-from mpi4py import MPI
-import pandas as pd
 import petsc4py
 file_folder = Path(__file__).parent.resolve()
 mocafe_folder = file_folder.parent
@@ -16,55 +75,23 @@ from mocafe.angie.forms import angiogenesis_form, angiogenic_factor_form
 import mocafe.fenut.parameters as mpar
 from mocafe.fenut.solvers import SNESProblem
 
-# initial setup
+# get MPI comm and rank
 comm = fenics.MPI.comm_world
 rank = comm.Get_rank()
 
+# create pbar for setup
+if rank == 0:
+    setup_pbar = tqdm(total=8, desc="setting up")
+else:
+    setup_pbar = None
 
-def print_p0(msg: str):
-    if rank == 0:
-        print(msg)
-        sys.stdout.flush()
-
-
-class OpCounter:
-    def __init__(self, filename):
-        self.dict = {
-            "operation": [],
-            "duration": []
-        }
-        self.init_times = {}
-        self.file_name = filename
-
-    def start_op(self, op_name: str):
-        init_time = time.time()
-        comm.barrier()
-        min_init_time = comm.allreduce(init_time, op=MPI.MIN)
-        self.init_times[op_name] = min_init_time
-
-    def end_op(self, op_name: str):
-        end_time = time.time()
-        comm.barrier()
-        max_end_time = comm.allreduce(end_time, op=MPI.MAX)
-        self.dict["operation"].append(op_name)
-        self.dict["duration"].append(max_end_time - self.init_times[op_name])
-
-    def write_csv(self):
-        if rank == 0:
-            df = pd.DataFrame(self.dict)
-            df.to_csv(self.file_name)
-
-
-n = 5
-print_p0(f"1/{n} Setting up...")
 # only process 0 logs
-# fenics.parameters["std_out_all_processes"] = False
+fenics.parameters["std_out_all_processes"] = False
 # set log level ERROR
-# fenics.set_log_level(fenics.LogLevel.ERROR)
+fenics.set_log_level(fenics.LogLevel.ERROR)
 # define data folder
 data_folder = mansimd.setup_data_folder(folder_path=f"{file_folder/Path('demo_out')}/angiogenesis_3d",
                                         auto_enumerate=False)
-op_counter = OpCounter(str(data_folder/"op_counter.csv"))
 
 # setup xdmf files
 file_names = ["c", "af", "tipcells", "mesh"]
@@ -74,8 +101,13 @@ file_c, file_af, tipcells_xdmf, mesh_xdmf = fu.setup_xdmf_files(file_names, data
 parameters_file = file_folder/Path("demo_in/angiogenesis_3d/parameters.ods")
 parameters = mpar.from_ods_sheet(parameters_file, "SimParams")
 
-# create mesh
-op_counter.start_op("Mesh_creation")
+# %%
+# Definition of the spatial domain and the function space
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# This is the one of the only changes we need to do: we need to define a 3D domain. However, we can do that with ease
+# using a ``BoxMesh``. Of course, creating a 3D mesh takes longer than a 2D mesh; thus, we placed an if statement to
+# make FEniCS generate the mesh at the first run of the script, save it in the data folder, and reload it in all the
+# following runs.
 Lx = parameters.get_value("Lx")
 Ly = parameters.get_value("Ly")
 Lz = parameters.get_value("Lz")
@@ -83,40 +115,78 @@ nx = int(parameters.get_value("nx"))
 ny = int(parameters.get_value("ny"))
 nz = int(parameters.get_value("nz"))
 mesh_file = data_folder / Path("mesh.xdmf")
+
+# check if mesh has already been created
 if mesh_file.exists():
-    print_p0(f"2/{n} Detected mesh file, reading mesh data...")
+    if rank == 0:
+        setup_pbar.update(1)
+        setup_pbar.set_description("loading mesh")
+
+    # in the case, load it
     mesh = fenics.Mesh()
     mesh_xdmf.read(mesh)
 else:
-    print_p0(f"2/{n} Creating 3D mesh; this might take some time...")
+    if rank == 0:
+        setup_pbar.update(1)
+        setup_pbar.set_description("creating mesh")
+
+    # create mesh
     mesh = fenics.BoxMesh(fenics.Point(0., 0., 0.),
                           fenics.Point(Lx, Ly, Lz),
                           nx,
                           ny,
                           nz)
+    # read it to file for following runs
     mesh_xdmf.write(mesh)
-op_counter.end_op("Mesh_creation")
 
-# define function spaces
+# %%
+# From the mesh, we can again define the function space in the same way we did in the 2D simulation. Indeed, the
+# system of differential equations is the same and FEniCS will take care of defining the "3D-version" of the polynomial
+# functions. Remember that, even though there are just two variables :math:`c` and :math:`af`, we also need to
+# consider an auxiliary variable :math:`mu` for the :math:`c` field (see demo for the 2D case).
+
 # for c and af
 function_space = fu.get_mixed_function_space(mesh, 3, "CG", 1)
 # for grad_T
 grad_af_function_space = fenics.VectorFunctionSpace(mesh, "CG", 1)
 
-# define initial conditions for c and mu
-print_p0(f"3/{n} Defining initial conditions... ")
-op_counter.start_op("Init_initial_conditions")
+# %%
+# Initial & boundary conditions
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# Again, in this implementation we will consider natural Neumann boundary conditions for both :math:`c` and
+# :math`af`.
+#
+# As initial condition for :math:`c`, the most natural choice to resemble the results of Travasso and his collaborators
+# :cite:`Travasso2011a` is to define a cylindrical blood vessel on one side of the mesh. To do so, we will use again
+# the standard fenics interface for defining an ``Expression``:
+
+if rank == 0:
+    setup_pbar.update(1)
+    setup_pbar.set_description("generating initial conditions")
+
 initial_vessel_radius = parameters.get_value("initial_vessel_width")
 c_exp = fenics.Expression("((pow(x[0], 2) + pow(x[2] - Lz/2, 2)) < pow(R_v, 2)) ? 1 : -1",
                           degree=2,
                           R_v=initial_vessel_radius,
                           Lz=Lz)
-print_p0(f"3a/{n} Interpolating c_0 and af_0... ")
+
+if rank == 0:
+    setup_pbar.update(1)
+    setup_pbar.set_description("interpolating c_0 and af_0")
+
 c_0 = fenics.interpolate(c_exp, function_space.sub(0).collapse())
 mu_0 = fenics.interpolate(fenics.Constant(0.), function_space.sub(0).collapse())
 
+# %%
+# As initial condition for :math:`af`, we can just use the ``RandomSourceMap`` object and the ``SourcesManager`` just
+# as we did in the 2D demo. Both of them are indeed designed to work just the same in 2D and 3D, with the only
+# difference that, in 3D, the cells are spheres instead of circles.
+
 # define source map
-print_p0(f"3b/{n} Creating sources map... ")
+if rank == 0:
+    setup_pbar.update(1)
+    setup_pbar.set_description("creating sources map")
+
 n_sources = int(parameters.get_value("n_sources"))
 cylinder_radius = initial_vessel_radius + parameters.get_value("d")
 sources_map = af_sourcing.RandomSourceMap(mesh,
@@ -127,7 +197,11 @@ sources_map = af_sourcing.RandomSourceMap(mesh,
 sources_manager = af_sourcing.SourcesManager(sources_map, mesh, parameters)
 # apply sources to af
 af_0 = fenics.interpolate(fenics.Constant(0.), function_space.sub(0).collapse())
-print_p0(f"3c/{n} Applying sources... ")
+
+if rank == 0:
+    setup_pbar.update(1)
+    setup_pbar.set_description("applying sources")
+
 sources_manager.apply_sources(af_0)
 
 # write initial conditions
@@ -138,16 +212,26 @@ file_c.write(c_0, 0)
 tipcells_field = fenics.Function(function_space.sub(0).collapse())
 
 # init grad af
-print_p0(f"3d/{n} Projecting grad_af... ")
+if rank == 0:
+    setup_pbar.update(1)
+    setup_pbar.set_description("projecting grad_af")
+
 grad_af = fenics.Function(grad_af_function_space)
 grad_af.assign(  # assign to grad_af
     fenics.project(fenics.grad(af_0), grad_af_function_space,
                    solver_type="gmres", preconditioner_type="amg")  # the projection on the fun space of grad(af_0)
 )
-op_counter.end_op("Init_initial_conditions")
 
-print_p0(f"4/{n} Defining weak forms... ")
-op_counter.start_op("Weak_forms_definition")
+# %%
+# PDE System definition
+# ^^^^^^^^^^^^^^^^^^^^^
+# Exactly how the differential equations don't change from 2D to 3D, the PDE definition remains the same. Indeed,
+# you can notice that the code it's just identical to the 2D demo, except for the update of ``setup_pbar``:
+
+if rank == 0:
+    setup_pbar.update(1)
+    setup_pbar.set_description("defining weak form")
+
 # init test functions
 v1, v2, v3 = fenics.TestFunctions(function_space)
 
@@ -159,23 +243,30 @@ af, c, mu = fenics.split(u)
 form_af = angiogenic_factor_form(af, af_0, c, v1, parameters)
 form_ang = angiogenesis_form(c, c_0, mu, mu_0, v2, v3, af, parameters)
 weak_form = form_af + form_ang
-op_counter.end_op("Weak_forms_definition")
 
-# init tip cell manager
+# %%
+# Simulation setup
+# ^^^^^^^^^^^^^^^^
+# Now that everything is set up we can proceed to the actual simulation, that, just as before, will start with the
+# definition of the ``TipCellsManager``:
 tip_cell_manager = tipcells.TipCellManager(mesh,
                                            parameters)
 
-jacobian = fenics.derivative(weak_form, u)
+# update
+if rank == 0:
+    setup_pbar.update(1)
+    setup_pbar.set_description("starting simulation")
 
-print_p0(f"5/{n} Starting iteration... ")
+# %%
+# After that, everything will just work the same. For efficiency, we make use of the PETSc SNES solver to solve the
+# differential equations this time, but this is the only change we made to the 2D demo code.
 t = 0.
 n_steps = 200
 if rank == 0:
-    pbar = tqdm(total=n_steps, ncols=100, position=1, desc="angiogenesis_3d")
+    pbar = tqdm(total=n_steps, ncols=100, position=1, desc="simulation")
 else:
     pbar = None
 
-# init PETSc with parameters
 petsc4py.init([__name__,
                "-snes_type", "newtonls",
                "-ksp_type", "gmres",
@@ -186,73 +277,50 @@ from petsc4py import PETSc
 snes_solver = PETSc.SNES().create(comm)
 snes_solver.setFromOptions()
 
+# start iteration in time
 for step in range(1, n_steps + 1):
     # update time
     t += parameters.get_value("dt")
 
     # turn off near sources
-    op_counter.start_op("remove_sources_near_vessels")
     sources_manager.remove_sources_near_vessels(c_0)
-    op_counter.end_op("remove_sources_near_vessels")
 
     # activate tip cell
-    op_counter.start_op("activate_tip_cells")
     tip_cell_manager.activate_tip_cell(c_0, af_0, grad_af, step)
-    op_counter.end_op("activate_tip_cells")
 
     # revert tip cells
-    op_counter.start_op("revert_tip_cells")
     tip_cell_manager.revert_tip_cells(af_0, grad_af)
-    op_counter.end_op("revert_tip_cells")
 
     # move tip cells
-    op_counter.start_op("move_tip_cells")
     tip_cell_manager.move_tip_cells(c_0, af_0, grad_af)
-    op_counter.end_op("move_tip_cells")
 
     # get tip cells field
-    op_counter.start_op("assign_latest_tip_cell_function")
     tipcells_field.assign(tip_cell_manager.get_latest_tip_cell_function())
-    op_counter.end_op("assign_latest_tip_cell_function")
 
     # solve the problem with the solver defined by the given parameters
-    op_counter.start_op("solution")
     problem = SNESProblem(weak_form, u, [])
     b = fenics.PETScVector()
     J_mat = fenics.PETScMatrix()
     snes_solver.setFunction(problem.F, b.vec())
     snes_solver.setJacobian(problem.J, J_mat.mat())
     snes_solver.solve(None, u.vector().vec())
-    op_counter.end_op("solution")
 
     # assign u to the initial conditions functions
-    op_counter.start_op("reassign_old")
     fenics.assign([af_0, c_0, mu_0], u)
-    op_counter.end_op("reassign_old")
 
     # update source field
-    op_counter.start_op("apply_sources")
     sources_manager.apply_sources(af_0)
-    op_counter.end_op("apply_sources")
 
     # compute grad_T
-    op_counter.start_op("compute_af_grad")
     grad_af.assign(
         fenics.project(fenics.grad(af_0), grad_af_function_space,
                        solver_type="gmres", preconditioner_type="amg")
     )
-    op_counter.end_op("compute_af_grad")
 
     # save data
-    op_counter.start_op("write_to_files")
     file_af.write(af_0, t)
     file_c.write(c_0, t)
     tipcells_xdmf.write(tipcells_field, t)
-    op_counter.end_op("write_to_files")
 
     if rank == 0:
         pbar.update(1)
-
-op_counter.write_csv()
-
-print("Ok!")
