@@ -8,7 +8,9 @@
   
 > A Python package based on [FEniCS](https://fenicsproject.org/) to develop and simulate Phase Field mathematical models for cancer  
   
-The purpose of _mocafe_ is to provide an open source and efficient implementation of legacy Phase Field mathematical models of cancer development and angiogenesis. Use _mocafe_ to: 
+The purpose of _mocafe_ is to provide an open source and efficient implementation of legacy Phase Field mathematical models of cancer development and angiogenesis. 
+
+Use _mocafe_ to: 
 * reproduce legacy cancer phase field model (also in parallel with `MPI`);  
 * understand them better inspecting the code, and changing the parameters;  
 * integrate these models in yours [FEniCS](https://fenicsproject.org/) scripts.  
