@@ -20,6 +20,11 @@ However, it is recommended to exploit parallelization to save simulation time:
 Notice that the number following the ``-n`` option is the number of MPI processes you using for parallelizing the
 simulation. You can change it accordingly with your CPU.
 
+Visualize the results of this simulation
+----------------------------------------
+You need to have `Paraview <https://www.paraview.org/>`_ to visualize the results. Once you have installed it,
+you can easly import the ``.xdmf`` files generated during the simulation and visualize the result.
+
 Brief introduction to the mathematical model
 --------------------------------------------
 The model is composed of just two partial differential equations (PDEs). The first describes the evolution of the
