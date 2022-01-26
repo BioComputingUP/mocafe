@@ -39,13 +39,18 @@ However, it is recommended to exploit parallelization to save simulation time:
 Notice that the number following the ``-n`` option is the number of MPI processes you using for parallelizing the
 simulation. You can change it accordingly with your CPU.
 
+Visualize the results of this simulation
+----------------------------------------
+You need to have `Paraview <https://www.paraview.org/>`_ to visualize the results. Once you have installed it,
+you can easly import the ``.xdmf`` files generated during the simulation and visualize the result.
+
 Note on 3D simulations
 ----------------------
 The computational effort required to solve a system in 3D is of orders of magnitude higher than to solve the same
 system in 2D. Thus, a normal laptop might be not able to compute the solution in reasonable time. Consider using
 a powerful desktop computer or an HPC to simulate the system.
 
-.. GENERATED FROM PYTHON SOURCE LINES 31-38
+.. GENERATED FROM PYTHON SOURCE LINES 36-43
 
 Implementation
 ------------------------------------------
@@ -55,7 +60,7 @@ dimension. With appropriate initial and boundary conditions, you can find the so
 in any possible space. This is not always true for the software implementations of such differential equations;
 however, using FEniCS the script is just slightly different from the one we've presented in the 2D case.
 
-.. GENERATED FROM PYTHON SOURCE LINES 38-83
+.. GENERATED FROM PYTHON SOURCE LINES 43-88
 
 .. code-block:: default
 
@@ -105,14 +110,14 @@ however, using FEniCS the script is just slightly different from the one we've p
     })
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 84-88
+.. GENERATED FROM PYTHON SOURCE LINES 89-93
 
 Definition of the spatial domain and the function space
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 This is the one of the only changes we need to do: we need to define a 3D domain. However, we can do that with ease
 using a ``BoxMesh`` with a side of 2000 :math:`\mu m`:
 
-.. GENERATED FROM PYTHON SOURCE LINES 88-101
+.. GENERATED FROM PYTHON SOURCE LINES 93-106
 
 .. code-block:: default
 
@@ -130,20 +135,20 @@ using a ``BoxMesh`` with a side of 2000 :math:`\mu m`:
                           nz)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 102-105
+.. GENERATED FROM PYTHON SOURCE LINES 107-110
 
 From the mesh, we can again define the function space in the same way we did in the 2D simulation. Indeed, the
 system of differential equations is the same and FEniCS will take care of defining the "3D-version" of the polynomial
 functions:
 
-.. GENERATED FROM PYTHON SOURCE LINES 105-107
+.. GENERATED FROM PYTHON SOURCE LINES 110-112
 
 .. code-block:: default
 
     function_space = get_mixed_function_space(mesh, 2, "CG", 1)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 108-116
+.. GENERATED FROM PYTHON SOURCE LINES 113-121
 
 Initial & boundary conditions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -154,7 +159,7 @@ As initial condition for :math:`\varphi` and :math:`\sigma`, the most natural ch
 Lorenzo and collaborators :cite:`Lorenzo2016` is to define an Ellipsoid, instead of an Ellipse. This can be done
 with ease using mocafe:
 
-.. GENERATED FROM PYTHON SOURCE LINES 116-138
+.. GENERATED FROM PYTHON SOURCE LINES 121-143
 
 .. code-block:: default
 
@@ -181,14 +186,14 @@ with ease using mocafe:
     sigma_xdmf.write(sigma0, 0)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 139-143
+.. GENERATED FROM PYTHON SOURCE LINES 144-148
 
 PDE System definition
 ^^^^^^^^^^^^^^^^^^^^^
 Exactly how the differential equations don't change from 2D to 3D, the PDE definition remains the same. Indeed,
 you can notice that the code it's just identical to the 2D demo:
 
-.. GENERATED FROM PYTHON SOURCE LINES 143-159
+.. GENERATED FROM PYTHON SOURCE LINES 148-164
 
 .. code-block:: default
 
@@ -209,27 +214,27 @@ you can notice that the code it's just identical to the 2D demo:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 160-164
+.. GENERATED FROM PYTHON SOURCE LINES 165-169
 
 Simulation setup
 ^^^^^^^^^^^^^^^^
 And, again, the simulation setup is the same as the 2D case. We just choose a lower number of step in order to reduce
 the simulation time:
 
-.. GENERATED FROM PYTHON SOURCE LINES 164-166
+.. GENERATED FROM PYTHON SOURCE LINES 169-171
 
 .. code-block:: default
 
     n_steps = 500
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 167-170
+.. GENERATED FROM PYTHON SOURCE LINES 172-175
 
 Then, the code remains the same. However, remember what we remarked in the 2D demo: you might need to change the
 solver configuration in order to solve the system on your computer, and it's not guaranteed that the configuration
 you choose for the 2D system is the best for the 3D system as well.
 
-.. GENERATED FROM PYTHON SOURCE LINES 170-212
+.. GENERATED FROM PYTHON SOURCE LINES 175-217
 
 .. code-block:: default
 

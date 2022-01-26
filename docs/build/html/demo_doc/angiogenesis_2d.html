@@ -71,8 +71,13 @@ as <em>source cells</em>, since are the only source of angiogenic factor in this
 <p>Notice that the number following the <code class="docutils literal notranslate"><span class="pre">-n</span></code> option is the number of MPI processes you using for parallelize the
 simulation. You can change it accordingly with your CPU.</p>
 </section>
+<section id="visualize-the-results-of-this-simulation">
+<span id="angiogenesis-2d-brief-introduction"></span><h2>Visualize the results of this simulation<a class="headerlink" href="#visualize-the-results-of-this-simulation" title="Permalink to this headline">¶</a></h2>
+<p>You need to have <a class="reference external" href="https://www.paraview.org/">Paraview</a> to visualize the results. Once you have installed it,
+you can easly import the <code class="docutils literal notranslate"><span class="pre">.xdmf</span></code> files generated during the simulation and visualize the result.</p>
+</section>
 <section id="brief-introduction-to-the-mathematical-model">
-<span id="angiogenesis-2d-brief-introduction"></span><h2>Brief introduction to the mathematical model<a class="headerlink" href="#brief-introduction-to-the-mathematical-model" title="Permalink to this headline">¶</a></h2>
+<h2>Brief introduction to the mathematical model<a class="headerlink" href="#brief-introduction-to-the-mathematical-model" title="Permalink to this headline">¶</a></h2>
 <p>The model is composed of two main parts interacting together: a set of differential equation and a computational
 “agent-based” model. The first part takes into account the continuous dynamics of the angiogenic factor and
 of the capillaries field, while the latter is responsible for the discrete dynamics of the source cells (i.e. the

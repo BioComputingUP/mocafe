@@ -43,6 +43,11 @@ However, it is recommended to exploit parallelization to save simulation time:
 Notice that the number following the ``-n`` option is the number of MPI processes you using for parallelizing the
 simulation. You can change it accordingly with your CPU.
 
+Visualize the results of this simulation
+----------------------------------------
+You need to have `Paraview <https://www.paraview.org/>`_ to visualize the results. Once you have installed it,
+you can easly import the ``.xdmf`` files generated during the simulation and visualize the result.
+
 Brief introduction to the mathematical model
 --------------------------------------------
 The model is composed of just two partial differential equations (PDEs). The first describes the evolution of the
@@ -72,7 +77,7 @@ a distribution :math:`s`, and that the nutrient is consumed at a constant rate b
 :math:`\gamma \sigma`.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 58-65
+.. GENERATED FROM PYTHON SOURCE LINES 63-70
 
 Implementation
 ------------------------------------------
@@ -82,7 +87,7 @@ Setup
 After the math, let's see the code. To reproduce this model we need first to import everything we need throughout
 the simulation. Notice that while most of the packages are provided by mocafe, we also use some other stuff.
 
-.. GENERATED FROM PYTHON SOURCE LINES 65-77
+.. GENERATED FROM PYTHON SOURCE LINES 70-82
 
 .. code-block:: default
 
@@ -99,26 +104,26 @@ the simulation. Notice that while most of the packages are provided by mocafe, w
     import mocafe.litforms.prostate_cancer as pc_model
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 78-82
+.. GENERATED FROM PYTHON SOURCE LINES 83-87
 
 Then, it is useful (even though not necessary) to do a number of operations before running our simulation.
 
 First of all, we shut down the logging messages from FEniCS, leaving only the error messages in case something goes
 *really* wrong. If you want to see the FEniCS logging messages, you can comment this line.
 
-.. GENERATED FROM PYTHON SOURCE LINES 82-84
+.. GENERATED FROM PYTHON SOURCE LINES 87-89
 
 .. code-block:: default
 
     fenics.set_log_level(fenics.LogLevel.ERROR)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 85-87
+.. GENERATED FROM PYTHON SOURCE LINES 90-92
 
 Then, we define the MPI rank for each process. Generally speaking, this is necessary for running the simulation in
 parallel using ``mpirun``, even though in this simulation is not largely used, as we are going to see.
 
-.. GENERATED FROM PYTHON SOURCE LINES 87-90
+.. GENERATED FROM PYTHON SOURCE LINES 92-95
 
 .. code-block:: default
 
@@ -126,7 +131,7 @@ parallel using ``mpirun``, even though in this simulation is not largely used, a
     rank = comm.Get_rank()
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 91-101
+.. GENERATED FROM PYTHON SOURCE LINES 96-106
 
 Then, we can define the files where to save our result for visualization and post-processing. The recommended format
 for saving FEniCS simulations is using ``.xdmf`` files, which can easily be visualized in
@@ -139,7 +144,7 @@ methods for defining:
   the current folder (``base_location``) and it's called demo_out/prostate_cancer2d;
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 101-105
+.. GENERATED FROM PYTHON SOURCE LINES 106-110
 
 .. code-block:: default
 
@@ -148,20 +153,20 @@ methods for defining:
                                     auto_enumerate=False)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 106-109
+.. GENERATED FROM PYTHON SOURCE LINES 111-114
 
 - then, the two files for the cancer :math:`\varphi` and for the nutrients :math:`\sigma`, which will be called
   ``phi.xdmf`` and ``sigma.xdmf``.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 109-111
+.. GENERATED FROM PYTHON SOURCE LINES 114-116
 
 .. code-block:: default
 
     phi_xdmf, sigma_xdmf = setup_xdmf_files(["phi", "sigma"], data_folder)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 112-119
+.. GENERATED FROM PYTHON SOURCE LINES 117-124
 
 Finally, we define the parameters of the differential equation using a mocafe ``Parameter`` object, which is created
 for this purpose.
@@ -171,7 +176,7 @@ dictionary where each key is the parameter name and the value is the actual valu
 chosen for this simulation are in agreement with those reported by Lorenzo et al. by two papers regarding this
 model :cite:`Lorenzo2016` :cite:`Lorenzo2017`.
 
-.. GENERATED FROM PYTHON SOURCE LINES 119-138
+.. GENERATED FROM PYTHON SOURCE LINES 124-143
 
 .. code-block:: default
 
@@ -195,7 +200,7 @@ model :cite:`Lorenzo2016` :cite:`Lorenzo2017`.
     })
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 139-149
+.. GENERATED FROM PYTHON SOURCE LINES 144-154
 
 Definition of the spatial domain and the function space
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -208,7 +213,7 @@ More precisely, in the following we are going to define a mesh of the dimension 
 points for each side.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 149-161
+.. GENERATED FROM PYTHON SOURCE LINES 154-166
 
 .. code-block:: default
 
@@ -225,7 +230,7 @@ points for each side.
                                 ny)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 162-178
+.. GENERATED FROM PYTHON SOURCE LINES 167-183
 
 From the mesh defined above, we can then define the ``FunctionSpace``. If your not familiar enough with FEniCS
 to know what a function space is, we suggest you to have a look to the first pages of The Fenics Tutorial
@@ -244,14 +249,14 @@ However, the very same operation can be performed in just one line using the fol
 mocafe:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 178-180
+.. GENERATED FROM PYTHON SOURCE LINES 183-185
 
 .. code-block:: default
 
     function_space = get_mixed_function_space(mesh, 2, "CG", 1)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 181-192
+.. GENERATED FROM PYTHON SOURCE LINES 186-197
 
 Initial & boundary conditions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -265,7 +270,7 @@ command from the user.
 As initial condition for :math:`\varphi`, according to the author :cite:`Lorenzo2017`, we will define an elliptical
 tumor with the given semiaxes:
 
-.. GENERATED FROM PYTHON SOURCE LINES 192-195
+.. GENERATED FROM PYTHON SOURCE LINES 197-200
 
 .. code-block:: default
 
@@ -273,7 +278,7 @@ tumor with the given semiaxes:
     semiax_y = 150  # um
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 196-218
+.. GENERATED FROM PYTHON SOURCE LINES 201-223
 
 With FEniCS we can do so by defining an expression which 'mathematically' represent our initial condition.
 Indeed, an ``Expression`` is the FEniCS way to define symbolic mathematical function and they can be defined
@@ -298,7 +303,7 @@ using simple C++ code as follows:
 However, if you don't feel confident in defining your own expression with the FEniCS interface, you can use
 the one provided by mocafe:
 
-.. GENERATED FROM PYTHON SOURCE LINES 218-224
+.. GENERATED FROM PYTHON SOURCE LINES 223-229
 
 .. code-block:: default
 
@@ -309,7 +314,7 @@ the one provided by mocafe:
                         outside_value=parameters.get_value("phi0_out"))
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 225-234
+.. GENERATED FROM PYTHON SOURCE LINES 230-239
 
 The FEniCS expression must then be interpolated in the function space in order to obtain a
 FEniCS Function. Again, explaining why we need to do so is something that goes beyond the purpose of this small
@@ -321,14 +326,14 @@ The interpolation can be done simply calling the FEniCS method ``interpolate``, 
 expression to be projected and the function space where to do the projection. Notice that, since the function space
 we defined is mixed, we must choose one of the sub-field to define the function.
 
-.. GENERATED FROM PYTHON SOURCE LINES 234-236
+.. GENERATED FROM PYTHON SOURCE LINES 239-241
 
 .. code-block:: default
 
     phi0 = fenics.interpolate(phi0, function_space.sub(0).collapse())
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 237-244
+.. GENERATED FROM PYTHON SOURCE LINES 242-249
 
 Notice also that since the mixed function space is defined by two identical function spaces, it makes no
 difference to pick sub(0) or sub(1).
@@ -338,21 +343,21 @@ beginning, simply calling the method ``write(phi0, 0)``. The second argument, 0,
 this is the value of the field for the time 0. As we're going to see in the simulation, the file ``phi_xdmf`` can
 collect the values of phi for each time.
 
-.. GENERATED FROM PYTHON SOURCE LINES 244-246
+.. GENERATED FROM PYTHON SOURCE LINES 249-251
 
 .. code-block:: default
 
     phi_xdmf.write(phi0, 0)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 247-251
+.. GENERATED FROM PYTHON SOURCE LINES 252-256
 
 Finally, after having defined the initial condition for :math:`\varphi`, let's define the initial for
 :math:`\sigma`. Following the hypothesis of original author :cite:`Lorenzo2017`, we will assume a nutrient
 distribution that is 0.2 inside the cancer and 1. outside. So, we can define this distribution similarly to
 what we just did for ``phi0``:
 
-.. GENERATED FROM PYTHON SOURCE LINES 251-259
+.. GENERATED FROM PYTHON SOURCE LINES 256-264
 
 .. code-block:: default
 
@@ -365,7 +370,7 @@ what we just did for ``phi0``:
     sigma_xdmf.write(sigma0, 0)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 260-268
+.. GENERATED FROM PYTHON SOURCE LINES 265-273
 
 PDE System definition
 ^^^^^^^^^^^^^^^^^^^^^
@@ -376,25 +381,25 @@ First of all, we define the two variables, ``phi`` and ``sigma``, for which the 
 two equations are coupled (i.e. they depend on each other) the easiest way to do so is to define a 'vector'
 function ``u`` on the mixed function space:
 
-.. GENERATED FROM PYTHON SOURCE LINES 268-270
+.. GENERATED FROM PYTHON SOURCE LINES 273-275
 
 .. code-block:: default
 
     u = fenics.Function(function_space)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 271-272
+.. GENERATED FROM PYTHON SOURCE LINES 276-277
 
 And then to split the vector in its two components, which represent :math:`\varphi` and :math:`\sigma`:
 
-.. GENERATED FROM PYTHON SOURCE LINES 272-274
+.. GENERATED FROM PYTHON SOURCE LINES 277-279
 
 .. code-block:: default
 
     phi, sigma = fenics.split(u)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 275-290
+.. GENERATED FROM PYTHON SOURCE LINES 280-295
 
 After having defined phi and sigma, we defined the :math:`s` function, which represent the distribution of
 nutrient that is supplied to the system.
@@ -412,7 +417,7 @@ function ``(random()/((double)RAND_MAX))`` to generate uniform random numbers be
 ways to do the same thing in Python using the ``random`` module, but in our experience the use of C++ code with the
 FEniCS interface reduces significantly the time required for the interpolation.
 
-.. GENERATED FROM PYTHON SOURCE LINES 290-297
+.. GENERATED FROM PYTHON SOURCE LINES 295-302
 
 .. code-block:: default
 
@@ -424,13 +429,13 @@ FEniCS interface reduces significantly the time required for the interpolation.
     s = fenics.interpolate(s_exp, function_space.sub(0).collapse())
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 298-301
+.. GENERATED FROM PYTHON SOURCE LINES 303-306
 
 Now, we have everything in place to define our PDE system. Since FEniCS uses the Finite Element Method (FEM) to
 approximate the solution we need to define the so called 'weak form' of our system. If you're not experienced with
 weak forms, you can just take advantage of the mocafe "black-box" method to get it ready to run:
 
-.. GENERATED FROM PYTHON SOURCE LINES 301-306
+.. GENERATED FROM PYTHON SOURCE LINES 306-311
 
 .. code-block:: default
 
@@ -440,7 +445,7 @@ weak forms, you can just take advantage of the mocafe "black-box" method to get 
         pc_model.prostate_cancer_nutrient_form(sigma, sigma0, phi, v2, s, parameters)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 307-332
+.. GENERATED FROM PYTHON SOURCE LINES 312-337
 
 However, if you know what a weak form is and how to define it for a PDEs set, you migth appreciate how easy it is
 to define them in FEniCS using the Unified Form Language (UFL). Just to give you a taste, we show you how the system
@@ -468,7 +473,7 @@ From this code, FEniCS is able to efficiently construct all the data structures 
 solution at each time step. If you wank to know more about this topic, you are encouraged to have a look to The
 Fenics Tutorial to start :cite:`LangtangenLogg2017`.
 
-.. GENERATED FROM PYTHON SOURCE LINES 334-341
+.. GENERATED FROM PYTHON SOURCE LINES 339-346
 
 Simulation setup
 ^^^^^^^^^^^^^^^^
@@ -478,20 +483,20 @@ above for each time step.
 To do so, we start defining the total number of steps to simulate. We choose that in order to have a total
 simulated time of one year, given the dt of the system (see its value in the ``Parameters`` object)
 
-.. GENERATED FROM PYTHON SOURCE LINES 341-343
+.. GENERATED FROM PYTHON SOURCE LINES 346-348
 
 .. code-block:: default
 
     n_steps = 1000
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 344-347
+.. GENERATED FROM PYTHON SOURCE LINES 349-352
 
 Then, we define a progress bar with ``tqdm`` in order to monitor the iteration progress. Notice that the progress
 bar is defined only if the rank of the process is 0. This is necessary to avoid every process to print out a
 different progress bar.
 
-.. GENERATED FROM PYTHON SOURCE LINES 347-352
+.. GENERATED FROM PYTHON SOURCE LINES 352-357
 
 .. code-block:: default
 
@@ -501,7 +506,7 @@ different progress bar.
         progress_bar = None
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 353-368
+.. GENERATED FROM PYTHON SOURCE LINES 358-373
 
 Then, we need to define how we want FEniCS to solve or PDE system. To do so, we first need to define the solver we
 want to use.
@@ -519,7 +524,7 @@ The standard way to create a SNES solver is to set it up from the command line, 
 
 However, for your convenience, we just hard coded the SNES configuration that worked better for us.
 
-.. GENERATED FROM PYTHON SOURCE LINES 368-379
+.. GENERATED FROM PYTHON SOURCE LINES 373-384
 
 .. code-block:: default
 
@@ -535,7 +540,7 @@ However, for your convenience, we just hard coded the SNES configuration that wo
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 380-391
+.. GENERATED FROM PYTHON SOURCE LINES 385-396
 
 Still, notice that the best configuration for your system might change, since it is well known that it is very hard
 to tell which solver will perform the best given the PDEs, the mesh, the CPU, the cores number and so on (see
@@ -549,13 +554,13 @@ need more information on the use of SNES in FEniCS, you can also refer to this
 FEniCS forum.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 394-397
+.. GENERATED FROM PYTHON SOURCE LINES 399-402
 
 Simulation
 ^^^^^^^^^^
 Finally, we can iterate in time to solve the system with the given solver at each time step.
 
-.. GENERATED FROM PYTHON SOURCE LINES 397-425
+.. GENERATED FROM PYTHON SOURCE LINES 402-430
 
 .. code-block:: default
 
@@ -588,7 +593,7 @@ Finally, we can iterate in time to solve the system with the given solver at eac
             progress_bar.update(1)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 426-489
+.. GENERATED FROM PYTHON SOURCE LINES 431-494
 
 Let's analyze everything step-by-step. First, we update the simulation time:
 

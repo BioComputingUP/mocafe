@@ -62,6 +62,11 @@ Then, simply run it using python:</p>
 <p>Notice that the number following the <code class="docutils literal notranslate"><span class="pre">-n</span></code> option is the number of MPI processes you using for parallelizing the
 simulation. You can change it accordingly with your CPU.</p>
 </section>
+<section id="visualize-the-results-of-this-simulation">
+<h2>Visualize the results of this simulation<a class="headerlink" href="#visualize-the-results-of-this-simulation" title="Permalink to this headline">¶</a></h2>
+<p>You need to have <a class="reference external" href="https://www.paraview.org/">Paraview</a> to visualize the results. Once you have installed it,
+you can easly import the <code class="docutils literal notranslate"><span class="pre">.xdmf</span></code> files generated during the simulation and visualize the result.</p>
+</section>
 <section id="brief-introduction-to-the-mathematical-model">
 <h2>Brief introduction to the mathematical model<a class="headerlink" href="#brief-introduction-to-the-mathematical-model" title="Permalink to this headline">¶</a></h2>
 <p>The model is composed of just two partial differential equations (PDEs). The first describes the evolution of the
@@ -141,7 +146,7 @@ for this purpose.</p>
 <p>A Parameters object can be initialized in several ways. In the following, we define it from a
 dictionary where each key is the parameter name and the value is the actual value of the parameter. The values
 chosen for this simulation are in agreement with those reported by Lorenzo et al. by two papers regarding this
-model <span id="id4">[<a class="reference internal" href="../bib.html#id2" title="Guillermo Lorenzo, Michael A Scott, Kevin Tew, Thomas J R Hughes, Yongjie Jessica Zhang, Lei Liu, Guillermo Vilanova, and Hector Gomez. Tissue-scale, personalized modeling and simulation of prostate cancer growth. Proceedings of the National Academy of Sciences, 2016. URL: www.pnas.org/cgi/doi/10.1073/pnas.1615791113, doi:10.1073/pnas.1615791113.">LST+16</a>]</span> <span id="id5">[<a class="reference internal" href="../bib.html#id5" title="G. Lorenzo, M. A. Scott, K. Tew, T. J.R. Hughes, and H. Gomez. Hierarchically refined and coarsened splines for moving interface problems, with particular application to phase-field models of prostate tumor growth. Computer Methods in Applied Mechanics and Engineering, 319:515–548, jun 2017. doi:10.1016/j.cma.2017.03.009.">LST+17</a>]</span>.</p>
+model <span id="id5">[<a class="reference internal" href="../bib.html#id2" title="Guillermo Lorenzo, Michael A Scott, Kevin Tew, Thomas J R Hughes, Yongjie Jessica Zhang, Lei Liu, Guillermo Vilanova, and Hector Gomez. Tissue-scale, personalized modeling and simulation of prostate cancer growth. Proceedings of the National Academy of Sciences, 2016. URL: www.pnas.org/cgi/doi/10.1073/pnas.1615791113, doi:10.1073/pnas.1615791113.">LST+16</a>]</span> <span id="id6">[<a class="reference internal" href="../bib.html#id5" title="G. Lorenzo, M. A. Scott, K. Tew, T. J.R. Hughes, and H. Gomez. Hierarchically refined and coarsened splines for moving interface problems, with particular application to phase-field models of prostate tumor growth. Computer Methods in Applied Mechanics and Engineering, 319:515–548, jun 2017. doi:10.1016/j.cma.2017.03.009.">LST+17</a>]</span>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">parameters</span> <span class="o">=</span> <span class="n">from_dict</span><span class="p">({</span>
     <span class="s2">&quot;phi0_in&quot;</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span>  <span class="c1"># adimentional</span>
     <span class="s2">&quot;phi0_out&quot;</span><span class="p">:</span> <span class="mf">0.</span><span class="p">,</span>  <span class="c1"># adimdimentional</span>
@@ -186,7 +191,7 @@ points for each side.</p>
 </div>
 <p>From the mesh defined above, we can then define the <code class="docutils literal notranslate"><span class="pre">FunctionSpace</span></code>. If your not familiar enough with FEniCS
 to know what a function space is, we suggest you to have a look to the first pages of The Fenics Tutorial
-<span id="id6">[<a class="reference internal" href="../bib.html#id4" title="Hans Petter Langtangen and Anders Logg. Solving PDEs in Python. Springer, 2017. ISBN 978-3-319-52461-0. doi:10.1007/978-3-319-52462-7.">LL17</a>]</span>, but basically the function space defines the set of the piece-wise
+<span id="id7">[<a class="reference internal" href="../bib.html#id4" title="Hans Petter Langtangen and Anders Logg. Solving PDEs in Python. Springer, 2017. ISBN 978-3-319-52461-0. doi:10.1007/978-3-319-52462-7.">LL17</a>]</span>, but basically the function space defines the set of the piece-wise
 polynomial function that will be used to approximate the solutions of our PDEs.</p>
 <p>Since the model we wish to simulate is composed of two coupled equations, we need to define a MixedElement function
 space with two different elements. In this implementation, we will use for both equations the same element
@@ -209,7 +214,7 @@ mocafe:</p>
 :math`sigma`, which means that the derivative in space of the two fields is zero along the entire boundary.
 This is an easy pick for FEniCS, since it will automatically apply this condition for us without requiring any
 command from the user.</p>
-<p>As initial condition for <span class="math notranslate nohighlight">\(\varphi\)</span>, according to the author <span id="id7">[<a class="reference internal" href="../bib.html#id5" title="G. Lorenzo, M. A. Scott, K. Tew, T. J.R. Hughes, and H. Gomez. Hierarchically refined and coarsened splines for moving interface problems, with particular application to phase-field models of prostate tumor growth. Computer Methods in Applied Mechanics and Engineering, 319:515–548, jun 2017. doi:10.1016/j.cma.2017.03.009.">LST+17</a>]</span>, we will define an elliptical
+<p>As initial condition for <span class="math notranslate nohighlight">\(\varphi\)</span>, according to the author <span id="id8">[<a class="reference internal" href="../bib.html#id5" title="G. Lorenzo, M. A. Scott, K. Tew, T. J.R. Hughes, and H. Gomez. Hierarchically refined and coarsened splines for moving interface problems, with particular application to phase-field models of prostate tumor growth. Computer Methods in Applied Mechanics and Engineering, 319:515–548, jun 2017. doi:10.1016/j.cma.2017.03.009.">LST+17</a>]</span>, we will define an elliptical
 tumor with the given semiaxes:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">semiax_x</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># um</span>
 <span class="n">semiax_y</span> <span class="o">=</span> <span class="mi">150</span>  <span class="c1"># um</span>
@@ -263,7 +268,7 @@ collect the values of phi for each time.</p>
 </pre></div>
 </div>
 <p>Finally, after having defined the initial condition for <span class="math notranslate nohighlight">\(\varphi\)</span>, let’s define the initial for
-<span class="math notranslate nohighlight">\(\sigma\)</span>. Following the hypothesis of original author <span id="id8">[<a class="reference internal" href="../bib.html#id5" title="G. Lorenzo, M. A. Scott, K. Tew, T. J.R. Hughes, and H. Gomez. Hierarchically refined and coarsened splines for moving interface problems, with particular application to phase-field models of prostate tumor growth. Computer Methods in Applied Mechanics and Engineering, 319:515–548, jun 2017. doi:10.1016/j.cma.2017.03.009.">LST+17</a>]</span>, we will assume a nutrient
+<span class="math notranslate nohighlight">\(\sigma\)</span>. Following the hypothesis of original author <span id="id9">[<a class="reference internal" href="../bib.html#id5" title="G. Lorenzo, M. A. Scott, K. Tew, T. J.R. Hughes, and H. Gomez. Hierarchically refined and coarsened splines for moving interface problems, with particular application to phase-field models of prostate tumor growth. Computer Methods in Applied Mechanics and Engineering, 319:515–548, jun 2017. doi:10.1016/j.cma.2017.03.009.">LST+17</a>]</span>, we will assume a nutrient
 distribution that is 0.2 inside the cancer and 1. outside. So, we can define this distribution similarly to
 what we just did for <code class="docutils literal notranslate"><span class="pre">phi0</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sigma0</span> <span class="o">=</span> <span class="n">EllipseField</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">]),</span>
@@ -293,7 +298,7 @@ function <code class="docutils literal notranslate"><span class="pre">u</span></
 <p>After having defined phi and sigma, we defined the <span class="math notranslate nohighlight">\(s\)</span> function, which represent the distribution of
 nutrient that is supplied to the system.</p>
 <p>In the original paper they simulated the model for both a constant distribution and for a ‘capillary-like’
-distribution based on an picture <span id="id9">[<a class="reference internal" href="../bib.html#id2" title="Guillermo Lorenzo, Michael A Scott, Kevin Tew, Thomas J R Hughes, Yongjie Jessica Zhang, Lei Liu, Guillermo Vilanova, and Hector Gomez. Tissue-scale, personalized modeling and simulation of prostate cancer growth. Proceedings of the National Academy of Sciences, 2016. URL: www.pnas.org/cgi/doi/10.1073/pnas.1615791113, doi:10.1073/pnas.1615791113.">LST+16</a>]</span>.</p>
+distribution based on an picture <span id="id10">[<a class="reference internal" href="../bib.html#id2" title="Guillermo Lorenzo, Michael A Scott, Kevin Tew, Thomas J R Hughes, Yongjie Jessica Zhang, Lei Liu, Guillermo Vilanova, and Hector Gomez. Tissue-scale, personalized modeling and simulation of prostate cancer growth. Proceedings of the National Academy of Sciences, 2016. URL: www.pnas.org/cgi/doi/10.1073/pnas.1615791113, doi:10.1073/pnas.1615791113.">LST+16</a>]</span>.</p>
 <p>In this implementation we just chose a to simulate the model with a random distribution of the nutrient, with
 values included in the range <span class="math notranslate nohighlight">\([s_{average} + s_{min}, s_{average} + s_{max}]\)</span>, where :math`s_{max} = - s_{min}`.
 The specific values we need are specified in the parameters object we created above, so we use that to retrieve the
@@ -340,7 +345,7 @@ just eye-pleasing, but it makes it way easier to define the system and to introd
 from different perspectives.
 From this code, FEniCS is able to efficiently construct all the data structures needed to get our
 solution at each time step. If you wank to know more about this topic, you are encouraged to have a look to The
-Fenics Tutorial to start <span id="id10">[<a class="reference internal" href="../bib.html#id4" title="Hans Petter Langtangen and Anders Logg. Solving PDEs in Python. Springer, 2017. ISBN 978-3-319-52461-0. doi:10.1007/978-3-319-52462-7.">LL17</a>]</span>.</p>
+Fenics Tutorial to start <span id="id11">[<a class="reference internal" href="../bib.html#id4" title="Hans Petter Langtangen and Anders Logg. Solving PDEs in Python. Springer, 2017. ISBN 978-3-319-52461-0. doi:10.1007/978-3-319-52462-7.">LL17</a>]</span>.</p>
 </section>
 <section id="simulation-setup">
 <h3>Simulation setup<a class="headerlink" href="#simulation-setup" title="Permalink to this headline">¶</a></h3>
