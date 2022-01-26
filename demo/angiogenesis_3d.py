@@ -35,6 +35,11 @@ However, it is recommended to exploit parallelization to save simulation time:
 Notice that the number following the ``-n`` option is the number of MPI processes you using for parallelizing the
 simulation. You can change it accordingly with your CPU.
 
+Visualize the results of this simulation
+----------------------------------------
+You need to have `Paraview <https://www.paraview.org/>`_ to visualize the results. Once you have installed it,
+you can easly import the ``.xdmf`` files generated during the simulation and visualize the result.
+
 Note on 3D simulations
 ----------------------
 The computational effort required to solve a system in 3D is of orders of magnitude higher than to solve the same

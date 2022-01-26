@@ -37,6 +37,11 @@ simulation. You can change it accordingly with your CPU.
 
 .. _angiogenesis_2d_brief_introduction:
 
+Visualize the results of this simulation
+----------------------------------------
+You need to have `Paraview <https://www.paraview.org/>`_ to visualize the results. Once you have installed it,
+you can easly import the ``.xdmf`` files generated during the simulation and visualize the result.
+
 Brief introduction to the mathematical model
 --------------------------------------------
 The model is composed of two main parts interacting together: a set of differential equation and a computational
