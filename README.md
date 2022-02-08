@@ -17,7 +17,7 @@ Use _mocafe_ to:
 
 See complete documentation [here](https://biocomputingup.github.io/mocafe/build/html/index.html)
   
-![*mocafe* header](https://i.imgur.com/hkg84Ow.png)
+![*mocafe* header](https://i.imgur.com/ETeV67C.png)
   
 ## Installation  
 _mocafe_ can be easily installed using pip:
