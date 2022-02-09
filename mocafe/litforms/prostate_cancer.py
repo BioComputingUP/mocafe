@@ -48,12 +48,13 @@ def prostate_cancer_form(phi: fenics.Function,
 
     The parameters required for the equation must be specified in the ``parameters`` object. The name for the
     required parameters ore:
-     - ``dt``: the time step (time discretization: backward Euler)
-     - ``lambda``: diffusion constant for \varphi (correspond to \lambda in the original paper)
-     - ``tau``: the time constant for the double-well potential (correspond to \tau in the original paper)
-     - ``chempot_constant``: the double-well potential constant (no name in the original paper; its value was 16)
-     - ``chi``: proliferation rate for prostate cancer (correspond to \chi in the original publication)
-     - ``A``: the apoptosis rate for the prostate cancer (correspond to :math:`A` in the original publication
+
+    - ``dt``: the time step (time discretization: backward Euler)
+    - ``lambda``: diffusion constant for \varphi (correspond to \lambda in the original paper)
+    - ``tau``: the time constant for the double-well potential (correspond to \tau in the original paper)
+    - ``chempot_constant``: the double-well potential constant (no name in the original paper; its value was 16)
+    - ``chi``: proliferation rate for prostate cancer (correspond to \chi in the original publication)
+    - ``A``: the apoptosis rate for the prostate cancer (correspond to :math:`A` in the original publication
 
     :param phi: the FEniCS ``Function`` for \varphi
     :param phi_prec: the initial value for \varphi
@@ -84,10 +85,11 @@ def prostate_cancer_nutrient_form(sigma: fenics.Function,
 
     The parameters required for the equation must be specified in the ``parameters`` object. The name for the
     required parameters ore:
-     - ``dt``: the time step (time discretization: backward Euler)
-     - ``epsilon``: diffusion constant for \sigma (correspond to \lambda in the original paper)
-     - ``delta``: the uptake rate of the nutrient by the cancer (correspond to \delta in the original paper)
-     - ``gamma``: the decay rate for \sigma (correspong to \gamma in the original paper)
+
+    - ``dt``: the time step (time discretization: backward Euler)
+    - ``epsilon``: diffusion constant for \sigma (correspond to \lambda in the original paper)
+    - ``delta``: the uptake rate of the nutrient by the cancer (correspond to \delta in the original paper)
+    - ``gamma``: the decay rate for \sigma (correspong to \gamma in the original paper)
 
     :param sigma: the FEniCS ``Function`` for the \sigma variable
     :param sigma_old: the FEniCS ``Function`` for the initial value of the \sigma value

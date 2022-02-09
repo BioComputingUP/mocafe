@@ -13,10 +13,13 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/class.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/functions.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="mocafe.math" href="../math.html" />
@@ -39,6 +42,109 @@
             
   <section id="module-mocafe.litforms.prostate_cancer">
 <span id="mocafe-litforms-prostate-cancer"></span><h1><code class="docutils literal notranslate"><span class="pre">mocafe.litforms.prostate_cancer</span></code><a class="headerlink" href="#module-mocafe.litforms.prostate_cancer" title="Permalink to this headline">¶</a></h1>
+<p>This module contains methods to build the weak form of a Phase Field prostate cancer model described by
+Lorenzo and collaborators <span id="id1">[<a class="reference internal" href="../../bib.html#id2" title="Guillermo Lorenzo, Michael A Scott, Kevin Tew, Thomas J R Hughes, Yongjie Jessica Zhang, Lei Liu, Guillermo Vilanova, and Hector Gomez. Tissue-scale, personalized modeling and simulation of prostate cancer growth. Proceedings of the National Academy of Sciences, 2016. URL: www.pnas.org/cgi/doi/10.1073/pnas.1615791113, doi:10.1073/pnas.1615791113.">LST+16</a>]</span>.</p>
+<p>For a complete description of the model, please refer to the original publication. Also, if you use this model
+for your scientific work, remember to cite the original paper.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mocafe.litforms.prostate_cancer.df_dphi">
+<span class="sig-prename descclassname"><span class="pre">mocafe.litforms.prostate_cancer.</span></span><span class="sig-name descname"><span class="pre">df_dphi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chem_potential_constant</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.litforms.prostate_cancer.df_dphi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the derivative of the “chemical potential” associated with the cancer equation. It is used to build the weak form for
+the prostate cancer model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>phi</strong> – the FEniCS <code class="docutils literal notranslate"><span class="pre">Function</span></code> for varphi</p></li>
+<li><p><strong>chem_potential_constant</strong> – the constant of the chemical potential (equals to 16 in <span id="id2">[<a class="reference internal" href="../../bib.html#id2" title="Guillermo Lorenzo, Michael A Scott, Kevin Tew, Thomas J R Hughes, Yongjie Jessica Zhang, Lei Liu, Guillermo Vilanova, and Hector Gomez. Tissue-scale, personalized modeling and simulation of prostate cancer growth. Proceedings of the National Academy of Sciences, 2016. URL: www.pnas.org/cgi/doi/10.1073/pnas.1615791113, doi:10.1073/pnas.1615791113.">LST+16</a>]</span>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the derivative of the chemical potential, as FEniCS UFL equation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mocafe.litforms.prostate_cancer.prostate_cancer_chem_potential">
+<span class="sig-prename descclassname"><span class="pre">mocafe.litforms.prostate_cancer.</span></span><span class="sig-name descname"><span class="pre">prostate_cancer_chem_potential</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var_phi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.cpp.common.Variable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chem_potential_constant</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.litforms.prostate_cancer.prostate_cancer_chem_potential" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the “chemical potential” associated with the cancer equation. It is used to build the weak form for
+the prostate cancer model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>var_phi</strong> – the varphi variable</p></li>
+<li><p><strong>chem_potential_constant</strong> – the constant of the chemical potential (equals to 16 in <span id="id3">[<a class="reference internal" href="../../bib.html#id2" title="Guillermo Lorenzo, Michael A Scott, Kevin Tew, Thomas J R Hughes, Yongjie Jessica Zhang, Lei Liu, Guillermo Vilanova, and Hector Gomez. Tissue-scale, personalized modeling and simulation of prostate cancer growth. Proceedings of the National Academy of Sciences, 2016. URL: www.pnas.org/cgi/doi/10.1073/pnas.1615791113, doi:10.1073/pnas.1615791113.">LST+16</a>]</span>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the chemical potential, as FEniCS UFL equation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mocafe.litforms.prostate_cancer.prostate_cancer_form">
+<span class="sig-prename descclassname"><span class="pre">mocafe.litforms.prostate_cancer.</span></span><span class="sig-name descname"><span class="pre">prostate_cancer_form</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi_prec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.argument.TestFunction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../fenut_sub_code_doc/parameters.html#mocafe.fenut.parameters.Parameters" title="mocafe.fenut.parameters.Parameters"><span class="pre">mocafe.fenut.parameters.Parameters</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.litforms.prostate_cancer.prostate_cancer_form" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds the FEniCS UFL weak form for the prostate cancer equation reported by Lorenzo and collaborators
+<span id="id4">[<a class="reference internal" href="../../bib.html#id2" title="Guillermo Lorenzo, Michael A Scott, Kevin Tew, Thomas J R Hughes, Yongjie Jessica Zhang, Lei Liu, Guillermo Vilanova, and Hector Gomez. Tissue-scale, personalized modeling and simulation of prostate cancer growth. Proceedings of the National Academy of Sciences, 2016. URL: www.pnas.org/cgi/doi/10.1073/pnas.1615791113, doi:10.1073/pnas.1615791113.">LST+16</a>]</span>. The name of the variable for the cancer is varphi</p>
+<p>The parameters required for the equation must be specified in the <code class="docutils literal notranslate"><span class="pre">parameters</span></code> object. The name for the
+required parameters ore:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">dt</span></code>: the time step (time discretization: backward Euler)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lambda</span></code>: diffusion constant for varphi (correspond to lambda in the original paper)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tau</span></code>: the time constant for the double-well potential (correspond to tau in the original paper)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">chempot_constant</span></code>: the double-well potential constant (no name in the original paper; its value was 16)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">chi</span></code>: proliferation rate for prostate cancer (correspond to chi in the original publication)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: the apoptosis rate for the prostate cancer (correspond to <span class="math notranslate nohighlight">\(A\)</span> in the original publication</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>phi</strong> – the FEniCS <code class="docutils literal notranslate"><span class="pre">Function</span></code> for varphi</p></li>
+<li><p><strong>phi_prec</strong> – the initial value for varphi</p></li>
+<li><p><strong>sigma</strong> – the FEniCS <code class="docutils literal notranslate"><span class="pre">Function</span></code> for the nutrients (sigma)</p></li>
+<li><p><strong>v</strong> – the Test Function to define the weak form</p></li>
+<li><p><strong>parameters</strong> – the parameters of the equation as <code class="docutils literal notranslate"><span class="pre">Parameters</span></code> object. All the values listed in the
+documentation must be present</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the UFL weak form for the prostate cancer equation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mocafe.litforms.prostate_cancer.prostate_cancer_nutrient_form">
+<span class="sig-prename descclassname"><span class="pre">mocafe.litforms.prostate_cancer.</span></span><span class="sig-name descname"><span class="pre">prostate_cancer_nutrient_form</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_old</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.argument.TestFunction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../fenut_sub_code_doc/parameters.html#mocafe.fenut.parameters.Parameters" title="mocafe.fenut.parameters.Parameters"><span class="pre">mocafe.fenut.parameters.Parameters</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.litforms.prostate_cancer.prostate_cancer_nutrient_form" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds the FEniCS UFL weak form for the nutrient equation reported by Lorenzo and collaborators
+<span id="id5">[<a class="reference internal" href="../../bib.html#id2" title="Guillermo Lorenzo, Michael A Scott, Kevin Tew, Thomas J R Hughes, Yongjie Jessica Zhang, Lei Liu, Guillermo Vilanova, and Hector Gomez. Tissue-scale, personalized modeling and simulation of prostate cancer growth. Proceedings of the National Academy of Sciences, 2016. URL: www.pnas.org/cgi/doi/10.1073/pnas.1615791113, doi:10.1073/pnas.1615791113.">LST+16</a>]</span>. The name of the nutrient is sigma.</p>
+<p>The parameters required for the equation must be specified in the <code class="docutils literal notranslate"><span class="pre">parameters</span></code> object. The name for the
+required parameters ore:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">dt</span></code>: the time step (time discretization: backward Euler)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">epsilon</span></code>: diffusion constant for sigma (correspond to lambda in the original paper)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">delta</span></code>: the uptake rate of the nutrient by the cancer (correspond to delta in the original paper)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gamma</span></code>: the decay rate for sigma (correspong to gamma in the original paper)</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sigma</strong> – the FEniCS <code class="docutils literal notranslate"><span class="pre">Function</span></code> for the sigma variable</p></li>
+<li><p><strong>sigma_old</strong> – the FEniCS <code class="docutils literal notranslate"><span class="pre">Function</span></code> for the initial value of the sigma value</p></li>
+<li><p><strong>phi</strong> – the FEniCS <code class="docutils literal notranslate"><span class="pre">Function</span></code> for the cancer</p></li>
+<li><p><strong>v</strong> – the Test Function to define the weak form</p></li>
+<li><p><strong>s</strong> – the FEniCS <code class="docutils literal notranslate"><span class="pre">Function</span></code> for the nutrient supply</p></li>
+<li><p><strong>parameters</strong> – the parameters fo the equation as <code class="docutils literal notranslate"><span class="pre">Parameters</span></code> object. All the values listed in the
+documentation must be present</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the UFL weak form for the nutrient equation</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 
