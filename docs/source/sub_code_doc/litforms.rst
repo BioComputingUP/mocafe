@@ -7,3 +7,4 @@ This subpackage contains modules for providing access to legacy phase field canc
     :caption: The full documentation for each submodule is provided below:
 
     litforms_sub_code_doc/prostate_cancer
+    litforms_sub_code_doc/xu16
