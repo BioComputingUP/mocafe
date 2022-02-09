@@ -1,11 +1,9 @@
 """
-Weak forms of the Phase-Field models to the tumor growth model presented by Xu and collaborators in 2016 [Xu2016] _.
-Each weak form is a FEniCS UFL Form which can be used calling a specific method, that returns the form itself.
+This module contains methods to build the weak form of a Phase Field cancer model described by
+Xu and collaborators :cite:`Xu2016`.
 
-References:
-
-.. [Xu2016] Xu, J., Vilanova, G., & Gomez, H. (2016). A Mathematical Model Coupling Tumor Growth and Angiogenesis. PLOS
-   ONE, 11(2), e0149422. https://doi.org/10.1371/JOURNAL.PONE.0149422
+For a complete description of the model, please refer to the original publication. Also, if you use this model
+for your scientific work, remember to cite the original paper.
 """
 import fenics
 from mocafe.math import shf
@@ -19,33 +17,32 @@ def xu2016_nutrient_form(sigma: fenics.Function,
                          v: fenics.TestFunction,
                          params: dict):
     r"""
-    Equation describing the nutrient evolution in time based on the equation (6) of the paper by Xu et al (2016)
-    [Xu2016] _.
+    Equation describing the nutrient evolution in time based on the equation (6) of the paper by Xu et al.
+    :cite:`Xu2016`.
 
     The equation simply describes a general nutrient :math:`\sigma` which diffuses from the capillaries field :math:`c`
     and is consumed by the cancer and the healthy tissue (represented by value 1 and 0 of the field :math:`\varphi`:).
 
-    .. math::
-       \frac{\partial \sigma}{\partial t} = \nabla (D_{\sigma} \nabla \sigma) +
-       V_{p}^{c} \cdot (1 - \sigma) \cdot c \cdot H(c) - V_{u}^{T} \cdot \sigma \varphi -
-       V_{u}^{H} \cdot \sigma H(1 -\varphi)
+    The parameters required for the equation must be specified in the ``parameters`` object. The name for the
+    required parameters ore:
 
-    References:
+    - ``dt``: the time step (time discretization: backward Euler)
+    - ``D_sigma``: diffusion constant for \sigma (correspond to :math:`D_{\sigma}` in the original paper)
+    - ``V_pc``: nutrient production rate at capillaries (correspond to :math:`V_{p}^{c}` in the original paper)
+    - ``V_uT``: nutrient uptake rate by the tumor (correspond to :math:`V_{u}^{T}` in the original paper)
+    - ``V_uH``: nutrient uptake rate by the healthy tissue (correspond to :math:`V_{u}^{H}` in the original paper)
 
-    .. [Xu2016] Xu, J., Vilanova, G., & Gomez, H. (2016). A Mathematical Model Coupling Tumor Growth and Angiogenesis. PLOS
-       ONE, 11(2), e0149422. https://doi.org/10.1371/JOURNAL.PONE.0149422
-
-    :param sigma: the nutrient field
-    :param sigma_0: the initial nutrient field
-    :param c: the capillaries field
-    :param phi: the cancer field
-    :param v: the test function for the equation
-    :param params: the simulation parameters
-    :return: the weak form of the equation
+    :param sigma: the FEniCS ``Function`` for the nutrient
+    :param sigma_0: the FEniCS ``Function`` for the nutrient initial value
+    :param c: the FEniCS ``Function`` for the capillaries
+    :param phi: the FEniCS ``Function`` for the cancer
+    :param v: the Test Function for the equation
+    :param params: the simulation parameters as ``Parameters`` object
+    :return: the FEniCS UFL form of the equation
     """
     # set parameters
     # v_pc = params["V_pc"] * (0.1 + 0.9 * shf(af - params["af_th"]))
-    v_pc = params["V_pv"]
+    v_pc = params["V_pc"]
     # define form
     form = (((sigma - sigma_0) / params["dt"]) * v * fenics.dx) + \
            (params["D_sigma"] * fenics.dot(fenics.grad(sigma), fenics.grad(v)) * fenics.dx) - \
@@ -62,34 +59,26 @@ def xu_2016_cancer_form(phi: fenics.Function,
                         v: fenics.TestFunction,
                         params: Parameters):
     r"""
-    Equation describing cancer evolution according to equation (5) of the paper of Xu et al. (2016) [Xu2016] _.
+    Equation describing cancer evolution according to equation (5) of the paper of Xu et al. :cite:`Xu2016`.
 
-    The equation describes a pretty versatile phase field cancer model based on a double well potential. The model
-    reads:
+    The equation describes a pretty versatile phase field cancer model based on a double well potential. The cancer
+    is represented by the variable \varphi.
 
-    .. math::
-        \frac{\partial \varphi}{\partial t} = M_{\varphi} \cdot (\lambda^2 \cdot \nabla^2 \varphi -
-        \mu_{\varphi}(\varphi, \sigma))
+    The parameters required for the equation must be specified in the ``parameters`` object. The name for the
+    required parameters ore:
 
-    Where:
+    - ``dt``: the time step (time discretization: backward Euler)
+    - ``M_phi``: mobility constant for \varphi (correspond to :math:`M_{\phi}` in the original paper)
+    - ``lambda_phi``: interface constant (correspond to :math:`\lambda_{phi}` in the original paper)
+    - ``sigma^(h-v)``: nutrient value separating the proliferative rim and the hypoxic rim (correspond to
+    :math:`\sigma^{h - v}` in the original paper)
 
-    .. math::
-        \mu_{\varphi}(\varphi, \sigma) = \frac{\partial \Psi}{\partial \varphi}
-
-        \Psi(\varphi, \sigma) = g(\varphi) + m(\sigma) \cdot h(\varphi)
-
-        g(\varphi) = \varphi^2 \cdot (1 - \varphi)^2
-
-        h(\varphi) = \varphi^2 \cdot (3 - 2\varphi)
-
-        m(\sigma) = \frac{2}{3.01\pi} \cdot arctan(15 \cdot (\sigma - \sigma^{h-v}))
-
-    :param phi: tumor field
-    :param phi_0: initial tumor field
-    :param sigma: nutrient field
-    :param v: test function for the equation
+    :param phi: the FEniCS ``Function`` for the tumor
+    :param phi_0: the FEniCS ``Function`` for the tumor initial condition
+    :param sigma: the FEniCS ``Function`` for the nutrient
+    :param v: Test Function for the equation
     :param params: parameters of the equation
-    :return: the weak form of the equation
+    :return: the FEniCS UFL form of the equation
     """
     # transform phi and sigma in variables
     phi = fenics.variable(phi)
