@@ -15,9 +15,10 @@ models of cancer development and angiogenesis. You can use *mocafe* to:
 * understand them better inspecting the code, and changing the parameters;
 * integrate these models in yours FEniCS scripts.
 
+In the following, you can find the complete package documentation, including demos and bibliography:
+
 .. toctree::
    :maxdepth: 2
-   :caption: In the following, you can find the complete package documentation, including demos and bibliography:
 
    demo_doc/index
    installation
