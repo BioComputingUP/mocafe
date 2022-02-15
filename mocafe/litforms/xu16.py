@@ -71,7 +71,7 @@ def xu_2016_cancer_form(phi: fenics.Function,
     - ``M_phi``: mobility constant for \varphi (correspond to :math:`M_{\phi}` in the original paper)
     - ``lambda_phi``: interface constant (correspond to :math:`\lambda_{phi}` in the original paper)
     - ``sigma^(h-v)``: nutrient value separating the proliferative rim and the hypoxic rim (correspond to
-    :math:`\sigma^{h - v}` in the original paper)
+      :math:`\sigma^{h - v}` in the original paper)
 
     :param phi: the FEniCS ``Function`` for the tumor
     :param phi_0: the FEniCS ``Function`` for the tumor initial condition
