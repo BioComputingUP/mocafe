@@ -16,6 +16,27 @@ Just click on the demo you'd like to see:
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="This demo is deliberately very brief, given the presence online of excellent and extensive tuto...">
+
+.. only:: html
+
+ .. figure:: /demo_doc/images/thumb/sphx_glr_introduction_to_fenics_thumb.png
+     :alt: A brief introduction to FEniCS
+
+     :ref:`sphx_glr_demo_doc_introduction_to_fenics.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /demo_doc/introduction_to_fenics
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="In this short demo we will show you how to simulate a phase field model described by G. Lorenzo...">
 
 .. only:: html
