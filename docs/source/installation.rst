@@ -11,7 +11,7 @@ A FEniCS Docker container is available at `quay.io/fenicsproject/stable <quay.io
 Docker does not provide a full support to MPI. Thus, the best way to use FEniCS and *mocafe* in a container is to use
 `Singularity <https://sylabs.io/docs/>`_, which supports also Docker containers.
 
-If you don't have Singularity installed, just follow the instruction provided at the official `documentation page for
+If you don't have Singularity installed, just follow the instruction provided at the official `documentation page
 for SingularityCE <https://github.com/sylabs/singularity>`_.
 
 If you have Singularity, just build a FEniCS container typing:
@@ -28,7 +28,7 @@ those you're using in your container. A good solution to this problem is provide
 <https://git.its.aau.dk/CLAAUDIA/docs_aicloud/src/branch/master/aicloud_slurm/pip_in_containers/pip_in_containers.md>`__
 and we're going to use this approach in the following.
 
-Firs of all, create a local directory for the *mocafe* python package. If your Linux username is ``username``, you can
+First of all, create a local directory for the *mocafe* python package. If your Linux username is ``username``, you can
 simpy do something like this:
 
 .. code-block:: console

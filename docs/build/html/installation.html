@@ -49,7 +49,7 @@ cases the installation instructions are identical.</p>
 <p>A FEniCS Docker container is available at <a class="reference external" href="quay.io/fenicsproject/stable">quay.io/fenicsproject/stable</a>; however,
 Docker does not provide a full support to MPI. Thus, the best way to use FEniCS and <em>mocafe</em> in a container is to use
 <a class="reference external" href="https://sylabs.io/docs/">Singularity</a>, which supports also Docker containers.</p>
-<p>If you don’t have Singularity installed, just follow the instruction provided at the official <a class="reference external" href="https://github.com/sylabs/singularity">documentation page for
+<p>If you don’t have Singularity installed, just follow the instruction provided at the official <a class="reference external" href="https://github.com/sylabs/singularity">documentation page
 for SingularityCE</a>.</p>
 <p>If you have Singularity, just build a FEniCS container typing:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">singularity build fenics.sif docker:quay.io/fenicsproject/stable:latest</span>
@@ -60,7 +60,7 @@ for SingularityCE</a>.</p>
 However, using <code class="docutils literal notranslate"><span class="pre">pip</span></code> inside a singularity container is not enough to separate your host system python packages from
 those you’re using in your container. A good solution to this problem is provided <a class="reference external" href="https://git.its.aau.dk/CLAAUDIA/docs_aicloud/src/branch/master/aicloud_slurm/pip_in_containers/pip_in_containers.md">here</a>
 and we’re going to use this approach in the following.</p>
-<p>Firs of all, create a local directory for the <em>mocafe</em> python package. If your Linux username is <code class="docutils literal notranslate"><span class="pre">username</span></code>, you can
+<p>First of all, create a local directory for the <em>mocafe</em> python package. If your Linux username is <code class="docutils literal notranslate"><span class="pre">username</span></code>, you can
 simpy do something like this:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">mkdir /home/username/.mocafe-local</span>
 </pre></div>
