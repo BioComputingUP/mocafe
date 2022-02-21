@@ -2,7 +2,7 @@ Code Documentation
 ===================
 
 In the following you can find the complete documentation of *mocafe* code.
-At the moment, the package is divided in 3 subpackages and 2 submodules. The content of each of them is summarized
+The package is currently divided in 3 subpackages and 2 submodules. The content of each of them is summarized
 below:
 
 Subpackages:
@@ -16,9 +16,10 @@ Submodules:
 * ``mocafe.expressions``: utility FEniCS ``Expression`` defined for *mocafe*
 * ``mocafe.math``: utility math functions defined for *mocafe*
 
+Full documentation below:
+
 .. toctree::
     :maxdepth: 2
-    :caption: Full documentation below:
 
     sub_code_doc/angie
     sub_code_doc/fenut

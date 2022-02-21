@@ -18,6 +18,8 @@
 .. _sphx_glr_demo_doc_introduction_to_fenics.py:
 
 
+.. _FENICS_INTRO:
+
 A brief introduction to FEniCS
 ===============================
 This demo is ment to give a brief introduction to the FEniCS computing platform for the *mocafe* users who
@@ -90,7 +92,7 @@ In this simple case we just import the FEniCS package and create an ``.xdmf`` fi
 solution of our problem in time. You can open this kind of file with the software
 `Paraview <https://www.paraview.org/>`_, which is one of the recommended ways to visualize results obtained with FEniCS.
 
-.. GENERATED FROM PYTHON SOURCE LINES 74-79
+.. GENERATED FROM PYTHON SOURCE LINES 76-81
 
 .. code-block:: default
 
@@ -100,36 +102,41 @@ solution of our problem in time. You can open this kind of file with the softwar
     u_xdmf = fenics.XDMFFile("./demo_out/introduction_to_fenics/u.xdmf")
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 80-84
+.. GENERATED FROM PYTHON SOURCE LINES 82-86
 
 Mesh definition
 ^^^^^^^^^^^^^^^^
 Here we use one of the FEniCS builtin function to create a simple square mesh of side 1. Notice that you can
 specify the number of elements for each side (in this case, 32 x 32).
 
-.. GENERATED FROM PYTHON SOURCE LINES 84-86
+.. GENERATED FROM PYTHON SOURCE LINES 86-88
 
 .. code-block:: default
 
     mesh = fenics.UnitSquareMesh(32, 32)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 87-92
+.. GENERATED FROM PYTHON SOURCE LINES 89-99
 
 Spatial discretization
 ^^^^^^^^^^^^^^^^^^^^^^
-Then, we can specify which kind of finite element we need for solving our problem. This is extremely simple with the
+Then, we can choose how to approximate the solution of our PDE in space or, in FEM-terms, which kind of finite
+element we need for solving our problem. It is not simple to explain a few words what a finite element is; simply
+put, the kind of finite element specifies the class of piece-wise functions we want to use to approximate the solution
+of our PDE of interest.
+
+However, choosing the kind of finite element to use is extremely simple with the
 ``FunctionSpace`` class in FEniCS. Below, with a single line of code, we generate the finite elements for our mesh,
 specifying that we want Lagrange elements of degree 1.
 
-.. GENERATED FROM PYTHON SOURCE LINES 92-94
+.. GENERATED FROM PYTHON SOURCE LINES 99-101
 
 .. code-block:: default
 
     V = fenics.FunctionSpace(mesh, "Lagrange", 1)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 95-105
+.. GENERATED FROM PYTHON SOURCE LINES 102-112
 
 Initial and boundary conditions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -142,7 +149,7 @@ expression written in C++. If you understand the basics of C, you can see that t
 is a C string defining a mathematical function, which is 1 inside a circle centered in (``c_x``, ``c_y``), and 0
 outside.
 
-.. GENERATED FROM PYTHON SOURCE LINES 105-109
+.. GENERATED FROM PYTHON SOURCE LINES 112-116
 
 .. code-block:: default
 
@@ -151,30 +158,33 @@ outside.
                                 c_x=0.5, c_y=0.5, r=0.25)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 110-114
+.. GENERATED FROM PYTHON SOURCE LINES 117-121
 
 This ``Expression``, however, is just a "symbolic" representation of our initial condition. In order to translate
 it in an actual function, discretized in space according to our problem, we need to project it in our function space.
 
 FEniCS has a built in function to do so, which is called, indeed, ``project``:
 
-.. GENERATED FROM PYTHON SOURCE LINES 114-116
+.. GENERATED FROM PYTHON SOURCE LINES 121-123
 
 .. code-block:: default
 
     u_0 = fenics.project(u_0_exp, V)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 117-119
+.. GENERATED FROM PYTHON SOURCE LINES 124-126
 
 Regarding the boundary condition, we need no code to implement natural Neumann conditions in FEniCS because it is the
 default setup. For different boundary conditions, you're invited to check specific tutorials.
 
-.. GENERATED FROM PYTHON SOURCE LINES 121-122
+.. GENERATED FROM PYTHON SOURCE LINES 128-132
 
-Finally, it is useful to store this initial condition in the ``.xdmf`` file we defined above.
+Finally, it is useful to store this initial condition in the ``.xdmf`` file we defined above, simply calling the
+method ``write(phi0, 0)``. The second argument, 0, just represent the fact that
+this is the value of the function at time 0. As we're going to see in the simulation, the file ``phi_xdmf`` can
+collect the values of phi for each time.
 
-.. GENERATED FROM PYTHON SOURCE LINES 122-125
+.. GENERATED FROM PYTHON SOURCE LINES 132-135
 
 .. code-block:: default
 
@@ -182,7 +192,7 @@ Finally, it is useful to store this initial condition in the ``.xdmf`` file we d
     u_xdmf.write(u_0, t)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 126-153
+.. GENERATED FROM PYTHON SOURCE LINES 136-163
 
 Weak form definition
 ^^^^^^^^^^^^^^^^^^^^
@@ -212,7 +222,7 @@ In the following, we translate this mathematical equation into scientific code l
 FEniCS: the Unified Form Language (UFL). Indeed, you can see yourself that the definition of a and L is very close
 to the actual mathematical formula.
 
-.. GENERATED FROM PYTHON SOURCE LINES 153-160
+.. GENERATED FROM PYTHON SOURCE LINES 163-174
 
 .. code-block:: default
 
@@ -223,8 +233,12 @@ to the actual mathematical formula.
     a = (u / dt) * v * fenics.dx + D * fenics.dot(fenics.grad(u), fenics.grad(v)) * fenics.dx
     L = (u_0 / dt) * v * fenics.dx
 
+    # From this code, FEniCS is able to efficiently construct all the data structures needed to get our
+    # solution at each time step. If you wank to know more about this topic, you are again encouraged to have a look to The
+    # Fenics Tutorial to start :cite:`LangtangenLogg2017`.
 
-.. GENERATED FROM PYTHON SOURCE LINES 161-167
+
+.. GENERATED FROM PYTHON SOURCE LINES 175-181
 
 Problem solution
 ^^^^^^^^^^^^^^^^
@@ -233,7 +247,7 @@ The last thing to do is to just solve our differential equation.
 Since the equation is time-dependent, we need to iterate in time and solve for each time step the equation using the
 following ``for`` loop:
 
-.. GENERATED FROM PYTHON SOURCE LINES 167-178
+.. GENERATED FROM PYTHON SOURCE LINES 181-192
 
 .. code-block:: default
 
@@ -249,7 +263,7 @@ following ``for`` loop:
         u_xdmf.write(u_0, t)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 179-196
+.. GENERATED FROM PYTHON SOURCE LINES 193-250
 
 Notice that also here the flow is very basic:
 
@@ -268,6 +282,46 @@ Below you can find an animation of the result of this script:
 .. only:: html
 
    .. figure:: ./images/introduction_to_fenics/diffusion.gif
+
+Full code
+---------
+
+.. code-block:: default
+
+  import fenics
+
+  # create file
+  u_xdmf = fenics.XDMFFile("./demo_out/introduction_to_fenics/u.xdmf")
+
+  mesh = fenics.UnitSquareMesh(32, 32)
+
+  V = fenics.FunctionSpace(mesh, "Lagrange", 1)
+
+  u_0_exp = fenics.Expression("(pow(x[0] - c_x, 2) + pow(x[1] - c_y, 2) <= pow(r, 2)) ? 1. : 0.",
+                            degree=2,
+                            c_x=0.5, c_y=0.5, r=0.25)
+  u_0 = fenics.project(u_0_exp, V)
+
+  t = 0
+  u_xdmf.write(u_0, t)
+
+  D = fenics.Constant(1.)
+  dt = 0.001
+  u = fenics.TrialFunction(V)
+  v = fenics.TestFunction(V)
+  a = (u / dt) * v * fenics.dx + D * fenics.dot(fenics.grad(u), fenics.grad(v)) * fenics.dx
+  L = (u_0 / dt) * v * fenics.dx
+
+  u = fenics.Function(V)
+  for n in range(30):
+    # update time
+    t += dt
+    # compute solution at current time step
+    fenics.solve(a == L, u)
+    # assign new solution to old
+    fenics.assign(u_0, u)
+    # save solution for the current time step
+    u_xdmf.write(u_0, t)
 
 
 .. rst-class:: sphx-glr-timing

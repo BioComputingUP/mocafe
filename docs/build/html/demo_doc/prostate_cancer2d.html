@@ -93,9 +93,11 @@ a distribution <span class="math notranslate nohighlight">\(s\)</span>, and that
 </section>
 <section id="implementation">
 <h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
-<section id="setup">
-<h3>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h3>
-<p>After the math, let’s see the code. To reproduce this model we need first to import everything we need throughout
+<p>After the math, let’s see the code. The implementation of this model in scientific code just follow the general
+FEniCS workflow we outlined in the demo <a class="reference internal" href="introduction_to_fenics.html#fenics-intro"><span class="std std-ref">A brief introduction to FEniCS</span></a>.</p>
+<section id="initial-setup">
+<h3>Initial setup<a class="headerlink" href="#initial-setup" title="Permalink to this headline">¶</a></h3>
+<p>To reproduce this model we need first to import everything we need throughout
 the simulation. Notice that while most of the packages are provided by mocafe, we also use some other stuff.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">fenics</span>
@@ -129,7 +131,7 @@ for saving FEniCS simulations is using <code class="docutils literal notranslate
 methods for defining:</p>
 <ul class="simple">
 <li><p>first, the folder where to save the result of the simulation. In this case, the folder will be based inside
-the current folder (<code class="docutils literal notranslate"><span class="pre">base_location</span></code>) and it’s called demo_out/prostate_cancer2d;</p></li>
+the current folder (<code class="docutils literal notranslate"><span class="pre">file_folder</span></code>) and it’s called demo_out/prostate_cancer2d;</p></li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">file_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
 <span class="n">data_folder</span> <span class="o">=</span> <span class="n">setup_data_folder</span><span class="p">(</span><span class="n">folder_path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;{file_folder/Path(&#39;demo_out&#39;)}/prostate_cancer_2d&quot;</span><span class="p">,</span>
@@ -170,8 +172,8 @@ model <span id="id5">[<a class="reference internal" href="../bib.html#id2" title
 </pre></div>
 </div>
 </section>
-<section id="definition-of-the-spatial-domain-and-the-function-space">
-<h3>Definition of the spatial domain and the function space<a class="headerlink" href="#definition-of-the-spatial-domain-and-the-function-space" title="Permalink to this headline">¶</a></h3>
+<section id="mesh-definition-and-spatial-discretization">
+<h3>Mesh definition and spatial discretization<a class="headerlink" href="#mesh-definition-and-spatial-discretization" title="Permalink to this headline">¶</a></h3>
 <p>The first step toward the simulation of our system is the definition of the space where the simulation takes
 place. Similarly to the original paper, we are going to simulate the model on a 2D square mesh of dimension
 2000 x 2000 <span class="math notranslate nohighlight">\(\mu m\)</span>. This is pretty simple to do using FEniCs, which provides the class <code class="docutils literal notranslate"><span class="pre">RectangleMesh</span></code>
@@ -191,11 +193,8 @@ points for each side.</p>
                             <span class="n">ny</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>From the mesh defined above, we can then define the <code class="docutils literal notranslate"><span class="pre">FunctionSpace</span></code>. If your not familiar enough with FEniCS
-to know what a function space is, we suggest you to have a look to the first pages of The Fenics Tutorial
-<span id="id7">[<a class="reference internal" href="../bib.html#id4" title="Hans Petter Langtangen and Anders Logg. Solving PDEs in Python. Springer, 2017. ISBN 978-3-319-52461-0. doi:10.1007/978-3-319-52462-7.">LL17</a>]</span>, but basically the function space defines the set of the piece-wise
-polynomial function that will be used to approximate the solutions of our PDEs.</p>
-<p>Since the model we wish to simulate is composed of two coupled equations, we need to define a MixedElement function
+<p>From the mesh defined above, we can then define the <code class="docutils literal notranslate"><span class="pre">FunctionSpace</span></code>.
+Since the model we wish to simulate is composed of two coupled equations, we need to define a MixedElement function
 space with two different elements. In this implementation, we will use for both equations the same element
 type, “CG” (Continuous Galerking), of the first order, which can be created in FEniCS simply using:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cg1_element</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">FiniteElement</span><span class="p">(</span><span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="n">fenics</span><span class="o">.</span><span class="n">triangle</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># define element</span>
@@ -211,37 +210,19 @@ mocafe:</p>
 </section>
 <section id="initial-boundary-conditions">
 <h3>Initial &amp; boundary conditions<a class="headerlink" href="#initial-boundary-conditions" title="Permalink to this headline">¶</a></h3>
-<p>Since the model is a system of PDEs, we need both initial and boundary conditions to find a unique solution.</p>
 <p>In this implementation we will consider natural Neumann boundary conditions for both <span class="math notranslate nohighlight">\(\varphi\)</span> and
 :math`sigma`, which means that the derivative in space of the two fields is zero along the entire boundary.
 This is an easy pick for FEniCS, since it will automatically apply this condition for us without requiring any
 command from the user.</p>
-<p>As initial condition for <span class="math notranslate nohighlight">\(\varphi\)</span>, according to the author <span id="id8">[<a class="reference internal" href="../bib.html#id5" title="G. Lorenzo, M. A. Scott, K. Tew, T. J.R. Hughes, and H. Gomez. Hierarchically refined and coarsened splines for moving interface problems, with particular application to phase-field models of prostate tumor growth. Computer Methods in Applied Mechanics and Engineering, 319:515–548, jun 2017. doi:10.1016/j.cma.2017.03.009.">LST+17</a>]</span>, we will define an elliptical
+<p>As initial condition for <span class="math notranslate nohighlight">\(\varphi\)</span>, according to the author <span id="id7">[<a class="reference internal" href="../bib.html#id5" title="G. Lorenzo, M. A. Scott, K. Tew, T. J.R. Hughes, and H. Gomez. Hierarchically refined and coarsened splines for moving interface problems, with particular application to phase-field models of prostate tumor growth. Computer Methods in Applied Mechanics and Engineering, 319:515–548, jun 2017. doi:10.1016/j.cma.2017.03.009.">LST+17</a>]</span>, we will define an elliptical
 tumor with the given semiaxes:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">semiax_x</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># um</span>
 <span class="n">semiax_y</span> <span class="o">=</span> <span class="mi">150</span>  <span class="c1"># um</span>
 </pre></div>
 </div>
-<p>With FEniCS we can do so by defining an expression which ‘mathematically’ represent our initial condition.
-Indeed, an <code class="docutils literal notranslate"><span class="pre">Expression</span></code> is the FEniCS way to define symbolic mathematical function and they can be defined
-using simple C++ code as follows:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">phi0_max</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="n">phi0_min</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="c1"># cpp code that returns True if the point x is inside the ellipse, and False otherwise</span>
-<span class="n">is_in_ellipse_cpp_code</span> <span class="o">=</span> <span class="s2">&quot;((pow(x[0] / semiax_x, 2)) + (pow(x[1] / semiax_y, 2)) &lt;= 1)&quot;</span>
-<span class="c1"># cpp code that returns 1 if the above statement is True, and 0 otherwise</span>
-<span class="n">phi0_cpp_code</span> <span class="o">=</span> <span class="n">is_in_ellipse_cpp_code</span> <span class="o">+</span> <span class="s2">&quot; ? phi0_max : phi0_min&quot;</span>
-<span class="c1"># FEniCS expression, built from cpp code defined above</span>
-<span class="n">phi0</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">Expression</span><span class="p">(</span><span class="n">phi0_cpp_code</span><span class="p">,</span>
-                         <span class="n">degree</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-                         <span class="n">semiax_x</span><span class="o">=</span><span class="n">semiax_x</span><span class="p">,</span>
-                         <span class="n">semiax_y</span><span class="o">=</span><span class="n">semiax_y</span><span class="p">,</span>
-                         <span class="n">phi0_max</span><span class="o">=</span><span class="n">phi0_max</span><span class="p">,</span>
-                         <span class="n">phi0_min</span><span class="o">=</span><span class="n">phi0_min</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>However, if you don’t feel confident in defining your own expression with the FEniCS interface, you can use
-the one provided by mocafe:</p>
+<p>With FEniCS is not hard to define such a function leveraging the <code class="docutils literal notranslate"><span class="pre">Expression</span></code> class. However, given how common
+this initial condition is in cancer mathematical modeling, we provided our own built-in expression for defining a
+general elliptic field expression:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">phi0</span> <span class="o">=</span> <span class="n">EllipseField</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">]),</span>
                     <span class="n">semiax_x</span><span class="o">=</span><span class="n">semiax_x</span><span class="p">,</span>
                     <span class="n">semiax_y</span><span class="o">=</span><span class="n">semiax_y</span><span class="p">,</span>
@@ -249,28 +230,22 @@ the one provided by mocafe:</p>
                     <span class="n">outside_value</span><span class="o">=</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;phi0_out&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>The FEniCS expression must then be interpolated in the function space in order to obtain a
-FEniCS Function. Again, explaining why we need to do so is something that goes beyond the purpose of this small
-demo, but think about it as a necessary operation required to transform the ‘symbolic’ function provided by the
-<code class="docutils literal notranslate"><span class="pre">Expression</span></code> into the actual set of values of our expression in our spatial domain, so we can use them to
-calculate our solution.</p>
+<p>Which can be then interpolated in our function space.</p>
 <p>The interpolation can be done simply calling the FEniCS method <code class="docutils literal notranslate"><span class="pre">interpolate</span></code>, which takes as arguments the
-expression to be projected and the function space where to do the projection. Notice that, since the function space
-we defined is mixed, we must choose one of the sub-field to define the function.</p>
+expression to be interpolated and the function space where to do the interpolation. Notice that, since the function
+space we defined is mixed, we must choose one of the sub-field to define the function.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">phi0</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">phi0</span><span class="p">,</span> <span class="n">function_space</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">collapse</span><span class="p">())</span>
 </pre></div>
 </div>
 <p>Notice also that since the mixed function space is defined by two identical function spaces, it makes no
 difference to pick sub(0) or sub(1).</p>
 <p>Then, we can save the initial condition of the <span class="math notranslate nohighlight">\(\varphi\)</span> field in the <cite>.xdmf</cite> file we defined at the
-beginning, simply calling the method <code class="docutils literal notranslate"><span class="pre">write(phi0,</span> <span class="pre">0)</span></code>. The second argument, 0, just represent the fact that
-this is the value of the field for the time 0. As we’re going to see in the simulation, the file <code class="docutils literal notranslate"><span class="pre">phi_xdmf</span></code> can
-collect the values of phi for each time.</p>
+beginning:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">phi_xdmf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">phi0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Finally, after having defined the initial condition for <span class="math notranslate nohighlight">\(\varphi\)</span>, let’s define the initial for
-<span class="math notranslate nohighlight">\(\sigma\)</span>. Following the hypothesis of original author <span id="id9">[<a class="reference internal" href="../bib.html#id5" title="G. Lorenzo, M. A. Scott, K. Tew, T. J.R. Hughes, and H. Gomez. Hierarchically refined and coarsened splines for moving interface problems, with particular application to phase-field models of prostate tumor growth. Computer Methods in Applied Mechanics and Engineering, 319:515–548, jun 2017. doi:10.1016/j.cma.2017.03.009.">LST+17</a>]</span>, we will assume a nutrient
+<span class="math notranslate nohighlight">\(\sigma\)</span>. Following the hypothesis of original author <span id="id8">[<a class="reference internal" href="../bib.html#id5" title="G. Lorenzo, M. A. Scott, K. Tew, T. J.R. Hughes, and H. Gomez. Hierarchically refined and coarsened splines for moving interface problems, with particular application to phase-field models of prostate tumor growth. Computer Methods in Applied Mechanics and Engineering, 319:515–548, jun 2017. doi:10.1016/j.cma.2017.03.009.">LST+17</a>]</span>, we will assume a nutrient
 distribution that is 0.2 inside the cancer and 1. outside. So, we can define this distribution similarly to
 what we just did for <code class="docutils literal notranslate"><span class="pre">phi0</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sigma0</span> <span class="o">=</span> <span class="n">EllipseField</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">]),</span>
@@ -283,10 +258,10 @@ what we just did for <code class="docutils literal notranslate"><span class="pre
 </pre></div>
 </div>
 </section>
-<section id="pde-system-definition">
-<h3>PDE System definition<a class="headerlink" href="#pde-system-definition" title="Permalink to this headline">¶</a></h3>
-<p>After having defined the initial conditions for the system, we continue with the definition of the system
-itself.</p>
+<section id="weak-form-definition">
+<h3>Weak form definition<a class="headerlink" href="#weak-form-definition" title="Permalink to this headline">¶</a></h3>
+<p>After having defined the initial conditions for the system, we continue with the definition of the weak form of
+the system itself.</p>
 <p>First of all, we define the two variables, <code class="docutils literal notranslate"><span class="pre">phi</span></code> and <code class="docutils literal notranslate"><span class="pre">sigma</span></code>, for which the system will be solved. Since the
 two equations are coupled (i.e. they depend on each other) the easiest way to do so is to define a ‘vector’
 function <code class="docutils literal notranslate"><span class="pre">u</span></code> on the mixed function space:</p>
@@ -300,9 +275,10 @@ function <code class="docutils literal notranslate"><span class="pre">u</span></
 <p>After having defined phi and sigma, we defined the <span class="math notranslate nohighlight">\(s\)</span> function, which represent the distribution of
 nutrient that is supplied to the system.</p>
 <p>In the original paper they simulated the model for both a constant distribution and for a ‘capillary-like’
-distribution based on an picture <span id="id10">[<a class="reference internal" href="../bib.html#id2" title="Guillermo Lorenzo, Michael A Scott, Kevin Tew, Thomas J R Hughes, Yongjie Jessica Zhang, Lei Liu, Guillermo Vilanova, and Hector Gomez. Tissue-scale, personalized modeling and simulation of prostate cancer growth. Proceedings of the National Academy of Sciences, 2016. URL: www.pnas.org/cgi/doi/10.1073/pnas.1615791113, doi:10.1073/pnas.1615791113.">LST+16</a>]</span>.</p>
-<p>In this implementation we just chose a to simulate the model with a random distribution of the nutrient, with
-values included in the range <span class="math notranslate nohighlight">\([s_{average} + s_{min}, s_{average} + s_{max}]\)</span>, where :math`s_{max} = - s_{min}`.
+distribution based on an picture <span id="id9">[<a class="reference internal" href="../bib.html#id2" title="Guillermo Lorenzo, Michael A Scott, Kevin Tew, Thomas J R Hughes, Yongjie Jessica Zhang, Lei Liu, Guillermo Vilanova, and Hector Gomez. Tissue-scale, personalized modeling and simulation of prostate cancer growth. Proceedings of the National Academy of Sciences, 2016. URL: www.pnas.org/cgi/doi/10.1073/pnas.1615791113, doi:10.1073/pnas.1615791113.">LST+16</a>]</span>.</p>
+<p>In this implementation we just chose to simulate the model with a random distribution of the nutrient, with
+values included in the range <span class="math notranslate nohighlight">\([s_{average} + s_{min}, s_{average} + s_{max}]\)</span>, where
+<span class="math notranslate nohighlight">\(s_{max} = - s_{min}\)</span>.
 The specific values we need are specified in the parameters object we created above, so we use that to retrieve the
 values.</p>
 <p>The most efficient way to do so in FEniCS is to use the <code class="docutils literal notranslate"><span class="pre">Expression</span></code> class and a C++ code with the
@@ -317,41 +293,19 @@ FEniCS interface reduces significantly the time required for the interpolation.<
 <span class="n">s</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">s_exp</span><span class="p">,</span> <span class="n">function_space</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">collapse</span><span class="p">())</span>
 </pre></div>
 </div>
-<p>Now, we have everything in place to define our PDE system. Since FEniCS uses the Finite Element Method (FEM) to
-approximate the solution we need to define the so called ‘weak form’ of our system. If you’re not experienced with
-weak forms, you can just take advantage of the mocafe “black-box” method to get it ready to run:</p>
+<p>Now, we have everything in place to define our PDE system exploiting the related <em>mocafe</em> functions contained in the
+module <code class="docutils literal notranslate"><span class="pre">pc_model</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">TestFunctions</span><span class="p">(</span><span class="n">function_space</span><span class="p">)</span>
 <span class="n">weak_form</span> <span class="o">=</span> <span class="n">pc_model</span><span class="o">.</span><span class="n">prostate_cancer_form</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">phi0</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span> <span class="o">+</span> \
     <span class="n">pc_model</span><span class="o">.</span><span class="n">prostate_cancer_nutrient_form</span><span class="p">(</span><span class="n">sigma</span><span class="p">,</span> <span class="n">sigma0</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>However, if you know what a weak form is and how to define it for a PDEs set, you migth appreciate how easy it is
-to define them in FEniCS using the Unified Form Language (UFL). Just to give you a taste, we show you how the system
-looks like in code:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">TestFunctions</span><span class="p">(</span><span class="n">function_space</span><span class="p">)</span>
-<span class="n">prostate_cancer_weak_form</span> <span class="o">=</span> <span class="p">(((</span><span class="n">phi</span> <span class="o">-</span> <span class="n">phi_prec</span><span class="p">)</span> <span class="o">/</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;dt&quot;</span><span class="p">))</span> <span class="o">*</span> <span class="n">v</span> <span class="o">*</span> <span class="n">fenics</span><span class="o">.</span><span class="n">dx</span><span class="p">)</span> \
-  <span class="o">+</span> <span class="p">(</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;lambda&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="n">fenics</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">fenics</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">phi</span><span class="p">),</span> <span class="n">fenics</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="o">*</span> <span class="n">fenics</span><span class="o">.</span><span class="n">dx</span><span class="p">)</span> \
-  <span class="o">+</span> <span class="p">((</span><span class="mi">1</span> <span class="o">/</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;tau&quot;</span><span class="p">))</span> <span class="o">*</span> <span class="n">df_dphi</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;chempot_constant&quot;</span><span class="p">))</span> <span class="o">*</span> <span class="n">v</span> <span class="o">*</span> <span class="n">fenics</span><span class="o">.</span><span class="n">dx</span><span class="p">)</span> \
-  <span class="o">+</span> <span class="p">(</span><span class="o">-</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;chi&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="n">sigma</span> <span class="o">*</span> <span class="n">v</span> <span class="o">*</span> <span class="n">fenics</span><span class="o">.</span><span class="n">dx</span><span class="p">)</span> \
-  <span class="o">+</span> <span class="p">(</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="n">phi</span> <span class="o">*</span> <span class="n">v</span> <span class="o">*</span> <span class="n">fenics</span><span class="o">.</span><span class="n">dx</span><span class="p">)</span>
-<span class="n">nutrient_weak_form</span> <span class="o">=</span> <span class="p">(((</span><span class="n">sigma</span> <span class="o">-</span> <span class="n">sigma_old</span><span class="p">)</span> <span class="o">/</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;dt&quot;</span><span class="p">))</span> <span class="o">*</span> <span class="n">v</span> <span class="o">*</span> <span class="n">fenics</span><span class="o">.</span><span class="n">dx</span><span class="p">)</span> \
-  <span class="o">+</span> <span class="p">(</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;epsilon&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="n">fenics</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">fenics</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">sigma</span><span class="p">),</span> <span class="n">fenics</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="o">*</span> <span class="n">fenics</span><span class="o">.</span><span class="n">dx</span><span class="p">)</span> \
-  <span class="o">+</span> <span class="p">(</span><span class="o">-</span> <span class="n">s</span> <span class="o">*</span> <span class="n">v</span> <span class="o">*</span> <span class="n">fenics</span><span class="o">.</span><span class="n">dx</span><span class="p">)</span> \
-  <span class="o">+</span> <span class="p">(</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;delta&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="n">phi</span> <span class="o">*</span> <span class="n">v</span> <span class="o">*</span> <span class="n">fenics</span><span class="o">.</span><span class="n">dx</span><span class="p">)</span> \
-  <span class="o">+</span> <span class="p">(</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;gamma&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="n">sigma</span> <span class="o">*</span> <span class="n">v</span> <span class="o">*</span> <span class="n">fenics</span><span class="o">.</span><span class="n">dx</span><span class="p">)</span>
-<span class="n">weak_form</span> <span class="o">=</span> <span class="n">prostate_cancer_weak_form</span> <span class="o">+</span> <span class="n">nutrient_weak_form</span>
-</pre></div>
-</div>
-<p>Even knowing nothing about FEM, you might notice how close this code is to actual mathematical language. This is not
-just eye-pleasing, but it makes it way easier to define the system and to introduce variations to study the model
-from different perspectives.
-From this code, FEniCS is able to efficiently construct all the data structures needed to get our
-solution at each time step. If you wank to know more about this topic, you are encouraged to have a look to The
-Fenics Tutorial to start <span id="id11">[<a class="reference internal" href="../bib.html#id4" title="Hans Petter Langtangen and Anders Logg. Solving PDEs in Python. Springer, 2017. ISBN 978-3-319-52461-0. doi:10.1007/978-3-319-52462-7.">LL17</a>]</span>.</p>
+<p>These functions are nothing more than a self-contained definition of the UFL form of the model’s equations, which you
+can inspect yourself if you like.</p>
 </section>
 <section id="simulation-setup">
-<h3>Simulation setup<a class="headerlink" href="#simulation-setup" title="Permalink to this headline">¶</a></h3>
-<p>Now that everything is set up, simulating this mathematical model is just a matter of solving the PDE system defined
+<h3>Simulation: setup<a class="headerlink" href="#simulation-setup" title="Permalink to this headline">¶</a></h3>
+<p>Now that everything is ready, simulating this mathematical model is just a matter of solving the PDE system defined
 above for each time step.</p>
 <p>To do so, we start defining the total number of steps to simulate. We choose that in order to have a total
 simulated time of one year, given the dt of the system (see its value in the <code class="docutils literal notranslate"><span class="pre">Parameters</span></code> object)</p>
@@ -393,10 +347,10 @@ More precisely, since our model is non-linear, we will take advantage of the PET
 <p>Still, notice that the best configuration for your system might change, since it is well known that it is very hard
 to tell which solver will perform the best given the PDEs, the mesh, the CPU, the cores number and so on (see
 <a class="reference external" href="https://fenicsproject.discourse.group/t/how-to-choose-the-optimal-solver-for-a-pde-problem/7477">this post</a>).</p>
-<p>If error occurs, please consider using a different configuration for SNES. For a complete list, you can refer to
+<p>If errors occur, please consider using a different configuration for SNES. For a complete list, you can refer to
 the documentation of <a class="reference external" href="https://www.mcs.anl.gov/petsc/petsc4py-current/docs/apiref/index.html">petsc4py</a>. If you
 need more information on the use of SNES in FEniCS, you can also refer to this
-<cite>excellent discussion &lt;https://fenicsproject.discourse.group/t/using-petsc4py-petsc-snes-directly/2368&gt;</cite> in the
+<a class="reference external" href="https://fenicsproject.discourse.group/t/using-petsc4py-petsc-snes-directly/2368">excellent discussion</a> in the
 FEniCS forum.</p>
 </section>
 <section id="simulation">
@@ -482,6 +436,146 @@ condition for the next iteration:</p>
     <span class="n">progress_bar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
+</section>
+</section>
+<section id="full-code">
+<h2>Full code<a class="headerlink" href="#full-code" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">fenics</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">petsc4py</span>
+<span class="kn">from</span> <span class="nn">mocafe.fenut.solvers</span> <span class="kn">import</span> <span class="n">SNESProblem</span>
+<span class="kn">from</span> <span class="nn">mocafe.fenut.fenut</span> <span class="kn">import</span> <span class="n">get_mixed_function_space</span><span class="p">,</span> <span class="n">setup_xdmf_files</span>
+<span class="kn">from</span> <span class="nn">mocafe.fenut.mansimdata</span> <span class="kn">import</span> <span class="n">setup_data_folder</span>
+<span class="kn">from</span> <span class="nn">mocafe.expressions</span> <span class="kn">import</span> <span class="n">EllipseField</span>
+<span class="kn">from</span> <span class="nn">mocafe.fenut.parameters</span> <span class="kn">import</span> <span class="n">from_dict</span>
+<span class="kn">import</span> <span class="nn">mocafe.litforms.prostate_cancer</span> <span class="k">as</span> <span class="nn">pc_model</span>
+
+<span class="c1"># initial setup</span>
+<span class="n">fenics</span><span class="o">.</span><span class="n">set_log_level</span><span class="p">(</span><span class="n">fenics</span><span class="o">.</span><span class="n">LogLevel</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+<span class="n">comm</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">MPI</span><span class="o">.</span><span class="n">comm_world</span>
+<span class="n">rank</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
+
+<span class="n">file_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+<span class="n">data_folder</span> <span class="o">=</span> <span class="n">setup_data_folder</span><span class="p">(</span><span class="n">folder_path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;{file_folder / Path(&#39;demo_out&#39;)}/prostate_cancer_2d&quot;</span><span class="p">,</span>
+                                  <span class="n">auto_enumerate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">phi_xdmf</span><span class="p">,</span> <span class="n">sigma_xdmf</span> <span class="o">=</span> <span class="n">setup_xdmf_files</span><span class="p">([</span><span class="s2">&quot;phi&quot;</span><span class="p">,</span> <span class="s2">&quot;sigma&quot;</span><span class="p">],</span> <span class="n">data_folder</span><span class="p">)</span>
+
+<span class="n">parameters</span> <span class="o">=</span> <span class="n">from_dict</span><span class="p">({</span>
+      <span class="s2">&quot;phi0_in&quot;</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span>  <span class="c1"># adimentional</span>
+      <span class="s2">&quot;phi0_out&quot;</span><span class="p">:</span> <span class="mf">0.</span><span class="p">,</span>  <span class="c1"># adimdimentional</span>
+      <span class="s2">&quot;sigma0_in&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>  <span class="c1"># adimentional</span>
+      <span class="s2">&quot;sigma0_out&quot;</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span>  <span class="c1"># adimentional</span>
+      <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span>  <span class="c1"># years</span>
+      <span class="s2">&quot;lambda&quot;</span><span class="p">:</span> <span class="mf">1.6E5</span><span class="p">,</span>  <span class="c1"># (um^2) / years</span>
+      <span class="s2">&quot;tau&quot;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span>  <span class="c1"># years</span>
+      <span class="s2">&quot;chempot_constant&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>  <span class="c1"># adimensional</span>
+      <span class="s2">&quot;chi&quot;</span><span class="p">:</span> <span class="mf">600.0</span><span class="p">,</span>  <span class="c1"># Liters / (gram * years)</span>
+      <span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mf">600.0</span><span class="p">,</span>  <span class="c1"># 1 / years</span>
+      <span class="s2">&quot;epsilon&quot;</span><span class="p">:</span> <span class="mf">5.0E6</span><span class="p">,</span>  <span class="c1"># (um^2) / years</span>
+      <span class="s2">&quot;delta&quot;</span><span class="p">:</span> <span class="mf">1003.75</span><span class="p">,</span>  <span class="c1"># grams / (Liters * years)</span>
+      <span class="s2">&quot;gamma&quot;</span><span class="p">:</span> <span class="mf">1000.0</span><span class="p">,</span>  <span class="c1"># grams / (Liters * years)</span>
+      <span class="s2">&quot;s_average&quot;</span><span class="p">:</span> <span class="mf">2.75</span> <span class="o">*</span> <span class="mi">365</span><span class="p">,</span>  <span class="c1"># 961.2,  # grams / (Liters * years)</span>
+      <span class="s2">&quot;s_max&quot;</span><span class="p">:</span> <span class="mf">73.</span><span class="p">,</span>
+      <span class="s2">&quot;s_min&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">73.</span>
+<span class="p">})</span>
+
+<span class="c1"># Mesh definition</span>
+<span class="n">nx</span> <span class="o">=</span> <span class="mi">130</span>
+<span class="n">ny</span> <span class="o">=</span> <span class="n">nx</span>
+<span class="n">x_max</span> <span class="o">=</span> <span class="mi">1000</span>  <span class="c1"># um</span>
+<span class="n">x_min</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1000</span>  <span class="c1"># um</span>
+<span class="n">y_max</span> <span class="o">=</span> <span class="n">x_max</span>
+<span class="n">y_min</span> <span class="o">=</span> <span class="n">x_min</span>
+
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">RectangleMesh</span><span class="p">(</span><span class="n">fenics</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">y_min</span><span class="p">),</span>
+                            <span class="n">fenics</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="n">x_max</span><span class="p">,</span> <span class="n">y_max</span><span class="p">),</span>
+                            <span class="n">nx</span><span class="p">,</span>
+                            <span class="n">ny</span><span class="p">)</span>
+
+<span class="c1"># Spatial discretization</span>
+<span class="n">function_space</span> <span class="o">=</span> <span class="n">get_mixed_function_space</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Initial conditions</span>
+<span class="n">phi0</span> <span class="o">=</span> <span class="n">EllipseField</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">]),</span>
+                    <span class="n">semiax_x</span><span class="o">=</span><span class="n">semiax_x</span><span class="p">,</span>
+                    <span class="n">semiax_y</span><span class="o">=</span><span class="n">semiax_y</span><span class="p">,</span>
+                    <span class="n">inside_value</span><span class="o">=</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;phi0_in&quot;</span><span class="p">),</span>
+                    <span class="n">outside_value</span><span class="o">=</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;phi0_out&quot;</span><span class="p">))</span>
+<span class="n">phi0</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">phi0</span><span class="p">,</span> <span class="n">function_space</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">collapse</span><span class="p">())</span>
+<span class="n">phi_xdmf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">phi0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="n">sigma0</span> <span class="o">=</span> <span class="n">EllipseField</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">]),</span>
+                      <span class="n">semiax_x</span><span class="o">=</span><span class="n">semiax_x</span><span class="p">,</span>
+                      <span class="n">semiax_y</span><span class="o">=</span><span class="n">semiax_y</span><span class="p">,</span>
+                      <span class="n">inside_value</span><span class="o">=</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;sigma0_in&quot;</span><span class="p">),</span>
+                      <span class="n">outside_value</span><span class="o">=</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;sigma0_out&quot;</span><span class="p">))</span>
+<span class="n">sigma0</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">sigma0</span><span class="p">,</span> <span class="n">function_space</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">collapse</span><span class="p">())</span>
+<span class="n">sigma_xdmf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sigma0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Weak form definition</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">function_space</span><span class="p">)</span>
+<span class="n">phi</span><span class="p">,</span> <span class="n">sigma</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+
+<span class="n">s_exp</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">Expression</span><span class="p">(</span><span class="s2">&quot;(s_av + s_min) + ((s_max - s_min)*(random()/((double)RAND_MAX)))&quot;</span><span class="p">,</span>
+                          <span class="n">degree</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                          <span class="n">s_av</span><span class="o">=</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;s_average&quot;</span><span class="p">),</span>
+                          <span class="n">s_min</span><span class="o">=</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;s_min&quot;</span><span class="p">),</span>
+                          <span class="n">s_max</span><span class="o">=</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;s_max&quot;</span><span class="p">))</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">s_exp</span><span class="p">,</span> <span class="n">function_space</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">collapse</span><span class="p">())</span>
+
+<span class="n">v1</span><span class="p">,</span> <span class="n">v2</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">TestFunctions</span><span class="p">(</span><span class="n">function_space</span><span class="p">)</span>
+<span class="n">weak_form</span> <span class="o">=</span> <span class="n">pc_model</span><span class="o">.</span><span class="n">prostate_cancer_form</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">phi0</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span> <span class="o">+</span> \
+              <span class="n">pc_model</span><span class="o">.</span><span class="n">prostate_cancer_nutrient_form</span><span class="p">(</span><span class="n">sigma</span><span class="p">,</span> <span class="n">sigma0</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+<span class="c1"># Simulation: setup</span>
+<span class="n">n_steps</span> <span class="o">=</span> <span class="mi">1000</span>
+
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+      <span class="n">progress_bar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="n">n_steps</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+      <span class="n">progress_bar</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="n">petsc4py</span><span class="o">.</span><span class="n">init</span><span class="p">([</span><span class="vm">__name__</span><span class="p">,</span>
+               <span class="s2">&quot;-snes_type&quot;</span><span class="p">,</span> <span class="s2">&quot;newtonls&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;-ksp_type&quot;</span><span class="p">,</span> <span class="s2">&quot;gmres&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;-pc_type&quot;</span><span class="p">,</span> <span class="s2">&quot;gamg&quot;</span><span class="p">])</span>
+<span class="kn">from</span> <span class="nn">petsc4py</span> <span class="kn">import</span> <span class="n">PETSc</span>
+
+<span class="c1"># define solver</span>
+<span class="n">snes_solver</span> <span class="o">=</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">SNES</span><span class="p">()</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">comm</span><span class="p">)</span>
+<span class="n">snes_solver</span><span class="o">.</span><span class="n">setFromOptions</span><span class="p">()</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">current_step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_steps</span><span class="p">):</span>
+      <span class="c1"># update time</span>
+      <span class="n">t</span> <span class="o">+=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;dt&quot;</span><span class="p">)</span>
+
+      <span class="c1"># define problem</span>
+      <span class="n">problem</span> <span class="o">=</span> <span class="n">SNESProblem</span><span class="p">(</span><span class="n">weak_form</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="p">[])</span>
+
+      <span class="c1"># set up algebraic system for SNES</span>
+      <span class="n">b</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">PETScVector</span><span class="p">()</span>
+      <span class="n">J_mat</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">PETScMatrix</span><span class="p">()</span>
+      <span class="n">snes_solver</span><span class="o">.</span><span class="n">setFunction</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">F</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">vec</span><span class="p">())</span>
+      <span class="n">snes_solver</span><span class="o">.</span><span class="n">setJacobian</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">J</span><span class="p">,</span> <span class="n">J_mat</span><span class="o">.</span><span class="n">mat</span><span class="p">())</span>
+
+      <span class="c1"># solve system</span>
+      <span class="n">snes_solver</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">vec</span><span class="p">())</span>
+
+      <span class="c1"># save new values to phi0 and sigma0, in order for them to be the initial condition for the next step</span>
+      <span class="n">fenics</span><span class="o">.</span><span class="n">assign</span><span class="p">([</span><span class="n">phi0</span><span class="p">,</span> <span class="n">sigma0</span><span class="p">],</span> <span class="n">u</span><span class="p">)</span>
+
+      <span class="c1"># save current solutions to file</span>
+      <span class="n">phi_xdmf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">phi0</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>  <span class="c1"># write the value of phi at time t</span>
+      <span class="n">sigma_xdmf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sigma0</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>  <span class="c1"># write the value of sigma at time t</span>
+
+      <span class="c1"># update progress bar</span>
+      <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+          <span class="n">progress_bar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
 <p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-demo-doc-prostate-cancer2d-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
@@ -492,7 +586,6 @@ condition for the next iteration:</p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</section>
 </section>
 </section>
 

@@ -46,7 +46,7 @@
 to download the full example code</p>
 </div>
 <section class="sphx-glr-example-title" id="a-brief-introduction-to-fenics">
-<span id="sphx-glr-demo-doc-introduction-to-fenics-py"></span><h1>A brief introduction to FEniCS<a class="headerlink" href="#a-brief-introduction-to-fenics" title="Permalink to this headline">¶</a></h1>
+<span id="fenics-intro"></span><span id="sphx-glr-demo-doc-introduction-to-fenics-py"></span><h1>A brief introduction to FEniCS<a class="headerlink" href="#a-brief-introduction-to-fenics" title="Permalink to this headline">¶</a></h1>
 <p>This demo is ment to give a brief introduction to the FEniCS computing platform for the <em>mocafe</em> users who
 never came across this software. For a complete understanding of this demo it is required to have a basic
 understanding of partial differential equations (PDEs), finite element method (FEM), and Python scripting.</p>
@@ -121,7 +121,11 @@ specify the number of elements for each side (in this case, 32 x 32).</p>
 </section>
 <section id="spatial-discretization">
 <h3>Spatial discretization<a class="headerlink" href="#spatial-discretization" title="Permalink to this headline">¶</a></h3>
-<p>Then, we can specify which kind of finite element we need for solving our problem. This is extremely simple with the
+<p>Then, we can choose how to approximate the solution of our PDE in space or, in FEM-terms, which kind of finite
+element we need for solving our problem. It is not simple to explain a few words what a finite element is; simply
+put, the kind of finite element specifies the class of piece-wise functions we want to use to approximate the solution
+of our PDE of interest.</p>
+<p>However, choosing the kind of finite element to use is extremely simple with the
 <code class="docutils literal notranslate"><span class="pre">FunctionSpace</span></code> class in FEniCS. Below, with a single line of code, we generate the finite elements for our mesh,
 specifying that we want Lagrange elements of degree 1.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">V</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;Lagrange&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -150,7 +154,10 @@ it in an actual function, discretized in space according to our problem, we need
 </div>
 <p>Regarding the boundary condition, we need no code to implement natural Neumann conditions in FEniCS because it is the
 default setup. For different boundary conditions, you’re invited to check specific tutorials.</p>
-<p>Finally, it is useful to store this initial condition in the <code class="docutils literal notranslate"><span class="pre">.xdmf</span></code> file we defined above.</p>
+<p>Finally, it is useful to store this initial condition in the <code class="docutils literal notranslate"><span class="pre">.xdmf</span></code> file we defined above, simply calling the
+method <code class="docutils literal notranslate"><span class="pre">write(phi0,</span> <span class="pre">0)</span></code>. The second argument, 0, just represent the fact that
+this is the value of the function at time 0. As we’re going to see in the simulation, the file <code class="docutils literal notranslate"><span class="pre">phi_xdmf</span></code> can
+collect the values of phi for each time.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="n">u_xdmf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">u_0</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
 </pre></div>
@@ -182,6 +189,10 @@ to the actual mathematical formula.</p>
 <span class="n">v</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">TestFunction</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
 <span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="n">u</span> <span class="o">/</span> <span class="n">dt</span><span class="p">)</span> <span class="o">*</span> <span class="n">v</span> <span class="o">*</span> <span class="n">fenics</span><span class="o">.</span><span class="n">dx</span> <span class="o">+</span> <span class="n">D</span> <span class="o">*</span> <span class="n">fenics</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">fenics</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">u</span><span class="p">),</span> <span class="n">fenics</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="o">*</span> <span class="n">fenics</span><span class="o">.</span><span class="n">dx</span>
 <span class="n">L</span> <span class="o">=</span> <span class="p">(</span><span class="n">u_0</span> <span class="o">/</span> <span class="n">dt</span><span class="p">)</span> <span class="o">*</span> <span class="n">v</span> <span class="o">*</span> <span class="n">fenics</span><span class="o">.</span><span class="n">dx</span>
+
+<span class="c1"># From this code, FEniCS is able to efficiently construct all the data structures needed to get our</span>
+<span class="c1"># solution at each time step. If you wank to know more about this topic, you are again encouraged to have a look to The</span>
+<span class="c1"># Fenics Tutorial to start :cite:`LangtangenLogg2017`.</span>
 </pre></div>
 </div>
 </section>
@@ -217,6 +228,46 @@ different solution algorithms in FEniCS.</p>
 <figure class="align-default">
 <img alt="../_images/diffusion.gif" src="../_images/diffusion.gif" />
 </figure>
+</section>
+</section>
+<section id="full-code">
+<h2>Full code<a class="headerlink" href="#full-code" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fenics</span>
+
+<span class="c1"># create file</span>
+<span class="n">u_xdmf</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">XDMFFile</span><span class="p">(</span><span class="s2">&quot;./demo_out/introduction_to_fenics/u.xdmf&quot;</span><span class="p">)</span>
+
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">UnitSquareMesh</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+
+<span class="n">V</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;Lagrange&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">u_0_exp</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">Expression</span><span class="p">(</span><span class="s2">&quot;(pow(x[0] - c_x, 2) + pow(x[1] - c_y, 2) &lt;= pow(r, 2)) ? 1. : 0.&quot;</span><span class="p">,</span>
+                          <span class="n">degree</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                          <span class="n">c_x</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">c_y</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">u_0</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">u_0_exp</span><span class="p">,</span> <span class="n">V</span><span class="p">)</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">u_xdmf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">u_0</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+
+<span class="n">D</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">Constant</span><span class="p">(</span><span class="mf">1.</span><span class="p">)</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="mf">0.001</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">TrialFunction</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">TestFunction</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
+<span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="n">u</span> <span class="o">/</span> <span class="n">dt</span><span class="p">)</span> <span class="o">*</span> <span class="n">v</span> <span class="o">*</span> <span class="n">fenics</span><span class="o">.</span><span class="n">dx</span> <span class="o">+</span> <span class="n">D</span> <span class="o">*</span> <span class="n">fenics</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">fenics</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">u</span><span class="p">),</span> <span class="n">fenics</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="o">*</span> <span class="n">fenics</span><span class="o">.</span><span class="n">dx</span>
+<span class="n">L</span> <span class="o">=</span> <span class="p">(</span><span class="n">u_0</span> <span class="o">/</span> <span class="n">dt</span><span class="p">)</span> <span class="o">*</span> <span class="n">v</span> <span class="o">*</span> <span class="n">fenics</span><span class="o">.</span><span class="n">dx</span>
+
+<span class="n">u</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">30</span><span class="p">):</span>
+  <span class="c1"># update time</span>
+  <span class="n">t</span> <span class="o">+=</span> <span class="n">dt</span>
+  <span class="c1"># compute solution at current time step</span>
+  <span class="n">fenics</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">a</span> <span class="o">==</span> <span class="n">L</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>
+  <span class="c1"># assign new solution to old</span>
+  <span class="n">fenics</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">u_0</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>
+  <span class="c1"># save solution for the current time step</span>
+  <span class="n">u_xdmf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">u_0</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+</pre></div>
+</div>
 <p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-demo-doc-introduction-to-fenics-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
@@ -227,7 +278,6 @@ different solution algorithms in FEniCS.</p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</section>
 </section>
 </section>
 
