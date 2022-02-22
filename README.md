@@ -54,7 +54,7 @@ We welcome any feedback and we thank you if you're considering to contribute to 
 Briefly, if you'd like to make a change to *mocafe* you can:
 
 1. create an account on GitHub 
-2. fork tqdm 
+2. fork this project 
 3. make a local clone with `git clone https://github.com/your_account/mocafe.git`
 4. make changes on the local copy 
 5. commit changes git commit -a -m "my message"

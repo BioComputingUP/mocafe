@@ -1,4 +1,6 @@
 r"""
+.. _FENICS_INTRO:
+
 A brief introduction to FEniCS
 ===============================
 This demo is ment to give a brief introduction to the FEniCS computing platform for the *mocafe* users who
@@ -86,7 +88,12 @@ mesh = fenics.UnitSquareMesh(32, 32)
 # %%
 # Spatial discretization
 # ^^^^^^^^^^^^^^^^^^^^^^
-# Then, we can specify which kind of finite element we need for solving our problem. This is extremely simple with the
+# Then, we can choose how to approximate the solution of our PDE in space or, in FEM-terms, which kind of finite
+# element we need for solving our problem. It is not simple to explain a few words what a finite element is; simply
+# put, the kind of finite element specifies the class of piece-wise functions we want to use to approximate the solution
+# of our PDE of interest.
+#
+# However, choosing the kind of finite element to use is extremely simple with the
 # ``FunctionSpace`` class in FEniCS. Below, with a single line of code, we generate the finite elements for our mesh,
 # specifying that we want Lagrange elements of degree 1.
 V = fenics.FunctionSpace(mesh, "Lagrange", 1)
@@ -118,7 +125,10 @@ u_0 = fenics.project(u_0_exp, V)
 # default setup. For different boundary conditions, you're invited to check specific tutorials.
 
 # %%
-# Finally, it is useful to store this initial condition in the ``.xdmf`` file we defined above.
+# Finally, it is useful to store this initial condition in the ``.xdmf`` file we defined above, simply calling the
+# method ``write(phi0, 0)``. The second argument, 0, just represent the fact that
+# this is the value of the function at time 0. As we're going to see in the simulation, the file ``phi_xdmf`` can
+# collect the values of phi for each time.
 t = 0
 u_xdmf.write(u_0, t)
 
@@ -157,6 +167,10 @@ v = fenics.TestFunction(V)
 a = (u / dt) * v * fenics.dx + D * fenics.dot(fenics.grad(u), fenics.grad(v)) * fenics.dx
 L = (u_0 / dt) * v * fenics.dx
 
+# From this code, FEniCS is able to efficiently construct all the data structures needed to get our
+# solution at each time step. If you wank to know more about this topic, you are again encouraged to have a look to The
+# Fenics Tutorial to start :cite:`LangtangenLogg2017`.
+
 # %%
 # Problem solution
 # ^^^^^^^^^^^^^^^^
@@ -193,4 +207,43 @@ for n in range(30):
 # .. only:: html
 #
 #    .. figure:: ./images/introduction_to_fenics/diffusion.gif
-
+#
+# Full code
+# ---------
+#
+# .. code-block:: default
+#
+#   import fenics
+#
+#   # create file
+#   u_xdmf = fenics.XDMFFile("./demo_out/introduction_to_fenics/u.xdmf")
+#
+#   mesh = fenics.UnitSquareMesh(32, 32)
+#
+#   V = fenics.FunctionSpace(mesh, "Lagrange", 1)
+#
+#   u_0_exp = fenics.Expression("(pow(x[0] - c_x, 2) + pow(x[1] - c_y, 2) <= pow(r, 2)) ? 1. : 0.",
+#                             degree=2,
+#                             c_x=0.5, c_y=0.5, r=0.25)
+#   u_0 = fenics.project(u_0_exp, V)
+#
+#   t = 0
+#   u_xdmf.write(u_0, t)
+#
+#   D = fenics.Constant(1.)
+#   dt = 0.001
+#   u = fenics.TrialFunction(V)
+#   v = fenics.TestFunction(V)
+#   a = (u / dt) * v * fenics.dx + D * fenics.dot(fenics.grad(u), fenics.grad(v)) * fenics.dx
+#   L = (u_0 / dt) * v * fenics.dx
+#
+#   u = fenics.Function(V)
+#   for n in range(30):
+#     # update time
+#     t += dt
+#     # compute solution at current time step
+#     fenics.solve(a == L, u)
+#     # assign new solution to old
+#     fenics.assign(u_0, u)
+#     # save solution for the current time step
+#     u_xdmf.write(u_0, t)

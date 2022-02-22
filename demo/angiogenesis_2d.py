@@ -1,6 +1,6 @@
 r"""
-Angiogenesis phase field model
-==============================
+Angiogenesis
+=============
 In this demo we will reproduce the angiogenesis phase field model described by Travasso et al. in 2011
 :cite:`Travasso2011a`. In this implementation, we will simulate a set of discrete cells expressing a generic angiogenic
 factor (e.g. VEGF), which lead to the sprouting of a 2D vascular network. In the following, we will refer to these cells
@@ -185,8 +185,8 @@ parameters = mpar.from_ods_sheet(parameters_file, "SimParams")
 # reference for the value, etc.); moreover, it reduces the risk of making mistakes in the revisions of the script.
 
 # %%
-# Definition of the spatial domain and the function space
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# Mesh definition
+# ^^^^^^^^^^^^^^^
 # Again, to simulate our system we need to define the space where the simulation takes place and the function space
 # to approximate our solution.
 #
@@ -203,6 +203,8 @@ mesh = fenics.RectangleMesh(fenics.Point(0., 0.),
                             ny)
 
 # %%
+# Spatial discretization
+# ^^^^^^^^^^^^^^^^^^^^^^^
 # Then, we initialize the function space as follows:
 
 # define function space for c and af
@@ -246,12 +248,13 @@ mu_0 = fenics.interpolate(fenics.Constant(0.), function_space.sub(0).collapse())
 
 # %%
 # Finally, we need to define an initial condition of the angiogenic factor :math:`af`. According to the original paper,
-# initially :math:`af` is 0. everywhere, except for the points inside the source cells where the value is
-# :math:`af_s`. Thus, we need to define the source cells do define the initial conditions for the angiogenic factor.
+# initially :math:`af` is 0 everywhere, except for the points inside the source cells where the value is
+# :math:`af_s`. Thus, we need to define first the source cells if we want to set up the initial condition
+# for the angiogenic factor.
 #
 # In the original paper, the source cells where placed randomly in the right part of the domain, relatively far
 # from the initial vessel. Creating this set up in mocafe is relatively easy. We start by defining the number
-# of source cells we want:
+# of source cells we want, which we stored in the parameters file:
 n_sources = int(parameters.get_value("n_sources"))
 
 # %%
@@ -312,7 +315,7 @@ file_c.write(c_0, 0)
 #
 
 # %%
-# PDE System definition
+# Weak form definition
 # ^^^^^^^^^^^^^^^^^^^^^
 # After having defined the initial conditions for the system, we continue with the definition of the system
 # itself. As usual, we define the test functions necessary for computing the solution with the finite element method:
@@ -503,3 +506,148 @@ for step in range(1, n_steps + 1):
 #
 #   if rank == 0:
 #     pbar.update(1)
+#
+# Full code
+# =========
+#
+# .. code-block:: default
+#
+#   import fenics
+#   import mshr
+#   from tqdm import tqdm
+#   from pathlib import Path
+#   import mocafe.fenut.fenut as fu
+#   import mocafe.fenut.mansimdata as mansimd
+#   from mocafe.angie import af_sourcing, tipcells
+#   from mocafe.angie.forms import angiogenesis_form, angiogenic_factor_form
+#   import mocafe.fenut.parameters as mpar
+#
+#   # MPI
+#   comm = fenics.MPI.comm_world
+#   rank = comm.Get_rank()
+#   # only process 0 logs
+#   fenics.parameters["std_out_all_processes"] = False
+#   # set log level ERROR
+#   fenics.set_log_level(fenics.LogLevel.ERROR)
+#   # define data folder
+#   file_folder = Path(__file__).parent.resolve()
+#   data_folder = mansimd.setup_data_folder(folder_path=f"{file_folder / Path('demo_out')}/angiogenesis_2d",
+#                                           auto_enumerate=False)
+#   file_names = ["c", "af", "tipcells"]
+#   file_c, file_af, tipcells_xdmf = fu.setup_xdmf_files(file_names, data_folder)
+#
+#   file_folder = Path(__file__).parent.resolve()
+#   parameters_file = file_folder / Path("demo_in/angiogenesis_2d/parameters.ods")
+#   parameters = mpar.from_ods_sheet(parameters_file, "SimParams")
+#
+#   # Mesh definition
+#   Lx = parameters.get_value("Lx")
+#   Ly = parameters.get_value("Ly")
+#   nx = int(parameters.get_value("nx"))
+#   ny = int(parameters.get_value("ny"))
+#   mesh = fenics.RectangleMesh(fenics.Point(0., 0.),
+#                               fenics.Point(Lx, Ly),
+#                               nx,
+#                               ny)
+#
+#   # Spatial discretization
+#   # define function space for c and af
+#   function_space = fu.get_mixed_function_space(mesh, 3, "CG", 1)
+#   # define function space for grad_T
+#   grad_af_function_space = fenics.VectorFunctionSpace(mesh, "CG", 1)
+#
+#   # Initial conditions
+#   initial_vessel_width = parameters.get_value("initial_vessel_width")
+#   c_0_exp = fenics.Expression("(x[0] < i_v_w) ? 1 : -1",
+#                               degree=2,
+#                               i_v_w=initial_vessel_width)
+#   c_0 = fenics.interpolate(c_0_exp, function_space.sub(0).collapse())
+#
+#   mu_0 = fenics.interpolate(fenics.Constant(0.), function_space.sub(0).collapse())
+#
+#   n_sources = int(parameters.get_value("n_sources"))
+#   random_sources_domain = mshr.Rectangle(fenics.Point(initial_vessel_width + parameters.get_value("d"), 0),
+#                                          fenics.Point(Lx, Ly))
+#   sources_map = af_sourcing.RandomSourceMap(mesh,
+#                                             n_sources,
+#                                             parameters,
+#                                             where=random_sources_domain)
+#
+#   sources_manager = af_sourcing.SourcesManager(sources_map, mesh, parameters)
+#   af_0 = fenics.interpolate(fenics.Constant(0.), function_space.sub(0).collapse())
+#   sources_manager.apply_sources(af_0)
+#
+#   file_af.write(af_0, 0)
+#   file_c.write(c_0, 0)
+#
+#   # Weak form defintion
+#   v1, v2, v3 = fenics.TestFunctions(function_space)
+#
+#   u = fenics.Function(function_space)
+#   af, c, mu = fenics.split(u)
+#
+#   grad_af = fenics.Function(grad_af_function_space)
+#   tipcells_field = fenics.Function(function_space.sub(0).collapse())
+#
+#   grad_af.assign(  # assign to grad_af
+#       fenics.project(fenics.grad(af_0), grad_af_function_space)  # the projection on the fun space of grad(af_0)
+#   )
+#
+#   form_af = angiogenic_factor_form(af, af_0, c, v1, parameters)
+#
+#   form_ang = angiogenesis_form(c, c_0, mu, mu_0, v2, v3, af, parameters)
+#
+#   weak_form = form_af + form_ang
+#
+#   # Solution
+#   tip_cell_manager = tipcells.TipCellManager(mesh,
+#                                              parameters)
+#
+#   jacobian = fenics.derivative(weak_form, u)
+#
+#   t = 0.
+#   n_steps = int(parameters.get_value("n_steps"))
+#   if rank == 0:
+#       pbar = tqdm(total=n_steps, ncols=100, position=1, desc="angiogenesis_2d")
+#   else:
+#       pbar = None
+#
+#   # start iterating
+#   for step in range(1, n_steps + 1):
+#       # update time
+#       t += parameters.get_value("dt")
+#
+#       # turn off near sources
+#       sources_manager.remove_sources_near_vessels(c_0)
+#
+#       # activate tip cell
+#       tip_cell_manager.activate_tip_cell(c_0, af_0, grad_af, step)
+#
+#       # revert tip cells
+#       tip_cell_manager.revert_tip_cells(af_0, grad_af)
+#
+#       # move tip cells
+#       tip_cell_manager.move_tip_cells(c_0, af_0, grad_af)
+#
+#       # get tip cells field
+#       tipcells_field.assign(tip_cell_manager.get_latest_tip_cell_function())
+#
+#       # update fields
+#       fenics.solve(weak_form == 0, u, J=jacobian)
+#
+#       # assign u to the initial conditions functions
+#       fenics.assign([af_0, c_0, mu_0], u)
+#
+#       # update source field
+#       sources_manager.apply_sources(af_0)
+#
+#       # compute grad_T
+#       grad_af.assign(fenics.project(fenics.grad(af_0), grad_af_function_space))
+#
+#       # save data
+#       file_af.write(af_0, t)
+#       file_c.write(c_0, t)
+#       tipcells_xdmf.write(tipcells_field, t)
+#
+#       if rank == 0:
+#           pbar.update(1)
