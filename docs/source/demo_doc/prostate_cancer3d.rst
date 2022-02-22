@@ -18,8 +18,8 @@
 .. _sphx_glr_demo_doc_prostate_cancer3d.py:
 
 
-Prostate cancer phase field 3D model
-====================================
+Prostate cancer 3D
+==================
 
 In this short demo we will show you how to simulate a phase field model described by G. Lorenzo and collaborators
 in 2016 :cite:`Lorenzo2016` using FEniCS and mocafe in 3D. You'll notice that the script is just the same of the 2D

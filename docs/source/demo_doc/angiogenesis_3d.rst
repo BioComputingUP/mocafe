@@ -18,8 +18,8 @@
 .. _sphx_glr_demo_doc_angiogenesis_3d.py:
 
 
-Angiogenesis Phase Field Model in 3D
-====================================
+Angiogenesis 3D
+===============
 
 In this short demo we will show you how to simulate a phase field model described by Travasso et al. in 2011
 :cite:`Travasso2011a` using FEniCS and mocafe in 3D. You'll notice that the script is just the same of the 2D

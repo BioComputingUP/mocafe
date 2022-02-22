@@ -1,6 +1,6 @@
 r"""
-Angiogenesis phase field model
-==============================
+Angiogenesis
+=============
 In this demo we will reproduce the angiogenesis phase field model described by Travasso et al. in 2011
 :cite:`Travasso2011a`. In this implementation, we will simulate a set of discrete cells expressing a generic angiogenic
 factor (e.g. VEGF), which lead to the sprouting of a 2D vascular network. In the following, we will refer to these cells

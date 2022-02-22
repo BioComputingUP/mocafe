@@ -1,6 +1,6 @@
 r"""
-Prostate cancer phase field model
-==================================
+Prostate cancer
+===============
 
 In this short demo we will show you how to simulate a phase field model described by G. Lorenzo and collaborators
 in 2016 :cite:`Lorenzo2016` using FEniCS and mocafe. The model was published on PNAS in 2016 and presents a

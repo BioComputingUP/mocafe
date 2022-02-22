@@ -44,7 +44,7 @@ Just click on the demo you'd like to see:
 .. only:: html
 
  .. figure:: /demo_doc/images/thumb/sphx_glr_prostate_cancer2d_thumb.png
-     :alt: Prostate cancer phase field model
+     :alt: Prostate cancer
 
      :ref:`sphx_glr_demo_doc_prostate_cancer2d.py`
 
@@ -65,7 +65,7 @@ Just click on the demo you'd like to see:
 .. only:: html
 
  .. figure:: /demo_doc/images/thumb/sphx_glr_angiogenesis_2d_thumb.png
-     :alt: Angiogenesis phase field model
+     :alt: Angiogenesis
 
      :ref:`sphx_glr_demo_doc_angiogenesis_2d.py`
 
@@ -86,7 +86,7 @@ Just click on the demo you'd like to see:
 .. only:: html
 
  .. figure:: /demo_doc/images/thumb/sphx_glr_prostate_cancer3d_thumb.png
-     :alt: Prostate cancer phase field 3D model
+     :alt: Prostate cancer 3D
 
      :ref:`sphx_glr_demo_doc_prostate_cancer3d.py`
 
@@ -107,7 +107,7 @@ Just click on the demo you'd like to see:
 .. only:: html
 
  .. figure:: /demo_doc/images/thumb/sphx_glr_angiogenesis_3d_thumb.png
-     :alt: Angiogenesis Phase Field Model in 3D
+     :alt: Angiogenesis 3D
 
      :ref:`sphx_glr_demo_doc_angiogenesis_3d.py`
 
