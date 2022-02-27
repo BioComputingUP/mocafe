@@ -20,11 +20,17 @@ See complete documentation [here](https://biocomputingup.github.io/mocafe/build/
 ![*mocafe* header](https://i.imgur.com/ETeV67C.png)
   
 ## Installation  
-_mocafe_ can be easily installed using pip:
+You can easily build and use a [Singularity](https://sylabs.io/singularity) container of _mocafe_ exploiting the 
+[`singularity/mocafe.def` file](https://github.com/BioComputingUP/mocafe/tree/main/singularity):
 ```
-pip3 install git+https://github.cotm/fpradelli94/mocafe#egg=mocafe
+# build container
+sudo singularity build mocafe.sif mocafe.def
+# open shell inside the container
+singularity shell mocafe.sif
 ```
-However, **you need to install FEniCS** on your system to use it. Moreover, to take advantage of the parallelization, you need to have MPI installed. Please see the [Installation page](https://biocomputingup.github.io/mocafe/build/html/installation.html) on the documentation for a complete installation guide.
+If you don't have Singularity installed, or you prefer installing mocafe on your system, you can check out
+the [Installation page](https://biocomputingup.github.io/mocafe/build/html/installation.html) on the documentation 
+for an extensive installation guide.
 
 ## Usage example
  
