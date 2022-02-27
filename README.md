@@ -28,7 +28,7 @@ sudo singularity build mocafe.sif mocafe.def
 # open shell inside the container
 singularity shell mocafe.sif
 ```
-If you don't have Singularity installed, or you prefer installing mocafe on your system, you can check out
+If you don't have Singularity installed, or you prefer installing _mocafe_ on your system, you can check out
 the [Installation page](https://biocomputingup.github.io/mocafe/build/html/installation.html) on the documentation 
 for an extensive installation guide.
 
