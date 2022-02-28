@@ -1,45 +1,42 @@
 Installation
 ============
-Currently, *mocafe* has been tested only on Linux and on Windows, using the Windows Subsystem for Linux (WSL). In both
-cases the installation instructions are identical.
+Currently, *mocafe* has been tested on:
+
+- Linux (Ubuntu)
+- Windows (using Windows Subsystem for Linux 2.0)
 
 *Notice:* WSL is available for Windows 10 onwards.
 
-Installing *mocafe* in Singularity container (**recommended**)
---------------------------------------------------------------
-A FEniCS Docker container is available at `quay.io/fenicsproject/stable <quay.io/fenicsproject/stable>`_; however,
-Docker does not provide a full support to MPI. Thus, the best way to use FEniCS and *mocafe* in a container is to use
-`Singularity <https://sylabs.io/docs/>`_, which supports also Docker containers.
+Installing *mocafe* Singularity container (*recommended*)
+----------------------------------------------------------
+**If you don't have Singularity installed**, just **follow the instructions** provided at the official `documentation
+page for SingularityCE <https://sylabs.io/docs>`_.
 
-If you don't have Singularity installed, just follow the instruction provided at the official `documentation page
-for SingularityCE <https://github.com/sylabs/singularity>`_.
+**If you have Singularity**:
 
-If you have Singularity, you can just use the definition file provided with the package to built a conatiner with
-*mocafe* and all its dependencies.
+1. Download the definition file ``mocafe.def`` from :download:`here <../../singularity/mocafe.def>`).
 
-First, download the definition file ``mocafe.def`` from the folder ``singularity`` on GitHub (or just click
-:download:`here <../../singularity/mocafe.def>`).
+2. From the terminal, built the container (it might take some time):
 
-Then, built a container typing:
+    .. code-block:: console
 
-.. code-block:: console
+        sudo singularity build mocafe.sif mocafe.def
 
-    sudo singularity build mocafe.sif mocafe.def
+Now you already have a Singularity image with all you need to use *mocafe* on your system.
 
-It may take some time to do all the necessary operations.
+**To test the container**:
 
-Now you already have a Singularity image with all you need to use *mocafe* on jour system. Just open a shell inside the
-container:
+1. Open a shell inside the container:
 
-.. code-block:: console
+    .. code-block:: console
 
-    singularity shell mocafe.sif
+        singularity shell mocafe.sif
 
-And test it typing:
+2. type:
 
-.. code-block:: console
+    .. code-block:: console
 
-    python3 -m mocafe
+        python3 -m mocafe
 
 If everything is working properly, you should see the output message:
 
@@ -52,7 +49,7 @@ And now you can run any *mocafe* or FEniCS script inside the container.
 *Notice*: by default, Singularity binds the home path of the container with the home of the host system. So, you can
 find and use any file of your host system inside the container.
 
-Installing *mocafe* on your Linux system (**not recommended**)
+Installing *mocafe* on your Linux system (*not recommended*)
 --------------------------------------------------------------
 An alternative way to have FEniCS and *mocafe* on your PC is to install both FEniCS and *mocafe* directly on your
 system. The following procedure is currently supported but not recommended, since FEniCS is transitioning from
@@ -139,7 +136,7 @@ Then, you can simply remove the ``mocafe.sif`` file:
 
 .. code-block:: console
 
-    rm fenics.sif
+    rm mocafe.sif
 
 .. _remove-singularity:
 
@@ -187,3 +184,6 @@ In case you installed FEniCS using apt, you can just remove it with all its depe
 .. code-block:: console
 
     sudo apt autoremove fenics -y
+
+Notes
+-----

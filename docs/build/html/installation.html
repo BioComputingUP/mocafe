@@ -41,34 +41,45 @@
             
   <section id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<p>Currently, <em>mocafe</em> has been tested only on Linux and on Windows, using the Windows Subsystem for Linux (WSL). In both
-cases the installation instructions are identical.</p>
+<p>Currently, <em>mocafe</em> has been tested on:</p>
+<ul class="simple">
+<li><p>Linux (Ubuntu)</p></li>
+<li><p>Windows (using Windows Subsystem for Linux 2.0)</p></li>
+</ul>
 <p><em>Notice:</em> WSL is available for Windows 10 onwards.</p>
-<section id="installing-mocafe-in-singularity-container-recommended">
-<h2>Installing <em>mocafe</em> in Singularity container (<strong>recommended</strong>)<a class="headerlink" href="#installing-mocafe-in-singularity-container-recommended" title="Permalink to this headline">¶</a></h2>
-<p>A FEniCS Docker container is available at <a class="reference external" href="quay.io/fenicsproject/stable">quay.io/fenicsproject/stable</a>; however,
-Docker does not provide a full support to MPI. Thus, the best way to use FEniCS and <em>mocafe</em> in a container is to use
-<a class="reference external" href="https://sylabs.io/docs/">Singularity</a>, which supports also Docker containers.</p>
-<p>If you don’t have Singularity installed, just follow the instruction provided at the official <a class="reference external" href="https://github.com/sylabs/singularity">documentation page
-for SingularityCE</a>.</p>
-<p>If you have Singularity, you can just use the definition file provided with the package to built a conatiner with
-<em>mocafe</em> and all its dependencies.</p>
-<p>First, download the definition file <code class="docutils literal notranslate"><span class="pre">mocafe.def</span></code> from the folder <code class="docutils literal notranslate"><span class="pre">singularity</span></code> on GitHub (or just click
-<a class="reference download internal" download="" href="_downloads/5c0a51b5ae838208e4786a3864d2f519/mocafe.def"><code class="xref download docutils literal notranslate"><span class="pre">here</span></code></a>).</p>
-<p>Then, built a container typing:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo singularity build mocafe.sif mocafe.def</span>
+<section id="installing-mocafe-singularity-container-recommended">
+<h2>Installing <em>mocafe</em> Singularity container (<em>recommended</em>)<a class="headerlink" href="#installing-mocafe-singularity-container-recommended" title="Permalink to this headline">¶</a></h2>
+<p><strong>If you don’t have Singularity installed</strong>, just <strong>follow the instructions</strong> provided at the official <a class="reference external" href="https://sylabs.io/docs">documentation
+page for SingularityCE</a>.</p>
+<p><strong>If you have Singularity</strong>:</p>
+<ol class="arabic">
+<li><p>Download the definition file <code class="docutils literal notranslate"><span class="pre">mocafe.def</span></code> from <a class="reference download internal" download="" href="_downloads/5c0a51b5ae838208e4786a3864d2f519/mocafe.def"><code class="xref download docutils literal notranslate"><span class="pre">here</span></code></a>).</p></li>
+<li><p>From the terminal, built the container (it might take some time):</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo singularity build mocafe.sif mocafe.def</span>
 </pre></div>
 </div>
-<p>It may take some time to do all the necessary operations.</p>
-<p>Now you already have a Singularity image with all you need to use <em>mocafe</em> on jour system. Just open a shell inside the
-container:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">singularity shell mocafe.sif</span>
+</div></blockquote>
+</li>
+</ol>
+<p>Now you already have a Singularity image with all you need to use <em>mocafe</em> on your system.</p>
+<p><strong>To test the container</strong>:</p>
+<ol class="arabic">
+<li><p>Open a shell inside the container:</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">singularity shell mocafe.sif</span>
 </pre></div>
 </div>
-<p>And test it typing:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python3 -m mocafe</span>
+</div></blockquote>
+</li>
+<li><p>type:</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python3 -m mocafe</span>
 </pre></div>
 </div>
+</div></blockquote>
+</li>
+</ol>
 <p>If everything is working properly, you should see the output message:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Your mocafe is ready!</span>
 </pre></div>
@@ -78,7 +89,7 @@ container:</p>
 find and use any file of your host system inside the container.</p>
 </section>
 <section id="installing-mocafe-on-your-linux-system-not-recommended">
-<h2>Installing <em>mocafe</em> on your Linux system (<strong>not recommended</strong>)<a class="headerlink" href="#installing-mocafe-on-your-linux-system-not-recommended" title="Permalink to this headline">¶</a></h2>
+<h2>Installing <em>mocafe</em> on your Linux system (<em>not recommended</em>)<a class="headerlink" href="#installing-mocafe-on-your-linux-system-not-recommended" title="Permalink to this headline">¶</a></h2>
 <p>An alternative way to have FEniCS and <em>mocafe</em> on your PC is to install both FEniCS and <em>mocafe</em> directly on your
 system. The following procedure is currently supported but not recommended, since FEniCS is transitioning from
 its version 2019 to FEniCSx and the apt package might not be supported in the future.</p>
@@ -140,7 +151,7 @@ provided below. Notice that uninstalling instruction change depending on the ins
 </pre></div>
 </div>
 <p>Then, you can simply remove the <code class="docutils literal notranslate"><span class="pre">mocafe.sif</span></code> file:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">rm fenics.sif</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">rm mocafe.sif</span>
 </pre></div>
 </div>
 </section>
@@ -179,6 +190,9 @@ removed with the command above. To remove them, you need to tell <code class="do
 </div>
 </section>
 </section>
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+</section>
 </section>
 
 
@@ -204,9 +218,10 @@ removed with the command above. To remove them, you need to tell <code class="do
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="demo_doc/index.html">Demo Gallery</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#installing-mocafe-in-singularity-container-recommended">Installing <em>mocafe</em> in Singularity container (<strong>recommended</strong>)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#installing-mocafe-on-your-linux-system-not-recommended">Installing <em>mocafe</em> on your Linux system (<strong>not recommended</strong>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installing-mocafe-singularity-container-recommended">Installing <em>mocafe</em> Singularity container (<em>recommended</em>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installing-mocafe-on-your-linux-system-not-recommended">Installing <em>mocafe</em> on your Linux system (<em>not recommended</em>)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#uninstalling">Uninstalling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#notes">Notes</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="code_documentation.html">Code Documentation</a></li>
@@ -248,7 +263,7 @@ removed with the command above. To remove them, you need to tell <code class="do
       &copy;2021, Franco Pradelli.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
