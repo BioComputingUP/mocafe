@@ -3,7 +3,7 @@ Weak forms of the Phase-Field models related to angiogenesis. Each weak form is 
 calling a specific method, that returns the form itself.
 
 For a use example see the :ref:`Angiogenesis <Angiogenesis 2D Demo>` and the
-:ref:`Angiogenesis 3D <Angiogenesis 2D Demo>`_ demos.
+:ref:`Angiogenesis 3D <Angiogenesis 2D Demo>` demos.
 """
 
 import fenics
