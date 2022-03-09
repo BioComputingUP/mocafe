@@ -18,6 +18,8 @@
 .. _sphx_glr_demo_doc_prostate_cancer3d.py:
 
 
+.. _Prostate Cancer 3D Demo:
+
 Prostate cancer 3D
 ==================
 
@@ -54,7 +56,7 @@ Visualize the results of this simulation
 You need to have `Paraview <https://www.paraview.org/>`_ to visualize the results. Once you have installed it,
 you can easly import the ``.xdmf`` files generated during the simulation and visualize the result.
 
-.. GENERATED FROM PYTHON SOURCE LINES 40-47
+.. GENERATED FROM PYTHON SOURCE LINES 42-49
 
 Implementation
 ------------------------------------------
@@ -64,17 +66,15 @@ dimension. With appropriate initial and boundary conditions, you can find the so
 in any possible space. This is not always true for the software implementations of such differential equations;
 however, using FEniCS the script is just slightly different from the one we've presented in the 2D case.
 
-.. GENERATED FROM PYTHON SOURCE LINES 49-53
-
-Setup
-^^^^^
-The setup is just the same as in the 2D case; we can even use the same parameters. Of course, the data folder
-changed, in order to store the 2D and 3D simulation result in different locations.
-
-.. GENERATED FROM PYTHON SOURCE LINES 53-93
+.. GENERATED FROM PYTHON SOURCE LINES 49-94
 
 .. code-block:: default
 
+
+    # Setup
+    # ^^^^^
+    # The setup is just the same as in the 2D case; we can even use the same parameters. Of course, the data folder
+    # changed, in order to store the 2D and 3D simulation result in different locations.
     import numpy as np
     import fenics
     import petsc4py
@@ -116,14 +116,14 @@ changed, in order to store the 2D and 3D simulation result in different location
     })
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 94-98
+.. GENERATED FROM PYTHON SOURCE LINES 95-99
 
 Mesh definition and spatial discretization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 The mesh definition is different from the 2D case, because this time we need to define a 3D domain.
 However, we can do that with ease using a FEniCS ``BoxMesh`` with a side of 2000 :math:`\mu m`:
 
-.. GENERATED FROM PYTHON SOURCE LINES 98-111
+.. GENERATED FROM PYTHON SOURCE LINES 99-112
 
 .. code-block:: default
 
@@ -141,20 +141,20 @@ However, we can do that with ease using a FEniCS ``BoxMesh`` with a side of 2000
                           nz)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 112-115
+.. GENERATED FROM PYTHON SOURCE LINES 113-116
 
 From the mesh, we can again define the function space in the same way we did in the 2D simulation. Indeed, the
 system of differential equations is the same and FEniCS will take care of defining the "3D-version" of the finite
 element:
 
-.. GENERATED FROM PYTHON SOURCE LINES 115-117
+.. GENERATED FROM PYTHON SOURCE LINES 116-118
 
 .. code-block:: default
 
     function_space = get_mixed_function_space(mesh, 2, "CG", 1)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 118-126
+.. GENERATED FROM PYTHON SOURCE LINES 119-127
 
 Initial & boundary conditions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -165,7 +165,7 @@ As initial condition for :math:`\varphi` and :math:`\sigma`, the most natural ch
 Lorenzo and collaborators :cite:`Lorenzo2016` is to define an Ellipsoid, instead of the Ellipse we defined in the 2D
 simulation. This can be done with ease using *mocafe*:
 
-.. GENERATED FROM PYTHON SOURCE LINES 126-148
+.. GENERATED FROM PYTHON SOURCE LINES 127-149
 
 .. code-block:: default
 
@@ -192,14 +192,14 @@ simulation. This can be done with ease using *mocafe*:
     sigma_xdmf.write(sigma0, 0)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 149-153
+.. GENERATED FROM PYTHON SOURCE LINES 150-154
 
 PDE System definition
 ^^^^^^^^^^^^^^^^^^^^^
 Exactly how the differential equations don't change from 2D to 3D, the PDE definition remains the same. Indeed,
 you can notice that the code it's just identical to the 2D demo:
 
-.. GENERATED FROM PYTHON SOURCE LINES 153-169
+.. GENERATED FROM PYTHON SOURCE LINES 154-170
 
 .. code-block:: default
 
@@ -220,27 +220,27 @@ you can notice that the code it's just identical to the 2D demo:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 170-174
+.. GENERATED FROM PYTHON SOURCE LINES 171-175
 
 Simulation setup
 ^^^^^^^^^^^^^^^^
 And, again, the simulation setup is the same as the 2D case. We just choose a lower number of step in order to reduce
 the simulation time:
 
-.. GENERATED FROM PYTHON SOURCE LINES 174-176
+.. GENERATED FROM PYTHON SOURCE LINES 175-177
 
 .. code-block:: default
 
     n_steps = 500
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 177-180
+.. GENERATED FROM PYTHON SOURCE LINES 178-181
 
 Then, the code remains the same. However, remember what we remarked in the 2D demo: you might need to change the
 solver configuration in order to solve the system on your computer, and it's not guaranteed that the configuration
 you choose for the 2D system is the best for the 3D system as well.
 
-.. GENERATED FROM PYTHON SOURCE LINES 180-223
+.. GENERATED FROM PYTHON SOURCE LINES 181-224
 
 .. code-block:: default
 
@@ -288,7 +288,7 @@ you choose for the 2D system is the best for the 3D system as well.
             progress_bar.update(1)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 224-369
+.. GENERATED FROM PYTHON SOURCE LINES 225-370
 
 Full code
 ----------

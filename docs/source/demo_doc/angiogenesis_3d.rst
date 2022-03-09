@@ -18,6 +18,8 @@
 .. _sphx_glr_demo_doc_angiogenesis_3d.py:
 
 
+.. _Angiogenesis 3D Demo:
+
 Angiogenesis 3D
 ===============
 
@@ -65,7 +67,7 @@ Visualize the results of this simulation
 You need to have `Paraview <https://www.paraview.org/>`_ to visualize the results. Once you have installed it,
 you can easly import the ``.xdmf`` files generated during the simulation and visualize the result.
 
-.. GENERATED FROM PYTHON SOURCE LINES 51-67
+.. GENERATED FROM PYTHON SOURCE LINES 53-69
 
 Implementation
 --------------
@@ -84,7 +86,7 @@ data. Also, notice that the parameters file is different. However, if you compar
 with the one we provided you for the 2D examples, you'll notice that there are just small
 variations.
 
-.. GENERATED FROM PYTHON SOURCE LINES 67-106
+.. GENERATED FROM PYTHON SOURCE LINES 69-108
 
 .. code-block:: default
 
@@ -128,7 +130,7 @@ variations.
     parameters = mpar.from_ods_sheet(parameters_file, "SimParams")
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 107-113
+.. GENERATED FROM PYTHON SOURCE LINES 109-115
 
 Definition of the spatial domain and the function space
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -137,7 +139,7 @@ using a ``BoxMesh``. Of course, creating a 3D mesh takes longer than a 2D mesh; 
 make FEniCS generate the mesh at the first run of the script, save it in the data folder, and reload it in all the
 following runs.
 
-.. GENERATED FROM PYTHON SOURCE LINES 113-144
+.. GENERATED FROM PYTHON SOURCE LINES 115-146
 
 .. code-block:: default
 
@@ -173,14 +175,14 @@ following runs.
         mesh_xdmf.write(mesh)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 145-149
+.. GENERATED FROM PYTHON SOURCE LINES 147-151
 
 From the mesh, we can again define the function space in the same way we did in the 2D simulation. Indeed, the
 system of differential equations is the same and FEniCS will take care of defining the "3D-version" of the polynomial
 functions. Remember that, even though there are just two variables :math:`c` and :math:`af`, we also need to
 consider an auxiliary variable :math:`mu` for the :math:`c` field (see demo for the 2D case).
 
-.. GENERATED FROM PYTHON SOURCE LINES 149-155
+.. GENERATED FROM PYTHON SOURCE LINES 151-157
 
 .. code-block:: default
 
@@ -191,7 +193,7 @@ consider an auxiliary variable :math:`mu` for the :math:`c` field (see demo for 
     grad_af_function_space = fenics.VectorFunctionSpace(mesh, "CG", 1)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 156-164
+.. GENERATED FROM PYTHON SOURCE LINES 158-166
 
 Initial & boundary conditions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -202,7 +204,7 @@ As initial condition for :math:`c`, the most natural choice to resemble the resu
 :cite:`Travasso2011a` is to define a cylindrical blood vessel on one side of the mesh. To do so, we will use again
 the standard fenics interface for defining an ``Expression``:
 
-.. GENERATED FROM PYTHON SOURCE LINES 164-182
+.. GENERATED FROM PYTHON SOURCE LINES 166-184
 
 .. code-block:: default
 
@@ -225,13 +227,13 @@ the standard fenics interface for defining an ``Expression``:
     mu_0 = fenics.interpolate(fenics.Constant(0.), function_space.sub(0).collapse())
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 183-186
+.. GENERATED FROM PYTHON SOURCE LINES 185-188
 
 As initial condition for :math:`af`, we can just use the ``RandomSourceMap`` object and the ``SourcesManager`` just
 as we did in the 2D demo. Both of them are indeed designed to work just the same in 2D and 3D, with the only
 difference that, in 3D, the cells are spheres instead of circles.
 
-.. GENERATED FROM PYTHON SOURCE LINES 186-227
+.. GENERATED FROM PYTHON SOURCE LINES 188-229
 
 .. code-block:: default
 
@@ -277,14 +279,14 @@ difference that, in 3D, the cells are spheres instead of circles.
     )
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 228-232
+.. GENERATED FROM PYTHON SOURCE LINES 230-234
 
 PDE System definition
 ^^^^^^^^^^^^^^^^^^^^^
 Exactly how the differential equations don't change from 2D to 3D, the PDE definition remains the same. Indeed,
 you can notice that the code it's just identical to the 2D demo, except for the update of ``setup_pbar``:
 
-.. GENERATED FROM PYTHON SOURCE LINES 232-249
+.. GENERATED FROM PYTHON SOURCE LINES 234-251
 
 .. code-block:: default
 
@@ -306,14 +308,14 @@ you can notice that the code it's just identical to the 2D demo, except for the 
     weak_form = form_af + form_ang
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 250-254
+.. GENERATED FROM PYTHON SOURCE LINES 252-256
 
 Simulation setup
 ^^^^^^^^^^^^^^^^
 Now that everything is set up we can proceed to the actual simulation, that, just as before, will start with the
 definition of the ``TipCellsManager``:
 
-.. GENERATED FROM PYTHON SOURCE LINES 254-262
+.. GENERATED FROM PYTHON SOURCE LINES 256-264
 
 .. code-block:: default
 
@@ -326,12 +328,12 @@ definition of the ``TipCellsManager``:
         setup_pbar.set_description("starting simulation")
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 263-265
+.. GENERATED FROM PYTHON SOURCE LINES 265-267
 
 After that, everything will just work the same. For efficiency, we make use of the PETSc SNES solver to solve the
 differential equations this time, but this is the only change we made to the 2D demo code.
 
-.. GENERATED FROM PYTHON SOURCE LINES 265-330
+.. GENERATED FROM PYTHON SOURCE LINES 267-332
 
 .. code-block:: default
 
@@ -401,7 +403,7 @@ differential equations this time, but this is the only change we made to the 2D 
             pbar.update(1)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 331-559
+.. GENERATED FROM PYTHON SOURCE LINES 333-561
 
 Full code
 ---------

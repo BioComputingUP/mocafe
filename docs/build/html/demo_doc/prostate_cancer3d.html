@@ -46,7 +46,7 @@
 to download the full example code</p>
 </div>
 <section class="sphx-glr-example-title" id="prostate-cancer-3d">
-<span id="sphx-glr-demo-doc-prostate-cancer3d-py"></span><h1>Prostate cancer 3D<a class="headerlink" href="#prostate-cancer-3d" title="Permalink to this headline">¶</a></h1>
+<span id="prostate-cancer-3d-demo"></span><span id="sphx-glr-demo-doc-prostate-cancer3d-py"></span><h1>Prostate cancer 3D<a class="headerlink" href="#prostate-cancer-3d" title="Permalink to this headline">¶</a></h1>
 <p>In this short demo we will show you how to simulate a phase field model described by G. Lorenzo and collaborators
 in 2016 <span id="id1">[<a class="reference internal" href="../bib.html#id2" title="Guillermo Lorenzo, Michael A Scott, Kevin Tew, Thomas J R Hughes, Yongjie Jessica Zhang, Lei Liu, Guillermo Vilanova, and Hector Gomez. Tissue-scale, personalized modeling and simulation of prostate cancer growth. Proceedings of the National Academy of Sciences, 2016. URL: www.pnas.org/cgi/doi/10.1073/pnas.1615791113, doi:10.1073/pnas.1615791113.">LST+16</a>]</span> using FEniCS and mocafe in 3D. You’ll notice that the script is just the same of the 2D
 demo: you just need to change the spatial domain!</p>
@@ -81,11 +81,11 @@ you can easly import the <code class="docutils literal notranslate"><span class=
 dimension. With appropriate initial and boundary conditions, you can find the solution of a differential equation
 in any possible space. This is not always true for the software implementations of such differential equations;
 however, using FEniCS the script is just slightly different from the one we’ve presented in the 2D case.</p>
-<section id="setup">
-<h3>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h3>
-<p>The setup is just the same as in the 2D case; we can even use the same parameters. Of course, the data folder
-changed, in order to store the 2D and 3D simulation result in different locations.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Setup</span>
+<span class="c1"># ^^^^^</span>
+<span class="c1"># The setup is just the same as in the 2D case; we can even use the same parameters. Of course, the data folder</span>
+<span class="c1"># changed, in order to store the 2D and 3D simulation result in different locations.</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">fenics</span>
 <span class="kn">import</span> <span class="nn">petsc4py</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
@@ -126,7 +126,6 @@ changed, in order to store the 2D and 3D simulation result in different location
 <span class="p">})</span>
 </pre></div>
 </div>
-</section>
 <section id="mesh-definition-and-spatial-discretization">
 <h3>Mesh definition and spatial discretization<a class="headerlink" href="#mesh-definition-and-spatial-discretization" title="Permalink to this headline">¶</a></h3>
 <p>The mesh definition is different from the 2D case, because this time we need to define a 3D domain.
