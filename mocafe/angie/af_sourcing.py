@@ -2,7 +2,8 @@
 This module contains classes and methods to manage discrete angiogenic factor sources in ``mocafe``. This discrete agents
 might represent hypoxic cells inducing angiogenesis, as presented by Travasso et al. :cite:`Travasso2011a`.
 
-For a use example see the `angiogenesis_demo`_ and the `angiogenesis_3d_demo`_ demos.
+For a use example see the :ref:`Angiogenesis <Angiogenesis 2D Demo>` and the
+:ref:`Angiogenesis 3D <Angiogenesis 2D Demo>`_ demos.
 """
 
 import types
