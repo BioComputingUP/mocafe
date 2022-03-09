@@ -102,7 +102,7 @@ Just click on the demo you'd like to see:
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="For this reason *mocafe* provides some tools to makes simulation management easier. To see this...">
+    <div class="sphx-glr-thumbcontainer" tooltip="For this reason *mocafe* provides tool to make simulation management easier. To see this in act...">
 
 .. only:: html
 
