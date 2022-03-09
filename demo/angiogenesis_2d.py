@@ -1,4 +1,6 @@
 r"""
+.. _angiogenesis_demo:
+
 Angiogenesis
 =============
 In this demo we will reproduce the angiogenesis phase field model described by Travasso et al. in 2011
