@@ -3,7 +3,7 @@ This module contains classes and methods to manage discrete angiogenic factor so
 might represent hypoxic cells inducing angiogenesis, as presented by Travasso et al. :cite:`Travasso2011a`.
 
 For a use example see the :ref:`Angiogenesis <Angiogenesis 2D Demo>` and the
-:ref:`Angiogenesis 3D <Angiogenesis 2D Demo>`_ demos.
+:ref:`Angiogenesis 3D <Angiogenesis 2D Demo>` demos.
 """
 
 import types
