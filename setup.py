@@ -16,7 +16,7 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/fpradelli94/mocafe",
     author="Franco Pradelli",
-    license="MIT",
+    license="CC-BY-NC 4.0",
     packages=find_packages(exclude=("test", "demo", "docs", "projects", ".cache")),
     include_package_data=True,
     install_requires=["numpy>=1.15.4",  # for pandas
