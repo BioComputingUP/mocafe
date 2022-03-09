@@ -131,8 +131,8 @@ you can easly import the ``.xdmf`` files generated during the simulation and vis
 #   For instance, this is the content of the file generated for the first simulation:
 #
 # .. image:: demo_out/multiple_pc_simulations/0000/sim_info.png
-#    :width: 200px
-#
+#   :width: 300
+#   :align: center
 #
 # After the loop, the result will be stored in a tree like the following:
 #
@@ -153,7 +153,7 @@ you can easly import the ``.xdmf`` files generated during the simulation and vis
 #        └── sim_info.html
 #
 # As you can see, there are two nested folders inside ``demo_out/multiple_pc_simulations``, called ``0000``
-# (the first simulation) and 0001 (the second simulation). For each folder, the simulation output (``phi.*``
+# (the first simulation) and ``0001`` (the second simulation). For each folder, the simulation output (``phi.*``
 # and ``sigma.*``) is stored together with the report file ``sim_info.html``, containing the simulation meta-data.
 
 # %%
