@@ -131,7 +131,7 @@ you can easly import the ``.xdmf`` files generated during the simulation and vis
 #   For instance, this is the content of the file generated for the first simulation:
 #
 # .. image:: demo_out/multiple_pc_simulations/0000/sim_info.png
-#   :width: 600
+#    :scale: 50 %
 #
 # After the loop, the result will be stored in a tree like the following:
 #
