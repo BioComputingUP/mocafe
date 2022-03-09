@@ -1,4 +1,6 @@
 r"""
+.. _Prostate Cancer 2D Demo:
+
 Prostate cancer
 ===============
 

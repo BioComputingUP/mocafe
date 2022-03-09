@@ -1,6 +1,8 @@
 r"""
+.. _Prostate Cancer 3D Demo:
+
 Prostate cancer phase field 3d model
-===================================
+====================================
 
 In this short demo we will show you how to simulate a phase field model described by G. Lorenzo and collaborators
 in 2016 :cite:`Lorenzo2016` using FEniCS and mocafe in 3D. You'll notice that the script is just the same of the 2D
