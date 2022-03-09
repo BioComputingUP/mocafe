@@ -73,7 +73,7 @@ Notice that the methods takes just three arguments:
 * ``data_folder``: the folder to store the simulation output
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 57-157
+.. GENERATED FROM PYTHON SOURCE LINES 57-158
 
 Managing multiple simulations
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -152,7 +152,8 @@ As you can see, inside the loop we do a number of operations:
   For instance, this is the content of the file generated for the first simulation:
 
 .. image:: demo_out/multiple_pc_simulations/0000/sim_info.png
-  :width: 600
+  :width: 300
+  :align: center
 
 After the loop, the result will be stored in a tree like the following:
 
@@ -173,17 +174,17 @@ After the loop, the result will be stored in a tree like the following:
        └── sim_info.html
 
 As you can see, there are two nested folders inside ``demo_out/multiple_pc_simulations``, called ``0000``
-(the first simulation) and 0001 (the second simulation). For each folder, the simulation output (``phi.*``
+(the first simulation) and ``0001`` (the second simulation). For each folder, the simulation output (``phi.*``
 and ``sigma.*``) is stored together with the report file ``sim_info.html``, containing the simulation meta-data.
 
-.. GENERATED FROM PYTHON SOURCE LINES 159-163
+.. GENERATED FROM PYTHON SOURCE LINES 160-164
 
 .. _Multiple PC Demo-Full Code:
 
 Full code
 ---------
 
-.. GENERATED FROM PYTHON SOURCE LINES 163-336
+.. GENERATED FROM PYTHON SOURCE LINES 164-337
 
 .. code-block:: default
 
