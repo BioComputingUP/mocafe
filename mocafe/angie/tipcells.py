@@ -1,6 +1,8 @@
 """
 This module contains classes and methods to manage the tip cells in ``mocafe``. More precisely, it provides useful
 tools to activate, remove, and move the tip cell in the spatial domain.
+
+For a use example see the `Angiogenesis`_ and the `Angiogenesis Phase Field Model in 3D`_ demos.
 """
 
 import fenics

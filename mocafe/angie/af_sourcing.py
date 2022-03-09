@@ -1,10 +1,8 @@
 """
-This module contains classes and methods to manage discrete angiogenic factor sources in ``mocafe``. More precisely,
-it provides useful tools to create cells (described as circles with a given radius) which act as angiogenic factor
-sources, inducing angiogenesis.
+This module contains classes and methods to manage discrete angiogenic factor sources in ``mocafe``. This discrete agents
+might represent hypoxic cells inducing angiogenesis, as presented by Travasso et al. :cite:`Travasso2011a`.
 
-This module have been implemented to reproduce the results given by the angiogenesis model presented by Travasso et al.
-:cite:`Travasso2011a`, where they where testing their model using multiple sources in random positions.
+For a use example see the `Angiogenesis`_ and the `Angiogenesis Phase Field Model in 3D`_ demos.
 """
 
 import types
