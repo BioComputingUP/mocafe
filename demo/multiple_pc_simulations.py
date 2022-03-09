@@ -3,16 +3,16 @@
 
 Save simulations meta-data
 ==========================
-Often phase field models are tested using different parameters. Managing different parameters values, simulation
-outputs, and other meta-data might be not trivial and lead to mistakes and repeated simulations.
+Often phase field models are simulated using different parameters. However, managing different parameters values,
+simulation outputs, and other meta-data might be not trivial and can lead to mistakes and repeated simulations.
 
-For this reason *mocafe* provides some tools to makes simulation management easier. To see this in action, we are going
-to simulate the Prostate Cancer models presented in :ref:`this demo<Prostate Cancer 2D Demo>` for different values
-for the parameters.
+For this reason *mocafe* provides tool to make simulation management easier. To see this in action, we are going
+to simulate the Prostate Cancer models presented in :ref:`this demo<Prostate Cancer 2D Demo>` for different parameters
+values.
 
 How to run this example on mocafe
 ---------------------------------
-Make sure you have FEniCS and mocafe installed and download the source script of this page (see above for the link).
+Make sure you have FEniCS and *mocafe* installed and download the source script of this page (see above for the link).
 Then, simply run it using python:
 
 .. code-block:: console
@@ -36,19 +36,22 @@ you can easly import the ``.xdmf`` files generated during the simulation and vis
 # %%
 # Implementation
 # ^^^^^^^^^^^^^^
-# The simulated model is the same of the :ref:`Prostate Cancer demo demo<Prostate Cancer 2D Demo>`, so most of
-# the code is just the same for that demo. Thus, we created a convenience method that will do most of the work
-# for us, called ``run_prostate_cancer_simulation``, which contains most of what we saw in the original demo
-# (see section :ref:`Full Code <Multiple PC Demo-Full Code>` for the complete implementation):
+# The simulated model is the same of the :ref:`Prostate Cancer demo <Prostate Cancer 2D Demo>`, so most of
+# the code would be just the same. Thus, we created a convenience method that will do most of the work
+# for us, called ``run_prostate_cancer_simulation``:
 #
 # .. code-block:: default
 #
 #    def run_prostate_cancer_simulation(loading_message, parameters, data_folder):
 #       ...
 #
-# Notice that the methods takes just three arguments:
+# This method contains basically an adapted version of the code we saw in
+# :ref:`Prostate Cancer demo <Prostate Cancer 2D Demo>` and thus we skip a full explanation in this demo.
+# Still, you can see the complete implementation in the :ref:`Full Code <Multiple PC Demo-Full Code>` section.
 #
-# * ``loading_message``: just a string containing a message to print nearby the progress bar
+# Notice that ``run_prostate_cancer_simulation`` takes just three arguments:
+#
+# * ``loading_message``: just a string containing a message to display nearby the progress bar
 # * ``parameters``: the simulation parameters
 # * ``data_folder``: the folder to store the simulation output
 #
@@ -125,10 +128,10 @@ you can easly import the ``.xdmf`` files generated during the simulation and vis
 #
 # * We use ``setup_data_folder`` with the argument ``auto_enumerate`` = ``True`` to automatically create multiple
 #   data folder nested inside the given folder;
-# * We change the value of the parameters of interest using ``set_value``;
-# * At the end of the simulation, we save some of the simulation meta-data inside the data folder, using the method
-#   ``save_sim_info``. This result in the generation of a file called ``sim_info.html``, unique for each simulation.
-#   For instance, this is the content of the file generated for the first simulation:
+# * We change the value of the parameters of interest using ``std_parameters.set_value``;
+# * At the end of the simulation, we use the method ``save_sim_info`` to store the simulation meta-data inside the
+#   data folder. Indeed, this method generates a file called ``sim_info.html``, unique for each simulation, containing
+#   all the meta-data we asked to save. For instance, this is the file generated for the first simulation:
 #
 # .. image:: demo_out/multiple_pc_simulations/0000/sim_info.png
 #   :width: 300
