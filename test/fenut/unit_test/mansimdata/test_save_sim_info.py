@@ -45,8 +45,8 @@ def test_save_sim_info_rationale(tmpdir, odf_sheet_test):
     sim_name = "another_test"
     dateandtime = "test"
     sim_rationale = "A rationale"
-    mansim.save_sim_info(data_folder, execution_time, parameters, sim_name,
-                         dateandtime=dateandtime, sim_rationale=sim_rationale)
+    mansim.save_sim_info(data_folder, execution_time, parameters, sim_name, dateandtime=dateandtime,
+                         sim_description=sim_rationale)
     sim_info_file = data_folder / mansim.sim_info_file
     # how the sim_info file should look like
     expected_result = f"<article>\n" \
@@ -76,8 +76,8 @@ def test_sim_info_error(tmpdir, odf_sheet_test):
     sim_rationale = "A rationale"
     error_msg = "An error"
     error = RuntimeError(error_msg)
-    mansim.save_sim_info(data_folder, execution_time, parameters, sim_name,
-                         dateandtime=dateandtime, sim_rationale=sim_rationale, error_msg=str(error))
+    mansim.save_sim_info(data_folder, execution_time, parameters, sim_name, dateandtime=dateandtime,
+                         sim_description=sim_rationale, error_msg=str(error))
     sim_info_file = data_folder / mansim.sim_info_file
     # how the sim_info file should look like
     expected_result = f"<article>\n" \

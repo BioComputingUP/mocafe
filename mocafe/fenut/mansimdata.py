@@ -78,11 +78,11 @@ def setup_data_folder(folder_path: str,
 
 
 def save_sim_info(data_folder: pathlib.Path,
-                  execution_time: float,
                   parameters: Parameters or dict,
+                  execution_time: float or None = None,
                   sim_name: str = default_data_folder_name,
                   dateandtime: str = "auto",
-                  sim_rationale: str = "input",
+                  sim_description: str = None,
                   error_msg: str = None) -> None:
     """
     Save simulation infos as html file. The simulation infos will be stored in the provided data_folder.
@@ -94,20 +94,20 @@ def save_sim_info(data_folder: pathlib.Path,
     :param sim_name: the simulation name
     :param dateandtime: date and time of the simulation. If it is equal to "auto" the time and date are automatically
         added by the method
-    :param sim_rationale: rationale of the simulation. If set to input the method will ask the user to type the
+    :param sim_description: rationale of the simulation. If set to input the method will ask the user to type the
         rationale in the command line; otherwise the given rationale will be set in the "rationale" field of the
-        sim_info.html file. Default is "input".
+        sim_info.html file. Default is None.
     :param error_msg: if an error occurred during the simulation, save the error message
     :return: nothing
     """
     # if sim_name is not default, ask user the rationale for the simulation
     if rank == 0:
         if sim_name == default_data_folder_name or sim_name == test_sim_name:
-            sim_rationale = sim_name
+            sim_description = sim_name
         else:
-            if sim_rationale == "input":
+            if sim_description == "input":
                 print("--- Simulation Rationale --- ")
-                sim_rationale = input("Type the rationale for the simulation: ")
+                sim_description = input("Type the rationale for the simulation: ")
         with open(data_folder / sim_info_file, "w+") as report_file:
             report_file.write(f"<article>\n")
             report_file.write(f"  <h1>Simulation report </h1>\n")
@@ -117,7 +117,7 @@ def save_sim_info(data_folder: pathlib.Path,
             report_file.write(f"  <p>Date and time: "
                               f"{str(datetime.datetime.now()) if dateandtime == 'auto' else dateandtime} </p>\n")
             report_file.write(f"  <h2>Simulation rationale </h2>\n")
-            report_file.write(f"  <p>{sim_rationale} </p>\n")
+            report_file.write(f"  <p>{sim_description} </p>\n")
             report_file.write(f"  <h2>Parameters used </h2>\n")
             if type(parameters) is Parameters:
                 report_file.write(parameters.as_dataframe().to_html())
