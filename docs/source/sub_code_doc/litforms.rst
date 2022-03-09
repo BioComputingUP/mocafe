@@ -1,6 +1,6 @@
 ``mocafe.litforms``
 ===================
-This subpackage contains modules for providing access to legacy phase field cancer models.
+This subpackage contains modules for providing access to phase field cancer models.
 
 .. toctree::
     :maxdepth: 2

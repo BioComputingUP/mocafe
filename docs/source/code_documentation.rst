@@ -2,14 +2,12 @@ Code Documentation
 ===================
 
 In the following you can find the complete documentation of *mocafe* code.
-The package is currently divided in 3 subpackages and 2 submodules. The content of each of them is summarized
-below:
 
 Subpackages:
 
 * ``mocafe.angie``: submodules related to the angiogenesis models;
-* ``mocafe.fenut``: utility classes and methods to manage the simulation data, logging, and so on;
-* ``mocafe.litforms``: weak forms related to legacy Phase Field cancer models, coded using FEniCS Unified Form Language :cite:`UFL2014`
+* ``mocafe.fenut``: utilities to manage the simulation data, logging, and so on;
+* ``mocafe.litforms``: weak forms of Phase Field cancer models, coded using FEniCS Unified Form Language :cite:`UFL2014`
 
 Submodules:
 
