@@ -102,6 +102,27 @@ Just click on the demo you'd like to see:
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="For this reason *mocafe* provides some tools to makes simulation management easier. To see this...">
+
+.. only:: html
+
+ .. figure:: /demo_doc/images/thumb/sphx_glr_multiple_pc_simulations_thumb.png
+     :alt: Save simulations meta-data
+
+     :ref:`sphx_glr_demo_doc_multiple_pc_simulations.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /demo_doc/multiple_pc_simulations
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="In this short demo we will show you how to simulate a phase field model described by Travasso e...">
 
 .. only:: html

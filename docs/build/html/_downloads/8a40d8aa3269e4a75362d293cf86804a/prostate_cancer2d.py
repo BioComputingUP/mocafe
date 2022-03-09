@@ -503,6 +503,8 @@ for current_step in range(n_steps):
 #   function_space = get_mixed_function_space(mesh, 2, "CG", 1)
 #
 #   # Initial conditions
+#   semiax_x = 100  # um
+#   semiax_y = 150  # um
 #   phi0 = EllipseField(center=np.array([0., 0.]),
 #                       semiax_x=semiax_x,
 #                       semiax_y=semiax_y,

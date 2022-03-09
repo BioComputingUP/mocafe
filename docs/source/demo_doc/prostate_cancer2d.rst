@@ -543,7 +543,7 @@ Finally, we can iterate in time to solve the system with the given solver at eac
             progress_bar.update(1)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 380-582
+.. GENERATED FROM PYTHON SOURCE LINES 380-584
 
 Let's analyze everything step-by-step. First, we update the simulation time:
 
@@ -671,6 +671,8 @@ Full code
   function_space = get_mixed_function_space(mesh, 2, "CG", 1)
 
   # Initial conditions
+  semiax_x = 100  # um
+  semiax_y = 150  # um
   phi0 = EllipseField(center=np.array([0., 0.]),
                       semiax_x=semiax_x,
                       semiax_y=semiax_y,
