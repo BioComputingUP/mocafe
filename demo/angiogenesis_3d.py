@@ -1,5 +1,5 @@
 r"""
-.. _angiogenesis_3d_demo:
+.. _Angiogenesis 3D Demo:
 
 Angiogenesis 3D
 ===============

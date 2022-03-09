@@ -1,4 +1,6 @@
 r"""
+.. _Prostate Cancer 3D Demo:
+
 Prostate cancer 3D
 ==================
 
@@ -45,7 +47,6 @@ you can easly import the ``.xdmf`` files generated during the simulation and vis
 # in any possible space. This is not always true for the software implementations of such differential equations;
 # however, using FEniCS the script is just slightly different from the one we've presented in the 2D case.
 
-# %%
 # Setup
 # ^^^^^
 # The setup is just the same as in the 2D case; we can even use the same parameters. Of course, the data folder
