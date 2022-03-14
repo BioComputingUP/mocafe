@@ -5,7 +5,7 @@ From: quay.io/fenicsproject/stable:latest
     # Upgrade pip
     pip install --upgrade pip
     # Install Mocafe
-    pip3 install git+https://github.com/fpradelli94/mocafe#egg=mocafe
+    pip3 install git+https://github.com/BioComputingUP/mocafe#egg=mocafe
 
 %help
     mocafe container, built on the FEniCS 2019 version.
