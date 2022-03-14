@@ -1,7 +1,7 @@
 Demo Gallery
 =================
 This Demo Gallery provide some Python scripts where you see how to implment
-specific Phase Field models step by step using FEniCS and *mocafe*.
+specific Phase Field models step by step using FEniCS and Mocafe.
 
 Also, a brief introduction to the FEniCS platform is provided.
 

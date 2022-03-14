@@ -1,7 +1,7 @@
 Code Documentation
 ===================
 
-In the following you can find the complete documentation of *mocafe* code.
+In the following you can find the complete documentation of Mocafe code.
 
 Subpackages:
 
@@ -11,8 +11,8 @@ Subpackages:
 
 Submodules:
 
-* ``mocafe.expressions``: utility FEniCS ``Expression`` defined for *mocafe*
-* ``mocafe.math``: utility math functions defined for *mocafe*
+* ``mocafe.expressions``: utility FEniCS ``Expression`` defined for Mocafe
+* ``mocafe.math``: utility math functions defined for Mocafe
 
 Full documentation below:
 
