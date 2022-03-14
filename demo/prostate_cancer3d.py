@@ -5,12 +5,12 @@ Prostate cancer 3D
 ==================
 
 In this short demo we will show you how to simulate a phase field model described by G. Lorenzo and collaborators
-in 2016 :cite:`Lorenzo2016` using FEniCS and mocafe in 3D. You'll notice that the script is just the same of the 2D
+in 2016 :cite:`Lorenzo2016` using FEniCS and Mocafe in 3D. You'll notice that the script is just the same of the 2D
 demo: you just need to change the spatial domain!
 
-How to run this example on mocafe
+How to run this example on Mocafe
 ---------------------------------
-Make sure you have FEniCS and mocafe and download the source script of this page (see above for the link).
+Make sure you have FEniCS and Mocafe and download the source script of this page (see above for the link).
 Then, simply run it using python:
 
 .. code-block:: console
@@ -122,8 +122,8 @@ function_space = get_mixed_function_space(mesh, 2, "CG", 1)
 # :math`\sigma`.
 #
 # As initial condition for :math:`\varphi` and :math:`\sigma`, the most natural choice to resemble the results of
-# Lorenzo and collaborators :cite:`Lorenzo2016` is to define an Ellipsoid, instead of the Ellipse we defined in the 2D
-# simulation. This can be done with ease using *mocafe*:
+# Lorenzo and collaborators :cite:`Lorenzo2016` is to define an Ellipsoid, instead of an Ellipse. This can be done
+# with ease using Mocafe:
 semiax_x = 100  # um
 semiax_y = 150  # um
 semiax_z = 100  # um

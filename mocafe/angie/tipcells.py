@@ -1,5 +1,5 @@
 """
-This module contains classes and methods to manage the tip cells in ``mocafe``. More precisely, it provides useful
+This module contains classes and methods to manage the tip cells in Mocafe. More precisely, it provides useful
 tools to activate, remove, and move the tip cell in the spatial domain.
 
 For a use example see the :ref:`Angiogenesis <Angiogenesis 2D Demo>` and the

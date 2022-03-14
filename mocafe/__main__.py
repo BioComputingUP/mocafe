@@ -23,7 +23,7 @@ def main():
                 @@@@@@@@@@@@@@@@@@@                         
                                                             
                                                                                                                    
-    ~~~~~~~~~~~~ Your mocafe is ready! ~~~~~~~~~~~~~~~
+    ~~~~~~~~~~~~ Your Mocafe is ready! ~~~~~~~~~~~~~~~
     """
     try:
         import mocafe

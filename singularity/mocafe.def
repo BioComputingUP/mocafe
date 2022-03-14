@@ -4,7 +4,7 @@ From: quay.io/fenicsproject/stable:latest
 %post
     # Upgrade pip
     pip install --upgrade pip
-    # Install mocafe
+    # Install Mocafe
     pip3 install git+https://github.com/fpradelli94/mocafe#egg=mocafe
 
 %help

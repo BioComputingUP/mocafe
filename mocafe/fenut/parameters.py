@@ -5,7 +5,7 @@ from pandas_ods_reader import read_ods
 
 def from_dict(parameters: dict):
     """
-    Creates a mocafe Parameters object from a Python dictionary.
+    Creates a Mocafe Parameters object from a Python dictionary.
 
     The structure of the Python dictionary must be::
 
@@ -28,7 +28,7 @@ def from_dict(parameters: dict):
 
 def from_ods_sheet(file: pathlib.Path, sheet: str):
     """
-    Creates a mocafe Parameters object form a sheet of an ``.odf`` file.
+    Creates a Mocafe Parameters object form a sheet of an ``.odf`` file.
 
     The given sheet must have at least to columns: ``name``, with the parameters' names; and ``sim_value``, with the
     value of the parameters. Any other column, for instance containing the measure units, the reference of the
