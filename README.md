@@ -19,18 +19,9 @@ See complete documentation [here](https://biocomputingup.github.io/mocafe/build/
   
 ![Mocafe header](https://i.imgur.com/ETeV67C.png)
   
-## Installation  
-You can easily build and use a [Singularity](https://sylabs.io/singularity) container of Mocafe exploiting the 
-[`singularity/mocafe.def` file](https://github.com/BioComputingUP/mocafe/tree/main/singularity):
-```
-# build container
-sudo singularity build mocafe.sif mocafe.def
-# open shell inside the container
-singularity shell mocafe.sif
-```
-If you don't have Singularity installed, or you prefer installing Mocafe on your system, you can check out
-the [Installation page](https://biocomputingup.github.io/mocafe/build/html/installation.html) on the documentation 
-for an extensive installation guide.
+## Installation
+See the [Installation page](https://biocomputingup.github.io/mocafe/build/html/installation.html) on the documentation 
+for an extensive guide.
 
 ## Usage example
  
