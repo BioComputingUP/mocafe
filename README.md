@@ -4,23 +4,23 @@
   </a>
 </p>
 
-# _mocafe_: modeling cancer with FEniCS  
+# Mocafe: modeling cancer with FEniCS  
   
 > A Python package based on [FEniCS](https://fenicsproject.org/) to develop and simulate Phase Field mathematical models for cancer  
   
-The purpose of _mocafe_ is to provide an open source and efficient implementation of legacy Phase Field mathematical models of cancer development and angiogenesis. 
+The purpose of Mocafe is to provide an open source and efficient implementation of legacy Phase Field mathematical models of cancer development and angiogenesis. 
 
-Use _mocafe_ to: 
+Use Mocafe to: 
 * reproduce legacy cancer phase field model (also in parallel with `MPI`);  
 * understand them better inspecting the code, and changing the parameters;  
 * integrate these models in yours [FEniCS](https://fenicsproject.org/) scripts.  
 
 See complete documentation [here](https://biocomputingup.github.io/mocafe/build/html/index.html)
   
-![*mocafe* header](https://i.imgur.com/ETeV67C.png)
+![Mocafe header](https://i.imgur.com/ETeV67C.png)
   
 ## Installation  
-You can easily build and use a [Singularity](https://sylabs.io/singularity) container of _mocafe_ exploiting the 
+You can easily build and use a [Singularity](https://sylabs.io/singularity) container of Mocafe exploiting the 
 [`singularity/mocafe.def` file](https://github.com/BioComputingUP/mocafe/tree/main/singularity):
 ```
 # build container
@@ -28,21 +28,21 @@ sudo singularity build mocafe.sif mocafe.def
 # open shell inside the container
 singularity shell mocafe.sif
 ```
-If you don't have Singularity installed, or you prefer installing _mocafe_ on your system, you can check out
+If you don't have Singularity installed, or you prefer installing Mocafe on your system, you can check out
 the [Installation page](https://biocomputingup.github.io/mocafe/build/html/installation.html) on the documentation 
 for an extensive installation guide.
 
 ## Usage example
  
-*mocafe* allows anyone to simulate a phase field cancer models just as any other FEniCS python script.
-Please refer to the [demo gallery](https://biocomputingup.github.io/mocafe/build/html/demo_doc/index.html)  in the *mocafe* documentation for extensive usage examples. Currently, the demos include:
+Mocafe allows anyone to simulate a phase field cancer models just as any other FEniCS python script.
+Please refer to the [demo gallery](https://biocomputingup.github.io/mocafe/build/html/demo_doc/index.html)  in the Mocafe documentation for extensive usage examples. Currently, the demos include:
 
 * the simulation of a **prostate cancer model** first proposed by Lorenzo et al. in 2016 [^Lorenzo2016], both in 2D and in 3D;
 * the simulation of an **angiogenesis model** first proposed by Travasso et al. in 2011 [^Travasso2011], both in 2D and in 3D (3D adaptation first reported by Xu et al. in 2020 [^Xu2020])
   
 ## Release History  
   
-* 24 Jan 2021: Released *mocafe* 1.0.0 
+* 24 Jan 2021: Released Mocafe 1.0.0 
   
 ## Meta  
   
@@ -55,9 +55,9 @@ This work is licensed under the Creative Commons Attribution-NonCommercial 4.0 I
 ## Contributing  
 We welcome any feedback and we thank you if you're considering to contribute to our project.
   
-*mocafe* follows the standard "Fork & Pull" contributing model of GitHub (more information [here](https://docs.github.com/en/get-started/quickstart/contributing-to-projects)).
+Mocafe follows the standard "Fork & Pull" contributing model of GitHub (more information [here](https://docs.github.com/en/get-started/quickstart/contributing-to-projects)).
 
-Briefly, if you'd like to make a change to *mocafe* you can:
+Briefly, if you'd like to make a change to Mocafe you can:
 
 1. create an account on GitHub 
 2. fork this project 
@@ -67,7 +67,7 @@ Briefly, if you'd like to make a change to *mocafe* you can:
 6. push to your GitHub account with `git push origin`
 7. create a Pull Request (PR) from your GitHub fork (go to your fork's webpage and click on "Pull Request." You can then add a message to describe your proposal.)
 
-If you'd like to add a mathematical model to *mocafe*, the `litforms` package is the right place for it. 
+If you'd like to add a mathematical model to Mocafe, the `litforms` package is the right place for it. 
 It is sufficient to add a module containing, at least, a method returning the FEniCS `Form` of your model of interest.
 Also, consider adding complete documentation and references for it.
 

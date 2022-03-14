@@ -3,7 +3,7 @@ r"""
 
 A brief introduction to FEniCS
 ===============================
-This demo is ment to give a brief introduction to the FEniCS computing platform for the *mocafe* users who
+This demo is ment to give a brief introduction to the FEniCS computing platform for the Mocafe users who
 never came across this software. For a complete understanding of this demo it is required to have a basic
 understanding of partial differential equations (PDEs), finite element method (FEM), and Python scripting.
 

@@ -61,7 +61,7 @@ def _create_clean_log_folder(folder: Path):
 
 def confgure_root_logger_with_standard_settings(data_folder: Path):
     """
-    Configures the root logger with the standard mocafe settings.
+    Configures the root logger with the standard Mocafe settings.
 
     This is mainly used for internal purposes, but can be used from the user as well.
 

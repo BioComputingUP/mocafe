@@ -5,12 +5,12 @@ Prostate cancer
 ===============
 
 In this short demo we will show you how to simulate a phase field model described by G. Lorenzo and collaborators
-in 2016 :cite:`Lorenzo2016` using FEniCS and mocafe. The model was published on PNAS in 2016 and presents a
+in 2016 :cite:`Lorenzo2016` using FEniCS and Mocafe. The model was published on PNAS in 2016 and presents a
 continuous mathematical model able to reproduce the growth pattern of prostate cancer at tissue scale.
 
-How to run this example on mocafe
+How to run this example on Mocafe
 ---------------------------------
-Make sure you have FEniCS and mocafe installed and download the source script of this page (see above for the link).
+Make sure you have FEniCS and Mocafe installed and download the source script of this page (see above for the link).
 Then, simply run it using python:
 
 .. code-block:: console
@@ -70,7 +70,7 @@ a distribution :math:`s`, and that the nutrient is consumed at a constant rate b
 # Initial setup
 # ^^^^^^^^^^^^^
 # To reproduce this model we need first to import everything we need throughout
-# the simulation. Notice that while most of the packages are provided by mocafe, we also use some other stuff.
+# the simulation. Notice that while most of the packages are provided by Mocafe, we also use some other stuff.
 import numpy as np
 import fenics
 from tqdm import tqdm
@@ -101,7 +101,7 @@ rank = comm.Get_rank()
 # for saving FEniCS simulations is using ``.xdmf`` files, which can easily be visualized in
 # `Paraview <https://www.paraview.org/>`_.
 #
-# Even though FEniCS provides its own classes and method to define these files, in the following we use two mocafe
+# Even though FEniCS provides its own classes and method to define these files, in the following we use two Mocafe
 # methods for defining:
 #
 # - first, the folder where to save the result of the simulation. In this case, the folder will be based inside
@@ -118,7 +118,7 @@ data_folder = setup_data_folder(folder_path=f"{file_folder/Path('demo_out')}/pro
 phi_xdmf, sigma_xdmf = setup_xdmf_files(["phi", "sigma"], data_folder)
 
 # %%
-# Finally, we define the parameters of the differential equation using a mocafe ``Parameter`` object, which is created
+# Finally, we define the parameters of the differential equation using a Mocafe ``Parameter`` object, which is created
 # for this purpose.
 #
 # A Parameters object can be initialized in several ways. In the following, we define it from a
@@ -178,7 +178,7 @@ mesh = fenics.RectangleMesh(fenics.Point(x_min, y_min),
 #     function_space = fenics.FunctionSpace(mesh, mixed_element)  # define function space for the given mesh
 #
 # However, the very same operation can be performed in just one line using the following method provided by
-# mocafe:
+# Mocafe:
 #
 function_space = get_mixed_function_space(mesh, 2, "CG", 1)
 
@@ -274,7 +274,7 @@ s_exp = fenics.Expression("(s_av + s_min) + ((s_max - s_min)*(random()/((double)
 s = fenics.interpolate(s_exp, function_space.sub(0).collapse())
 
 # %%
-# Now, we have everything in place to define our PDE system exploiting the related *mocafe* functions contained in the
+# Now, we have everything in place to define our PDE system exploiting the related Mocafe functions contained in the
 # module ``pc_model``:
 
 v1, v2 = fenics.TestFunctions(function_space)
