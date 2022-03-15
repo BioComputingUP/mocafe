@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Angiogenesis &#8212; mocafe 1.0.0 documentation</title>
+    <title>Angiogenesis &#8212; Mocafe 1.0.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
@@ -52,8 +52,8 @@ to download the full example code</p>
 factor (e.g. VEGF), which lead to the sprouting of a 2D vascular network. In the following, we will refer to these cells
 as <em>source cells</em>, since are the only source of angiogenic factor in this model.</p>
 <section id="how-to-run-this-example-on-mocafe">
-<h2>How to run this example on mocafe<a class="headerlink" href="#how-to-run-this-example-on-mocafe" title="Permalink to this headline">¶</a></h2>
-<p>Make sure you have FEniCS and mocafe installed and download the source script of this page (see above for the link).</p>
+<h2>How to run this example on Mocafe<a class="headerlink" href="#how-to-run-this-example-on-mocafe" title="Permalink to this headline">¶</a></h2>
+<p>Make sure you have FEniCS and Mocafe installed and download the source script of this page (see above for the link).</p>
 <p>Then, download the parameters file for the simulation from
 <a class="reference download internal" download="" href="../_downloads/6131c614d7c7b7316338d040d69f499b/parameters.ods"><code class="xref download docutils literal notranslate"><span class="pre">this</span> <span class="pre">link</span></code></a> and place it inside the folder
 <code class="docutils literal notranslate"><span class="pre">demo_in/angiogenesis_2d</span></code>:</p>
@@ -153,7 +153,7 @@ values.</p>
 <h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
 <section id="setup">
 <h3>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h3>
-<p>With mocafe, the implementation of the model is not very different from any other FEniCS script. Let’s start
+<p>With Mocafe, the implementation of the model is not very different from any other FEniCS script. Let’s start
 importing everything we need:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fenics</span>
 <span class="kn">import</span> <span class="nn">mshr</span>
@@ -188,7 +188,7 @@ mentioned above, the tip cells dynamics is merged to the capillaries dynamics th
 <span class="n">file_c</span><span class="p">,</span> <span class="n">file_af</span><span class="p">,</span> <span class="n">tipcells_xdmf</span> <span class="o">=</span> <span class="n">fu</span><span class="o">.</span><span class="n">setup_xdmf_files</span><span class="p">(</span><span class="n">file_names</span><span class="p">,</span> <span class="n">data_folder</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Finally, we need the parameters of the model. This time we exploit one of the functions of <code class="docutils literal notranslate"><span class="pre">mocafe</span></code> to retrieve
+<p>Finally, we need the parameters of the model. This time we exploit one of the functions of Mocafe to retrieve
 them from an ods sheet:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">file_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
 <span class="n">parameters_file</span> <span class="o">=</span> <span class="n">file_folder</span><span class="o">/</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;demo_in/angiogenesis_2d/parameters.ods&quot;</span><span class="p">)</span>
@@ -262,7 +262,7 @@ initially <span class="math notranslate nohighlight">\(af\)</span> is 0 everywhe
 <span class="math notranslate nohighlight">\(af_s\)</span>. Thus, we need to define first the source cells if we want to set up the initial condition
 for the angiogenic factor.</p>
 <p>In the original paper, the source cells where placed randomly in the right part of the domain, relatively far
-from the initial vessel. Creating this set up in mocafe is relatively easy. We start by defining the number
+from the initial vessel. Creating this set up in Mocafe is relatively easy. We start by defining the number
 of source cells we want, which we stored in the parameters file:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">n_sources</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;n_sources&quot;</span><span class="p">))</span>
 </pre></div>
@@ -280,7 +280,7 @@ including all the mesh except the initial vessel and a part of width <span class
                                           <span class="n">where</span><span class="o">=</span><span class="n">random_sources_domain</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>A <code class="docutils literal notranslate"><span class="pre">SourceMap</span></code> is a mocafe object which contains the position of all the source cells at a given time throughout
+<p>A <code class="docutils literal notranslate"><span class="pre">SourceMap</span></code> is a Mocafe object which contains the position of all the source cells at a given time throughout
 the entire simulation. As you can see, you just need to input the mesh, the parameters, the number of sources
 and where you want the sources to be placed. In this implementation, we defined the part of the domain where we
 needed the source cell as <code class="docutils literal notranslate"><span class="pre">mshr.Rectangle</span></code>, but the <code class="docutils literal notranslate"><span class="pre">where</span></code> argument can take as input also a function which
@@ -293,7 +293,7 @@ For instance we could have initialized the same source map as above simply doing
 </pre></div>
 </div>
 <p>However, the source map is not sufficient to define the initial condition we need. To do so, we need an additional
-mocafe object, a <code class="docutils literal notranslate"><span class="pre">SourcesManager</span></code>:</p>
+Mocafe object, a <code class="docutils literal notranslate"><span class="pre">SourcesManager</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sources_manager</span> <span class="o">=</span> <span class="n">af_sourcing</span><span class="o">.</span><span class="n">SourcesManager</span><span class="p">(</span><span class="n">sources_map</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -658,7 +658,7 @@ step:</p>
             <p class="logo"><a href="../index.html">
               <img class="logo" src="../_static/200mocafe_logo.png" alt="Logo"/>
             </a></p>
-<h1 class="logo"><a href="../index.html">mocafe</a></h1>
+<h1 class="logo"><a href="../index.html">Mocafe</a></h1>
 
 
 
@@ -675,8 +675,9 @@ step:</p>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Angiogenesis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#full-code">Full code</a></li>
 <li class="toctree-l2"><a class="reference internal" href="prostate_cancer3d.html">Prostate cancer 3D</a></li>
-<li class="toctree-l2"><a class="reference internal" href="multiple_pc_simulations.html">Save simulations meta-data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multiple_pc_simulations.html">Save simulations meta-data 1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="angiogenesis_3d.html">Angiogenesis 3D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multiple_angiogenesis_simulations.html">Save simulations meta-data 2</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Installation &#8212; mocafe 1.0.0 documentation</title>
+    <title>Installation &#8212; Mocafe 1.0.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css" />
@@ -22,7 +22,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Code Documentation" href="code_documentation.html" />
-    <link rel="prev" title="Angiogenesis 3D" href="demo_doc/angiogenesis_3d.html" />
+    <link rel="prev" title="Save simulations meta-data 2" href="demo_doc/multiple_angiogenesis_simulations.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -41,9 +41,9 @@
             
   <section id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<p>Currently, <em>mocafe</em> has been tested on:</p>
+<p>Currently, Mocafe has been tested on:</p>
 <ul class="simple">
-<li><p>Linux (Ubuntu)</p></li>
+<li><p>Linux (Ubuntu 20.04)</p></li>
 <li><p>Windows (using Windows Subsystem for Linux 2.0)</p></li>
 </ul>
 <p><em>Notice:</em> WSL is available for Windows 10 onwards.</p>
@@ -53,7 +53,11 @@
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo apt install openmpi-bin</span>
 </pre></div>
 </div>
-<p>And test it using <code class="docutils literal notranslate"><span class="pre">mpirun</span> <span class="pre">--version</span></code>. If everything worked out well, you should get something like:</p>
+<p>And test it typing:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mpirun</span> <span class="o">--</span><span class="n">version</span>
+</pre></div>
+</div>
+<p>If everything worked out well, you should get something like:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">mpirun (Open MPI) 4.0.3</span>
 
 <span class="go">Report bugs to http://www.open-mpi.org/community/help/</span>
@@ -73,8 +77,13 @@
 <span class="gp">&gt;</span>&gt;&gt;
 </pre></div>
 </div>
-<p>If FEniCS works, you can proceed to installing <em>mocafe</em> using <code class="docutils literal notranslate"><span class="pre">pip</span></code>:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip3 install git+https://github.com/fpradelli94/mocafe#egg=mocafe</span>
+<p>If you encounter errors, you can:</p>
+<ul class="simple">
+<li><p>Use the Singularity container of Mocafe (see section <a class="reference internal" href="#mocafe-singularity"><span class="std std-ref">Install Singularity container</span></a></p></li>
+<li><p>Try to install FEniCS in other ways; see <a class="reference external" href="https://fenicsproject.org/download/archive/">FEniCS 2019 Download page</a></p></li>
+</ul>
+<p>If FEniCS works, you can proceed to installing mocafe using <code class="docutils literal notranslate"><span class="pre">pip</span></code>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip3 install git+https://github.com/BioComputingUP/mocafe#egg=mocafe</span>
 </pre></div>
 </div>
 <p>Test it executing the main script:</p>
@@ -82,19 +91,26 @@
 </pre></div>
 </div>
 <p>I everything is properly working, the output should be:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Your mocafe is ready!</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Your Mocafe is ready!</span>
 </pre></div>
 </div>
 <p><em>Note</em>: FEniCS is transitioning from version “2019” to FEniCSx, so the <code class="docutils literal notranslate"><span class="pre">apt</span></code> package might not be supported in the
-future. In that case, consider using the <em>mocafe</em> container as explained below.</p>
+future. In that case, consider using the Mocafe container as explained below.</p>
 </section>
 <section id="install-singularity-container">
-<h2>Install Singularity container<a class="headerlink" href="#install-singularity-container" title="Permalink to this headline">¶</a></h2>
-<p><strong>If you don’t have Singularity installed</strong>, just <strong>follow the instructions</strong> provided at the official <a class="reference external" href="https://sylabs.io/docs">documentation
-page for SingularityCE</a>.</p>
+<span id="mocafe-singularity"></span><h2>Install Singularity container<a class="headerlink" href="#install-singularity-container" title="Permalink to this headline">¶</a></h2>
+<p><strong>If you don’t have Singularity installed</strong>, just <strong>follow the instructions</strong> provided at the official documentation
+page for SingularityCE. You can find the last version of SingularityCE documentation <a class="reference external" href="https://sylabs.io/docs">at this link</a>.</p>
 <p><strong>If you have Singularity</strong>:</p>
 <ol class="arabic">
-<li><p>Download the definition file <code class="docutils literal notranslate"><span class="pre">mocafe.def</span></code> from <a class="reference download internal" download="" href="_downloads/5c0a51b5ae838208e4786a3864d2f519/mocafe.def"><code class="xref download docutils literal notranslate"><span class="pre">here</span></code></a>).</p></li>
+<li><p>Download the definition file <code class="docutils literal notranslate"><span class="pre">mocafe.def</span></code> from <a class="reference external" href="https://github.com/BioComputingUP/mocafe/blob/main/singularity/mocafe.def">here</a>,
+or, if you have <code class="docutils literal notranslate"><span class="pre">wget</span></code>:</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">wget https://raw.githubusercontent.com/BioComputingUP/mocafe/main/singularity/mocafe.def</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
 <li><p>From the terminal, built the container (it might take some time):</p>
 <blockquote>
 <div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo singularity build mocafe.sif mocafe.def</span>
@@ -103,7 +119,7 @@ page for SingularityCE</a>.</p>
 </div></blockquote>
 </li>
 </ol>
-<p>Now you already have a Singularity image with all you need to use <em>mocafe</em> on your system.</p>
+<p>Now you already have a Singularity image with all you need to use Mocafe on your system.</p>
 <p><strong>To test the container</strong>:</p>
 <ol class="arabic">
 <li><p>Open a shell inside the container:</p>
@@ -122,30 +138,30 @@ page for SingularityCE</a>.</p>
 </li>
 </ol>
 <p>If everything is working properly, you should see the output message:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Your mocafe is ready!</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Your Mocafe is ready!</span>
 </pre></div>
 </div>
-<p>And now you can run any <em>mocafe</em> or FEniCS script inside the container.</p>
+<p>And now you can run any Mocafe or FEniCS script inside the container.</p>
 <p><em>Notice</em>: by default, Singularity binds the home path of the container with the home of the host system. So, you can
 find and use any file of your host system inside the container.</p>
 </section>
 <section id="uninstalling">
 <h2>Uninstalling<a class="headerlink" href="#uninstalling" title="Permalink to this headline">¶</a></h2>
-<p>In case you want to remove <em>mocafe</em> and its dependencies from your system, you just need to follow the instructions
+<p>In case you want to remove Mocafe and its dependencies from your system, you just need to follow the instructions
 provided below. Notice that uninstalling instruction change depending on the installation procedure you followed.</p>
-<p>In case you installed <em>mocafe</em> using <code class="docutils literal notranslate"><span class="pre">apt</span></code> and <code class="docutils literal notranslate"><span class="pre">apt</span></code>:</p>
+<p>In case you installed Mocafe using <code class="docutils literal notranslate"><span class="pre">apt</span></code> and <code class="docutils literal notranslate"><span class="pre">apt</span></code>:</p>
 <ol class="arabic simple">
-<li><p>Uninstall <em>mocafe</em> and its python dependencies using <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">uninstall</span></code>; see section <a class="reference internal" href="#uninstalling-mocafe"><span class="std std-ref">Uninstalling mocafe</span></a></p></li>
+<li><p>Uninstall Mocafe and its python dependencies using <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">uninstall</span></code>; see section <a class="reference internal" href="#uninstalling-mocafe"><span class="std std-ref">Uninstalling Mocafe</span></a></p></li>
 <li><p>Remove FEniCS using <code class="docutils literal notranslate"><span class="pre">apt</span> <span class="pre">autoremove</span></code>; see section <a class="reference internal" href="#remove-fenics-apt"><span class="std std-ref">Remove FEniCS with apt</span></a></p></li>
 </ol>
-<p>In case you installed <em>mocafe</em> using Singularity:</p>
+<p>In case you installed Mocafe using Singularity:</p>
 <ol class="arabic simple">
-<li><p>Remove the <em>mocafe</em> container; see section <a class="reference internal" href="#remove-mocafe-container"><span class="std std-ref">Remove mocafe container</span></a></p></li>
+<li><p>Remove the Mocafe container; see section <a class="reference internal" href="#remove-mocafe-container"><span class="std std-ref">Remove Mocafe container</span></a></p></li>
 <li><p>Remove Singularity (in case you don’t need it anymore); see section <a class="reference internal" href="#remove-singularity"><span class="std std-ref">Remove Singularity</span></a></p></li>
 </ol>
 <section id="remove-mocafe-container">
-<span id="id1"></span><h3>Remove <em>mocafe</em> container<a class="headerlink" href="#remove-mocafe-container" title="Permalink to this headline">¶</a></h3>
-<p>To remove correctly the <em>mocafe</em> container from your system, you need to remove all the cached data:</p>
+<span id="id1"></span><h3>Remove Mocafe container<a class="headerlink" href="#remove-mocafe-container" title="Permalink to this headline">¶</a></h3>
+<p>To remove correctly the Mocafe container from your system, you need to remove all the cached data:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">singularity cache clean mocafe.sif</span>
 </pre></div>
 </div>
@@ -168,12 +184,12 @@ The easier way to remove it is to just remove the following folders from your co
 </div>
 </section>
 <section id="uninstalling-mocafe">
-<span id="id3"></span><h3>Uninstalling <em>mocafe</em><a class="headerlink" href="#uninstalling-mocafe" title="Permalink to this headline">¶</a></h3>
+<span id="id3"></span><h3>Uninstalling Mocafe<a class="headerlink" href="#uninstalling-mocafe" title="Permalink to this headline">¶</a></h3>
 <p>To do so, you just need to type:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip uninstall mocafe</span>
 </pre></div>
 </div>
-<p>Notice that <em>mocafe</em> has some dependencies, such as <code class="docutils literal notranslate"><span class="pre">tqdm</span></code>, <code class="docutils literal notranslate"><span class="pre">pandas</span></code>, and so on, that won’t be automatically
+<p>Notice that Mocafe has some dependencies, such as <code class="docutils literal notranslate"><span class="pre">tqdm</span></code>, <code class="docutils literal notranslate"><span class="pre">pandas</span></code>, and so on, that won’t be automatically
 removed with the command above. To remove them, you need to tell <code class="docutils literal notranslate"><span class="pre">pip</span></code> to do so.</p>
 <p>This is what you need to type to remove <em>moacfe</em> with all its dependencies:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip uninstall mocafe numpy pandas pandas-ods-reader tqdm</span>
@@ -201,7 +217,7 @@ removed with the command above. To remove them, you need to tell <code class="do
             <p class="logo"><a href="index.html">
               <img class="logo" src="_static/200mocafe_logo.png" alt="Logo"/>
             </a></p>
-<h1 class="logo"><a href="index.html">mocafe</a></h1>
+<h1 class="logo"><a href="index.html">Mocafe</a></h1>
 
 
 
@@ -227,7 +243,7 @@ removed with the command above. To remove them, you need to tell <code class="do
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="demo_doc/angiogenesis_3d.html" title="previous chapter">Angiogenesis 3D</a></li>
+      <li>Previous: <a href="demo_doc/multiple_angiogenesis_simulations.html" title="previous chapter">Save simulations meta-data 2</a></li>
       <li>Next: <a href="code_documentation.html" title="next chapter">Code Documentation</a></li>
   </ul></li>
 </ul>

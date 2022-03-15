@@ -27,9 +27,9 @@ In this demo we will reproduce the angiogenesis phase field model described by T
 factor (e.g. VEGF), which lead to the sprouting of a 2D vascular network. In the following, we will refer to these cells
 as *source cells*, since are the only source of angiogenic factor in this model.
 
-How to run this example on mocafe
+How to run this example on Mocafe
 ---------------------------------
-Make sure you have FEniCS and mocafe installed and download the source script of this page (see above for the link).
+Make sure you have FEniCS and Mocafe installed and download the source script of this page (see above for the link).
 
 Then, download the parameters file for the simulation from
 :download:`this link<./demo_in/angiogenesis_2d/parameters.ods>` and place it inside the folder
@@ -159,7 +159,7 @@ Implementation
 
 Setup
 ^^^^^
-With mocafe, the implementation of the model is not very different from any other FEniCS script. Let's start
+With Mocafe, the implementation of the model is not very different from any other FEniCS script. Let's start
 importing everything we need:
 
 .. GENERATED FROM PYTHON SOURCE LINES 145-155
@@ -215,7 +215,7 @@ mentioned above, the tip cells dynamics is merged to the capillaries dynamics th
 
 .. GENERATED FROM PYTHON SOURCE LINES 178-180
 
-Finally, we need the parameters of the model. This time we exploit one of the functions of ``mocafe`` to retrieve
+Finally, we need the parameters of the model. This time we exploit one of the functions of Mocafe to retrieve
 them from an ods sheet:
 
 .. GENERATED FROM PYTHON SOURCE LINES 180-184
@@ -339,7 +339,7 @@ initially :math:`af` is 0 everywhere, except for the points inside the source ce
 for the angiogenic factor.
 
 In the original paper, the source cells where placed randomly in the right part of the domain, relatively far
-from the initial vessel. Creating this set up in mocafe is relatively easy. We start by defining the number
+from the initial vessel. Creating this set up in Mocafe is relatively easy. We start by defining the number
 of source cells we want, which we stored in the parameters file:
 
 .. GENERATED FROM PYTHON SOURCE LINES 260-262
@@ -378,7 +378,7 @@ Finally, we initialize a so called ``RandomSourceMap``, which will create the so
 
 .. GENERATED FROM PYTHON SOURCE LINES 276-292
 
-A ``SourceMap`` is a mocafe object which contains the position of all the source cells at a given time throughout
+A ``SourceMap`` is a Mocafe object which contains the position of all the source cells at a given time throughout
 the entire simulation. As you can see, you just need to input the mesh, the parameters, the number of sources
 and where you want the sources to be placed. In this implementation, we defined the part of the domain where we
 needed the source cell as ``mshr.Rectangle``, but the ``where`` argument can take as input also a function which
@@ -393,7 +393,7 @@ For instance we could have initialized the same source map as above simply doing
                                             where=lambda x: x[0] > initial_vessel_width + parameters.get_value("d"))
 
 However, the source map is not sufficient to define the initial condition we need. To do so, we need an additional
-mocafe object, a ``SourcesManager``:
+Mocafe object, a ``SourcesManager``:
 
 .. GENERATED FROM PYTHON SOURCE LINES 292-294
 

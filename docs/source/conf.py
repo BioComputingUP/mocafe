@@ -19,7 +19,7 @@ sys.path.append(os.path.abspath('.'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'mocafe'
+project = 'Mocafe'
 copyright = '2021, Franco Pradelli'
 author = 'Franco Pradelli'
 

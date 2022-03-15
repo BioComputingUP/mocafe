@@ -24,12 +24,12 @@ Prostate cancer
 ===============
 
 In this short demo we will show you how to simulate a phase field model described by G. Lorenzo and collaborators
-in 2016 :cite:`Lorenzo2016` using FEniCS and mocafe. The model was published on PNAS in 2016 and presents a
+in 2016 :cite:`Lorenzo2016` using FEniCS and Mocafe. The model was published on PNAS in 2016 and presents a
 continuous mathematical model able to reproduce the growth pattern of prostate cancer at tissue scale.
 
-How to run this example on mocafe
+How to run this example on Mocafe
 ---------------------------------
-Make sure you have FEniCS and mocafe installed and download the source script of this page (see above for the link).
+Make sure you have FEniCS and Mocafe installed and download the source script of this page (see above for the link).
 Then, simply run it using python:
 
 .. code-block:: console
@@ -89,7 +89,7 @@ FEniCS workflow we outlined in the demo :ref:`FENICS_INTRO`.
 Initial setup
 ^^^^^^^^^^^^^
 To reproduce this model we need first to import everything we need throughout
-the simulation. Notice that while most of the packages are provided by mocafe, we also use some other stuff.
+the simulation. Notice that while most of the packages are provided by Mocafe, we also use some other stuff.
 
 .. GENERATED FROM PYTHON SOURCE LINES 74-86
 
@@ -141,7 +141,7 @@ Then, we can define the files where to save our result for visualization and pos
 for saving FEniCS simulations is using ``.xdmf`` files, which can easily be visualized in
 `Paraview <https://www.paraview.org/>`_.
 
-Even though FEniCS provides its own classes and method to define these files, in the following we use two mocafe
+Even though FEniCS provides its own classes and method to define these files, in the following we use two Mocafe
 methods for defining:
 
 - first, the folder where to save the result of the simulation. In this case, the folder will be based inside
@@ -172,7 +172,7 @@ methods for defining:
 
 .. GENERATED FROM PYTHON SOURCE LINES 121-128
 
-Finally, we define the parameters of the differential equation using a mocafe ``Parameter`` object, which is created
+Finally, we define the parameters of the differential equation using a Mocafe ``Parameter`` object, which is created
 for this purpose.
 
 A Parameters object can be initialized in several ways. In the following, we define it from a
@@ -246,7 +246,7 @@ type, "CG" (Continuous Galerking), of the first order, which can be created in F
     function_space = fenics.FunctionSpace(mesh, mixed_element)  # define function space for the given mesh
 
 However, the very same operation can be performed in just one line using the following method provided by
-mocafe:
+Mocafe:
 
 
 .. GENERATED FROM PYTHON SOURCE LINES 183-185
@@ -405,7 +405,7 @@ FEniCS interface reduces significantly the time required for the interpolation.
 
 .. GENERATED FROM PYTHON SOURCE LINES 277-279
 
-Now, we have everything in place to define our PDE system exploiting the related *mocafe* functions contained in the
+Now, we have everything in place to define our PDE system exploiting the related Mocafe functions contained in the
 module ``pc_model``:
 
 .. GENERATED FROM PYTHON SOURCE LINES 279-284

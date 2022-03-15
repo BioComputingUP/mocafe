@@ -1,8 +1,8 @@
 Installation
 ============
-Currently, *mocafe* has been tested on:
+Currently, Mocafe has been tested on:
 
-- Linux (Ubuntu)
+- Linux (Ubuntu 20.04)
 - Windows (using Windows Subsystem for Linux 2.0)
 
 *Notice:* WSL is available for Windows 10 onwards.
@@ -16,7 +16,13 @@ First of all, if you don't already have it on your system, it is recommended to 
     sudo apt install openmpi-bin
 
 
-And test it using ``mpirun --version``. If everything worked out well, you should get something like:
+And test it typing:
+
+.. code-block::
+
+    mpirun --version
+
+If everything worked out well, you should get something like:
 
 .. code-block:: console
 
@@ -42,11 +48,16 @@ Test if FEniCS has been correctly installed trying to import it on IPython:
     >>> import fenics
     >>>
 
-If FEniCS works, you can proceed to installing *mocafe* using ``pip``:
+If you encounter errors, you can:
+
+* Use the Singularity container of Mocafe (see section :ref:`Mocafe singularity`
+* Try to install FEniCS in other ways; see `FEniCS 2019 Download page <https://fenicsproject.org/download/archive/>`_
+
+If FEniCS works, you can proceed to installing mocafe using ``pip``:
 
 .. code-block:: console
 
-    pip3 install git+https://github.com/fpradelli94/mocafe#egg=mocafe
+    pip3 install git+https://github.com/BioComputingUP/mocafe#egg=mocafe
 
 Test it executing the main script:
 
@@ -58,19 +69,26 @@ I everything is properly working, the output should be:
 
 .. code-block:: console
 
-    Your mocafe is ready!
+    Your Mocafe is ready!
 
 *Note*: FEniCS is transitioning from version "2019" to FEniCSx, so the ``apt`` package might not be supported in the
-future. In that case, consider using the *mocafe* container as explained below.
+future. In that case, consider using the Mocafe container as explained below.
+
+.. _Mocafe singularity:
 
 Install Singularity container
 ------------------------------
-**If you don't have Singularity installed**, just **follow the instructions** provided at the official `documentation
-page for SingularityCE <https://sylabs.io/docs>`_.
+**If you don't have Singularity installed**, just **follow the instructions** provided at the official documentation
+page for SingularityCE. You can find the last version of SingularityCE documentation `at this link <https://sylabs.io/docs>`_.
 
 **If you have Singularity**:
 
-1. Download the definition file ``mocafe.def`` from :download:`here <../../singularity/mocafe.def>`).
+1. Download the definition file ``mocafe.def`` from `here <https://github.com/BioComputingUP/mocafe/blob/main/singularity/mocafe.def>`_,
+   or, if you have ``wget``:
+
+    .. code-block:: console
+
+         wget https://raw.githubusercontent.com/BioComputingUP/mocafe/main/singularity/mocafe.def
 
 2. From the terminal, built the container (it might take some time):
 
@@ -78,7 +96,7 @@ page for SingularityCE <https://sylabs.io/docs>`_.
 
         sudo singularity build mocafe.sif mocafe.def
 
-Now you already have a Singularity image with all you need to use *mocafe* on your system.
+Now you already have a Singularity image with all you need to use Mocafe on your system.
 
 **To test the container**:
 
@@ -98,33 +116,33 @@ If everything is working properly, you should see the output message:
 
 .. code-block:: console
 
-    Your mocafe is ready!
+    Your Mocafe is ready!
 
-And now you can run any *mocafe* or FEniCS script inside the container.
+And now you can run any Mocafe or FEniCS script inside the container.
 
 *Notice*: by default, Singularity binds the home path of the container with the home of the host system. So, you can
 find and use any file of your host system inside the container.
 
 Uninstalling
 ------------
-In case you want to remove *mocafe* and its dependencies from your system, you just need to follow the instructions
+In case you want to remove Mocafe and its dependencies from your system, you just need to follow the instructions
 provided below. Notice that uninstalling instruction change depending on the installation procedure you followed.
 
-In case you installed *mocafe* using ``apt`` and ``apt``:
+In case you installed Mocafe using ``apt`` and ``apt``:
 
-1. Uninstall *mocafe* and its python dependencies using ``pip uninstall``; see section :ref:`uninstalling-mocafe`
+1. Uninstall Mocafe and its python dependencies using ``pip uninstall``; see section :ref:`uninstalling-mocafe`
 2. Remove FEniCS using ``apt autoremove``; see section :ref:`remove-fenics-apt`
 
-In case you installed *mocafe* using Singularity:
+In case you installed Mocafe using Singularity:
 
-1. Remove the *mocafe* container; see section :ref:`remove-mocafe-container`
+1. Remove the Mocafe container; see section :ref:`remove-mocafe-container`
 2. Remove Singularity (in case you don't need it anymore); see section :ref:`remove-singularity`
 
 .. _remove-mocafe-container:
 
-Remove *mocafe* container
+Remove Mocafe container
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-To remove correctly the *mocafe* container from your system, you need to remove all the cached data:
+To remove correctly the Mocafe container from your system, you need to remove all the cached data:
 
 .. code-block:: console
 
@@ -154,7 +172,7 @@ The easier way to remove it is to just remove the following folders from your co
 
 .. _uninstalling-mocafe:
 
-Uninstalling *mocafe*
+Uninstalling Mocafe
 ^^^^^^^^^^^^^^^^^^^^^^
 To do so, you just need to type:
 
@@ -162,7 +180,7 @@ To do so, you just need to type:
 
     pip uninstall mocafe
 
-Notice that *mocafe* has some dependencies, such as ``tqdm``, ``pandas``, and so on, that won't be automatically
+Notice that Mocafe has some dependencies, such as ``tqdm``, ``pandas``, and so on, that won't be automatically
 removed with the command above. To remove them, you need to tell ``pip`` to do so.
 
 This is what you need to type to remove *moacfe* with all its dependencies:

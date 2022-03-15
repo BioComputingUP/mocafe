@@ -7,7 +7,7 @@
 Demo Gallery
 =================
 This Demo Gallery provide some Python scripts where you see how to implment
-specific Phase Field models step by step using FEniCS and *mocafe*.
+specific Phase Field models step by step using FEniCS and Mocafe.
 
 Also, a brief introduction to the FEniCS platform is provided.
 
@@ -60,7 +60,7 @@ Just click on the demo you'd like to see:
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="How to run this example on mocafe --------------------------------- Make sure you have FEniCS a...">
+    <div class="sphx-glr-thumbcontainer" tooltip="How to run this example on Mocafe --------------------------------- Make sure you have FEniCS a...">
 
 .. only:: html
 
@@ -102,12 +102,12 @@ Just click on the demo you'd like to see:
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="For this reason *mocafe* provides tool to make simulation management easier. To see this in act...">
+    <div class="sphx-glr-thumbcontainer" tooltip="For this reason Mocafe provides tool to make simulation management easier. To see this in actio...">
 
 .. only:: html
 
  .. figure:: /demo_doc/images/thumb/sphx_glr_multiple_pc_simulations_thumb.png
-     :alt: Save simulations meta-data
+     :alt: Save simulations meta-data 1
 
      :ref:`sphx_glr_demo_doc_multiple_pc_simulations.py`
 
@@ -141,6 +141,27 @@ Just click on the demo you'd like to see:
    :hidden:
 
    /demo_doc/angiogenesis_3d
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="For this reason Mocafe provides tool to make simulation management easier. To see this in actio...">
+
+.. only:: html
+
+ .. figure:: /demo_doc/images/thumb/sphx_glr_multiple_angiogenesis_simulations_thumb.png
+     :alt: Save simulations meta-data 2
+
+     :ref:`sphx_glr_demo_doc_multiple_angiogenesis_simulations.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /demo_doc/multiple_angiogenesis_simulations
 .. raw:: html
 
     <div class="sphx-glr-clear"></div>

@@ -24,12 +24,12 @@ Angiogenesis 3D
 ===============
 
 In this short demo we will show you how to simulate a phase field model described by Travasso et al. in 2011
-:cite:`Travasso2011a` using FEniCS and mocafe in 3D. You'll notice that the script is just the same of the 2D
+:cite:`Travasso2011a` using FEniCS and Mocafe in 3D. You'll notice that the script is just the same of the 2D
 demo: you just need to change the spatial domain!
 
-How to run this example on mocafe
+How to run this example on Mocafe
 ---------------------------------
-Make sure you have FEniCS and mocafe and download the source script of this page (see above for the link).
+Make sure you have FEniCS and Mocafe and download the source script of this page (see above for the link).
 
 Then, download the parameters file for the simulation from
 :download:`this link<./demo_in/angiogenesis_3d/parameters.ods>` and place it inside the folder
@@ -75,7 +75,7 @@ Implementation
 One of the great things of differential equations is that they are not really constrained to a specific space
 dimension. With appropriate initial and boundary conditions, you can possibly find the solution of a differential
 equation in any possible space. This is not always true for the software implementations of such differential
-equations; however, FEniCS and *mocafe* are designed to follow just the same philosophy. So, you'll notice this
+equations; however, FEniCS and Mocafe are designed to follow just the same philosophy. So, you'll notice this
 script is extremely similar to the one used for the 2D simulation.
 
 Setup

@@ -1,18 +1,18 @@
 """
 .. _Multiple PC Demo:
 
-Save simulations meta-data
-==========================
+Save simulations meta-data 1
+=============================
 Often phase field models are simulated using different parameters. However, managing different parameters values,
 simulation outputs, and other meta-data might be not trivial and can lead to mistakes and repeated simulations.
 
-For this reason *mocafe* provides tool to make simulation management easier. To see this in action, we are going
+For this reason Mocafe provides tool to make simulation management easier. To see this in action, we are going
 to simulate the Prostate Cancer models presented in :ref:`this demo<Prostate Cancer 2D Demo>` for different parameters
 values.
 
-How to run this example on mocafe
+How to run this example on Mocafe
 ---------------------------------
-Make sure you have FEniCS and *mocafe* installed and download the source script of this page (see above for the link).
+Make sure you have FEniCS and Mocafe installed and download the source script of this page (see above for the link).
 Then, simply run it using python:
 
 .. code-block:: console
@@ -66,7 +66,7 @@ you can easly import the ``.xdmf`` files generated during the simulation and vis
 # * setting parameters A = 600 [:math:`y^{-1}`] and :math:`\chi` = 600 [:math:`L \cdot g^{-1} \cdot y^{-1}`], which
 #   lead to a 'fingered' shape tumour;
 #
-# Now that we defined the ``run_prostate_cancer_simulation`` is very easy to do the same in *mocafe*. The first
+# Now that we defined the ``run_prostate_cancer_simulation`` is very easy to do the same in Mocafe. The first
 # step is to define a set of parameters (now the values of :math:`\chi` and A don't matter):
 #
 # .. code-block:: default

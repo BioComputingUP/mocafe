@@ -2,7 +2,7 @@ Installation
 ============
 Currently, Mocafe has been tested on:
 
-- Linux (Ubuntu)
+- Linux (Ubuntu 20.04)
 - Windows (using Windows Subsystem for Linux 2.0)
 
 *Notice:* WSL is available for Windows 10 onwards.
@@ -16,7 +16,13 @@ First of all, if you don't already have it on your system, it is recommended to 
     sudo apt install openmpi-bin
 
 
-And test it using ``mpirun --version``. If everything worked out well, you should get something like:
+And test it typing:
+
+.. code-block::
+
+    mpirun --version
+
+If everything worked out well, you should get something like:
 
 .. code-block:: console
 
@@ -42,6 +48,11 @@ Test if FEniCS has been correctly installed trying to import it on IPython:
     >>> import fenics
     >>>
 
+If you encounter errors, you can:
+
+* Use the Singularity container of Mocafe (see section :ref:`Mocafe singularity`
+* Try to install FEniCS in other ways; see `FEniCS 2019 Download page <https://fenicsproject.org/download/archive/>`_
+
 If FEniCS works, you can proceed to installing mocafe using ``pip``:
 
 .. code-block:: console
@@ -63,14 +74,21 @@ I everything is properly working, the output should be:
 *Note*: FEniCS is transitioning from version "2019" to FEniCSx, so the ``apt`` package might not be supported in the
 future. In that case, consider using the Mocafe container as explained below.
 
+.. _Mocafe singularity:
+
 Install Singularity container
 ------------------------------
-**If you don't have Singularity installed**, just **follow the instructions** provided at the official `documentation
-page for SingularityCE <https://sylabs.io/docs>`_.
+**If you don't have Singularity installed**, just **follow the instructions** provided at the official documentation
+page for SingularityCE. You can find the last version of SingularityCE documentation `at this link <https://sylabs.io/docs>`_.
 
 **If you have Singularity**:
 
-1. Download the definition file ``mocafe.def`` from :download:`here <../../singularity/mocafe.def>`).
+1. Download the definition file ``mocafe.def`` from `here <https://github.com/BioComputingUP/mocafe/blob/main/singularity/mocafe.def>`_,
+   or, if you have ``wget``:
+
+    .. code-block:: console
+
+         wget https://raw.githubusercontent.com/BioComputingUP/mocafe/main/singularity/mocafe.def
 
 2. From the terminal, built the container (it might take some time):
 

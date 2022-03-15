@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Prostate cancer &#8212; mocafe 1.0.0 documentation</title>
+    <title>Prostate cancer &#8212; Mocafe 1.0.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
@@ -48,11 +48,11 @@ to download the full example code</p>
 <section class="sphx-glr-example-title" id="prostate-cancer">
 <span id="prostate-cancer-2d-demo"></span><span id="sphx-glr-demo-doc-prostate-cancer2d-py"></span><h1>Prostate cancer<a class="headerlink" href="#prostate-cancer" title="Permalink to this headline">¶</a></h1>
 <p>In this short demo we will show you how to simulate a phase field model described by G. Lorenzo and collaborators
-in 2016 <span id="id1">[<a class="reference internal" href="../bib.html#id2" title="Guillermo Lorenzo, Michael A Scott, Kevin Tew, Thomas J R Hughes, Yongjie Jessica Zhang, Lei Liu, Guillermo Vilanova, and Hector Gomez. Tissue-scale, personalized modeling and simulation of prostate cancer growth. Proceedings of the National Academy of Sciences, 2016. URL: www.pnas.org/cgi/doi/10.1073/pnas.1615791113, doi:10.1073/pnas.1615791113.">LST+16</a>]</span> using FEniCS and mocafe. The model was published on PNAS in 2016 and presents a
+in 2016 <span id="id1">[<a class="reference internal" href="../bib.html#id2" title="Guillermo Lorenzo, Michael A Scott, Kevin Tew, Thomas J R Hughes, Yongjie Jessica Zhang, Lei Liu, Guillermo Vilanova, and Hector Gomez. Tissue-scale, personalized modeling and simulation of prostate cancer growth. Proceedings of the National Academy of Sciences, 2016. URL: www.pnas.org/cgi/doi/10.1073/pnas.1615791113, doi:10.1073/pnas.1615791113.">LST+16</a>]</span> using FEniCS and Mocafe. The model was published on PNAS in 2016 and presents a
 continuous mathematical model able to reproduce the growth pattern of prostate cancer at tissue scale.</p>
 <section id="how-to-run-this-example-on-mocafe">
-<h2>How to run this example on mocafe<a class="headerlink" href="#how-to-run-this-example-on-mocafe" title="Permalink to this headline">¶</a></h2>
-<p>Make sure you have FEniCS and mocafe installed and download the source script of this page (see above for the link).
+<h2>How to run this example on Mocafe<a class="headerlink" href="#how-to-run-this-example-on-mocafe" title="Permalink to this headline">¶</a></h2>
+<p>Make sure you have FEniCS and Mocafe installed and download the source script of this page (see above for the link).
 Then, simply run it using python:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python3 prostate_cancer2d.py</span>
 </pre></div>
@@ -98,7 +98,7 @@ FEniCS workflow we outlined in the demo <a class="reference internal" href="intr
 <section id="initial-setup">
 <h3>Initial setup<a class="headerlink" href="#initial-setup" title="Permalink to this headline">¶</a></h3>
 <p>To reproduce this model we need first to import everything we need throughout
-the simulation. Notice that while most of the packages are provided by mocafe, we also use some other stuff.</p>
+the simulation. Notice that while most of the packages are provided by Mocafe, we also use some other stuff.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">fenics</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
@@ -127,7 +127,7 @@ parallel using <code class="docutils literal notranslate"><span class="pre">mpir
 <p>Then, we can define the files where to save our result for visualization and post-processing. The recommended format
 for saving FEniCS simulations is using <code class="docutils literal notranslate"><span class="pre">.xdmf</span></code> files, which can easily be visualized in
 <a class="reference external" href="https://www.paraview.org/">Paraview</a>.</p>
-<p>Even though FEniCS provides its own classes and method to define these files, in the following we use two mocafe
+<p>Even though FEniCS provides its own classes and method to define these files, in the following we use two Mocafe
 methods for defining:</p>
 <ul class="simple">
 <li><p>first, the folder where to save the result of the simulation. In this case, the folder will be based inside
@@ -145,7 +145,7 @@ the current folder (<code class="docutils literal notranslate"><span class="pre"
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">phi_xdmf</span><span class="p">,</span> <span class="n">sigma_xdmf</span> <span class="o">=</span> <span class="n">setup_xdmf_files</span><span class="p">([</span><span class="s2">&quot;phi&quot;</span><span class="p">,</span> <span class="s2">&quot;sigma&quot;</span><span class="p">],</span> <span class="n">data_folder</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Finally, we define the parameters of the differential equation using a mocafe <code class="docutils literal notranslate"><span class="pre">Parameter</span></code> object, which is created
+<p>Finally, we define the parameters of the differential equation using a Mocafe <code class="docutils literal notranslate"><span class="pre">Parameter</span></code> object, which is created
 for this purpose.</p>
 <p>A Parameters object can be initialized in several ways. In the following, we define it from a
 dictionary where each key is the parameter name and the value is the actual value of the parameter. The values
@@ -203,7 +203,7 @@ type, “CG” (Continuous Galerking), of the first order, which can be created 
 </pre></div>
 </div>
 <p>However, the very same operation can be performed in just one line using the following method provided by
-mocafe:</p>
+Mocafe:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">function_space</span> <span class="o">=</span> <span class="n">get_mixed_function_space</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -293,7 +293,7 @@ FEniCS interface reduces significantly the time required for the interpolation.<
 <span class="n">s</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">s_exp</span><span class="p">,</span> <span class="n">function_space</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">collapse</span><span class="p">())</span>
 </pre></div>
 </div>
-<p>Now, we have everything in place to define our PDE system exploiting the related <em>mocafe</em> functions contained in the
+<p>Now, we have everything in place to define our PDE system exploiting the related Mocafe functions contained in the
 module <code class="docutils literal notranslate"><span class="pre">pc_model</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">TestFunctions</span><span class="p">(</span><span class="n">function_space</span><span class="p">)</span>
 <span class="n">weak_form</span> <span class="o">=</span> <span class="n">pc_model</span><span class="o">.</span><span class="n">prostate_cancer_form</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">phi0</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span> <span class="o">+</span> \
@@ -601,7 +601,7 @@ condition for the next iteration:</p>
             <p class="logo"><a href="../index.html">
               <img class="logo" src="../_static/200mocafe_logo.png" alt="Logo"/>
             </a></p>
-<h1 class="logo"><a href="../index.html">mocafe</a></h1>
+<h1 class="logo"><a href="../index.html">Mocafe</a></h1>
 
 
 
@@ -618,8 +618,9 @@ condition for the next iteration:</p>
 <li class="toctree-l2"><a class="reference internal" href="angiogenesis_2d.html">Angiogenesis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="angiogenesis_2d.html#full-code">Full code</a></li>
 <li class="toctree-l2"><a class="reference internal" href="prostate_cancer3d.html">Prostate cancer 3D</a></li>
-<li class="toctree-l2"><a class="reference internal" href="multiple_pc_simulations.html">Save simulations meta-data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multiple_pc_simulations.html">Save simulations meta-data 1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="angiogenesis_3d.html">Angiogenesis 3D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multiple_angiogenesis_simulations.html">Save simulations meta-data 2</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>

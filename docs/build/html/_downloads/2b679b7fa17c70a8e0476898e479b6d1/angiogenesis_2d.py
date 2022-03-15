@@ -8,9 +8,9 @@ In this demo we will reproduce the angiogenesis phase field model described by T
 factor (e.g. VEGF), which lead to the sprouting of a 2D vascular network. In the following, we will refer to these cells
 as *source cells*, since are the only source of angiogenic factor in this model.
 
-How to run this example on mocafe
+How to run this example on Mocafe
 ---------------------------------
-Make sure you have FEniCS and mocafe installed and download the source script of this page (see above for the link).
+Make sure you have FEniCS and Mocafe installed and download the source script of this page (see above for the link).
 
 Then, download the parameters file for the simulation from
 :download:`this link<./demo_in/angiogenesis_2d/parameters.ods>` and place it inside the folder
@@ -140,7 +140,7 @@ values.
 #
 # Setup
 # ^^^^^
-# With mocafe, the implementation of the model is not very different from any other FEniCS script. Let's start
+# With Mocafe, the implementation of the model is not very different from any other FEniCS script. Let's start
 # importing everything we need:
 import fenics
 import mshr
@@ -175,7 +175,7 @@ file_names = ["c", "af", "tipcells"]
 file_c, file_af, tipcells_xdmf = fu.setup_xdmf_files(file_names, data_folder)
 
 # %%
-# Finally, we need the parameters of the model. This time we exploit one of the functions of ``mocafe`` to retrieve
+# Finally, we need the parameters of the model. This time we exploit one of the functions of Mocafe to retrieve
 # them from an ods sheet:
 file_folder = Path(__file__).parent.resolve()
 parameters_file = file_folder/Path("demo_in/angiogenesis_2d/parameters.ods")
@@ -255,7 +255,7 @@ mu_0 = fenics.interpolate(fenics.Constant(0.), function_space.sub(0).collapse())
 # for the angiogenic factor.
 #
 # In the original paper, the source cells where placed randomly in the right part of the domain, relatively far
-# from the initial vessel. Creating this set up in mocafe is relatively easy. We start by defining the number
+# from the initial vessel. Creating this set up in Mocafe is relatively easy. We start by defining the number
 # of source cells we want, which we stored in the parameters file:
 n_sources = int(parameters.get_value("n_sources"))
 
@@ -273,7 +273,7 @@ sources_map = af_sourcing.RandomSourceMap(mesh,
                                           where=random_sources_domain)
 
 # %%
-# A ``SourceMap`` is a mocafe object which contains the position of all the source cells at a given time throughout
+# A ``SourceMap`` is a Mocafe object which contains the position of all the source cells at a given time throughout
 # the entire simulation. As you can see, you just need to input the mesh, the parameters, the number of sources
 # and where you want the sources to be placed. In this implementation, we defined the part of the domain where we
 # needed the source cell as ``mshr.Rectangle``, but the ``where`` argument can take as input also a function which
@@ -288,7 +288,7 @@ sources_map = af_sourcing.RandomSourceMap(mesh,
 #                                             where=lambda x: x[0] > initial_vessel_width + parameters.get_value("d"))
 #
 # However, the source map is not sufficient to define the initial condition we need. To do so, we need an additional
-# mocafe object, a ``SourcesManager``:
+# Mocafe object, a ``SourcesManager``:
 sources_manager = af_sourcing.SourcesManager(sources_map, mesh, parameters)
 
 # %%
