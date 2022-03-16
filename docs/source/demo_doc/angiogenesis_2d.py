@@ -509,6 +509,14 @@ for step in range(1, n_steps + 1):
 #   if rank == 0:
 #     pbar.update(1)
 #
+#
+# Result
+# ------
+# We uploaded on Youtube the result on this simulation. You can check it out below or at
+# `this link <https://youtu.be/xTOa6dTCWgk>`_
+#
+# ..  youtube:: xTOa6dTCWgk
+#
 # Full code
 # =========
 #

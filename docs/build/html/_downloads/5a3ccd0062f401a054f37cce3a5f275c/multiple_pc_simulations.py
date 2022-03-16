@@ -158,6 +158,14 @@ you can easly import the ``.xdmf`` files generated during the simulation and vis
 # As you can see, there are two nested folders inside ``demo_out/multiple_pc_simulations``, called ``0000``
 # (the first simulation) and ``0001`` (the second simulation). For each folder, the simulation output (``phi.*``
 # and ``sigma.*``) is stored together with the report file ``sim_info.html``, containing the simulation meta-data.
+#
+# Result
+# ------
+# We uploaded on Youtube the result on this simulation. You can check it out below or at
+# `this link <https://youtu.be/5L7fQbSnCkU>`_
+#
+# ..  youtube:: 5L7fQbSnCkU
+#
 
 # %%
 # .. _Multiple PC Demo-Full Code:

@@ -330,6 +330,15 @@ for step in range(1, n_steps + 1):
         pbar.update(1)
 
 # %%
+# Result
+# ------
+# We uploaded on Youtube the result on this simulation. You can check it out below or at
+# `this link <https://youtu.be/ho-V58mqDv8>`_
+#
+# ..  youtube:: ho-V58mqDv8
+#
+
+# %%
 # Full code
 # ---------
 #

@@ -76,7 +76,7 @@ Notice that ``run_prostate_cancer_simulation`` takes just three arguments:
 * ``data_folder``: the folder to store the simulation output
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 60-161
+.. GENERATED FROM PYTHON SOURCE LINES 60-169
 
 Managing multiple simulations
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -180,14 +180,22 @@ As you can see, there are two nested folders inside ``demo_out/multiple_pc_simul
 (the first simulation) and ``0001`` (the second simulation). For each folder, the simulation output (``phi.*``
 and ``sigma.*``) is stored together with the report file ``sim_info.html``, containing the simulation meta-data.
 
-.. GENERATED FROM PYTHON SOURCE LINES 163-167
+Result
+------
+We uploaded on Youtube the result on this simulation. You can check it out below or at
+`this link <https://youtu.be/5L7fQbSnCkU>`_
+
+..  youtube:: 5L7fQbSnCkU
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 171-175
 
 .. _Multiple PC Demo-Full Code:
 
 Full code
 ---------
 
-.. GENERATED FROM PYTHON SOURCE LINES 167-340
+.. GENERATED FROM PYTHON SOURCE LINES 175-348
 
 .. code-block:: default
 

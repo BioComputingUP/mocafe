@@ -636,7 +636,7 @@ Now, we can start iterating
             pbar.update(1)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 430-656
+.. GENERATED FROM PYTHON SOURCE LINES 430-664
 
 Notice that additionally to the system solution a number of operations are performed at each time stem which require
 a bit of clarification. Let's see the code step by step then.
@@ -719,6 +719,14 @@ and we update the progress bar, in order to inform the user on the progress of t
 
   if rank == 0:
     pbar.update(1)
+
+
+Result
+------
+We uploaded on Youtube the result on this simulation. You can check it out below or at
+`this link <https://youtu.be/xTOa6dTCWgk>`_
+
+..  youtube:: xTOa6dTCWgk
 
 Full code
 =========

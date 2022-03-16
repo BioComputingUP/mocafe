@@ -240,7 +240,7 @@ Then, the code remains the same. However, remember what we remarked in the 2D de
 solver configuration in order to solve the system on your computer, and it's not guaranteed that the configuration
 you choose for the 2D system is the best for the 3D system as well.
 
-.. GENERATED FROM PYTHON SOURCE LINES 181-224
+.. GENERATED FROM PYTHON SOURCE LINES 181-225
 
 .. code-block:: default
 
@@ -288,7 +288,18 @@ you choose for the 2D system is the best for the 3D system as well.
             progress_bar.update(1)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 225-370
+
+.. GENERATED FROM PYTHON SOURCE LINES 226-233
+
+Result
+------
+We uploaded on Youtube the result on this simulation. You can check it out below or at
+`this link <https://youtu.be/pcT0Vf-kHt0>`_
+
+..  youtube:: pcT0Vf-kHt0
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 235-380
 
 Full code
 ----------

@@ -403,7 +403,17 @@ differential equations this time, but this is the only change we made to the 2D 
             pbar.update(1)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 333-561
+.. GENERATED FROM PYTHON SOURCE LINES 333-340
+
+Result
+------
+We uploaded on Youtube the result on this simulation. You can check it out below or at
+`this link <https://youtu.be/ho-V58mqDv8>`_
+
+..  youtube:: ho-V58mqDv8
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 342-570
 
 Full code
 ---------
