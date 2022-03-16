@@ -1,11 +1,18 @@
 Installation
 ============
+You have two options to install Mocafe:
+
+* :ref:`Mocafe apt`
+* :ref:`Mocafe singularity`
+
 Currently, Mocafe has been tested on:
 
 - Linux (Ubuntu 20.04)
 - Windows (using Windows Subsystem for Linux 2.0)
 
 *Notice:* WSL is available for Windows 10 onwards.
+
+.. _Mocafe apt:
 
 Install with ``apt`` and ``pip``
 --------------------------------
@@ -78,9 +85,27 @@ future. In that case, consider using the Mocafe container as explained below.
 
 Install Singularity container
 ------------------------------
-**If you don't have Singularity installed**, just **follow the instructions** provided at the official documentation
-page for SingularityCE. You can find the last version of SingularityCE documentation `at this link <https://sylabs.io/docs>`_.
+Singularity, like Docker, is a container platform which allows you to create and run containers that package up pieces
+of software in a way that is portable and reproducible. We preferred using Singularity instead of Docker because it is
+optimized to work on large HPC clusters and take full advantage of MPI.
 
+Install Singularity
+^^^^^^^^^^^^^^^^^^^^
+If you don't have Singularity installed, just follow the instructions provided at the official documentation
+page for SingularityCE.
+
+You can find the SingularityCE documentation `at this link <https://sylabs.io/docs>`_. To find the installation
+instructions, just:
+
+* find the **User Guide** for the Last Released Version
+* look for the **Quick Installation Steps**
+* follow them to install Singularity
+
+Notice that the procedure might take some time and requires the installation of the Singularity dependencies and the
+``go`` language.
+
+Install and test Mocafe container
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 **If you have Singularity**:
 
 1. Download the definition file ``mocafe.def`` from `here <https://github.com/BioComputingUP/mocafe/blob/main/singularity/mocafe.def>`_,
@@ -128,7 +153,7 @@ Uninstalling
 In case you want to remove Mocafe and its dependencies from your system, you just need to follow the instructions
 provided below. Notice that uninstalling instruction change depending on the installation procedure you followed.
 
-In case you installed Mocafe using ``apt`` and ``apt``:
+In case you installed Mocafe using ``apt`` and ``pip``:
 
 1. Uninstall Mocafe and its python dependencies using ``pip uninstall``; see section :ref:`uninstalling-mocafe`
 2. Remove FEniCS using ``apt autoremove``; see section :ref:`remove-fenics-apt`
@@ -137,38 +162,6 @@ In case you installed Mocafe using Singularity:
 
 1. Remove the Mocafe container; see section :ref:`remove-mocafe-container`
 2. Remove Singularity (in case you don't need it anymore); see section :ref:`remove-singularity`
-
-.. _remove-mocafe-container:
-
-Remove Mocafe container
-^^^^^^^^^^^^^^^^^^^^^^^^^
-To remove correctly the Mocafe container from your system, you need to remove all the cached data:
-
-.. code-block:: console
-
-    singularity cache clean mocafe.sif
-
-Then, you can simply remove the ``mocafe.sif`` file:
-
-.. code-block:: console
-
-    rm mocafe.sif
-
-.. _remove-singularity:
-
-Remove Singularity
-^^^^^^^^^^^^^^^^^^
-There is no "out of the box" method to remove Singularity from your system, since the recommended way to install
-it is to compile it from source.
-The easier way to remove it is to just remove the following folders from your computer:
-
-.. code-block:: console
-
-    rm -rf /usr/local/etc/singularity \
-       /usr/local/etc/bash_completion.d/singularity \
-       /usr/local/bin/singularity \
-       /usr/local/libexec/singularity \
-       /usr/local/var/singularity
 
 .. _uninstalling-mocafe:
 
@@ -200,3 +193,35 @@ In case you installed FEniCS using apt, you can just remove it with all its depe
 .. code-block:: console
 
     sudo apt autoremove fenics -y
+
+.. _remove-mocafe-container:
+
+Remove Mocafe container
+^^^^^^^^^^^^^^^^^^^^^^^^^
+To remove correctly the Mocafe container from your system, you need to remove all the cached data:
+
+.. code-block:: console
+
+    singularity cache clean mocafe.sif
+
+Then, you can simply remove the ``mocafe.sif`` file:
+
+.. code-block:: console
+
+    rm mocafe.sif
+
+.. _remove-singularity:
+
+Remove Singularity
+^^^^^^^^^^^^^^^^^^
+There is no "out of the box" method to remove Singularity from your system, since the recommended way to install
+it is to compile it from source.
+The easier way to remove it is to just remove the following folders from your computer:
+
+.. code-block:: console
+
+    sudo rm -rf /usr/local/etc/singularity \
+       /usr/local/etc/bash_completion.d/singularity \
+       /usr/local/bin/singularity \
+       /usr/local/libexec/singularity \
+       /usr/local/var/singularity

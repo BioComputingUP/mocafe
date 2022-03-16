@@ -41,6 +41,11 @@
             
   <section id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>You have two options to install Mocafe:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#mocafe-apt"><span class="std std-ref">Install with apt and pip</span></a></p></li>
+<li><p><a class="reference internal" href="#mocafe-singularity"><span class="std std-ref">Install Singularity container</span></a></p></li>
+</ul>
 <p>Currently, Mocafe has been tested on:</p>
 <ul class="simple">
 <li><p>Linux (Ubuntu 20.04)</p></li>
@@ -48,7 +53,7 @@
 </ul>
 <p><em>Notice:</em> WSL is available for Windows 10 onwards.</p>
 <section id="install-with-apt-and-pip">
-<h2>Install with <code class="docutils literal notranslate"><span class="pre">apt</span></code> and <code class="docutils literal notranslate"><span class="pre">pip</span></code><a class="headerlink" href="#install-with-apt-and-pip" title="Permalink to this headline">¶</a></h2>
+<span id="mocafe-apt"></span><h2>Install with <code class="docutils literal notranslate"><span class="pre">apt</span></code> and <code class="docutils literal notranslate"><span class="pre">pip</span></code><a class="headerlink" href="#install-with-apt-and-pip" title="Permalink to this headline">¶</a></h2>
 <p>First of all, if you don’t already have it on your system, it is recommended to install MPI:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo apt install openmpi-bin</span>
 </pre></div>
@@ -99,8 +104,25 @@ future. In that case, consider using the Mocafe container as explained below.</p
 </section>
 <section id="install-singularity-container">
 <span id="mocafe-singularity"></span><h2>Install Singularity container<a class="headerlink" href="#install-singularity-container" title="Permalink to this headline">¶</a></h2>
-<p><strong>If you don’t have Singularity installed</strong>, just <strong>follow the instructions</strong> provided at the official documentation
-page for SingularityCE. You can find the last version of SingularityCE documentation <a class="reference external" href="https://sylabs.io/docs">at this link</a>.</p>
+<p>Singularity, like Docker, is a container platform which allows you to create and run containers that package up pieces
+of software in a way that is portable and reproducible. We preferred using Singularity instead of Docker because it is
+optimized to work on large HPC clusters and take full advantage of MPI.</p>
+<section id="install-singularity">
+<h3>Install Singularity<a class="headerlink" href="#install-singularity" title="Permalink to this headline">¶</a></h3>
+<p>If you don’t have Singularity installed, just follow the instructions provided at the official documentation
+page for SingularityCE.</p>
+<p>You can find the SingularityCE documentation <a class="reference external" href="https://sylabs.io/docs">at this link</a>. To find the installation
+instructions, just:</p>
+<ul class="simple">
+<li><p>find the <strong>User Guide</strong> for the Last Released Version</p></li>
+<li><p>look for the <strong>Quick Installation Steps</strong></p></li>
+<li><p>follow them to install Singularity</p></li>
+</ul>
+<p>Notice that the procedure might take some time and requires the installation of the Singularity dependencies and the
+<code class="docutils literal notranslate"><span class="pre">go</span></code> language.</p>
+</section>
+<section id="install-and-test-mocafe-container">
+<h3>Install and test Mocafe container<a class="headerlink" href="#install-and-test-mocafe-container" title="Permalink to this headline">¶</a></h3>
 <p><strong>If you have Singularity</strong>:</p>
 <ol class="arabic">
 <li><p>Download the definition file <code class="docutils literal notranslate"><span class="pre">mocafe.def</span></code> from <a class="reference external" href="https://github.com/BioComputingUP/mocafe/blob/main/singularity/mocafe.def">here</a>,
@@ -145,11 +167,12 @@ or, if you have <code class="docutils literal notranslate"><span class="pre">wge
 <p><em>Notice</em>: by default, Singularity binds the home path of the container with the home of the host system. So, you can
 find and use any file of your host system inside the container.</p>
 </section>
+</section>
 <section id="uninstalling">
 <h2>Uninstalling<a class="headerlink" href="#uninstalling" title="Permalink to this headline">¶</a></h2>
 <p>In case you want to remove Mocafe and its dependencies from your system, you just need to follow the instructions
 provided below. Notice that uninstalling instruction change depending on the installation procedure you followed.</p>
-<p>In case you installed Mocafe using <code class="docutils literal notranslate"><span class="pre">apt</span></code> and <code class="docutils literal notranslate"><span class="pre">apt</span></code>:</p>
+<p>In case you installed Mocafe using <code class="docutils literal notranslate"><span class="pre">apt</span></code> and <code class="docutils literal notranslate"><span class="pre">pip</span></code>:</p>
 <ol class="arabic simple">
 <li><p>Uninstall Mocafe and its python dependencies using <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">uninstall</span></code>; see section <a class="reference internal" href="#uninstalling-mocafe"><span class="std std-ref">Uninstalling Mocafe</span></a></p></li>
 <li><p>Remove FEniCS using <code class="docutils literal notranslate"><span class="pre">apt</span> <span class="pre">autoremove</span></code>; see section <a class="reference internal" href="#remove-fenics-apt"><span class="std std-ref">Remove FEniCS with apt</span></a></p></li>
@@ -159,32 +182,8 @@ provided below. Notice that uninstalling instruction change depending on the ins
 <li><p>Remove the Mocafe container; see section <a class="reference internal" href="#remove-mocafe-container"><span class="std std-ref">Remove Mocafe container</span></a></p></li>
 <li><p>Remove Singularity (in case you don’t need it anymore); see section <a class="reference internal" href="#remove-singularity"><span class="std std-ref">Remove Singularity</span></a></p></li>
 </ol>
-<section id="remove-mocafe-container">
-<span id="id1"></span><h3>Remove Mocafe container<a class="headerlink" href="#remove-mocafe-container" title="Permalink to this headline">¶</a></h3>
-<p>To remove correctly the Mocafe container from your system, you need to remove all the cached data:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">singularity cache clean mocafe.sif</span>
-</pre></div>
-</div>
-<p>Then, you can simply remove the <code class="docutils literal notranslate"><span class="pre">mocafe.sif</span></code> file:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">rm mocafe.sif</span>
-</pre></div>
-</div>
-</section>
-<section id="remove-singularity">
-<span id="id2"></span><h3>Remove Singularity<a class="headerlink" href="#remove-singularity" title="Permalink to this headline">¶</a></h3>
-<p>There is no “out of the box” method to remove Singularity from your system, since the recommended way to install
-it is to compile it from source.
-The easier way to remove it is to just remove the following folders from your computer:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">rm -rf /usr/local/etc/singularity \</span>
-<span class="go">   /usr/local/etc/bash_completion.d/singularity \</span>
-<span class="go">   /usr/local/bin/singularity \</span>
-<span class="go">   /usr/local/libexec/singularity \</span>
-<span class="go">   /usr/local/var/singularity</span>
-</pre></div>
-</div>
-</section>
 <section id="uninstalling-mocafe">
-<span id="id3"></span><h3>Uninstalling Mocafe<a class="headerlink" href="#uninstalling-mocafe" title="Permalink to this headline">¶</a></h3>
+<span id="id1"></span><h3>Uninstalling Mocafe<a class="headerlink" href="#uninstalling-mocafe" title="Permalink to this headline">¶</a></h3>
 <p>To do so, you just need to type:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip uninstall mocafe</span>
 </pre></div>
@@ -201,6 +200,30 @@ removed with the command above. To remove them, you need to tell <code class="do
 <span id="remove-fenics-apt"></span><h3>Remove FEniCS with apt<a class="headerlink" href="#remove-fenics-with-apt" title="Permalink to this headline">¶</a></h3>
 <p>In case you installed FEniCS using apt, you can just remove it with all its dependencies using <code class="docutils literal notranslate"><span class="pre">apt</span> <span class="pre">autoremove</span></code>:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo apt autoremove fenics -y</span>
+</pre></div>
+</div>
+</section>
+<section id="remove-mocafe-container">
+<span id="id2"></span><h3>Remove Mocafe container<a class="headerlink" href="#remove-mocafe-container" title="Permalink to this headline">¶</a></h3>
+<p>To remove correctly the Mocafe container from your system, you need to remove all the cached data:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">singularity cache clean mocafe.sif</span>
+</pre></div>
+</div>
+<p>Then, you can simply remove the <code class="docutils literal notranslate"><span class="pre">mocafe.sif</span></code> file:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">rm mocafe.sif</span>
+</pre></div>
+</div>
+</section>
+<section id="remove-singularity">
+<span id="id3"></span><h3>Remove Singularity<a class="headerlink" href="#remove-singularity" title="Permalink to this headline">¶</a></h3>
+<p>There is no “out of the box” method to remove Singularity from your system, since the recommended way to install
+it is to compile it from source.
+The easier way to remove it is to just remove the following folders from your computer:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo rm -rf /usr/local/etc/singularity \</span>
+<span class="go">   /usr/local/etc/bash_completion.d/singularity \</span>
+<span class="go">   /usr/local/bin/singularity \</span>
+<span class="go">   /usr/local/libexec/singularity \</span>
+<span class="go">   /usr/local/var/singularity</span>
 </pre></div>
 </div>
 </section>
