@@ -46,14 +46,17 @@ Then, install FEniCS using ``apt-get``:
     sudo apt-get update
     sudo apt-get install fenics
 
-Test if FEniCS has been correctly installed trying to import it on IPython:
+Test if FEniCS has been correctly installed trying to import it:
 
 .. code-block:: console
 
-    python3
-    Type "help", "copyright", "credits" or "license" for more information.
-    >>> import fenics
-    >>>
+    python3 -c "import fenics; print('FEniCS is Installed')"
+
+If everything worked out well, you should get the message:
+
+.. code-block:: console
+
+    FEniCS is Installed
 
 If you encounter errors, you can:
 
