@@ -221,6 +221,16 @@ for current_step in range(n_steps):
     if rank == 0:
         progress_bar.update(1)
 
+
+# %%
+# Result
+# ------
+# We uploaded on Youtube the result on this simulation. You can check it out below or at
+# `this link <https://youtu.be/pcT0Vf-kHt0>`_
+#
+# ..  youtube:: pcT0Vf-kHt0
+#
+
 # %%
 # Full code
 # ----------
