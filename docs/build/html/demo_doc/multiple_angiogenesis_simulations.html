@@ -127,7 +127,7 @@ a name and a description to each simulated condition.</p>
         <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Travasso Fig3C&quot;</span><span class="p">,</span>
         <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Simulation reported in Travasso et al. (2011) in Figure 3C. The proliferation rate is low.&quot;</span><span class="p">,</span>
         <span class="s2">&quot;parameters_to_change&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;alpha_p&quot;</span><span class="p">:</span> <span class="n">std_parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;alpha_p&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
-                              <span class="s2">&quot;chi&quot;</span><span class="p">:</span> <span class="n">std_parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;chi&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.625</span><span class="p">}</span>
+                                 <span class="s2">&quot;chi&quot;</span><span class="p">:</span> <span class="n">std_parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;chi&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.625</span><span class="p">}</span>
     <span class="p">},</span>
     <span class="s2">&quot;sim3D&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Travasso Fig3D&quot;</span><span class="p">,</span>
@@ -186,6 +186,57 @@ a name and a description to each simulated condition.</p>
                            <span class="n">error_msg</span><span class="o">=</span><span class="n">error_message</span><span class="p">)</span>
 </pre></div>
 </div>
+</section>
+</section>
+<section id="result">
+<h2>Result<a class="headerlink" href="#result" title="Permalink to this headline">¶</a></h2>
+<p>here you can find the screenshots of the results for each simulation compared with the original results reported
+by Travasso et al. <span id="id2">[<a class="reference internal" href="../bib.html#id7" title="Rui D.M. Travasso, Eugenia Corvera Poiré, Mario Castro, Juan Carlos Rodrguez-Manzaneque, and A. Hernández-Machado. Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5):e19989, 2011. URL: http://www.fct.mctes.pt http://www.gulbenkian.pt/ http://www.conacyt.mx/ http://www.isciii.es/ http://www.micinn.es/, doi:10.1371/journal.pone.0019989.">TPoireC+11</a>]</span>.</p>
+<section id="experiment-reported-in-figure-2-of-the-original-paper">
+<h3>Experiment reported in Figure 2 of the original paper<a class="headerlink" href="#experiment-reported-in-figure-2-of-the-original-paper" title="Permalink to this headline">¶</a></h3>
+<p>A lower value of the <span class="math notranslate nohighlight">\(\chi\)</span> parameter lead to a lower tip cell velocity, and thus to thicker and less developed
+vessels. This is clearly visible in the original publication comparing Fig 2C, which is the models simulated with a
+low <span class="math notranslate nohighlight">\(\chi\)</span> value, with Fig 2D, where the <span class="math notranslate nohighlight">\(\chi\)</span> value is normal. Below you can find a crop of the image
+reported in the original publication:</p>
+<a class="reference internal image-reference" href="../_images/TravassoFig2_original.png"><img alt="../_images/TravassoFig2_original.png" src="../_images/TravassoFig2_original.png" style="width: 600px;" /></a>
+<p>And here is the result with Mocafe (i.e. with the script reported on this page):</p>
+<a class="reference internal image-reference" href="../_images/TravassoFig2.png"><img alt="../_images/TravassoFig2.png" src="../_images/TravassoFig2.png" style="width: 600px;" /></a>
+<p>Notice that, even though the result is not exactly the same, the qualitative aspects are preserved. The possible
+reasons for the differences in the results are many:</p>
+<ul class="simple">
+<li><p>not all parameters value are reported in the original publication (e.g. the number of angiogenic factor sources)</p></li>
+<li><p>the position of the angiogenic factor sources and of the tip cells is random</p></li>
+</ul>
+</section>
+<section id="experiment-reported-in-figure-3-of-the-original-paper">
+<h3>Experiment reported in Figure 3 of the original paper<a class="headerlink" href="#experiment-reported-in-figure-3-of-the-original-paper" title="Permalink to this headline">¶</a></h3>
+<p>A difference in the proliferation rate of the endothelial cells can lead to thicker or thinner vessels. This is shown
+in Figure 3 of the original publication, where they compared a simulation with a low proliferation rate (3C) and
+a simulation with an high proliferation rate. Below you can find a crop of the image reported in
+the original publication:</p>
+<a class="reference internal image-reference" href="../_images/TravassoFig3_original.png"><img alt="../_images/TravassoFig3_original.png" src="../_images/TravassoFig3_original.png" style="width: 600px;" /></a>
+<p>And here is the result with Mocafe (i.e. with the script reported on this page):</p>
+<a class="reference internal image-reference" href="../_images/TravassoFig3.png"><img alt="../_images/TravassoFig3.png" src="../_images/TravassoFig3.png" style="width: 600px;" /></a>
+<p>Notice that, even though the result is not exactly the same, the qualitative aspects are preserved. The possible
+reasons for the differences in the results are many:</p>
+<ul class="simple">
+<li><p>not all parameters value are reported in the original publication (e.g. the number of angiogenic factor sources)</p></li>
+<li><p>the position of the angiogenic factor sources and of the tip cells is random</p></li>
+</ul>
+</section>
+<section id="experiment-reported-in-figure-4-of-the-original-paper">
+<h3>Experiment reported in Figure 4 of the original paper<a class="headerlink" href="#experiment-reported-in-figure-4-of-the-original-paper" title="Permalink to this headline">¶</a></h3>
+<p>A difference in the angiogenic factor production by the sources can lead to a sparser or denser network of
+blood vessels. This is shown in Figure 4 of the original publication, where they compared a simulation with low
+angiogenic factor production (4C) with a simulation with high angiogenic factor production (4D).
+Below you can find a crop of the image reported in the original publication:</p>
+<a class="reference internal image-reference" href="../_images/TravassoFig4_original.png"><img alt="../_images/TravassoFig4_original.png" src="../_images/TravassoFig4_original.png" style="width: 600px;" /></a>
+<p>And here is the result with Mocafe (i.e. with the script reported on this page):</p>
+<a class="reference internal image-reference" href="../_images/TravassoFig4.png"><img alt="../_images/TravassoFig4.png" src="../_images/TravassoFig4.png" style="width: 600px;" /></a>
+<p>In Mocafe the difference is less evident than the one evidenced in the original publication. Still, the blood
+vessels network reported on the right looks slightly denser than the one on the left. The differences we observe
+in respect with the original publication are probably due to the number of angiogenic factor sources, that was not
+reported in the original publication and it is critical for this simulation in particular.</p>
 </section>
 </section>
 <section id="full-code">

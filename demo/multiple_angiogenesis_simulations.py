@@ -101,7 +101,7 @@ you can easly import the ``.xdmf`` files generated during the simulation and vis
 #            "name": "Travasso Fig3C",
 #            "desc": "Simulation reported in Travasso et al. (2011) in Figure 3C. The proliferation rate is low.",
 #            "parameters_to_change": {"alpha_p": std_parameters.get_value("alpha_p") / 2,
-#                                  "chi": std_parameters.get_value("chi") * 0.625}
+#                                     "chi": std_parameters.get_value("chi") * 0.625}
 #        },
 #        "sim3D": {
 #            "name": "Travasso Fig3D",
@@ -161,6 +161,74 @@ you can easly import the ``.xdmf`` files generated during the simulation and vis
 #                               sim_description=test_conditions[sim_dict_key]['desc'],
 #                               error_msg=error_message)
 #
+
+# %%
+# Result
+# ------
+# here you can find the screenshots of the results for each simulation compared with the original results reported
+# by Travasso et al. :cite:`Travasso2011a`.
+#
+# Experiment reported in Figure 2 of the original paper
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# A lower value of the :math:`\chi` parameter lead to a lower tip cell velocity, and thus to thicker and less developed
+# vessels. This is clearly visible in the original publication comparing Fig 2C, which is the models simulated with a
+# low :math:`\chi` value, with Fig 2D, where the :math:`\chi` value is normal. Below you can find a crop of the image
+# reported in the original publication:
+#
+# .. image:: ./images/multiple_angiogenesis_simulations/TravassoFig2_original.png
+#   :width: 600
+#
+# And here is the result with Mocafe (i.e. with the script reported on this page):
+#
+# .. image:: ./images/multiple_angiogenesis_simulations/TravassoFig2.png
+#   :width: 600
+#
+# Notice that, even though the result is not exactly the same, the qualitative aspects are preserved. The possible
+# reasons for the differences in the results are many:
+#
+# * not all parameters value are reported in the original publication (e.g. the number of angiogenic factor sources)
+# * the position of the angiogenic factor sources and of the tip cells is random
+#
+# Experiment reported in Figure 3 of the original paper
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# A difference in the proliferation rate of the endothelial cells can lead to thicker or thinner vessels. This is shown
+# in Figure 3 of the original publication, where they compared a simulation with a low proliferation rate (3C) and
+# a simulation with an high proliferation rate. Below you can find a crop of the image reported in
+# the original publication:
+#
+# .. image:: ./images/multiple_angiogenesis_simulations/TravassoFig3_original.png
+#    :width: 600
+#
+# And here is the result with Mocafe (i.e. with the script reported on this page):
+#
+# .. image:: ./images/multiple_angiogenesis_simulations/TravassoFig3.png
+#   :width: 600
+#
+# Notice that, even though the result is not exactly the same, the qualitative aspects are preserved. The possible
+# reasons for the differences in the results are many:
+#
+# * not all parameters value are reported in the original publication (e.g. the number of angiogenic factor sources)
+# * the position of the angiogenic factor sources and of the tip cells is random
+#
+# Experiment reported in Figure 4 of the original paper
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# A difference in the angiogenic factor production by the sources can lead to a sparser or denser network of
+# blood vessels. This is shown in Figure 4 of the original publication, where they compared a simulation with low
+# angiogenic factor production (4C) with a simulation with high angiogenic factor production (4D).
+# Below you can find a crop of the image reported in the original publication:
+#
+# .. image:: ./images/multiple_angiogenesis_simulations/TravassoFig4_original.png
+#    :width: 600
+#
+# And here is the result with Mocafe (i.e. with the script reported on this page):
+#
+# .. image:: ./images/multiple_angiogenesis_simulations/TravassoFig4.png
+#   :width: 600
+#
+# In Mocafe the difference is less evident than the one evidenced in the original publication. Still, the blood
+# vessels network reported on the right looks slightly denser than the one on the left. The differences we observe
+# in respect with the original publication are probably due to the number of angiogenic factor sources, that was not
+# reported in the original publication and it is critical for this simulation in particular.
 
 # %%
 #
