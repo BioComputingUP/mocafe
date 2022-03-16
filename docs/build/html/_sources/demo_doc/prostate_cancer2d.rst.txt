@@ -543,7 +543,7 @@ Finally, we can iterate in time to solve the system with the given solver at eac
             progress_bar.update(1)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 380-584
+.. GENERATED FROM PYTHON SOURCE LINES 380-591
 
 Let's analyze everything step-by-step. First, we update the simulation time:
 
@@ -607,6 +607,13 @@ And finally, we write the result on the ``.xdmf`` files and update the progress 
   # update progress bar
   if rank == 0:
       progress_bar.update(1)
+
+
+Result
+------
+We uploaded on Youtube the result on this simulation. You can check it out below or at `this link <https://youtu.be/2isujSzWH1A>`_
+
+..  youtube:: 2isujSzWH1A
 
 Full code
 ---------

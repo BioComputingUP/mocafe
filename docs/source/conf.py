@@ -34,7 +34,8 @@ release = '1.0.0'
 # ones.
 extensions = ['sphinx.ext.autodoc',
               'sphinx_gallery.gen_gallery',
-              'sphinxcontrib.bibtex']
+              'sphinxcontrib.bibtex',
+              'sphinxcontrib.youtube']
 
 # configure sphinx-gallery
 sphinx_gallery_conf = {

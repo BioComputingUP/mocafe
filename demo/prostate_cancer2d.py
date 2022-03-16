@@ -440,6 +440,13 @@ for current_step in range(n_steps):
 #   if rank == 0:
 #       progress_bar.update(1)
 #
+#
+# Result
+# ------
+# We uploaded on Youtube the result on this simulation. You can check it out below or at `this link <https://youtu.be/2isujSzWH1A>`_
+#
+# ..  youtube:: 2isujSzWH1A
+#
 # Full code
 # ---------
 #
