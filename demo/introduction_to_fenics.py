@@ -14,6 +14,9 @@ mention a few, you can find for free the book `The FEniCS Tutorial <https://feni
 created by J. S. Dokken <https://jorgensd.github.io/dolfinx-tutorial/>`_ for the development version of FEniCS,
 FEniCSx. In case you feel the need of a more gradual introduction to FEniCS, we recommend you those websites.
 
+.. contents:: Table of Contents
+   :local:
+
 What is FEniCS
 ---------------
 `FEniCS <https://fenicsproject.org/>`_ :cite:`FENICS2015` is a popular open source computing platform for solving PDEs,
