@@ -8,6 +8,9 @@ In this short demo we will show you how to simulate a phase field model describe
 :cite:`Travasso2011a` using FEniCS and Mocafe in 3D. You'll notice that the script is just the same of the 2D
 demo: you just need to change the spatial domain!
 
+.. contents:: Table of Contents
+   :local:
+
 How to run this example on Mocafe
 ---------------------------------
 Make sure you have FEniCS and Mocafe and download the source script of this page (see above for the link).
@@ -336,6 +339,14 @@ for step in range(1, n_steps + 1):
 # `this link <https://youtu.be/ho-V58mqDv8>`_
 #
 # ..  youtube:: ho-V58mqDv8
+#
+# Visualize the result with ParaView
+# ----------------------------------
+# The result of the simulation is stored in the ``.xdmf`` file generated, which are easy to load and visualize in
+# expernal softwares as ParaView. If you don't now how to do it, you can check out the tutorial below or at
+# `this Youtube link <https://youtu.be/ATzlVEIjicI>`_.
+#
+# ..  youtube:: ATzlVEIjicI
 #
 
 # %%

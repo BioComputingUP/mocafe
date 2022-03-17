@@ -8,6 +8,9 @@ In this demo we will reproduce the angiogenesis phase field model described by T
 factor (e.g. VEGF), which lead to the sprouting of a 2D vascular network. In the following, we will refer to these cells
 as *source cells*, since are the only source of angiogenic factor in this model.
 
+.. contents:: Table of Contents
+   :local:
+
 How to run this example on Mocafe
 ---------------------------------
 Make sure you have FEniCS and Mocafe installed and download the source script of this page (see above for the link).
@@ -516,6 +519,14 @@ for step in range(1, n_steps + 1):
 # `this link <https://youtu.be/xTOa6dTCWgk>`_
 #
 # ..  youtube:: xTOa6dTCWgk
+#
+# Visualize the result with ParaView
+# ----------------------------------
+# The result of the simulation is stored in the ``.xdmf`` file generated, which are easy to load and visualize in
+# expernal softwares as ParaView. If you don't now how to do it, you can check out the tutorial below or at
+# `this Youtube link <https://youtu.be/TiqoMD-eGM4>`_.
+#
+# ..  youtube:: TiqoMD-eGM4
 #
 # Full code
 # =========

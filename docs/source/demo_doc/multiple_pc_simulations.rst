@@ -29,6 +29,9 @@ For this reason Mocafe provides tool to make simulation management easier. To se
 to simulate the Prostate Cancer models presented in :ref:`this demo<Prostate Cancer 2D Demo>` for different parameters
 values.
 
+.. contents:: Table of Contents
+   :local:
+
 How to run this example on Mocafe
 ---------------------------------
 Make sure you have FEniCS and Mocafe installed and download the source script of this page (see above for the link).
@@ -52,7 +55,7 @@ Visualize the results of this simulation
 You need to have `Paraview <https://www.paraview.org/>`_ to visualize the results. Once you have installed it,
 you can easly import the ``.xdmf`` files generated during the simulation and visualize the result.
 
-.. GENERATED FROM PYTHON SOURCE LINES 37-58
+.. GENERATED FROM PYTHON SOURCE LINES 40-61
 
 Implementation
 ^^^^^^^^^^^^^^
@@ -76,7 +79,7 @@ Notice that ``run_prostate_cancer_simulation`` takes just three arguments:
 * ``data_folder``: the folder to store the simulation output
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 60-169
+.. GENERATED FROM PYTHON SOURCE LINES 63-172
 
 Managing multiple simulations
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -188,14 +191,14 @@ We uploaded on Youtube the result on this simulation. You can check it out below
 ..  youtube:: 5L7fQbSnCkU
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 171-175
+.. GENERATED FROM PYTHON SOURCE LINES 174-178
 
 .. _Multiple PC Demo-Full Code:
 
 Full code
 ---------
 
-.. GENERATED FROM PYTHON SOURCE LINES 175-348
+.. GENERATED FROM PYTHON SOURCE LINES 178-351
 
 .. code-block:: default
 

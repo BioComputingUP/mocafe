@@ -29,6 +29,9 @@ For this reason Mocafe provides tool to make simulation management easier. To se
 to simulate the Angiogenesis models presented in :ref:`this demo<Angiogenesis 2D Demo>` for different parameters
 values.
 
+.. contents:: Table of Contents
+   :local:
+
 How to run this example on Mocafe
 ---------------------------------
 Make sure you have FEniCS and Mocafe installed and download the source script of this page (see above for the link).
@@ -52,7 +55,7 @@ Visualize the results of this simulation
 You need to have `Paraview <https://www.paraview.org/>`_ to visualize the results. Once you have installed it,
 you can easly import the ``.xdmf`` files generated during the simulation and visualize the result.
 
-.. GENERATED FROM PYTHON SOURCE LINES 37-58
+.. GENERATED FROM PYTHON SOURCE LINES 40-61
 
 Implementation
 ^^^^^^^^^^^^^^
@@ -76,7 +79,7 @@ Notice that ``run_angiogenesis_simulation`` takes just three arguments:
 * ``data_folder``: the folder to store the simulation output
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 60-164
+.. GENERATED FROM PYTHON SOURCE LINES 63-167
 
 Managing multiple simulations
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -183,7 +186,7 @@ Finally, we use a for loop to simulate all the conditions defined in the diction
                               error_msg=error_message)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 166-232
+.. GENERATED FROM PYTHON SOURCE LINES 169-235
 
 Result
 ------
@@ -252,14 +255,14 @@ vessels network reported on the right looks slightly denser than the one on the 
 in respect with the original publication are probably due to the number of angiogenic factor sources, that was not
 reported in the original publication and it is critical for this simulation in particular.
 
-.. GENERATED FROM PYTHON SOURCE LINES 234-238
+.. GENERATED FROM PYTHON SOURCE LINES 237-241
 
 .. _Multiple Angiogenesis Demo-Full Code:
 
 Full code
 ---------
 
-.. GENERATED FROM PYTHON SOURCE LINES 239-460
+.. GENERATED FROM PYTHON SOURCE LINES 242-463
 
 .. code-block:: default
 

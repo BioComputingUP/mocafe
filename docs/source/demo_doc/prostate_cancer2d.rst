@@ -27,6 +27,9 @@ In this short demo we will show you how to simulate a phase field model describe
 in 2016 :cite:`Lorenzo2016` using FEniCS and Mocafe. The model was published on PNAS in 2016 and presents a
 continuous mathematical model able to reproduce the growth pattern of prostate cancer at tissue scale.
 
+.. contents:: Table of Contents
+   :local:
+
 How to run this example on Mocafe
 ---------------------------------
 Make sure you have FEniCS and Mocafe installed and download the source script of this page (see above for the link).
@@ -79,7 +82,7 @@ a distribution :math:`s`, and that the nutrient is consumed at a constant rate b
 :math:`\gamma \sigma`.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 65-74
+.. GENERATED FROM PYTHON SOURCE LINES 68-77
 
 Implementation
 ------------------------------------------
@@ -91,7 +94,7 @@ Initial setup
 To reproduce this model we need first to import everything we need throughout
 the simulation. Notice that while most of the packages are provided by Mocafe, we also use some other stuff.
 
-.. GENERATED FROM PYTHON SOURCE LINES 74-86
+.. GENERATED FROM PYTHON SOURCE LINES 77-89
 
 .. code-block:: default
 
@@ -108,26 +111,26 @@ the simulation. Notice that while most of the packages are provided by Mocafe, w
     import mocafe.litforms.prostate_cancer as pc_model
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 87-91
+.. GENERATED FROM PYTHON SOURCE LINES 90-94
 
 Then, it is useful (even though not necessary) to do a number of operations before running our simulation.
 
 First of all, we shut down the logging messages from FEniCS, leaving only the error messages in case something goes
 *really* wrong. If you want to see the FEniCS logging messages, you can comment this line.
 
-.. GENERATED FROM PYTHON SOURCE LINES 91-93
+.. GENERATED FROM PYTHON SOURCE LINES 94-96
 
 .. code-block:: default
 
     fenics.set_log_level(fenics.LogLevel.ERROR)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 94-96
+.. GENERATED FROM PYTHON SOURCE LINES 97-99
 
 Then, we define the MPI rank for each process. Generally speaking, this is necessary for running the simulation in
 parallel using ``mpirun``, even though in this simulation is not largely used, as we are going to see.
 
-.. GENERATED FROM PYTHON SOURCE LINES 96-99
+.. GENERATED FROM PYTHON SOURCE LINES 99-102
 
 .. code-block:: default
 
@@ -135,7 +138,7 @@ parallel using ``mpirun``, even though in this simulation is not largely used, a
     rank = comm.Get_rank()
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 100-110
+.. GENERATED FROM PYTHON SOURCE LINES 103-113
 
 Then, we can define the files where to save our result for visualization and post-processing. The recommended format
 for saving FEniCS simulations is using ``.xdmf`` files, which can easily be visualized in
@@ -148,7 +151,7 @@ methods for defining:
   the current folder (``file_folder``) and it's called demo_out/prostate_cancer2d;
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 110-114
+.. GENERATED FROM PYTHON SOURCE LINES 113-117
 
 .. code-block:: default
 
@@ -157,20 +160,20 @@ methods for defining:
                                     auto_enumerate=False)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 115-118
+.. GENERATED FROM PYTHON SOURCE LINES 118-121
 
 - then, the two files for the cancer :math:`\varphi` and for the nutrients :math:`\sigma`, which will be called
   ``phi.xdmf`` and ``sigma.xdmf``.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 118-120
+.. GENERATED FROM PYTHON SOURCE LINES 121-123
 
 .. code-block:: default
 
     phi_xdmf, sigma_xdmf = setup_xdmf_files(["phi", "sigma"], data_folder)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 121-128
+.. GENERATED FROM PYTHON SOURCE LINES 124-131
 
 Finally, we define the parameters of the differential equation using a Mocafe ``Parameter`` object, which is created
 for this purpose.
@@ -180,7 +183,7 @@ dictionary where each key is the parameter name and the value is the actual valu
 chosen for this simulation are in agreement with those reported by Lorenzo et al. by two papers regarding this
 model :cite:`Lorenzo2016` :cite:`Lorenzo2017`.
 
-.. GENERATED FROM PYTHON SOURCE LINES 128-147
+.. GENERATED FROM PYTHON SOURCE LINES 131-150
 
 .. code-block:: default
 
@@ -204,7 +207,7 @@ model :cite:`Lorenzo2016` :cite:`Lorenzo2017`.
     })
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 148-158
+.. GENERATED FROM PYTHON SOURCE LINES 151-161
 
 Mesh definition and spatial discretization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -217,7 +220,7 @@ More precisely, in the following we are going to define a mesh of the dimension 
 points for each side.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 158-170
+.. GENERATED FROM PYTHON SOURCE LINES 161-173
 
 .. code-block:: default
 
@@ -234,7 +237,7 @@ points for each side.
                                 ny)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 171-183
+.. GENERATED FROM PYTHON SOURCE LINES 174-186
 
 From the mesh defined above, we can then define the ``FunctionSpace``.
 Since the model we wish to simulate is composed of two coupled equations, we need to define a MixedElement function
@@ -249,14 +252,14 @@ However, the very same operation can be performed in just one line using the fol
 Mocafe:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 183-185
+.. GENERATED FROM PYTHON SOURCE LINES 186-188
 
 .. code-block:: default
 
     function_space = get_mixed_function_space(mesh, 2, "CG", 1)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 186-195
+.. GENERATED FROM PYTHON SOURCE LINES 189-198
 
 Initial & boundary conditions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -268,7 +271,7 @@ command from the user.
 As initial condition for :math:`\varphi`, according to the author :cite:`Lorenzo2017`, we will define an elliptical
 tumor with the given semiaxes:
 
-.. GENERATED FROM PYTHON SOURCE LINES 195-198
+.. GENERATED FROM PYTHON SOURCE LINES 198-201
 
 .. code-block:: default
 
@@ -276,13 +279,13 @@ tumor with the given semiaxes:
     semiax_y = 150  # um
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 199-202
+.. GENERATED FROM PYTHON SOURCE LINES 202-205
 
 With FEniCS is not hard to define such a function leveraging the ``Expression`` class. However, given how common
 this initial condition is in cancer mathematical modeling, we provided our own built-in expression for defining a
 general elliptic field expression:
 
-.. GENERATED FROM PYTHON SOURCE LINES 202-208
+.. GENERATED FROM PYTHON SOURCE LINES 205-211
 
 .. code-block:: default
 
@@ -293,7 +296,7 @@ general elliptic field expression:
                         outside_value=parameters.get_value("phi0_out"))
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 209-214
+.. GENERATED FROM PYTHON SOURCE LINES 212-217
 
 Which can be then interpolated in our function space.
 
@@ -301,14 +304,14 @@ The interpolation can be done simply calling the FEniCS method ``interpolate``, 
 expression to be interpolated and the function space where to do the interpolation. Notice that, since the function
 space we defined is mixed, we must choose one of the sub-field to define the function.
 
-.. GENERATED FROM PYTHON SOURCE LINES 214-216
+.. GENERATED FROM PYTHON SOURCE LINES 217-219
 
 .. code-block:: default
 
     phi0 = fenics.interpolate(phi0, function_space.sub(0).collapse())
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 217-222
+.. GENERATED FROM PYTHON SOURCE LINES 220-225
 
 Notice also that since the mixed function space is defined by two identical function spaces, it makes no
 difference to pick sub(0) or sub(1).
@@ -316,21 +319,21 @@ difference to pick sub(0) or sub(1).
 Then, we can save the initial condition of the :math:`\varphi` field in the `.xdmf` file we defined at the
 beginning:
 
-.. GENERATED FROM PYTHON SOURCE LINES 222-224
+.. GENERATED FROM PYTHON SOURCE LINES 225-227
 
 .. code-block:: default
 
     phi_xdmf.write(phi0, 0)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 225-229
+.. GENERATED FROM PYTHON SOURCE LINES 228-232
 
 Finally, after having defined the initial condition for :math:`\varphi`, let's define the initial for
 :math:`\sigma`. Following the hypothesis of original author :cite:`Lorenzo2017`, we will assume a nutrient
 distribution that is 0.2 inside the cancer and 1. outside. So, we can define this distribution similarly to
 what we just did for ``phi0``:
 
-.. GENERATED FROM PYTHON SOURCE LINES 229-237
+.. GENERATED FROM PYTHON SOURCE LINES 232-240
 
 .. code-block:: default
 
@@ -343,7 +346,7 @@ what we just did for ``phi0``:
     sigma_xdmf.write(sigma0, 0)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 238-246
+.. GENERATED FROM PYTHON SOURCE LINES 241-249
 
 Weak form definition
 ^^^^^^^^^^^^^^^^^^^^^
@@ -354,25 +357,25 @@ First of all, we define the two variables, ``phi`` and ``sigma``, for which the 
 two equations are coupled (i.e. they depend on each other) the easiest way to do so is to define a 'vector'
 function ``u`` on the mixed function space:
 
-.. GENERATED FROM PYTHON SOURCE LINES 246-248
+.. GENERATED FROM PYTHON SOURCE LINES 249-251
 
 .. code-block:: default
 
     u = fenics.Function(function_space)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 249-250
+.. GENERATED FROM PYTHON SOURCE LINES 252-253
 
 And then to split the vector in its two components, which represent :math:`\varphi` and :math:`\sigma`:
 
-.. GENERATED FROM PYTHON SOURCE LINES 250-252
+.. GENERATED FROM PYTHON SOURCE LINES 253-255
 
 .. code-block:: default
 
     phi, sigma = fenics.split(u)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 253-269
+.. GENERATED FROM PYTHON SOURCE LINES 256-272
 
 After having defined phi and sigma, we defined the :math:`s` function, which represent the distribution of
 nutrient that is supplied to the system.
@@ -391,7 +394,7 @@ function ``(random()/((double)RAND_MAX))`` to generate uniform random numbers be
 ways to do the same thing in Python using the ``random`` module, but in our experience the use of C++ code with the
 FEniCS interface reduces significantly the time required for the interpolation.
 
-.. GENERATED FROM PYTHON SOURCE LINES 269-276
+.. GENERATED FROM PYTHON SOURCE LINES 272-279
 
 .. code-block:: default
 
@@ -403,12 +406,12 @@ FEniCS interface reduces significantly the time required for the interpolation.
     s = fenics.interpolate(s_exp, function_space.sub(0).collapse())
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 277-279
+.. GENERATED FROM PYTHON SOURCE LINES 280-282
 
 Now, we have everything in place to define our PDE system exploiting the related Mocafe functions contained in the
 module ``pc_model``:
 
-.. GENERATED FROM PYTHON SOURCE LINES 279-284
+.. GENERATED FROM PYTHON SOURCE LINES 282-287
 
 .. code-block:: default
 
@@ -418,12 +421,12 @@ module ``pc_model``:
         pc_model.prostate_cancer_nutrient_form(sigma, sigma0, phi, v2, s, parameters)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 285-287
+.. GENERATED FROM PYTHON SOURCE LINES 288-290
 
 These functions are nothing more than a self-contained definition of the UFL form of the model's equations, which you
 can inspect yourself if you like.
 
-.. GENERATED FROM PYTHON SOURCE LINES 289-296
+.. GENERATED FROM PYTHON SOURCE LINES 292-299
 
 Simulation: setup
 ^^^^^^^^^^^^^^^^^
@@ -433,20 +436,20 @@ above for each time step.
 To do so, we start defining the total number of steps to simulate. We choose that in order to have a total
 simulated time of one year, given the dt of the system (see its value in the ``Parameters`` object)
 
-.. GENERATED FROM PYTHON SOURCE LINES 296-298
+.. GENERATED FROM PYTHON SOURCE LINES 299-301
 
 .. code-block:: default
 
     n_steps = 1000
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 299-302
+.. GENERATED FROM PYTHON SOURCE LINES 302-305
 
 Then, we define a progress bar with ``tqdm`` in order to monitor the iteration progress. Notice that the progress
 bar is defined only if the rank of the process is 0. This is necessary to avoid every process to print out a
 different progress bar.
 
-.. GENERATED FROM PYTHON SOURCE LINES 302-307
+.. GENERATED FROM PYTHON SOURCE LINES 305-310
 
 .. code-block:: default
 
@@ -456,7 +459,7 @@ different progress bar.
         progress_bar = None
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 308-323
+.. GENERATED FROM PYTHON SOURCE LINES 311-326
 
 Then, we need to define how we want FEniCS to solve or PDE system. To do so, we first need to define the solver we
 want to use.
@@ -474,7 +477,7 @@ The standard way to create a SNES solver is to set it up from the command line, 
 
 However, for your convenience, we just hard coded the SNES configuration that worked better for us.
 
-.. GENERATED FROM PYTHON SOURCE LINES 323-334
+.. GENERATED FROM PYTHON SOURCE LINES 326-337
 
 .. code-block:: default
 
@@ -490,7 +493,7 @@ However, for your convenience, we just hard coded the SNES configuration that wo
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 335-346
+.. GENERATED FROM PYTHON SOURCE LINES 338-349
 
 Still, notice that the best configuration for your system might change, since it is well known that it is very hard
 to tell which solver will perform the best given the PDEs, the mesh, the CPU, the cores number and so on (see
@@ -504,13 +507,13 @@ need more information on the use of SNES in FEniCS, you can also refer to this
 FEniCS forum.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 348-351
+.. GENERATED FROM PYTHON SOURCE LINES 351-354
 
 Simulation
 ^^^^^^^^^^
 Finally, we can iterate in time to solve the system with the given solver at each time step.
 
-.. GENERATED FROM PYTHON SOURCE LINES 351-379
+.. GENERATED FROM PYTHON SOURCE LINES 354-382
 
 .. code-block:: default
 
@@ -543,7 +546,7 @@ Finally, we can iterate in time to solve the system with the given solver at eac
             progress_bar.update(1)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 380-591
+.. GENERATED FROM PYTHON SOURCE LINES 383-602
 
 Let's analyze everything step-by-step. First, we update the simulation time:
 
@@ -614,6 +617,14 @@ Result
 We uploaded on Youtube the result on this simulation. You can check it out below or at `this link <https://youtu.be/2isujSzWH1A>`_
 
 ..  youtube:: 2isujSzWH1A
+
+Visualize the result with ParaView
+----------------------------------
+The result of the simulation is stored in the ``.xdmf`` file generated, which are easy to load and visualize in
+expernal softwares as ParaView. If you don't now how to do it, you can check out the tutorial below or at
+`this Youtube link <https://youtu.be/d-BwfqNltN4>`_.
+
+..  youtube:: d-BwfqNltN4
 
 Full code
 ---------

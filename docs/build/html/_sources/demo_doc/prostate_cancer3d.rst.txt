@@ -27,6 +27,9 @@ In this short demo we will show you how to simulate a phase field model describe
 in 2016 :cite:`Lorenzo2016` using FEniCS and Mocafe in 3D. You'll notice that the script is just the same of the 2D
 demo: you just need to change the spatial domain!
 
+.. contents:: Table of Contents
+   :local:
+
 How to run this example on Mocafe
 ---------------------------------
 Make sure you have FEniCS and Mocafe and download the source script of this page (see above for the link).
@@ -56,7 +59,7 @@ Visualize the results of this simulation
 You need to have `Paraview <https://www.paraview.org/>`_ to visualize the results. Once you have installed it,
 you can easly import the ``.xdmf`` files generated during the simulation and visualize the result.
 
-.. GENERATED FROM PYTHON SOURCE LINES 42-49
+.. GENERATED FROM PYTHON SOURCE LINES 45-52
 
 Implementation
 ------------------------------------------
@@ -66,7 +69,7 @@ dimension. With appropriate initial and boundary conditions, you can find the so
 in any possible space. This is not always true for the software implementations of such differential equations;
 however, using FEniCS the script is just slightly different from the one we've presented in the 2D case.
 
-.. GENERATED FROM PYTHON SOURCE LINES 49-94
+.. GENERATED FROM PYTHON SOURCE LINES 52-97
 
 .. code-block:: default
 
@@ -116,14 +119,14 @@ however, using FEniCS the script is just slightly different from the one we've p
     })
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 95-99
+.. GENERATED FROM PYTHON SOURCE LINES 98-102
 
 Mesh definition and spatial discretization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 The mesh definition is different from the 2D case, because this time we need to define a 3D domain.
 However, we can do that with ease using a FEniCS ``BoxMesh`` with a side of 2000 :math:`\mu m`:
 
-.. GENERATED FROM PYTHON SOURCE LINES 99-112
+.. GENERATED FROM PYTHON SOURCE LINES 102-115
 
 .. code-block:: default
 
@@ -141,20 +144,20 @@ However, we can do that with ease using a FEniCS ``BoxMesh`` with a side of 2000
                           nz)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 113-116
+.. GENERATED FROM PYTHON SOURCE LINES 116-119
 
 From the mesh, we can again define the function space in the same way we did in the 2D simulation. Indeed, the
 system of differential equations is the same and FEniCS will take care of defining the "3D-version" of the finite
 element:
 
-.. GENERATED FROM PYTHON SOURCE LINES 116-118
+.. GENERATED FROM PYTHON SOURCE LINES 119-121
 
 .. code-block:: default
 
     function_space = get_mixed_function_space(mesh, 2, "CG", 1)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 119-127
+.. GENERATED FROM PYTHON SOURCE LINES 122-130
 
 Initial & boundary conditions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -165,7 +168,7 @@ As initial condition for :math:`\varphi` and :math:`\sigma`, the most natural ch
 Lorenzo and collaborators :cite:`Lorenzo2016` is to define an Ellipsoid, instead of an Ellipse. This can be done
 with ease using Mocafe:
 
-.. GENERATED FROM PYTHON SOURCE LINES 127-149
+.. GENERATED FROM PYTHON SOURCE LINES 130-152
 
 .. code-block:: default
 
@@ -192,14 +195,14 @@ with ease using Mocafe:
     sigma_xdmf.write(sigma0, 0)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 150-154
+.. GENERATED FROM PYTHON SOURCE LINES 153-157
 
 PDE System definition
 ^^^^^^^^^^^^^^^^^^^^^
 Exactly how the differential equations don't change from 2D to 3D, the PDE definition remains the same. Indeed,
 you can notice that the code it's just identical to the 2D demo:
 
-.. GENERATED FROM PYTHON SOURCE LINES 154-170
+.. GENERATED FROM PYTHON SOURCE LINES 157-173
 
 .. code-block:: default
 
@@ -220,27 +223,27 @@ you can notice that the code it's just identical to the 2D demo:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 171-175
+.. GENERATED FROM PYTHON SOURCE LINES 174-178
 
 Simulation setup
 ^^^^^^^^^^^^^^^^
 And, again, the simulation setup is the same as the 2D case. We just choose a lower number of step in order to reduce
 the simulation time:
 
-.. GENERATED FROM PYTHON SOURCE LINES 175-177
+.. GENERATED FROM PYTHON SOURCE LINES 178-180
 
 .. code-block:: default
 
     n_steps = 500
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 178-181
+.. GENERATED FROM PYTHON SOURCE LINES 181-184
 
 Then, the code remains the same. However, remember what we remarked in the 2D demo: you might need to change the
 solver configuration in order to solve the system on your computer, and it's not guaranteed that the configuration
 you choose for the 2D system is the best for the 3D system as well.
 
-.. GENERATED FROM PYTHON SOURCE LINES 181-225
+.. GENERATED FROM PYTHON SOURCE LINES 184-228
 
 .. code-block:: default
 
@@ -289,7 +292,7 @@ you choose for the 2D system is the best for the 3D system as well.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 226-233
+.. GENERATED FROM PYTHON SOURCE LINES 229-244
 
 Result
 ------
@@ -298,8 +301,16 @@ We uploaded on Youtube the result on this simulation. You can check it out below
 
 ..  youtube:: pcT0Vf-kHt0
 
+Visualize the result with ParaView
+----------------------------------
+The result of the simulation is stored in the ``.xdmf`` file generated, which are easy to load and visualize in
+expernal softwares as ParaView. If you don't now how to do it, you can check out the tutorial below or at
+`this Youtube link <https://youtu.be/ghx5MNZesvQ>`_.
 
-.. GENERATED FROM PYTHON SOURCE LINES 235-380
+..  youtube:: ghx5MNZesvQ
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 246-391
 
 Full code
 ----------

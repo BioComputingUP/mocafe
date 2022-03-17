@@ -27,6 +27,9 @@ In this short demo we will show you how to simulate a phase field model describe
 :cite:`Travasso2011a` using FEniCS and Mocafe in 3D. You'll notice that the script is just the same of the 2D
 demo: you just need to change the spatial domain!
 
+.. contents:: Table of Contents
+   :local:
+
 How to run this example on Mocafe
 ---------------------------------
 Make sure you have FEniCS and Mocafe and download the source script of this page (see above for the link).
@@ -67,7 +70,7 @@ Visualize the results of this simulation
 You need to have `Paraview <https://www.paraview.org/>`_ to visualize the results. Once you have installed it,
 you can easly import the ``.xdmf`` files generated during the simulation and visualize the result.
 
-.. GENERATED FROM PYTHON SOURCE LINES 53-69
+.. GENERATED FROM PYTHON SOURCE LINES 56-72
 
 Implementation
 --------------
@@ -86,7 +89,7 @@ data. Also, notice that the parameters file is different. However, if you compar
 with the one we provided you for the 2D examples, you'll notice that there are just small
 variations.
 
-.. GENERATED FROM PYTHON SOURCE LINES 69-108
+.. GENERATED FROM PYTHON SOURCE LINES 72-111
 
 .. code-block:: default
 
@@ -130,7 +133,7 @@ variations.
     parameters = mpar.from_ods_sheet(parameters_file, "SimParams")
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 109-115
+.. GENERATED FROM PYTHON SOURCE LINES 112-118
 
 Definition of the spatial domain and the function space
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -139,7 +142,7 @@ using a ``BoxMesh``. Of course, creating a 3D mesh takes longer than a 2D mesh; 
 make FEniCS generate the mesh at the first run of the script, save it in the data folder, and reload it in all the
 following runs.
 
-.. GENERATED FROM PYTHON SOURCE LINES 115-146
+.. GENERATED FROM PYTHON SOURCE LINES 118-149
 
 .. code-block:: default
 
@@ -175,14 +178,14 @@ following runs.
         mesh_xdmf.write(mesh)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 147-151
+.. GENERATED FROM PYTHON SOURCE LINES 150-154
 
 From the mesh, we can again define the function space in the same way we did in the 2D simulation. Indeed, the
 system of differential equations is the same and FEniCS will take care of defining the "3D-version" of the polynomial
 functions. Remember that, even though there are just two variables :math:`c` and :math:`af`, we also need to
 consider an auxiliary variable :math:`mu` for the :math:`c` field (see demo for the 2D case).
 
-.. GENERATED FROM PYTHON SOURCE LINES 151-157
+.. GENERATED FROM PYTHON SOURCE LINES 154-160
 
 .. code-block:: default
 
@@ -193,7 +196,7 @@ consider an auxiliary variable :math:`mu` for the :math:`c` field (see demo for 
     grad_af_function_space = fenics.VectorFunctionSpace(mesh, "CG", 1)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 158-166
+.. GENERATED FROM PYTHON SOURCE LINES 161-169
 
 Initial & boundary conditions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -204,7 +207,7 @@ As initial condition for :math:`c`, the most natural choice to resemble the resu
 :cite:`Travasso2011a` is to define a cylindrical blood vessel on one side of the mesh. To do so, we will use again
 the standard fenics interface for defining an ``Expression``:
 
-.. GENERATED FROM PYTHON SOURCE LINES 166-184
+.. GENERATED FROM PYTHON SOURCE LINES 169-187
 
 .. code-block:: default
 
@@ -227,13 +230,13 @@ the standard fenics interface for defining an ``Expression``:
     mu_0 = fenics.interpolate(fenics.Constant(0.), function_space.sub(0).collapse())
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 185-188
+.. GENERATED FROM PYTHON SOURCE LINES 188-191
 
 As initial condition for :math:`af`, we can just use the ``RandomSourceMap`` object and the ``SourcesManager`` just
 as we did in the 2D demo. Both of them are indeed designed to work just the same in 2D and 3D, with the only
 difference that, in 3D, the cells are spheres instead of circles.
 
-.. GENERATED FROM PYTHON SOURCE LINES 188-229
+.. GENERATED FROM PYTHON SOURCE LINES 191-232
 
 .. code-block:: default
 
@@ -279,14 +282,14 @@ difference that, in 3D, the cells are spheres instead of circles.
     )
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 230-234
+.. GENERATED FROM PYTHON SOURCE LINES 233-237
 
 PDE System definition
 ^^^^^^^^^^^^^^^^^^^^^
 Exactly how the differential equations don't change from 2D to 3D, the PDE definition remains the same. Indeed,
 you can notice that the code it's just identical to the 2D demo, except for the update of ``setup_pbar``:
 
-.. GENERATED FROM PYTHON SOURCE LINES 234-251
+.. GENERATED FROM PYTHON SOURCE LINES 237-254
 
 .. code-block:: default
 
@@ -308,14 +311,14 @@ you can notice that the code it's just identical to the 2D demo, except for the 
     weak_form = form_af + form_ang
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 252-256
+.. GENERATED FROM PYTHON SOURCE LINES 255-259
 
 Simulation setup
 ^^^^^^^^^^^^^^^^
 Now that everything is set up we can proceed to the actual simulation, that, just as before, will start with the
 definition of the ``TipCellsManager``:
 
-.. GENERATED FROM PYTHON SOURCE LINES 256-264
+.. GENERATED FROM PYTHON SOURCE LINES 259-267
 
 .. code-block:: default
 
@@ -328,12 +331,12 @@ definition of the ``TipCellsManager``:
         setup_pbar.set_description("starting simulation")
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 265-267
+.. GENERATED FROM PYTHON SOURCE LINES 268-270
 
 After that, everything will just work the same. For efficiency, we make use of the PETSc SNES solver to solve the
 differential equations this time, but this is the only change we made to the 2D demo code.
 
-.. GENERATED FROM PYTHON SOURCE LINES 267-332
+.. GENERATED FROM PYTHON SOURCE LINES 270-335
 
 .. code-block:: default
 
@@ -403,7 +406,7 @@ differential equations this time, but this is the only change we made to the 2D 
             pbar.update(1)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 333-340
+.. GENERATED FROM PYTHON SOURCE LINES 336-351
 
 Result
 ------
@@ -412,8 +415,16 @@ We uploaded on Youtube the result on this simulation. You can check it out below
 
 ..  youtube:: ho-V58mqDv8
 
+Visualize the result with ParaView
+----------------------------------
+The result of the simulation is stored in the ``.xdmf`` file generated, which are easy to load and visualize in
+expernal softwares as ParaView. If you don't now how to do it, you can check out the tutorial below or at
+`this Youtube link <https://youtu.be/ATzlVEIjicI>`_.
 
-.. GENERATED FROM PYTHON SOURCE LINES 342-570
+..  youtube:: ATzlVEIjicI
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 353-581
 
 Full code
 ---------

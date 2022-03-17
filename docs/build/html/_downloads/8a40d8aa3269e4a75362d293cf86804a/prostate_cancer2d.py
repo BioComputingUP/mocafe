@@ -8,6 +8,9 @@ In this short demo we will show you how to simulate a phase field model describe
 in 2016 :cite:`Lorenzo2016` using FEniCS and Mocafe. The model was published on PNAS in 2016 and presents a
 continuous mathematical model able to reproduce the growth pattern of prostate cancer at tissue scale.
 
+.. contents:: Table of Contents
+   :local:
+
 How to run this example on Mocafe
 ---------------------------------
 Make sure you have FEniCS and Mocafe installed and download the source script of this page (see above for the link).
@@ -446,6 +449,14 @@ for current_step in range(n_steps):
 # We uploaded on Youtube the result on this simulation. You can check it out below or at `this link <https://youtu.be/2isujSzWH1A>`_
 #
 # ..  youtube:: 2isujSzWH1A
+#
+# Visualize the result with ParaView
+# ----------------------------------
+# The result of the simulation is stored in the ``.xdmf`` file generated, which are easy to load and visualize in
+# expernal softwares as ParaView. If you don't now how to do it, you can check out the tutorial below or at
+# `this Youtube link <https://youtu.be/d-BwfqNltN4>`_.
+#
+# ..  youtube:: d-BwfqNltN4
 #
 # Full code
 # ---------
