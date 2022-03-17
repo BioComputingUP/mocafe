@@ -8,6 +8,9 @@ In this demo we will reproduce the angiogenesis phase field model described by T
 factor (e.g. VEGF), which lead to the sprouting of a 2D vascular network. In the following, we will refer to these cells
 as *source cells*, since are the only source of angiogenic factor in this model.
 
+.. contents:: Table of Contents
+   :local:
+
 How to run this example on Mocafe
 ---------------------------------
 Make sure you have FEniCS and Mocafe installed and download the source script of this page (see above for the link).

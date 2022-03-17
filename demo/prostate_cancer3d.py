@@ -8,6 +8,9 @@ In this short demo we will show you how to simulate a phase field model describe
 in 2016 :cite:`Lorenzo2016` using FEniCS and Mocafe in 3D. You'll notice that the script is just the same of the 2D
 demo: you just need to change the spatial domain!
 
+.. contents:: Table of Contents
+   :local:
+
 How to run this example on Mocafe
 ---------------------------------
 Make sure you have FEniCS and Mocafe and download the source script of this page (see above for the link).

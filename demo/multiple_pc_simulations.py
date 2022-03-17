@@ -10,6 +10,9 @@ For this reason Mocafe provides tool to make simulation management easier. To se
 to simulate the Prostate Cancer models presented in :ref:`this demo<Prostate Cancer 2D Demo>` for different parameters
 values.
 
+.. contents:: Table of Contents
+   :local:
+
 How to run this example on Mocafe
 ---------------------------------
 Make sure you have FEniCS and Mocafe installed and download the source script of this page (see above for the link).
