@@ -2,6 +2,12 @@
 This module contains methods to build the weak form of a Phase Field prostate cancer model described by
 Lorenzo and collaborators :cite:`Lorenzo2016`.
 
+If you use this model in your research, remember to cite the original paper describing the model:
+
+    Lorenzo, G., Scott, M. A., Tew, K., Hughes, T. J. R., Zhang, Y. J., Liu, L., Vilanova, G., & Gomez, H. (2016).
+    Tissue-scale, personalized modeling and simulation of prostate cancer growth.
+    Proceedings of the National Academy of Sciences. https://doi.org/10.1073/pnas.1615791113
+
 For a complete description of the model, please refer to the original publication. Also, if you use this model
 for your scientific work, remember to cite the original paper.
 """

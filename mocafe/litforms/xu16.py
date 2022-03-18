@@ -2,6 +2,11 @@
 This module contains methods to build the weak form of a Phase Field cancer model described by
 Xu and collaborators :cite:`Xu2016`.
 
+If you use this model in your research, remember to cite the original paper describing the model:
+
+    Xu, J., Vilanova, G., & Gomez, H. (2016). A Mathematical Model Coupling Tumor Growth and Angiogenesis.
+    PLOS ONE, 11(2), e0149422. https://doi.org/10.1371/JOURNAL.PONE.0149422
+
 For a complete description of the model, please refer to the original publication. Also, if you use this model
 for your scientific work, remember to cite the original paper.
 """
