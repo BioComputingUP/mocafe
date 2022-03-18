@@ -2,6 +2,12 @@
 This module contains classes and methods to manage discrete angiogenic factor sources in Mocafe. This discrete agents
 might represent hypoxic cells inducing angiogenesis, as presented by Travasso et al. :cite:`Travasso2011a`.
 
+If you use this model in your research, remember to cite the original paper describing the model:
+
+    Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., & Hernández-Machado, A. (2011).
+    Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5), e19989.
+    https://doi.org/10.1371/journal.pone.0019989
+
 For a use example see the :ref:`Angiogenesis <Angiogenesis 2D Demo>` and the
 :ref:`Angiogenesis 3D <Angiogenesis 2D Demo>` demos.
 """
