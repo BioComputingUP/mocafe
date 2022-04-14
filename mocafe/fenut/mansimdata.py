@@ -4,6 +4,7 @@ Useful methods to manage simulation data
 
 import datetime
 import fenics
+import mocafe
 from mocafe.fenut.parameters import Parameters
 import pathlib
 
@@ -114,6 +115,7 @@ def save_sim_info(data_folder: pathlib.Path,
             report_file.write(f"  <h2>Basic informations </h2>\n")
             report_file.write(f"  <p>Simulation name: {sim_name} </p>\n")
             report_file.write(f"  <p>Execution time: {execution_time / 60} min </p>\n")
+            report_file.write(f"  <p>Mocafe version: {mocafe.__version__} min </p>\n")
             report_file.write(f"  <p>Date and time: "
                               f"{str(datetime.datetime.now()) if dateandtime == 'auto' else dateandtime} </p>\n")
             report_file.write(f"  <h2>Simulation rationale </h2>\n")
