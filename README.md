@@ -33,6 +33,7 @@ Please refer to the [demo gallery](https://biocomputingup.github.io/mocafe/build
   
 ## Release History  
   
+* 14 Apr 2022: Added Mocafe version to report generation
 * 24 Jan 2021: Released Mocafe 1.0.0 
   
 ## Meta  
