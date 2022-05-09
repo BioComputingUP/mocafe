@@ -16,12 +16,25 @@ Currently, Mocafe has been tested on:
 
 Install with ``apt`` and ``pip``
 --------------------------------
-First of all, if you don't already have it on your system, it is recommended to install MPI:
+The procedure requires three steps:
+
+1. Install MPI
+2. Install FEniCS
+3. Install Mocafe
+
+Install MPI
+^^^^^^^^^^^^
+First of all, verify if you have MPI already installed on your system. You can do it easily with:
+
+.. code-block::
+
+    mpirun --version
+
+If you don't already have it on your system, it is recommended to install it with:
 
 .. code-block:: console
 
     sudo apt install openmpi-bin
-
 
 And test it typing:
 
@@ -37,6 +50,14 @@ If everything worked out well, you should get something like:
 
     Report bugs to http://www.open-mpi.org/community/help/
 
+And you can **proceed** to the next step.
+
+If you had **problems** in the procedure above, we recommend you to use the Singularity container of Mocafe
+(see section :ref:`Mocafe singularity`), which already includes MPI. However, you can also use other methods to
+install MPI, such as ``sudo apt install mpich``.
+
+Install FEniCS
+^^^^^^^^^^^^^^^
 Then, install FEniCS using ``apt-get``:
 
 .. code-block:: console
@@ -60,10 +81,12 @@ If everything worked out well, you should get the message:
 
 If you encounter errors, you can:
 
-* Use the Singularity container of Mocafe (see section :ref:`Mocafe singularity`
+* Use the Singularity container of Mocafe (see section :ref:`Mocafe singularity`)
 * Try to install FEniCS in other ways; see `FEniCS 2019 Download page <https://fenicsproject.org/download/archive/>`_
 
-If FEniCS works, you can proceed to installing mocafe using ``pip``:
+Install Mocafe
+^^^^^^^^^^^^^^
+If FEniCS works, you can proceed to installing Mocafe using ``pip``:
 
 .. code-block:: console
 

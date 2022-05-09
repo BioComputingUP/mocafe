@@ -54,7 +54,19 @@
 <p><em>Notice:</em> WSL is available for Windows 10 onwards.</p>
 <section id="install-with-apt-and-pip">
 <span id="mocafe-apt"></span><h2>Install with <code class="docutils literal notranslate"><span class="pre">apt</span></code> and <code class="docutils literal notranslate"><span class="pre">pip</span></code><a class="headerlink" href="#install-with-apt-and-pip" title="Permalink to this headline">¶</a></h2>
-<p>First of all, if you don’t already have it on your system, it is recommended to install MPI:</p>
+<p>The procedure requires three steps:</p>
+<ol class="arabic simple">
+<li><p>Install MPI</p></li>
+<li><p>Install FEniCS</p></li>
+<li><p>Install Mocafe</p></li>
+</ol>
+<section id="install-mpi">
+<h3>Install MPI<a class="headerlink" href="#install-mpi" title="Permalink to this headline">¶</a></h3>
+<p>First of all, verify if you have MPI already installed on your system. You can do it easily with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mpirun</span> <span class="o">--</span><span class="n">version</span>
+</pre></div>
+</div>
+<p>If you don’t already have it on your system, it is recommended to install it with:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo apt install openmpi-bin</span>
 </pre></div>
 </div>
@@ -68,6 +80,13 @@
 <span class="go">Report bugs to http://www.open-mpi.org/community/help/</span>
 </pre></div>
 </div>
+<p>And you can <strong>proceed</strong> to the next step.</p>
+<p>If you had <strong>problems</strong> in the procedure above, we recommend you to use the Singularity container of Mocafe
+(see section <a class="reference internal" href="#mocafe-singularity"><span class="std std-ref">Install Singularity container</span></a>), which already includes MPI. However, you can also use other methods to
+install MPI, such as <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt</span> <span class="pre">install</span> <span class="pre">mpich</span></code>.</p>
+</section>
+<section id="install-fenics">
+<h3>Install FEniCS<a class="headerlink" href="#install-fenics" title="Permalink to this headline">¶</a></h3>
 <p>Then, install FEniCS using <code class="docutils literal notranslate"><span class="pre">apt-get</span></code>:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo apt-get install software-properties-common</span>
 <span class="go">sudo add-apt-repository ppa:fenics-packages/fenics</span>
@@ -85,10 +104,13 @@
 </div>
 <p>If you encounter errors, you can:</p>
 <ul class="simple">
-<li><p>Use the Singularity container of Mocafe (see section <a class="reference internal" href="#mocafe-singularity"><span class="std std-ref">Install Singularity container</span></a></p></li>
+<li><p>Use the Singularity container of Mocafe (see section <a class="reference internal" href="#mocafe-singularity"><span class="std std-ref">Install Singularity container</span></a>)</p></li>
 <li><p>Try to install FEniCS in other ways; see <a class="reference external" href="https://fenicsproject.org/download/archive/">FEniCS 2019 Download page</a></p></li>
 </ul>
-<p>If FEniCS works, you can proceed to installing mocafe using <code class="docutils literal notranslate"><span class="pre">pip</span></code>:</p>
+</section>
+<section id="install-mocafe">
+<h3>Install Mocafe<a class="headerlink" href="#install-mocafe" title="Permalink to this headline">¶</a></h3>
+<p>If FEniCS works, you can proceed to installing Mocafe using <code class="docutils literal notranslate"><span class="pre">pip</span></code>:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip3 install git+https://github.com/BioComputingUP/mocafe#egg=mocafe</span>
 </pre></div>
 </div>
@@ -102,6 +124,7 @@
 </div>
 <p><em>Note</em>: FEniCS is transitioning from version “2019” to FEniCSx, so the <code class="docutils literal notranslate"><span class="pre">apt</span></code> package might not be supported in the
 future. In that case, consider using the Mocafe container as explained below.</p>
+</section>
 </section>
 <section id="install-singularity-container">
 <span id="mocafe-singularity"></span><h2>Install Singularity container<a class="headerlink" href="#install-singularity-container" title="Permalink to this headline">¶</a></h2>
