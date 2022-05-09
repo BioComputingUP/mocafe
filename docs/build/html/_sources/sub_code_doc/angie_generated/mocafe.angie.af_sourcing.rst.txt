@@ -1,0 +1,40 @@
+﻿mocafe.angie.af\_sourcing
+=========================
+
+.. automodule:: mocafe.angie.af_sourcing
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      sources_in_circle_points
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      ClockChecker
+      ConstantSourcesField
+      RandomSourceMap
+      SourceCell
+      SourceMap
+      SourcesManager
+   
+   
+
+   
+   
+   
+
+
+

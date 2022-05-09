@@ -1,50 +1,102 @@
-
 <!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>mocafe.fenut.mansimdata &#8212; Mocafe 1.0.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/class.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/functions.css" />
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mocafe.fenut.mansimdata &mdash; Mocafe 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery-rendered-html.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/class.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/functions.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="mocafe.fenut.parameters" href="parameters.html" />
-    <link rel="prev" title="mocafe.fenut.log" href="log.html" />
-   
-  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+    <link rel="prev" title="mocafe.fenut.log" href="log.html" /> 
+</head>
 
-  </head><body>
-  
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Mocafe
+            <img src="../../_static/200mocafe_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../demo_doc/index.html">Demo Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../code_documentation.html">Code Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../angie.html"><code class="docutils literal notranslate"><span class="pre">mocafe.angie</span></code></a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../fenut.html"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut</span></code></a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="fenut.html"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut.fenut</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="log.html"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut.log</span></code></a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut.mansimdata</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="parameters.html"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut.parameters</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="solvers.html"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut.solvers</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../litforms.html"><code class="docutils literal notranslate"><span class="pre">mocafe.litforms</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../math.html"><code class="docutils literal notranslate"><span class="pre">mocafe.math</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../expressions.html"><code class="docutils literal notranslate"><span class="pre">mocafe.expressions</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../bib.html">Bibliography</a></li>
+</ul>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          
+        </div>
+      </div>
+    </nav>
 
-          <div class="body" role="main">
-            
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Mocafe</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../code_documentation.html">Code Documentation</a> &raquo;</li>
+          <li><a href="../fenut.html"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut</span></code></a> &raquo;</li>
+      <li><code class="docutils literal notranslate"><span class="pre">mocafe.fenut.mansimdata</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/sub_code_doc/fenut_sub_code_doc/mansimdata.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <section id="module-mocafe.fenut.mansimdata">
-<span id="mocafe-fenut-mansimdata"></span><h1><code class="docutils literal notranslate"><span class="pre">mocafe.fenut.mansimdata</span></code><a class="headerlink" href="#module-mocafe.fenut.mansimdata" title="Permalink to this headline">¶</a></h1>
+<span id="mocafe-fenut-mansimdata"></span><h1><code class="docutils literal notranslate"><span class="pre">mocafe.fenut.mansimdata</span></code><a class="headerlink" href="#module-mocafe.fenut.mansimdata" title="Permalink to this headline"></a></h1>
 <p>Useful methods to manage simulation data</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mocafe.fenut.mansimdata.save_sim_info">
-<span class="sig-prename descclassname"><span class="pre">mocafe.fenut.mansimdata.</span></span><span class="sig-name descname"><span class="pre">save_sim_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="parameters.html#mocafe.fenut.parameters.Parameters" title="mocafe.fenut.parameters.Parameters"><span class="pre">mocafe.fenut.parameters.Parameters</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'sim_data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dateandtime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mocafe.fenut.mansimdata.save_sim_info" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mocafe.fenut.mansimdata.</span></span><span class="sig-name descname"><span class="pre">save_sim_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="parameters.html#mocafe.fenut.parameters.Parameters" title="mocafe.fenut.parameters.Parameters"><span class="pre">mocafe.fenut.parameters.Parameters</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'sim_data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dateandtime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mocafe.fenut.mansimdata.save_sim_info" title="Permalink to this definition"></a></dt>
 <dd><p>Save simulation infos as html file. The simulation infos will be stored in the provided data_folder.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -70,7 +122,7 @@ sim_info.html file. Default is None.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mocafe.fenut.mansimdata.setup_data_folder">
-<span class="sig-prename descclassname"><span class="pre">mocafe.fenut.mansimdata.</span></span><span class="sig-name descname"><span class="pre">setup_data_folder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_enumerate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pathlib.Path</span></span></span><a class="headerlink" href="#mocafe.fenut.mansimdata.setup_data_folder" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mocafe.fenut.mansimdata.</span></span><span class="sig-name descname"><span class="pre">setup_data_folder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_enumerate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pathlib.Path</span></span></span><a class="headerlink" href="#mocafe.fenut.mansimdata.setup_data_folder" title="Permalink to this definition"></a></dt>
 <dd><p>Creates a folder at the given folder path and returns it as pathlib.Path object to use for the simulation
 files.</p>
 <p>If just the folder path is specified the folder will be simply created. For instance, calling the following:</p>
@@ -108,88 +160,42 @@ order: 0000, 0001, …, and so on.</p></li>
 </section>
 
 
+           </div>
           </div>
-          
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="log.html" class="btn btn-neutral float-left" title="mocafe.fenut.log" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="parameters.html" class="btn btn-neutral float-right" title="mocafe.fenut.parameters" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Franco Pradelli.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="../../index.html">
-              <img class="logo" src="../../_static/200mocafe_logo.png" alt="Logo"/>
-            </a></p>
-<h1 class="logo"><a href="../../index.html">Mocafe</a></h1>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>  
+
+  <style>
+    /* Sidebar header (and topbar for mobile) */
+    .wy-side-nav-search, .wy-nav-top {
+      background: #343131;
+    }
+  </style>
 
 
-
-
-
-
-
-
-<h3>Navigation</h3>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../demo_doc/index.html">Demo Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../../code_documentation.html">Code Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../angie.html"><code class="docutils literal notranslate"><span class="pre">mocafe.angie</span></code></a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../fenut.html"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../litforms.html"><code class="docutils literal notranslate"><span class="pre">mocafe.litforms</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../math.html"><code class="docutils literal notranslate"><span class="pre">mocafe.math</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../expressions.html"><code class="docutils literal notranslate"><span class="pre">mocafe.expressions</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../bib.html">Bibliography</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../../code_documentation.html">Code Documentation</a><ul>
-  <li><a href="../fenut.html"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut</span></code></a><ul>
-      <li>Previous: <a href="log.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut.log</span></code></a></li>
-      <li>Next: <a href="parameters.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut.parameters</span></code></a></li>
-  </ul></li>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2021, Franco Pradelli.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="../../_sources/sub_code_doc/fenut_sub_code_doc/mansimdata.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
-
-    
-
-    
-  </body>
+</body>
 </html>

@@ -1,0 +1,32 @@
+﻿mocafe.angie.forms
+==================
+
+.. automodule:: mocafe.angie.forms
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      angiogenesis_form
+      angiogenic_factor_form
+      cahn_hillard_form
+      vascular_proliferation_form
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

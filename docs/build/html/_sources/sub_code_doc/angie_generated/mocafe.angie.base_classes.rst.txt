@@ -1,0 +1,35 @@
+﻿mocafe.angie.base\_classes
+==========================
+
+.. automodule:: mocafe.angie.base_classes
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      fibonacci_sphere
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      BaseCell
+   
+   
+
+   
+   
+   
+
+
+

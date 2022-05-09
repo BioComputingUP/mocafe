@@ -12,6 +12,7 @@
 #
 import os
 import sys
+import sphinx_rtd_theme
 sys.path.append(os.path.abspath('../..'))
 sys.path.append(os.path.abspath('..'))
 sys.path.append(os.path.abspath('.'))
@@ -35,7 +36,8 @@ release = '1.0.0'
 extensions = ['sphinx.ext.autodoc',
               'sphinx_gallery.gen_gallery',
               'sphinxcontrib.bibtex',
-              'sphinxcontrib.youtube']
+              'sphinxcontrib.youtube',
+              'sphinx_rtd_theme',]
 
 # configure sphinx-gallery
 sphinx_gallery_conf = {
@@ -62,7 +64,7 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+html_theme = "sphinx_rtd_theme"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

@@ -1,51 +1,103 @@
-
 <!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>mocafe.fenut.fenut &#8212; Mocafe 1.0.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/class.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/functions.css" />
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mocafe.fenut.fenut &mdash; Mocafe 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery-rendered-html.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/class.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/functions.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="mocafe.fenut.log" href="log.html" />
-    <link rel="prev" title="mocafe.fenut" href="../fenut.html" />
-   
-  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+    <link rel="prev" title="mocafe.fenut" href="../fenut.html" /> 
+</head>
 
-  </head><body>
-  
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Mocafe
+            <img src="../../_static/200mocafe_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../demo_doc/index.html">Demo Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../code_documentation.html">Code Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../angie.html"><code class="docutils literal notranslate"><span class="pre">mocafe.angie</span></code></a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../fenut.html"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut</span></code></a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut.fenut</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="log.html"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut.log</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mansimdata.html"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut.mansimdata</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="parameters.html"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut.parameters</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="solvers.html"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut.solvers</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../litforms.html"><code class="docutils literal notranslate"><span class="pre">mocafe.litforms</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../math.html"><code class="docutils literal notranslate"><span class="pre">mocafe.math</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../expressions.html"><code class="docutils literal notranslate"><span class="pre">mocafe.expressions</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../bib.html">Bibliography</a></li>
+</ul>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          
+        </div>
+      </div>
+    </nav>
 
-          <div class="body" role="main">
-            
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Mocafe</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../code_documentation.html">Code Documentation</a> &raquo;</li>
+          <li><a href="../fenut.html"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut</span></code></a> &raquo;</li>
+      <li><code class="docutils literal notranslate"><span class="pre">mocafe.fenut.fenut</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/sub_code_doc/fenut_sub_code_doc/fenut.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <section id="module-mocafe.fenut.fenut">
-<span id="mocafe-fenut-fenut"></span><h1><code class="docutils literal notranslate"><span class="pre">mocafe.fenut.fenut</span></code><a class="headerlink" href="#module-mocafe.fenut.fenut" title="Permalink to this headline">¶</a></h1>
+<span id="mocafe-fenut-fenut"></span><h1><code class="docutils literal notranslate"><span class="pre">mocafe.fenut.fenut</span></code><a class="headerlink" href="#module-mocafe.fenut.fenut" title="Permalink to this headline"></a></h1>
 <p>Module containing some useful methods and Classes to work with FEniCS.
 Requires FEniCS 2019.1 to work.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mocafe.fenut.fenut.build_local_box">
-<span class="sig-prename descclassname"><span class="pre">mocafe.fenut.fenut.</span></span><span class="sig-name descname"><span class="pre">build_local_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">local_mesh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.cpp.mesh.Mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">border_width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.build_local_box" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mocafe.fenut.fenut.</span></span><span class="sig-name descname"><span class="pre">build_local_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">local_mesh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.cpp.mesh.Mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">border_width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.build_local_box" title="Permalink to this definition"></a></dt>
 <dd><p>Builds a local box for a given mesh.</p>
 <p>A local box is useful for parallel computation and might be useful for different purposes. In general, defines
 a square space, bigger than the local mesh, which may contain elements of interest for the local mesh</p>
@@ -64,7 +116,7 @@ a square space, bigger than the local mesh, which may contain elements of intere
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mocafe.fenut.fenut.divide_in_chunks">
-<span class="sig-prename descclassname"><span class="pre">mocafe.fenut.fenut.</span></span><span class="sig-name descname"><span class="pre">divide_in_chunks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">given_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_chnks</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.divide_in_chunks" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mocafe.fenut.fenut.</span></span><span class="sig-name descname"><span class="pre">divide_in_chunks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">given_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_chnks</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.divide_in_chunks" title="Permalink to this definition"></a></dt>
 <dd><p>Divides the elements of a given list in <code class="docutils literal notranslate"><span class="pre">n_chnks</span></code> list with almost the same number of elements. The result is
 a list of lists.</p>
 <p>More precisely, the total number of element of the given list is divided by <code class="docutils literal notranslate"><span class="pre">n_chnks</span></code>. If the number is not
@@ -96,7 +148,7 @@ divisible by <code class="docutils literal notranslate"><span class="pre">n_chnk
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mocafe.fenut.fenut.flatten_list_of_lists">
-<span class="sig-prename descclassname"><span class="pre">mocafe.fenut.fenut.</span></span><span class="sig-name descname"><span class="pre">flatten_list_of_lists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_of_lists</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.flatten_list_of_lists" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mocafe.fenut.fenut.</span></span><span class="sig-name descname"><span class="pre">flatten_list_of_lists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_of_lists</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.flatten_list_of_lists" title="Permalink to this definition"></a></dt>
 <dd><p>Flattens a list of lists in a flat list
 :param list_of_lists: the given list of lists
 :return: the flat list</p>
@@ -104,7 +156,7 @@ divisible by <code class="docutils literal notranslate"><span class="pre">n_chnk
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mocafe.fenut.fenut.get_mixed_function_space">
-<span class="sig-prename descclassname"><span class="pre">mocafe.fenut.fenut.</span></span><span class="sig-name descname"><span class="pre">get_mixed_function_space</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.cpp.mesh.Mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">element_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'CG'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.get_mixed_function_space" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mocafe.fenut.fenut.</span></span><span class="sig-name descname"><span class="pre">get_mixed_function_space</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.cpp.mesh.Mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">element_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'CG'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.get_mixed_function_space" title="Permalink to this definition"></a></dt>
 <dd><p>Builds a mixed function space for the given mesh with n_variables elements of the same given element_type.
 :param mesh: the mesh to build the function space on.
 :param n_variables: the number of elements composing the mixed elements space, usually equal to the number of
@@ -117,7 +169,7 @@ Glaerkin, ‘CG’.
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mocafe.fenut.fenut.is_in_local_box">
-<span class="sig-prename descclassname"><span class="pre">mocafe.fenut.fenut.</span></span><span class="sig-name descname"><span class="pre">is_in_local_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">local_box</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.is_in_local_box" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mocafe.fenut.fenut.</span></span><span class="sig-name descname"><span class="pre">is_in_local_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">local_box</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.is_in_local_box" title="Permalink to this definition"></a></dt>
 <dd><p>Given a local box, checks if the given point is inside that local box.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -134,7 +186,7 @@ Glaerkin, ‘CG’.
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mocafe.fenut.fenut.is_point_inside_mesh">
-<span class="sig-prename descclassname"><span class="pre">mocafe.fenut.fenut.</span></span><span class="sig-name descname"><span class="pre">is_point_inside_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.cpp.mesh.Mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.is_point_inside_mesh" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mocafe.fenut.fenut.</span></span><span class="sig-name descname"><span class="pre">is_point_inside_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.cpp.mesh.Mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.is_point_inside_mesh" title="Permalink to this definition"></a></dt>
 <dd><p>Check if the given point is inside the given mesh. In parallel, checks if the point is inside the local mesh.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -151,7 +203,7 @@ Glaerkin, ‘CG’.
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mocafe.fenut.fenut.load_parameters">
-<span class="sig-prename descclassname"><span class="pre">mocafe.fenut.fenut.</span></span><span class="sig-name descname"><span class="pre">load_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameters_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'parameters.json'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.load_parameters" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mocafe.fenut.fenut.</span></span><span class="sig-name descname"><span class="pre">load_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameters_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'parameters.json'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.load_parameters" title="Permalink to this definition"></a></dt>
 <dd><p>DEPRECATED: use Parameters class instead
 :param parameters_file:
 :return:</p>
@@ -159,7 +211,7 @@ Glaerkin, ‘CG’.
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mocafe.fenut.fenut.setup_pvd_files">
-<span class="sig-prename descclassname"><span class="pre">mocafe.fenut.fenut.</span></span><span class="sig-name descname"><span class="pre">setup_pvd_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_folder</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.setup_pvd_files" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mocafe.fenut.fenut.</span></span><span class="sig-name descname"><span class="pre">setup_pvd_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_folder</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.setup_pvd_files" title="Permalink to this definition"></a></dt>
 <dd><p>returns a list of <code class="docutils literal notranslate"><span class="pre">.pvd</span></code> files with the given list of names. <code class="docutils literal notranslate"><span class="pre">.pvd</span></code> files can be used to store FEniCS Functions,
 even though XDMF files are preferred.</p>
 <p>This method is useful when a relative long list of files is needed for a simulation.</p>
@@ -178,7 +230,7 @@ even though XDMF files are preferred.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mocafe.fenut.fenut.setup_xdmf_files">
-<span class="sig-prename descclassname"><span class="pre">mocafe.fenut.fenut.</span></span><span class="sig-name descname"><span class="pre">setup_xdmf_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_names:</span> <span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comm=&lt;mpi4py.MPI.Intracomm</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.setup_xdmf_files" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mocafe.fenut.fenut.</span></span><span class="sig-name descname"><span class="pre">setup_xdmf_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_names:</span> <span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comm=&lt;mpi4py.MPI.Intracomm</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut.fenut.setup_xdmf_files" title="Permalink to this definition"></a></dt>
 <dd><p>returns a list of <code class="docutils literal notranslate"><span class="pre">.xdmf</span></code> files with the given list of names. <code class="docutils literal notranslate"><span class="pre">.xdmf</span></code> files are the preferred way to store
 FEniCS functions for elaboration and visualization.</p>
 <p>This method is useful when a relative long list of files is needed for a simulation.</p>
@@ -199,88 +251,42 @@ FEniCS functions for elaboration and visualization.</p>
 </section>
 
 
+           </div>
           </div>
-          
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../fenut.html" class="btn btn-neutral float-left" title="mocafe.fenut" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="log.html" class="btn btn-neutral float-right" title="mocafe.fenut.log" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Franco Pradelli.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="../../index.html">
-              <img class="logo" src="../../_static/200mocafe_logo.png" alt="Logo"/>
-            </a></p>
-<h1 class="logo"><a href="../../index.html">Mocafe</a></h1>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>  
+
+  <style>
+    /* Sidebar header (and topbar for mobile) */
+    .wy-side-nav-search, .wy-nav-top {
+      background: #343131;
+    }
+  </style>
 
 
-
-
-
-
-
-
-<h3>Navigation</h3>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../demo_doc/index.html">Demo Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../../code_documentation.html">Code Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../angie.html"><code class="docutils literal notranslate"><span class="pre">mocafe.angie</span></code></a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../fenut.html"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../litforms.html"><code class="docutils literal notranslate"><span class="pre">mocafe.litforms</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../math.html"><code class="docutils literal notranslate"><span class="pre">mocafe.math</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../expressions.html"><code class="docutils literal notranslate"><span class="pre">mocafe.expressions</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../bib.html">Bibliography</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../../code_documentation.html">Code Documentation</a><ul>
-  <li><a href="../fenut.html"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut</span></code></a><ul>
-      <li>Previous: <a href="../fenut.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut</span></code></a></li>
-      <li>Next: <a href="log.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut.log</span></code></a></li>
-  </ul></li>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2021, Franco Pradelli.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="../../_sources/sub_code_doc/fenut_sub_code_doc/fenut.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
-
-    
-
-    
-  </body>
+</body>
 </html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mocafe.angie.base_classes &mdash; Mocafe 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery-rendered-html.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/class.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/functions.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="mocafe.angie.af_sourcing" href="../angie_sub_code_doc/af_sourcing.html" />
+    <link rel="prev" title="mocafe.angie.tipcells" href="mocafe.angie.tipcells.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Mocafe
+            <img src="../../_static/200mocafe_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../demo_doc/index.html">Demo Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../code_documentation.html">Code Documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../angie.html"><code class="docutils literal notranslate"><span class="pre">mocafe.angie</span></code></a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="mocafe.angie.af_sourcing.html">mocafe.angie.af_sourcing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mocafe.angie.forms.html">mocafe.angie.forms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mocafe.angie.tipcells.html">mocafe.angie.tipcells</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">mocafe.angie.base_classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../angie_sub_code_doc/af_sourcing.html"><code class="docutils literal notranslate"><span class="pre">mocafe.angie.af_sourcing</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../angie_sub_code_doc/forms.html"><code class="docutils literal notranslate"><span class="pre">mocafe.angie.forms</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../angie_sub_code_doc/tipcells.html"><code class="docutils literal notranslate"><span class="pre">mocafe.angie.tipcells</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../angie_sub_code_doc/base_classes.html"><code class="docutils literal notranslate"><span class="pre">mocafe.angie.base_classes</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../fenut.html"><code class="docutils literal notranslate"><span class="pre">mocafe.fenut</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../litforms.html"><code class="docutils literal notranslate"><span class="pre">mocafe.litforms</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../math.html"><code class="docutils literal notranslate"><span class="pre">mocafe.math</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../expressions.html"><code class="docutils literal notranslate"><span class="pre">mocafe.expressions</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../bib.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Mocafe</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../code_documentation.html">Code Documentation</a> &raquo;</li>
+          <li><a href="../angie.html"><code class="docutils literal notranslate"><span class="pre">mocafe.angie</span></code></a> &raquo;</li>
+      <li>mocafe.angie.base_classes</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/sub_code_doc/angie_generated/mocafe.angie.base_classes.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-mocafe.angie.base_classes">
+<span id="mocafe-angie-base-classes"></span><h1>mocafe.angie.base_classes<a class="headerlink" href="#module-mocafe.angie.base_classes" title="Permalink to this headline"></a></h1>
+<p>Base classes used only by mocafe.angie</p>
+<p class="rubric">Functions</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../angie_sub_code_doc/base_classes.html#mocafe.angie.base_classes.fibonacci_sphere" title="mocafe.angie.base_classes.fibonacci_sphere"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fibonacci_sphere</span></code></a>(n_points)</p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">n_points</span></code> points evely distributed on a sphere of radius 1 using the fibonacci algorithm.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../angie_sub_code_doc/base_classes.html#mocafe.angie.base_classes.BaseCell" title="mocafe.angie.base_classes.BaseCell"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseCell</span></code></a>(point, creation_step)</p></td>
+<td><p>Class representing a discrete cell agent.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mocafe.angie.tipcells.html" class="btn btn-neutral float-left" title="mocafe.angie.tipcells" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../angie_sub_code_doc/af_sourcing.html" class="btn btn-neutral float-right" title="mocafe.angie.af_sourcing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Franco Pradelli.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>  
+
+  <style>
+    /* Sidebar header (and topbar for mobile) */
+    .wy-side-nav-search, .wy-nav-top {
+      background: #343131;
+    }
+  </style>
+
+
+</body>
+</html>
