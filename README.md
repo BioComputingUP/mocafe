@@ -13,11 +13,13 @@ The purpose of Mocafe is to provide an open source and efficient implementation 
 Use Mocafe to: 
 * reproduce legacy cancer phase field model (also in parallel with `MPI`);  
 * understand them better inspecting the code, and changing the parameters;  
-* integrate these models in yours [FEniCS](https://fenicsproject.org/) scripts.  
-
-See complete documentation [here](https://biocomputingup.github.io/mocafe/build/html/index.html)
+* integrate these models in yours [FEniCS](https://fenicsproject.org/) scripts.
   
 ![Mocafe header](https://i.imgur.com/ETeV67C.png)
+
+## Documentation
+To ease Mocafe usage by every user, we provide an extensive documentation along with the package. 
+You can find it here: [link to documentation](https://biocomputingup.github.io/mocafe/build/html/index.html).
   
 ## Installation
 See the [Installation page](https://biocomputingup.github.io/mocafe/build/html/installation.html) on the documentation 
