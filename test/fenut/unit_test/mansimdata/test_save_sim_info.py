@@ -6,7 +6,7 @@ from mocafe.fenut.parameters import from_ods_sheet
 def test_save_sim_info(tmpdir, odf_sheet_test2):
     data_folder = mansim.setup_data_folder(folder_path=f"{tmpdir}/{mansim.test_sim_name}")
     parameters = from_ods_sheet(odf_sheet_test2, "SimParams")
-    mansim.save_sim_info(data_folder, 1.0, parameters, "test")
+    mansim.save_sim_info(data_folder, parameters, 1.0, "test")
     print(str(data_folder / pathlib.Path("sim_info.html")))
     assert (data_folder / pathlib.Path("sim_info.html")).exists()
 
@@ -17,7 +17,7 @@ def test_save_sim_info_format(tmpdir, odf_sheet_test):
     parameters = from_ods_sheet(odf_sheet_test, "Sheet1")
     sim_name = mansim.test_sim_name
     dateandtime = "test"
-    mansim.save_sim_info(data_folder, execution_time, parameters, sim_name, dateandtime)
+    mansim.save_sim_info(data_folder, parameters, execution_time, sim_name, dateandtime)
     sim_info_file = data_folder / mansim.sim_info_file
     # how the sim_info file should look like
     expected_result = f"<article>\n" \
@@ -45,7 +45,7 @@ def test_save_sim_info_rationale(tmpdir, odf_sheet_test):
     sim_name = "another_test"
     dateandtime = "test"
     sim_rationale = "A rationale"
-    mansim.save_sim_info(data_folder, execution_time, parameters, sim_name, dateandtime=dateandtime,
+    mansim.save_sim_info(data_folder, parameters, execution_time, sim_name, dateandtime=dateandtime,
                          sim_description=sim_rationale)
     sim_info_file = data_folder / mansim.sim_info_file
     # how the sim_info file should look like
@@ -76,7 +76,7 @@ def test_sim_info_error(tmpdir, odf_sheet_test):
     sim_rationale = "A rationale"
     error_msg = "An error"
     error = RuntimeError(error_msg)
-    mansim.save_sim_info(data_folder, execution_time, parameters, sim_name, dateandtime=dateandtime,
+    mansim.save_sim_info(data_folder, parameters, execution_time, sim_name, dateandtime=dateandtime,
                          sim_description=sim_rationale, error_msg=str(error))
     sim_info_file = data_folder / mansim.sim_info_file
     # how the sim_info file should look like
