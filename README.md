@@ -14,8 +14,6 @@ Use Mocafe to:
 * reproduce legacy cancer phase field model (also in parallel with `MPI`);  
 * understand them better inspecting the code, and changing the parameters;  
 * integrate these models in yours [FEniCS](https://fenicsproject.org/) scripts.
-  
-![Mocafe header](https://i.imgur.com/ETeV67C.png)
 
 ## Documentation
 To ease Mocafe usage by every user, we provide an extensive documentation along with the package. 
@@ -25,14 +23,16 @@ You can find it here: [link to documentation](https://biocomputingup.github.io/m
 See the [Installation page](https://biocomputingup.github.io/mocafe/build/html/installation.html) on the documentation 
 for an extensive guide.
 
-## Usage example
+## Demos
  
-Mocafe allows anyone to simulate a phase field cancer models just as any other FEniCS python script.
+Mocafe allows anyone to simulate a phase field cancer models just as any other FEniCS Python script.
 Please refer to the [demo gallery](https://biocomputingup.github.io/mocafe/build/html/demo_doc/index.html)  in the Mocafe documentation for extensive usage examples. Currently, the demos include:
 
-* the simulation of a **prostate cancer model** first proposed by Lorenzo et al. in 2016 [^Lorenzo2016], both in 2D and in 3D;
-* the simulation of an **angiogenesis model** first proposed by Travasso et al. in 2011 [^Travasso2011], both in 2D and in 3D (3D adaptation first reported by Guerra et al. in 2012 [^Guerra2012])
-  
+| Model                                                                                                                                                                           | 2D                                                     | 3D                                                     |
+|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------|--------------------------------------------------------|
+| A **prostate cancer model** first proposed by Lorenzo et al. in 2016 [^Lorenzo2016], both in 2D and in 3D;                                                                      | ![2D_prostate_cancer](https://i.imgur.com/zlLAeso.png) | ![3D_prostate_cancer](https://i.imgur.com/VOQ8c7u.png) |
+| An **angiogenesis model** first proposed by Travasso et al. in 2011 [^Travasso2011], both in 2D and in 3D (3D adaptation first reported by Guerra et al. in 2012 [^Guerra2012]) | ![2D_angiogenesis](https://i.imgur.com/Mk03qg0.png)    | ![3D_angiogenesis](https://i.imgur.com/6R1mJ4d.png)    |
+ 
 ## Release History  
   
 * 24 Jan 2021: Released Mocafe 1.0.0 
