@@ -13,27 +13,45 @@ The purpose of Mocafe is to provide an open source and efficient implementation 
 Use Mocafe to: 
 * reproduce legacy cancer phase field model (also in parallel with `MPI`);  
 * understand them better inspecting the code, and changing the parameters;  
-* integrate these models in yours [FEniCS](https://fenicsproject.org/) scripts.  
+* integrate these models in yours [FEniCS](https://fenicsproject.org/) scripts.
 
-See complete documentation [here](https://biocomputingup.github.io/mocafe/build/html/index.html)
-  
-![Mocafe header](https://i.imgur.com/ETeV67C.png)
+## Documentation
+To ease Mocafe usage by every user, we provide an extensive documentation along with the package. 
+You can find it here: [link to documentation](https://biocomputingup.github.io/mocafe/build/html/index.html).
   
 ## Installation
-See the [Installation page](https://biocomputingup.github.io/mocafe/build/html/installation.html) on the documentation 
-for an extensive guide.
 
-## Usage example
+### All users
+**If you don't have FEniCS installed**, you can find a step-by-step guide on the installation of FEniCS and Mocafe
+on the [Installation page](https://biocomputingup.github.io/mocafe/build/html/installation.html).
+
+### FEniCS users
+Every system with FEniCS installed can install and use Mocafe just like any other Python Package. You can use `pip3` to install it:
+```
+pip3 install git+https://github.com/BioComputingUP/mocafe#egg=mocafe
+```
+And test it running:
+```
+python3 -m mocafe
+```
+
+### Singularity users
+We prepared a Singularity recipy to easily create a Mocafe container to run on your system. See the 
+[Installation page](https://biocomputingup.github.io/mocafe/build/html/installation.html) for further details.
+
+## Demos
  
-Mocafe allows anyone to simulate a phase field cancer models just as any other FEniCS python script.
+Mocafe allows anyone to simulate a phase field cancer models just as any other FEniCS Python script.
 Please refer to the [demo gallery](https://biocomputingup.github.io/mocafe/build/html/demo_doc/index.html)  in the Mocafe documentation for extensive usage examples. Currently, the demos include:
 
-* the simulation of a **prostate cancer model** first proposed by Lorenzo et al. in 2016 [^Lorenzo2016], both in 2D and in 3D;
-* the simulation of an **angiogenesis model** first proposed by Travasso et al. in 2011 [^Travasso2011], both in 2D and in 3D (3D adaptation first reported by Xu et al. in 2020 [^Xu2020])
-  
+| Model                                                                                                                                                                           | 2D                                                     | 3D                                                     |
+|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------|--------------------------------------------------------|
+| A **prostate cancer model** first proposed by Lorenzo et al. in 2016 [^Lorenzo2016], both in 2D and in 3D;                                                                      | ![2D_prostate_cancer](https://i.imgur.com/zlLAeso.png) | ![3D_prostate_cancer](https://i.imgur.com/VOQ8c7u.png) |
+| An **angiogenesis model** first proposed by Travasso et al. in 2011 [^Travasso2011], both in 2D and in 3D (3D adaptation first reported by Guerra et al. in 2012 [^Guerra2012]) | ![2D_angiogenesis](https://i.imgur.com/Mk03qg0.png)    | ![3D_angiogenesis](https://i.imgur.com/6R1mJ4d.png)    |
+ 
 ## Release History  
   
-* 24 Jan 2022: Released Mocafe 1.0.0 
+* 24 Jan 2021: Released Mocafe 1.0.0 
   
 ## Meta  
   
@@ -65,6 +83,5 @@ Also, consider adding complete documentation and references for it.
  
  [^Lorenzo2016]: Lorenzo, G., Scott, M. A., Tew, K., Hughes, T. J. R., Zhang, Y. J., Liu, L., Vilanova, G., & Gomez, H. (2016). Tissue-scale, personalized modeling and simulation of prostate cancer growth. _Proceedings of the National Academy of Sciences_. https://doi.org/10.1073/pnas.1615791113
  [^Travasso2011]: Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., & Hernández-Machado, A. (2011). Tumor angiogenesis and vascular patterning: A mathematical model. _PLoS ONE_, _6_(5), e19989. https://doi.org/10.1371/journal.pone.0019989
- [^Xu2020]: Xu, J., Vilanova, G., & Gomez, H. (2020). Phase-field model of vascular tumor growth: Three-dimensional geometry of the vascular network and integration with imaging data. _Computer Methods in Applied Mechanics and Engineering_, _359_, 112648. https://doi.org/10.1016/J.CMA.2019.112648
-
+ [^Guerra2012]: Dias Soares Quinas Guerra, M. M., & Travasso, R. D. M. (2012). Novel approach to vascular network modeling in 3D. 2012 IEEE 2nd Portuguese Meeting in Bioengineering, ENBENG 2012. https://doi.org/10.1109/ENBENG.2012.6331381
 
