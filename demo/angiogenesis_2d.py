@@ -123,7 +123,7 @@ vector is indeed computed as follows:
     v & = \chi \nabla af & \quad \textrm{if} \quad |\nabla af|<G_M \\
     \; & = \chi \frac{\nabla af}{|\nabla af|}G_M & \quad \textrm{if} \quad |\nabla af| \ge G_M
 
-Notice that the velocity cannot be higher in norm than :math:`G_M`. Once a tip cell moved, the capilllaries
+Notice that the velocity cannot be higher in norm than :math:`\chi G_M`. Once a tip cell moved, the capillaries
 phase field :math:`c` is updated, adding a circle in the position of the tip cell with a constant value:
 
 .. math::
@@ -133,8 +133,10 @@ Where :math:`R_c` is the radius of the tip cell.
 Notice that this is one of the key elements of the model, because it merges the continuous dynamics of the field
 :math:`c` with the discrete dynamics of the tip cells.
 
-Finally, the tip cells deactivate when :math`af` or the norm of its gradient drop below the above-mentioned thresholds
-values.
+Finally, according to the original model, the tip cells deactivate when :math`af` or the norm of its gradient drop
+below the above-mentioned thresholds values. In the Mocafe implementation, however, we added a small change first
+introduced by Moreira-Soares et al. (2018) :cite:`MoreiraSoares2018`, and the tip cells deactivate also due to
+Notch-Signalling inhibition if they are close to each other.
 """
 
 # %%
