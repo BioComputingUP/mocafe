@@ -36,7 +36,7 @@ class TipCell(BaseCell):
     """
     Class representing a tip cell. The tip cells are represented as a circle with a given radius.
     """
-    def __init__(self, position, radius, creation_step):
+    def __init__(self, position: np.ndarray, radius, creation_step):
         """
         inits a TipCell in the given position for the given radius.
 
