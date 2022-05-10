@@ -2,6 +2,7 @@
 Base classes used only by mocafe.angie
 """
 import math
+import fenics
 import numpy as np
 
 
@@ -15,6 +16,9 @@ class BaseCell:
         :param point: position of the cell
         :param creation_step: creation step of the cell, used for internal purposes
         """
+        if type(point) is not np.ndarray:
+            raise TypeError(r"A cell position can be only an array of type np.ndarray. Please change array type")
+
         self.initial_position = point
         self.creation_step = creation_step
         self.position = point
