@@ -20,8 +20,24 @@ To ease Mocafe usage by every user, we provide an extensive documentation along 
 You can find it here: [link to documentation](https://biocomputingup.github.io/mocafe/build/html/index.html).
   
 ## Installation
-See the [Installation page](https://biocomputingup.github.io/mocafe/build/html/installation.html) on the documentation 
-for an extensive guide.
+
+### All users
+**If you don't have FEniCS installed**, you can find a step-by-step guide on the installation of FEniCS and Mocafe
+on the [Installation page](https://biocomputingup.github.io/mocafe/build/html/installation.html).
+
+### FEniCS users
+Every system with FEniCS installed can install and use Mocafe just like any other Python Package. You can use `pip3` to install it:
+```
+pip3 install git+https://github.com/BioComputingUP/mocafe#egg=mocafe
+```
+And test it running:
+```
+python3 -m mocafe
+```
+
+### Singularity users
+We prepared a Singularity recipy to easily create a Mocafe container to run on your system. See the 
+[Installation page](https://biocomputingup.github.io/mocafe/build/html/installation.html) for further details.
 
 ## Demos
  
