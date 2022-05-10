@@ -21,6 +21,7 @@ import random
 import logging
 from mocafe.fenut.parameters import Parameters
 from mocafe.fenut.log import InfoCsvAdapter, DebugAdapter
+import sys
 
 # get rank
 comm = fenics.MPI.comm_world
@@ -36,7 +37,7 @@ class TipCell(BaseCell):
     """
     Class representing a tip cell. The tip cells are represented as a circle with a given radius.
     """
-    def __init__(self, position, radius, creation_step):
+    def __init__(self, position: np.ndarray, radius, creation_step):
         """
         inits a TipCell in the given position for the given radius.
 
@@ -192,6 +193,7 @@ class TipCellManager:
         self.global_tip_cells_list = []
         self.local_tip_cells_list = []
         self.mesh = mesh
+        mesh.bounding_box_tree()  # done for MPI; otherwise idle (bounding box must be built on all processes)
         self.parameters = parameters
         self.T_c = parameters.get_value("T_c")
         self.G_m = parameters.get_value("G_m")
@@ -400,6 +402,11 @@ class TipCellManager:
 
         The procedure above is applied to all the active tip cells.
 
+        *New*: now the tip cells are deactivated also if there are other Tip Cells nearer then the distance
+        contained in the parameter 'min_tipcell_distance'. This was introduced to simulate the effect of Delta-
+        Notch signalling also on active Tip Cells, which was not present in Travasso et al. (2011) :cite:`Travasso2011a`
+        but has been introduced by Moreira-Soares et al. (2018) :cite:`MoreiraSoares2018`.
+
         :param af: angiogenic factor field
         :param grad_af: gradient of the angiogenic factor
         :return: nothing
@@ -409,6 +416,7 @@ class TipCellManager:
         local_to_remove = []
         local_to_check_if_outside_global_mesh = []
 
+        """1. For each local tip cell, check if the activation conditions are still met."""
         for tip_cell in self.local_tip_cells_list:
             position = tip_cell.get_position()
             # check if tip cell is inside local mesh
@@ -420,7 +428,7 @@ class TipCellManager:
                 # else add to the list for checking if in global mesh
                 local_to_check_if_outside_global_mesh.append(tip_cell)
 
-        # check if in global mesh
+        """2. For local tip cells which are outside the local mesh, check if they are outside the global mesh. """
         global_to_check_if_outside_global_mesh = comm.gather(local_to_check_if_outside_global_mesh, 0)
         if rank == 0:
             global_to_check_if_outside_global_mesh = fu.flatten_list_of_lists(global_to_check_if_outside_global_mesh)
@@ -436,7 +444,48 @@ class TipCellManager:
             if not is_inside_global_mesh:
                 local_to_remove.append(tip_cell)
 
-        # remove local cells to remove
+        """3. Remove local tip cells near to each other, due to Delta-Notch signalling."""
+        near_tcs_to_remove = []  # init list of cells to remove
+        if rank == 0:
+            global_tc_list = self.global_tip_cells_list.copy()  # get a copy of the global tip cells (tc) list
+            tc_groups_dict = {}  # init dictionary for tc groups
+            random.shuffle(global_tc_list)  # sort the list of tc randomly to ensure casual selection
+
+            for tc in global_tc_list:
+                near_tcs = []  # init list of the near tip cells
+                other_tcs = global_tc_list.copy()
+                other_tcs.remove(tc)  # get a list with the other tcs
+                for other_tc in other_tcs:
+                    is_tc_near_other_tc = \
+                        (tc.get_distance(other_tc.get_position()) < self.min_tipcell_distance)  # check if near
+                    if is_tc_near_other_tc:
+                        near_tcs.append(other_tc)  # if near, add to list
+                tc_groups_dict[tc] = near_tcs  # set list as value for dict with key tc
+
+            # sort groups by len
+            tc_groups_dict = \
+                {tc: tc_group for tc, tc_group
+                 in sorted(tc_groups_dict.items(), key=lambda item: len(item[1]), reverse=True)}
+
+            # iterate until all the groups are empty
+            while not all(group_len == 0 for group_len in [len(tc_groups_dict[tc]) for tc in tc_groups_dict]):
+                current_tc_largest_group = list(tc_groups_dict.keys())[0]  # get tc with the largest group
+                near_tcs_to_remove.append(current_tc_largest_group)  # append it to local to remove
+                tc_groups_dict.pop(current_tc_largest_group)  # remove tc entry from tc_groups_dict
+                for tc, tc_group in tc_groups_dict.items():
+                    if current_tc_largest_group in tc_group:
+                        tc_group.remove(current_tc_largest_group)
+        else:
+            pass
+
+        # get the global near tcs to remove
+        near_tcs_to_remove = comm.bcast(near_tcs_to_remove, 0)
+        # add the tcs to remove to local_to_remove
+        for tc in near_tcs_to_remove:
+            if (tc in self.local_tip_cells_list) and (tc not in local_to_remove):
+                local_to_remove.append(tc)
+
+        "4 (final). Remove tip cells added to local_to_remove"
         self._remove_tip_cells(local_to_remove)
 
     def _update_tip_cell_positions_and_get_field(self, af, grad_af):

@@ -1,7 +1,8 @@
 import fenics
+import sys
 import numpy as np
 import pytest
-from mocafe.angie.tipcells import TipCellManager
+from mocafe.angie.tipcells import TipCellManager, TipCell
 
 
 # @pytest.fixture
@@ -60,12 +61,10 @@ def gradT0(mesh, T0):
     return gradT0
 
 
-@pytest.fixture
-def tip_cell_manager(mesh, parameters):
-    return TipCellManager(mesh, parameters)
+def test_activate_tip_cell(T0, phi0, gradT0, mesh, parameters):
+    # create tip cell manager
+    tip_cell_manager = TipCellManager(mesh, parameters)
 
-
-def test_activate_tip_cell(T0, phi0, gradT0, tip_cell_manager):
     # activate
     tip_cell_manager.activate_tip_cell(phi0, T0, gradT0, 0)
 
@@ -84,7 +83,10 @@ def test_activate_tip_cell(T0, phi0, gradT0, tip_cell_manager):
     assert test_result is True, "There should be just one tip cell activated"
 
 
-def test_activate_3_tip_cells(parameters, T0, phi0, gradT0, tip_cell_manager):
+def test_activate_3_tip_cells(parameters, T0, phi0, gradT0, mesh):
+    # create tip cell manager
+    tip_cell_manager = TipCellManager(mesh, parameters)
+
     for i in range(3):
         tip_cell_manager.activate_tip_cell(phi0, T0, gradT0, i)
 
@@ -104,7 +106,10 @@ def test_activate_3_tip_cells(parameters, T0, phi0, gradT0, tip_cell_manager):
     assert tip_cell_list_len_is_3 and are_cells_distant, "There should be 3 cells distant to each other"
 
 
-def test_revert_tip_cells(phi0, T0, gradT0, tip_cell_manager):
+def test_revert_tip_cells(phi0, T0, gradT0, mesh, parameters):
+    # create tip cell manager
+    tip_cell_manager = TipCellManager(mesh, parameters)
+
     # set test result
     ref_len = [1, 2, 0]
     actual_len = []
@@ -119,3 +124,77 @@ def test_revert_tip_cells(phi0, T0, gradT0, tip_cell_manager):
         actual_len.append(n_tip_cells)
     assert np.allclose(ref_len, actual_len), \
         "There should be 1 tip cell at step 0, 2 tip cells at step 1, and 0 at step 2"
+
+
+def test_delta_notch_reversion(T0, gradT0, mesh, parameters):
+    # create tip cell manager
+    tip_cell_manager = TipCellManager(mesh, parameters)
+
+    # create 2 tip cells close to each other
+    tipcell1_pos = np.array([100., 100.])
+    tipcell1 = TipCell(tipcell1_pos, 4., 0)
+    tipcell2_pos = np.array([104., 100.])
+    tipcell2 = TipCell(tipcell2_pos, 4., 0)
+
+    # check if tip cells have been created correcty
+    assert np.allclose(tipcell1.get_position(), tipcell1_pos)
+    assert np.allclose(tipcell2.get_position(), tipcell2_pos)
+
+    # add tip cells to tip cell manager
+    tip_cell_manager._add_tip_cell(tipcell1)
+    tip_cell_manager._add_tip_cell(tipcell2)
+
+    # check if the tip cells have been added
+    assert len(tip_cell_manager.get_global_tip_cells_list()) == 2
+
+    # modify T0 and gradT0 to ensure the removal is not due to T0 or gradT0 level
+    T0.assign(fenics.Constant(1.))
+    gradT0.assign(fenics.Expression(("1.", "1"), degree=1))
+
+    # remove tip cells
+    tip_cell_manager.revert_tip_cells(T0, gradT0)
+    # exit(0)
+    assert len(tip_cell_manager.get_global_tip_cells_list()) == 1, \
+        "One Tip Cell should be removed due to Delta-Notch signaling."
+
+
+def test_delta_notch_3_cells(parameters, T0, gradT0, mesh):
+    # create tip cell manager
+    tip_cell_manager = TipCellManager(mesh, parameters)
+
+    # get min tip cell distance
+    min_distance = parameters.get_value("min_tipcell_distance")
+
+    # create 2 tip cells close to each other
+    tipcell1_pos = np.array([100., 100.])
+    tipcell1 = TipCell(tipcell1_pos, 4., 0)
+    tipcell2_pos = tipcell1_pos + np.array([min_distance / 1.5, 0.])  # <-- only this should be removed
+    tipcell2 = TipCell(tipcell2_pos, 4., 0)
+    tipcell3_pos = tipcell2_pos + np.array([min_distance / 1.5, 0.])
+    tipcell3 = TipCell(tipcell3_pos, 4., 0)
+
+    # check if tip cells have been created correctly
+    assert np.allclose(tipcell1.get_position(), tipcell1_pos)
+    assert np.allclose(tipcell2.get_position(), tipcell2_pos)
+    assert np.allclose(tipcell3.get_position(), tipcell3_pos)
+
+    # add tip cells to tip cell manager
+    tip_cell_manager._add_tip_cell(tipcell1)
+    tip_cell_manager._add_tip_cell(tipcell2)
+    tip_cell_manager._add_tip_cell(tipcell3)
+
+    # check if the tip cells have been added
+    assert len(tip_cell_manager.get_global_tip_cells_list()) == 3
+
+    # modify T0 and gradT0 to ensure the removal is not due to T0 or gradT0 level
+    T0.assign(fenics.Constant(1.))
+    gradT0.assign(fenics.Expression(("1.", "1"), degree=1))
+
+    # remove tip cells
+    tip_cell_manager.revert_tip_cells(T0, gradT0)
+    assert len(tip_cell_manager.get_global_tip_cells_list()) == 2, \
+        "Only one Tip Cell should be removed due to Delta-Notch signaling."
+    assert tipcell1 in tip_cell_manager.get_global_tip_cells_list(), \
+        f"Tip Cell in position {tipcell1_pos} should be in the list"
+    assert tipcell3 in tip_cell_manager.get_global_tip_cells_list(), \
+        f"Tip Cell in position {tipcell3_pos} should be in the list"
