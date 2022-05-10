@@ -31,7 +31,7 @@ Mocafe allows anyone to simulate a phase field cancer models just as any other F
 Please refer to the [demo gallery](https://biocomputingup.github.io/mocafe/build/html/demo_doc/index.html)  in the Mocafe documentation for extensive usage examples. Currently, the demos include:
 
 * the simulation of a **prostate cancer model** first proposed by Lorenzo et al. in 2016 [^Lorenzo2016], both in 2D and in 3D;
-* the simulation of an **angiogenesis model** first proposed by Travasso et al. in 2011 [^Travasso2011], both in 2D and in 3D (3D adaptation first reported by Xu et al. in 2020 [^Xu2020])
+* the simulation of an **angiogenesis model** first proposed by Travasso et al. in 2011 [^Travasso2011], both in 2D and in 3D (3D adaptation first reported by Guerra et al. in 2012 [^Guerra2012])
   
 ## Release History  
   
@@ -67,6 +67,5 @@ Also, consider adding complete documentation and references for it.
  
  [^Lorenzo2016]: Lorenzo, G., Scott, M. A., Tew, K., Hughes, T. J. R., Zhang, Y. J., Liu, L., Vilanova, G., & Gomez, H. (2016). Tissue-scale, personalized modeling and simulation of prostate cancer growth. _Proceedings of the National Academy of Sciences_. https://doi.org/10.1073/pnas.1615791113
  [^Travasso2011]: Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., & Hernández-Machado, A. (2011). Tumor angiogenesis and vascular patterning: A mathematical model. _PLoS ONE_, _6_(5), e19989. https://doi.org/10.1371/journal.pone.0019989
- [^Xu2020]: Xu, J., Vilanova, G., & Gomez, H. (2020). Phase-field model of vascular tumor growth: Three-dimensional geometry of the vascular network and integration with imaging data. _Computer Methods in Applied Mechanics and Engineering_, _359_, 112648. https://doi.org/10.1016/J.CMA.2019.112648
-
+ [^Guerra2012]: Dias Soares Quinas Guerra, M. M., & Travasso, R. D. M. (2012). Novel approach to vascular network modeling in 3D. 2012 IEEE 2nd Portuguese Meeting in Bioengineering, ENBENG 2012. https://doi.org/10.1109/ENBENG.2012.6331381
 
