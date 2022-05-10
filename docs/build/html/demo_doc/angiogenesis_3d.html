@@ -262,7 +262,7 @@ following runs.</p>
 <p>From the mesh, we can again define the function space in the same way we did in the 2D simulation. Indeed, the
 system of differential equations is the same and FEniCS will take care of defining the “3D-version” of the polynomial
 functions. Remember that, even though there are just two variables <span class="math notranslate nohighlight">\(c\)</span> and <span class="math notranslate nohighlight">\(af\)</span>, we also need to
-consider an auxiliary variable <span class="math notranslate nohighlight">\(mu\)</span> for the <span class="math notranslate nohighlight">\(c\)</span> field (see demo for the 2D case).</p>
+consider an auxiliary variable <span class="math notranslate nohighlight">\(\mu\)</span> for the <span class="math notranslate nohighlight">\(c\)</span> field (see demo for the 2D case).</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># for c and af</span>
 <span class="n">function_space</span> <span class="o">=</span> <span class="n">fu</span><span class="o">.</span><span class="n">get_mixed_function_space</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="c1"># for grad_T</span>

@@ -183,7 +183,7 @@ following runs.
 From the mesh, we can again define the function space in the same way we did in the 2D simulation. Indeed, the
 system of differential equations is the same and FEniCS will take care of defining the "3D-version" of the polynomial
 functions. Remember that, even though there are just two variables :math:`c` and :math:`af`, we also need to
-consider an auxiliary variable :math:`mu` for the :math:`c` field (see demo for the 2D case).
+consider an auxiliary variable :math:`\mu` for the :math:`c` field (see demo for the 2D case).
 
 .. GENERATED FROM PYTHON SOURCE LINES 154-160
 
