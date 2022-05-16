@@ -16,12 +16,11 @@ import fenics
 import numpy as np
 import mocafe.fenut.fenut as fu
 from mocafe.angie import af_sourcing
-from mocafe.angie.base_classes import BaseCell
+from mocafe.angie.base_classes import BaseCell, ClockChecker
 import random
 import logging
 from mocafe.fenut.parameters import Parameters
 from mocafe.fenut.log import InfoCsvAdapter, DebugAdapter
-import sys
 
 # get rank
 comm = fenics.MPI.comm_world
@@ -203,7 +202,7 @@ class TipCellManager:
         self.alpha_p = parameters.get_value("alpha_p")
         self.T_p = parameters.get_value("T_p")
         self.min_tipcell_distance = parameters.get_value("min_tipcell_distance")
-        self.clock_checker = af_sourcing.ClockChecker(mesh, self.cell_radius, start_point="west")
+        self.clock_checker = ClockChecker(mesh, self.cell_radius, start_point="west")
         self.local_box = self._build_local_box(self.cell_radius)
         self.latest_t_c_f_function = None
 
@@ -310,6 +309,7 @@ class TipCellManager:
         n_points_phi_09 = 0
         n_points_over_Tc = 0
         n_points_over_Gm = 0
+        n_points_distant_to_edge = 0
         for point in local_mesh_points:
             if self._point_distant_to_tip_cells(fenics.Point(point)):
                 n_points_distant += 1
@@ -319,7 +319,10 @@ class TipCellManager:
                         n_points_over_Tc += 1
                         if np.linalg.norm(grad_af(point)) > self.G_m:
                             n_points_over_Gm += 1
-                            local_possible_locations.append(point)
+                            if not self.clock_checker.clock_check(point, c, 0.,
+                                                                  lambda value, thr: value < thr):
+                                n_points_distant_to_edge += 1
+                                local_possible_locations.append(point)
         debug_msg = \
             f"Finished checking. I found: \n" \
             f"\t* {n_points_distant} / {n_points_to_check} distant to the current tip cells \n" \
