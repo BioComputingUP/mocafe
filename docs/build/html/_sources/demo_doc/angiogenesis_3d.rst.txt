@@ -104,8 +104,8 @@ variations.
     import mocafe.fenut.parameters as mpar
     from mocafe.fenut.solvers import SNESProblem
 
-    # get MPI comm and rank
-    comm = fenics.MPI.comm_world
+    # get MPI _comm and _rank
+    comm = fenics.MPI._comm_world
     rank = comm.Get_rank()
 
     # create pbar for setup
@@ -442,12 +442,12 @@ Full code
   import mocafe.fenut.parameters as mpar
   from mocafe.fenut.solvers import SNESProblem
 
-  # get MPI comm and rank
-  comm = fenics.MPI.comm_world
-  rank = comm.Get_rank()
+  # get MPI _comm and _rank
+  _comm = fenics.MPI._comm_world
+  _rank = _comm.Get_rank()
 
   # create pbar for setup
-  if rank == 0:
+  if _rank == 0:
       setup_pbar = tqdm(total=8, desc="setting up")
   else:
       setup_pbar = None
@@ -480,7 +480,7 @@ Full code
 
   # check if mesh has already been created
   if mesh_file.exists():
-      if rank == 0:
+      if _rank == 0:
           setup_pbar.update(1)
           setup_pbar.set_description("loading mesh")
 
@@ -488,7 +488,7 @@ Full code
       mesh = fenics.Mesh()
       mesh_xdmf.read(mesh)
   else:
-      if rank == 0:
+      if _rank == 0:
           setup_pbar.update(1)
           setup_pbar.set_description("creating mesh")
 
@@ -508,7 +508,7 @@ Full code
   grad_af_function_space = fenics.VectorFunctionSpace(mesh, "CG", 1)
 
 
-  if rank == 0:
+  if _rank == 0:
       setup_pbar.update(1)
       setup_pbar.set_description("generating initial conditions")
 
@@ -518,7 +518,7 @@ Full code
                             R_v=initial_vessel_radius,
                             Lz=Lz)
 
-  if rank == 0:
+  if _rank == 0:
       setup_pbar.update(1)
       setup_pbar.set_description("interpolating c_0 and af_0")
 
@@ -527,7 +527,7 @@ Full code
 
 
   # define source map
-  if rank == 0:
+  if _rank == 0:
       setup_pbar.update(1)
       setup_pbar.set_description("creating sources map")
 
@@ -542,7 +542,7 @@ Full code
   # apply sources to af
   af_0 = fenics.interpolate(fenics.Constant(0.), function_space.sub(0).collapse())
 
-  if rank == 0:
+  if _rank == 0:
       setup_pbar.update(1)
       setup_pbar.set_description("applying sources")
 
@@ -556,7 +556,7 @@ Full code
   tipcells_field = fenics.Function(function_space.sub(0).collapse())
 
   # init grad af
-  if rank == 0:
+  if _rank == 0:
       setup_pbar.update(1)
       setup_pbar.set_description("projecting grad_af")
 
@@ -567,7 +567,7 @@ Full code
   )
 
 
-  if rank == 0:
+  if _rank == 0:
       setup_pbar.update(1)
       setup_pbar.set_description("defining weak form")
 
@@ -587,13 +587,13 @@ Full code
                                              parameters)
 
   # update
-  if rank == 0:
+  if _rank == 0:
       setup_pbar.update(1)
       setup_pbar.set_description("starting simulation")
 
   t = 0.
   n_steps = 200
-  if rank == 0:
+  if _rank == 0:
       pbar = tqdm(total=n_steps, ncols=100, position=1, desc="simulation")
   else:
       pbar = None
@@ -605,7 +605,7 @@ Full code
   from petsc4py import PETSc
 
   # create snes solver
-  snes_solver = PETSc.SNES().create(comm)
+  snes_solver = PETSc.SNES().create(_comm)
   snes_solver.setFromOptions()
 
   # start iteration in time
@@ -653,7 +653,7 @@ Full code
       file_c.write(c_0, t)
       tipcells_xdmf.write(tipcells_field, t)
 
-      if rank == 0:
+      if _rank == 0:
           pbar.update(1)
 
 

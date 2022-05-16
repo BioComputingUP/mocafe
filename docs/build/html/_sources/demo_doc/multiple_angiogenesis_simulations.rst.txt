@@ -278,7 +278,7 @@ Full code
     import mocafe.fenut.parameters as mpar
 
     # setup MPI
-    comm = fenics.MPI.comm_world
+    comm = fenics.MPI._comm_world
     rank = comm.Get_rank()
     # only process 0 logs
     fenics.parameters["std_out_all_processes"] = False

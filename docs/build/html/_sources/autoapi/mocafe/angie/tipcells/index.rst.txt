@@ -34,43 +34,6 @@ Classes
 
 
 
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   mocafe.angie.tipcells.comm
-   mocafe.angie.tipcells.rank
-   mocafe.angie.tipcells.logger
-   mocafe.angie.tipcells.info_adapter
-   mocafe.angie.tipcells.debug_adapter
-
-
-.. py:data:: comm
-   
-
-   
-
-.. py:data:: rank
-   
-
-   
-
-.. py:data:: logger
-   
-
-   
-
-.. py:data:: info_adapter
-   
-
-   
-
-.. py:data:: debug_adapter
-   
-
-   
-
 .. py:class:: TipCell(position: numpy.ndarray, radius, creation_step)
 
    Bases: :py:obj:`mocafe.angie.base_classes.BaseCell`

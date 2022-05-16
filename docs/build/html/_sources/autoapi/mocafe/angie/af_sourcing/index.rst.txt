@@ -44,43 +44,6 @@ Functions
 
 
 
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   mocafe.angie.af_sourcing.comm
-   mocafe.angie.af_sourcing.rank
-   mocafe.angie.af_sourcing.logger
-   mocafe.angie.af_sourcing.info_adapter
-   mocafe.angie.af_sourcing.debug_adapter
-
-
-.. py:data:: comm
-   
-
-   
-
-.. py:data:: rank
-   
-
-   
-
-.. py:data:: logger
-   
-
-   
-
-.. py:data:: info_adapter
-   
-
-   
-
-.. py:data:: debug_adapter
-   
-
-   
-
 .. py:class:: SourceCell(point: numpy.ndarray, creation_step)
 
    Bases: :py:obj:`mocafe.angie.base_classes.BaseCell`

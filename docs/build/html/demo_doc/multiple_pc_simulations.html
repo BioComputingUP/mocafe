@@ -377,7 +377,7 @@ and <code class="docutils literal notranslate"><span class="pre">sigma.*</span><
 
 <span class="c1"># initial setup</span>
 <span class="n">fenics</span><span class="o">.</span><span class="n">set_log_level</span><span class="p">(</span><span class="n">fenics</span><span class="o">.</span><span class="n">LogLevel</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
-<span class="n">comm</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">MPI</span><span class="o">.</span><span class="n">comm_world</span>
+<span class="n">comm</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">MPI</span><span class="o">.</span><span class="n">_comm_world</span>
 <span class="n">rank</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
 
 <span class="c1"># get this file folder</span>

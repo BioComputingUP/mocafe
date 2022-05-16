@@ -190,8 +190,8 @@ variations.</p>
 <span class="kn">import</span> <span class="nn">mocafe.fenut.parameters</span> <span class="k">as</span> <span class="nn">mpar</span>
 <span class="kn">from</span> <span class="nn">mocafe.fenut.solvers</span> <span class="kn">import</span> <span class="n">SNESProblem</span>
 
-<span class="c1"># get MPI comm and rank</span>
-<span class="n">comm</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">MPI</span><span class="o">.</span><span class="n">comm_world</span>
+<span class="c1"># get MPI _comm and _rank</span>
+<span class="n">comm</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">MPI</span><span class="o">.</span><span class="n">_comm_world</span>
 <span class="n">rank</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
 
 <span class="c1"># create pbar for setup</span>
@@ -472,12 +472,12 @@ expernal softwares as ParaView. If you don’t now how to do it, you can check o
 <span class="kn">import</span> <span class="nn">mocafe.fenut.parameters</span> <span class="k">as</span> <span class="nn">mpar</span>
 <span class="kn">from</span> <span class="nn">mocafe.fenut.solvers</span> <span class="kn">import</span> <span class="n">SNESProblem</span>
 
-<span class="c1"># get MPI comm and rank</span>
-<span class="n">comm</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">MPI</span><span class="o">.</span><span class="n">comm_world</span>
-<span class="n">rank</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
+<span class="c1"># get MPI _comm and _rank</span>
+<span class="n">_comm</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">MPI</span><span class="o">.</span><span class="n">_comm_world</span>
+<span class="n">_rank</span> <span class="o">=</span> <span class="n">_comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
 
 <span class="c1"># create pbar for setup</span>
-<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="k">if</span> <span class="n">_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
     <span class="n">setup_pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;setting up&quot;</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="n">setup_pbar</span> <span class="o">=</span> <span class="kc">None</span>
@@ -510,7 +510,7 @@ expernal softwares as ParaView. If you don’t now how to do it, you can check o
 
 <span class="c1"># check if mesh has already been created</span>
 <span class="k">if</span> <span class="n">mesh_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-    <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">setup_pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">setup_pbar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="s2">&quot;loading mesh&quot;</span><span class="p">)</span>
 
@@ -518,7 +518,7 @@ expernal softwares as ParaView. If you don’t now how to do it, you can check o
     <span class="n">mesh</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">Mesh</span><span class="p">()</span>
     <span class="n">mesh_xdmf</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">setup_pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">setup_pbar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="s2">&quot;creating mesh&quot;</span><span class="p">)</span>
 
@@ -538,7 +538,7 @@ expernal softwares as ParaView. If you don’t now how to do it, you can check o
 <span class="n">grad_af_function_space</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">VectorFunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
 
-<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="k">if</span> <span class="n">_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
     <span class="n">setup_pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">setup_pbar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="s2">&quot;generating initial conditions&quot;</span><span class="p">)</span>
 
@@ -548,7 +548,7 @@ expernal softwares as ParaView. If you don’t now how to do it, you can check o
                           <span class="n">R_v</span><span class="o">=</span><span class="n">initial_vessel_radius</span><span class="p">,</span>
                           <span class="n">Lz</span><span class="o">=</span><span class="n">Lz</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="k">if</span> <span class="n">_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
     <span class="n">setup_pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">setup_pbar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="s2">&quot;interpolating c_0 and af_0&quot;</span><span class="p">)</span>
 
@@ -557,7 +557,7 @@ expernal softwares as ParaView. If you don’t now how to do it, you can check o
 
 
 <span class="c1"># define source map</span>
-<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="k">if</span> <span class="n">_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
     <span class="n">setup_pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">setup_pbar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="s2">&quot;creating sources map&quot;</span><span class="p">)</span>
 
@@ -572,7 +572,7 @@ expernal softwares as ParaView. If you don’t now how to do it, you can check o
 <span class="c1"># apply sources to af</span>
 <span class="n">af_0</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">fenics</span><span class="o">.</span><span class="n">Constant</span><span class="p">(</span><span class="mf">0.</span><span class="p">),</span> <span class="n">function_space</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">collapse</span><span class="p">())</span>
 
-<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="k">if</span> <span class="n">_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
     <span class="n">setup_pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">setup_pbar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="s2">&quot;applying sources&quot;</span><span class="p">)</span>
 
@@ -586,7 +586,7 @@ expernal softwares as ParaView. If you don’t now how to do it, you can check o
 <span class="n">tipcells_field</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">function_space</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">collapse</span><span class="p">())</span>
 
 <span class="c1"># init grad af</span>
-<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="k">if</span> <span class="n">_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
     <span class="n">setup_pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">setup_pbar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="s2">&quot;projecting grad_af&quot;</span><span class="p">)</span>
 
@@ -597,7 +597,7 @@ expernal softwares as ParaView. If you don’t now how to do it, you can check o
 <span class="p">)</span>
 
 
-<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="k">if</span> <span class="n">_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
     <span class="n">setup_pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">setup_pbar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="s2">&quot;defining weak form&quot;</span><span class="p">)</span>
 
@@ -617,13 +617,13 @@ expernal softwares as ParaView. If you don’t now how to do it, you can check o
                                            <span class="n">parameters</span><span class="p">)</span>
 
 <span class="c1"># update</span>
-<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="k">if</span> <span class="n">_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
     <span class="n">setup_pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">setup_pbar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="s2">&quot;starting simulation&quot;</span><span class="p">)</span>
 
 <span class="n">t</span> <span class="o">=</span> <span class="mf">0.</span>
 <span class="n">n_steps</span> <span class="o">=</span> <span class="mi">200</span>
-<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="k">if</span> <span class="n">_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
     <span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="n">n_steps</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;simulation&quot;</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="n">pbar</span> <span class="o">=</span> <span class="kc">None</span>
@@ -635,7 +635,7 @@ expernal softwares as ParaView. If you don’t now how to do it, you can check o
 <span class="kn">from</span> <span class="nn">petsc4py</span> <span class="kn">import</span> <span class="n">PETSc</span>
 
 <span class="c1"># create snes solver</span>
-<span class="n">snes_solver</span> <span class="o">=</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">SNES</span><span class="p">()</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">comm</span><span class="p">)</span>
+<span class="n">snes_solver</span> <span class="o">=</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">SNES</span><span class="p">()</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">_comm</span><span class="p">)</span>
 <span class="n">snes_solver</span><span class="o">.</span><span class="n">setFromOptions</span><span class="p">()</span>
 
 <span class="c1"># start iteration in time</span>
@@ -683,7 +683,7 @@ expernal softwares as ParaView. If you don’t now how to do it, you can check o
     <span class="n">file_c</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">c_0</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
     <span class="n">tipcells_xdmf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">tipcells_field</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>

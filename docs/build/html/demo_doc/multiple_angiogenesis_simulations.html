@@ -334,7 +334,7 @@ reported in the original publication and it is critical for this simulation in p
 <span class="kn">import</span> <span class="nn">mocafe.fenut.parameters</span> <span class="k">as</span> <span class="nn">mpar</span>
 
 <span class="c1"># setup MPI</span>
-<span class="n">comm</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">MPI</span><span class="o">.</span><span class="n">comm_world</span>
+<span class="n">comm</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">MPI</span><span class="o">.</span><span class="n">_comm_world</span>
 <span class="n">rank</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
 <span class="c1"># only process 0 logs</span>
 <span class="n">fenics</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;std_out_all_processes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>

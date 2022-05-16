@@ -202,9 +202,9 @@ the simulation. Notice that while most of the packages are provided by Mocafe, w
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">fenics</span><span class="o">.</span><span class="n">set_log_level</span><span class="p">(</span><span class="n">fenics</span><span class="o">.</span><span class="n">LogLevel</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Then, we define the MPI rank for each process. Generally speaking, this is necessary for running the simulation in
+<p>Then, we define the MPI _rank for each process. Generally speaking, this is necessary for running the simulation in
 parallel using <code class="docutils literal notranslate"><span class="pre">mpirun</span></code>, even though in this simulation is not largely used, as we are going to see.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">comm</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">MPI</span><span class="o">.</span><span class="n">comm_world</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">comm</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">MPI</span><span class="o">.</span><span class="n">_comm_world</span>
 <span class="n">rank</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -397,7 +397,7 @@ simulated time of one year, given the dt of the system (see its value in the <co
 </pre></div>
 </div>
 <p>Then, we define a progress bar with <code class="docutils literal notranslate"><span class="pre">tqdm</span></code> in order to monitor the iteration progress. Notice that the progress
-bar is defined only if the rank of the process is 0. This is necessary to avoid every process to print out a
+bar is defined only if the _rank of the process is 0. This is necessary to avoid every process to print out a
 different progress bar.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
     <span class="n">progress_bar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="n">n_steps</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
@@ -516,7 +516,7 @@ condition for the next iteration:</p>
 <span class="n">sigma_xdmf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sigma0</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>  <span class="c1"># write the value of sigma at time t</span>
 
 <span class="c1"># update progress bar</span>
-<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="k">if</span> <span class="n">_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
     <span class="n">progress_bar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -552,8 +552,8 @@ expernal softwares as ParaView. If you don’t now how to do it, you can check o
 
 <span class="c1"># initial setup</span>
 <span class="n">fenics</span><span class="o">.</span><span class="n">set_log_level</span><span class="p">(</span><span class="n">fenics</span><span class="o">.</span><span class="n">LogLevel</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
-<span class="n">comm</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">MPI</span><span class="o">.</span><span class="n">comm_world</span>
-<span class="n">rank</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
+<span class="n">_comm</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">MPI</span><span class="o">.</span><span class="n">_comm_world</span>
+<span class="n">_rank</span> <span class="o">=</span> <span class="n">_comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
 
 <span class="n">file_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
 <span class="n">data_folder</span> <span class="o">=</span> <span class="n">setup_data_folder</span><span class="p">(</span><span class="n">folder_path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;{file_folder / Path(&#39;demo_out&#39;)}/prostate_cancer_2d&quot;</span><span class="p">,</span>
@@ -632,7 +632,7 @@ expernal softwares as ParaView. If you don’t now how to do it, you can check o
 <span class="c1"># Simulation: setup</span>
 <span class="n">n_steps</span> <span class="o">=</span> <span class="mi">1000</span>
 
-<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="k">if</span> <span class="n">_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
       <span class="n">progress_bar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="n">n_steps</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
       <span class="n">progress_bar</span> <span class="o">=</span> <span class="kc">None</span>
@@ -644,7 +644,7 @@ expernal softwares as ParaView. If you don’t now how to do it, you can check o
 <span class="kn">from</span> <span class="nn">petsc4py</span> <span class="kn">import</span> <span class="n">PETSc</span>
 
 <span class="c1"># define solver</span>
-<span class="n">snes_solver</span> <span class="o">=</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">SNES</span><span class="p">()</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">comm</span><span class="p">)</span>
+<span class="n">snes_solver</span> <span class="o">=</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">SNES</span><span class="p">()</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">_comm</span><span class="p">)</span>
 <span class="n">snes_solver</span><span class="o">.</span><span class="n">setFromOptions</span><span class="p">()</span>
 
 <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>
@@ -672,7 +672,7 @@ expernal softwares as ParaView. If you don’t now how to do it, you can check o
       <span class="n">sigma_xdmf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sigma0</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>  <span class="c1"># write the value of sigma at time t</span>
 
       <span class="c1"># update progress bar</span>
-      <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+      <span class="k">if</span> <span class="n">_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
           <span class="n">progress_bar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>

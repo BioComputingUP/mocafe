@@ -123,7 +123,7 @@ Attributes
 
 .. py:function:: confgure_root_logger_with_standard_settings(data_folder: pathlib.Path)
 
-   Configures the root logger with the standard Mocafe settings.
+   Configures the root _logger with the standard Mocafe settings.
 
    This is mainly used for internal purposes, but can be used from the user as well.
 

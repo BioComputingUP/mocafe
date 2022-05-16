@@ -64,7 +64,7 @@ Attributes
 
 
 
-.. py:class:: PETScNewtonSolver(solver_parameters: dict, comm=fenics.MPI.comm_world)
+.. py:class:: PETScNewtonSolver(solver_parameters: dict, comm=fenics.MPI._comm_world)
 
    Bases: :py:obj:`fenics.NewtonSolver`
 

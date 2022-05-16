@@ -259,8 +259,8 @@ importing everything we need:</p>
 <span class="kn">import</span> <span class="nn">mocafe.fenut.parameters</span> <span class="k">as</span> <span class="nn">mpar</span>
 </pre></div>
 </div>
-<p>Then, as seen in previous examples, we initialize the MPI comm, the process root, the log level and the data folder</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">comm</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">MPI</span><span class="o">.</span><span class="n">comm_world</span>
+<p>Then, as seen in previous examples, we initialize the MPI _comm, the process root, the log level and the data folder</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">comm</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">MPI</span><span class="o">.</span><span class="n">_comm_world</span>
 <span class="n">rank</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
 <span class="c1"># only process 0 logs</span>
 <span class="n">fenics</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;std_out_all_processes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
@@ -579,7 +579,7 @@ step:</p>
 </pre></div>
 </div>
 <p>and we update the progress bar, in order to inform the user on the progress of the simulation.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
   <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -614,8 +614,8 @@ expernal softwares as ParaView. If you don’t now how to do it, you can check o
 <span class="kn">import</span> <span class="nn">mocafe.fenut.parameters</span> <span class="k">as</span> <span class="nn">mpar</span>
 
 <span class="c1"># MPI</span>
-<span class="n">comm</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">MPI</span><span class="o">.</span><span class="n">comm_world</span>
-<span class="n">rank</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
+<span class="n">_comm</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">MPI</span><span class="o">.</span><span class="n">_comm_world</span>
+<span class="n">_rank</span> <span class="o">=</span> <span class="n">_comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
 <span class="c1"># only process 0 logs</span>
 <span class="n">fenics</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;std_out_all_processes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="c1"># set log level ERROR</span>
@@ -698,7 +698,7 @@ expernal softwares as ParaView. If you don’t now how to do it, you can check o
 
 <span class="n">t</span> <span class="o">=</span> <span class="mf">0.</span>
 <span class="n">n_steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;n_steps&quot;</span><span class="p">))</span>
-<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="k">if</span> <span class="n">_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
     <span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="n">n_steps</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;angiogenesis_2d&quot;</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="n">pbar</span> <span class="o">=</span> <span class="kc">None</span>
@@ -740,7 +740,7 @@ expernal softwares as ParaView. If you don’t now how to do it, you can check o
     <span class="n">file_c</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">c_0</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
     <span class="n">tipcells_xdmf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">tipcells_field</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>

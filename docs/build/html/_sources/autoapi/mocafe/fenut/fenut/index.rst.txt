@@ -31,25 +31,6 @@ Functions
 
 
 
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   mocafe.fenut.fenut.comm_world
-   mocafe.fenut.fenut.rank
-
-
-.. py:data:: comm_world
-   
-
-   
-
-.. py:data:: rank
-   
-
-   
-
 .. py:function:: setup_pvd_files(file_names: list, data_folder)
 
    returns a list of ``.pvd`` files with the given list of names. ``.pvd`` files can be used to store FEniCS Functions,
@@ -62,7 +43,7 @@ Attributes
    :return: the FEniCS objects representing the files.
 
 
-.. py:function:: setup_xdmf_files(file_names: list, data_folder, comm=fenics.MPI.comm_world)
+.. py:function:: setup_xdmf_files(file_names: list, data_folder, comm=fenics.MPI._comm_world)
 
    returns a list of ``.xdmf`` files with the given list of names. ``.xdmf`` files are the preferred way to store
    FEniCS functions for elaboration and visualization.
