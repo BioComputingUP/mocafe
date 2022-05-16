@@ -9,8 +9,8 @@ import shutil
 import json
 import numpy as np
 
-comm_world = fenics.MPI.comm_world
-rank = comm_world.Get_rank()
+_comm_world = fenics.MPI._comm_world
+_rank = _comm_world.Get_rank()
 
 
 def setup_pvd_files(file_names: list, data_folder):
@@ -28,7 +28,7 @@ def setup_pvd_files(file_names: list, data_folder):
     return vtk_files
 
 
-def setup_xdmf_files(file_names: list, data_folder, comm=fenics.MPI.comm_world):
+def setup_xdmf_files(file_names: list, data_folder, comm=fenics.MPI._comm_world):
     """
     returns a list of ``.xdmf`` files with the given list of names. ``.xdmf`` files are the preferred way to store
     FEniCS functions for elaboration and visualization.

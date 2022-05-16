@@ -292,7 +292,7 @@ def run_prostate_cancer_simulation(loading_message, parameters, data_folder):
 
 # initial setup
 fenics.set_log_level(fenics.LogLevel.ERROR)
-comm = fenics.MPI.comm_world
+comm = fenics.MPI._comm_world
 rank = comm.Get_rank()
 
 # get this file folder

@@ -66,7 +66,7 @@ from mocafe.expressions import EllipsoidField
 from mocafe.fenut.parameters import from_dict
 import mocafe.litforms.prostate_cancer as pc_model
 
-comm = fenics.MPI.comm_world
+comm = fenics.MPI._comm_world
 rank = comm.Get_rank()
 
 file_folder = Path(__file__).parent.resolve()
@@ -260,8 +260,8 @@ for current_step in range(n_steps):
 #   from mocafe.fenut.parameters import from_dict
 #   import mocafe.litforms.prostate_cancer as pc_model
 #
-#   comm = fenics.MPI.comm_world
-#   rank = comm.Get_rank()
+#   _comm = fenics.MPI._comm_world
+#   _rank = _comm.Get_rank()
 #
 #   file_folder = Path(__file__).parent.resolve()
 #   data_folder = setup_data_folder(folder_path=f"{file_folder/Path('demo_out')}/prostate_cancer_3d",
@@ -349,7 +349,7 @@ for current_step in range(n_steps):
 #   n_steps = 500
 #
 #   # set up progress bar
-#   if rank == 0:
+#   if _rank == 0:
 #       progress_bar = tqdm(total=n_steps, ncols=100)
 #   else:
 #       progress_bar = None
@@ -362,7 +362,7 @@ for current_step in range(n_steps):
 #   from petsc4py import PETSc
 #
 #   # create snes solver
-#   snes_solver = PETSc.SNES().create(comm)
+#   snes_solver = PETSc.SNES().create(_comm)
 #   snes_solver.setFromOptions()
 #
 #   # iterate in time
@@ -387,5 +387,5 @@ for current_step in range(n_steps):
 #       sigma_xdmf.write(sigma0, t)  # write the value of sigma at time t
 #
 #       # update progress bar
-#       if rank == 0:
+#       if _rank == 0:
 #           progress_bar.update(1)

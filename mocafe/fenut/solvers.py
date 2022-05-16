@@ -7,7 +7,7 @@ petsc4py.init(sys.argv)
 from petsc4py import PETSc
 from itertools import product
 
-comm = fenics.MPI.comm_world
+comm = fenics.MPI._comm_world
 rank = comm.Get_rank()
 
 
@@ -69,7 +69,7 @@ class PETScNewtonSolver(fenics.NewtonSolver):
 
     Defines a solver for a nonlinear problem directly calling the PETSc linear algebra backend.
     """
-    def __init__(self, solver_parameters: dict, comm=fenics.MPI.comm_world):
+    def __init__(self, solver_parameters: dict, comm=fenics.MPI._comm_world):
         self.solver_parameters = solver_parameters
         fenics.NewtonSolver.__init__(self, comm,
                                      fenics.PETScKrylovSolver(), fenics.PETScFactory.instance())
