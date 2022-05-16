@@ -160,7 +160,7 @@ class TipCellsField(fenics.UserExpression):
         point_value = self.phi_min
         if self.tip_cells_positions:
             try:
-                is_inside_array = np.sum((x - self.tip_cells_positions) ** 2, axis=1) < (self.tip_cells_radiuses ** 2)
+                is_inside_array = np.sum((x - self.tip_cells_positions) ** 2, axis=1) <= (self.tip_cells_radiuses ** 2)
             except ValueError as e:
                 raise ValueError(f"Found error with the following params: \n"
                                  f"* {self.tip_cells_positions} \n"
