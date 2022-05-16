@@ -33,11 +33,11 @@ release = '1.0.0'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc',
-              'sphinx_gallery.gen_gallery',
+extensions = ['sphinx_gallery.gen_gallery',
               'sphinxcontrib.bibtex',
               'sphinxcontrib.youtube',
-              'sphinx_rtd_theme',]
+              'sphinx_rtd_theme',
+              'autoapi.extension']
 
 # configure sphinx-gallery
 sphinx_gallery_conf = {
@@ -47,6 +47,7 @@ sphinx_gallery_conf = {
 
 # add logo
 html_logo = '200mocafe_logo.png'
+
 # configure bibfile
 bibtex_bibfiles = ['ref.bib']
 
@@ -71,4 +72,7 @@ html_theme = "sphinx_rtd_theme"
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-html_css_files = ["css/class.css", "css/functions.css"]
+# configure autoapi
+autoapi_dirs = ['../../mocafe']
+autoapi_options = ['members', 'undoc-members', 'show-inheritance', 'show-module-summary',
+                   'special-members', 'imported-members']

@@ -1,0 +1,94 @@
+:py:mod:`mocafe.angie.base_classes`
+===================================
+
+.. py:module:: mocafe.angie.base_classes
+
+.. autoapi-nested-parse::
+
+   Base classes used only by mocafe.angie
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   mocafe.angie.base_classes.BaseCell
+   mocafe.angie.base_classes.ClockChecker
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   mocafe.angie.base_classes.fibonacci_sphere
+
+
+
+.. py:class:: BaseCell(point: numpy.ndarray, creation_step)
+
+   Class representing a discrete cell agent. This class is inherited by both Tip Cells and Source Cells.
+
+   .. py:method:: __eq__(self, other)
+
+      Return self==value.
+
+
+   .. py:method:: __hash__(self)
+
+      Return hash(self).
+
+
+   .. py:method:: get_position(self)
+
+      get cell position
+
+      :return: tip cell position as numpy.ndarray
+
+
+   .. py:method:: get_dimension(self)
+
+      get dimension (2D or 3D) for the cell.
+
+      :return: 2 for 2D, 3 for 3D
+
+
+   .. py:method:: get_distance(self, point)
+
+      get the distance of the given point from the the cell
+
+      :param point: the point to check the distance with
+      :return: the distance
+
+
+
+.. py:function:: fibonacci_sphere(n_points)
+
+   Returns ``n_points`` points evely distributed on a sphere of radius 1 using the fibonacci algorithm.
+
+   :param n_points: number of points to spread on a sphere.
+
+
+.. py:class:: ClockChecker(mesh: fenics.Mesh, radius, start_point='east')
+
+   Class representing a clock checker, i.e. an object that checks if a given condition is met in the surroundings of
+   a point of the mesh.
+
+   .. py:method:: clock_check(self, point, function: fenics.Function, threshold, condition)
+
+      clock-check the given function in the surrounding of the given point
+
+      :param point: center of the clock-check
+      :param function: function to check
+      :param threshold: threshold that the function has to surpass
+      :param condition: lambda function representing the condition to be met
+      :return: True if the condition is met; False otherwise
+
+
+

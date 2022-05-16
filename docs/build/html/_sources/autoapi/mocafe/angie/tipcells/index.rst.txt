@@ -1,0 +1,284 @@
+:py:mod:`mocafe.angie.tipcells`
+===============================
+
+.. py:module:: mocafe.angie.tipcells
+
+.. autoapi-nested-parse::
+
+   This module contains classes and methods to manage the tip cells in Mocafe. More precisely, it provides useful
+   tools to activate, remove, and move the tip cell in the spatial domain.
+
+   If you use this model in your research, remember to cite the original paper describing the model:
+
+       Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., & Hernández-Machado, A. (2011).
+       Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5), e19989.
+       https://doi.org/10.1371/journal.pone.0019989
+
+   For a use example see the :ref:`Angiogenesis <Angiogenesis 2D Demo>` and the
+   :ref:`Angiogenesis 3D <Angiogenesis 2D Demo>` demos.
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   mocafe.angie.tipcells.TipCell
+   mocafe.angie.tipcells.TipCellsField
+   mocafe.angie.tipcells.TipCellManager
+
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   mocafe.angie.tipcells.comm
+   mocafe.angie.tipcells.rank
+   mocafe.angie.tipcells.logger
+   mocafe.angie.tipcells.info_adapter
+   mocafe.angie.tipcells.debug_adapter
+
+
+.. py:data:: comm
+   
+
+   
+
+.. py:data:: rank
+   
+
+   
+
+.. py:data:: logger
+   
+
+   
+
+.. py:data:: info_adapter
+   
+
+   
+
+.. py:data:: debug_adapter
+   
+
+   
+
+.. py:class:: TipCell(position: numpy.ndarray, radius, creation_step)
+
+   Bases: :py:obj:`mocafe.angie.base_classes.BaseCell`
+
+   Class representing a tip cell. The tip cells are represented as a circle with a given radius.
+
+   .. py:method:: move(self, new_position)
+
+      Move the tip cell to the new position.
+
+      :param new_position: the new position where to move the tip cell.
+      :return: nothing
+
+
+   .. py:method:: get_radius(self)
+
+      Get the radius of the tip cell
+
+      :return: the radius of the tip cell
+
+
+   .. py:method:: is_point_inside(self, x)
+
+      Check if the given point is inside the tip cell
+
+      :param x: point to check
+      :return: True if the point is inside; False otherwise
+
+
+
+.. py:class:: TipCellsField(parameters: mocafe.fenut.parameters.Parameters, mesh_dim: int)
+
+   Bases: :py:obj:`fenics.UserExpression`
+
+   Expression representing the capillary field value inside the tip cells.
+
+   In this implementation, the value is coherent with the one used by Travasso et al (2011) in their Phase Field
+   angiogenesis model :cite:`Travasso2011a`, that is:
+
+   .. math::
+      \frac{\alpha_p(af) \cdot \pi \cdot R_c}{2 \cdot |v|}
+
+   Where :math:`R_c` is the radius of the tip cell, :math:`v` is the velocity of the tip cell, and
+   :math:`\alpha_p(af)` is the proliferation rate for the capillaries' cells, defined as a function of the angiogenic
+   factor concentration (:math:`af`) which reads:
+
+   .. math::
+      \alpha_p(af) &= \alpha_p \cdot af_p \quad \textrm{if} \quad af>af_p \\
+                   &= \alpha_p \cdot af  \quad \textrm{if} \quad 0<af \le af_p \\
+                   & = 0 \quad \textrm{if} \quad af \le 0
+
+
+   .. py:method:: __floordiv__(self, other)
+
+      UFL does not support integer division.
+
+
+   .. py:method:: add_tip_cell(self, tip_cell: TipCell, velocity, af_at_point)
+
+      Add a tip cell to the field.
+
+      :param tip_cell: the tip cell to add.
+      :param velocity: the velocity of the tip cell, that is used for computing the field value.
+      :param af_at_point: the angiogenic factor concentration at the tip cell center, that is used for computing the
+          field value.
+      :return:
+
+
+   .. py:method:: compute_phi_c(self, T_value, radius, velocity_norm)
+
+      Compute the value of a point inside the tip cell inside the eval method. According to :cite:`Travasso2011a`,
+      the value in 2D is:
+
+      .. math::
+          \phi_c = \frac{\pi}{2}\frac{\alpha_p \cdot af \cdot r}{|v|}
+
+      In 3D the value is slightly different, since tip cells are spheres and not circles:
+
+      .. math::
+          \phi_c = \frac{4}{3}\frac{\alpha_p \cdot af \cdot r}{|v|}
+
+      :param T_value: af value
+      :param radius: radius of the tip cell
+      :param velocity_norm: norm of the velocity vector
+
+
+   .. py:method:: eval(self, values, x)
+
+      evaluate the field value for the given point
+
+      :param values: internal FEniCS parameter
+      :param x: given point
+      :return: nothing
+
+
+   .. py:method:: value_shape(self)
+
+
+
+.. py:class:: TipCellManager(mesh: fenics.Mesh, parameters: mocafe.fenut.parameters.Parameters)
+
+   Class to manage the tip cells throughout the simulation.
+
+   .. py:method:: get_global_tip_cells_list(self)
+
+      Get the global tip cell list, i.e. all the tip cells for all the MPI processes
+
+      :return: a list of the tip cells
+
+
+   .. py:method:: activate_tip_cell(self, c, af, grad_af, current_step)
+
+      Activates a tip cell if the right conditions on the capillaries field c, the angiogenic factor field af and
+      its gradient, grad_af, are met.
+
+      In this implementation the conditions are coherent with the one used by Travasso et al. (2011)
+      :cite:`Travasso2011a`, which are reported in the following pseudo-code::
+
+          p = possible new tip cell center
+          if distance(p, closest_tip_cell) > min_tipcell_distance:
+              if c(p) > phi_th:
+                  if af(p) > T_c:
+                      if norm(grad_af(c)) > G_m
+                          create new tip cell at point p
+          else:
+              do nothing
+
+      Where ``min_tipcell_distance``, ``phi_th``, ``T_c``, and ``G_m`` are defined in the simulation parameters.
+
+      The procedure above is applied to every point of the mesh.
+
+      If more than two point are found as possible new tip cell positions, only one is randomly selected. Thus, in
+      this implementation only one tip cell can be activated at each call of the method.
+
+      :param c: capillaries field
+      :param af: angiogenic factor field
+      :param grad_af: gradient of the angiogenic factor field
+      :param current_step: current simulation step. it is used for internal purpose
+      :return:
+
+
+   .. py:method:: revert_tip_cells(self, af, grad_af)
+
+      Deactivate the tip cells when the right conditions are met.
+
+      In this implementation the conditions are coherent with the one used by Travasso et al. (2011)
+      :cite:`Travasso2011a`, which are reported in the following pseudo-code::
+
+          tc_p = a tip cell position
+          if (af(tc_p) < T_c or norm(grad_af(tc_p)) < G_m):
+              deactivate tip cell at position tc_p
+          else:
+              do nothing
+
+      Where ``T_c`` and ``G_m`` are constants defined in the simulation parameter.
+
+      The procedure above is applied to all the active tip cells.
+
+      *New*: now the tip cells are deactivated also if there are other Tip Cells nearer then the distance
+      contained in the parameter 'min_tipcell_distance'. This was introduced to simulate the effect of Delta-
+      Notch signalling also on active Tip Cells, which was not present in Travasso et al. (2011) :cite:`Travasso2011a`
+      but has been introduced by Moreira-Soares et al. (2018) :cite:`MoreiraSoares2018`.
+
+      :param af: angiogenic factor field
+      :param grad_af: gradient of the angiogenic factor
+      :return: nothing
+
+
+   .. py:method:: move_tip_cells(self, c, af, grad_af)
+
+      Move the tip cell to follow the gradient of the angiogenic factor, with the velocity computed by the method
+      ``compute_tip_cell_velocity``.
+
+      The method also updates the tip cell field and returns it.
+
+      The tip cells field is a FEniCS function which inside each tip cell has the value defined by Travasso et al.
+      (2011) :cite:`Travasso2011a`, which is:
+
+      .. math::
+         \frac{\alpha_p(af) \cdot \pi \cdot R_c}{2 \cdot |v|}
+
+      In every other point, the function has value 0.
+
+      :param c: capillaries field
+      :param af: angiogenic factor field
+      :param grad_af: gradient of the angiogenic factor field
+      :return:
+
+
+   .. py:method:: compute_tip_cell_velocity(self, grad_af, chi, tip_cell_position)
+
+      Compute the tip cell velocity given its position, the gradient of the angiogenic factor, and the constant chi.
+
+      In this implementation the velocity is computed according to the model presented by Travasso et al. (2011)
+      :cite:`Travasso2011a`. The formula is:
+
+      .. math::
+         v = \chi \nabla af [1 + (\frac{G_M}{G})\cdot (G - G_M)]
+
+      Where :math:`G` is the norm of the angiogenic factor gradient (:math:`\nabla af`).
+
+      :param grad_af:
+      :param chi:
+      :param tip_cell_position:
+      :return:
+
+
+   .. py:method:: get_latest_tip_cell_function(self)
+
+
+

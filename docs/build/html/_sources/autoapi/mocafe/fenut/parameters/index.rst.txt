@@ -1,0 +1,106 @@
+:py:mod:`mocafe.fenut.parameters`
+=================================
+
+.. py:module:: mocafe.fenut.parameters
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   mocafe.fenut.parameters.Parameters
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   mocafe.fenut.parameters.from_dict
+   mocafe.fenut.parameters.from_ods_sheet
+
+
+
+.. py:function:: from_dict(parameters: dict)
+
+   Creates a Mocafe Parameters object from a Python dictionary.
+
+   The structure of the Python dictionary must be::
+
+       param_dict = {
+           "name_param_a": <value_param_a>,
+           "name_param_b": <value_param_b>,
+           ...
+       }
+
+
+   :param parameters: the parameters dictionary
+   :return: the Parameters object
+
+
+.. py:function:: from_ods_sheet(file: pathlib.Path, sheet: str)
+
+   Creates a Mocafe Parameters object form a sheet of an ``.odf`` file.
+
+   The given sheet must have at least to columns: ``name``, with the parameters' names; and ``sim_value``, with the
+   value of the parameters. Any other column, for instance containing the measure units, the reference of the
+   parameters, or other informations, will be stored inside the Parameters object and used for reporting informations,
+   but are not compulsory.
+
+   :param file: file path
+   :param sheet: sheet of the file to be used to load parameters
+   :return: the Parameters object
+
+
+.. py:class:: Parameters(param_df: pandas.DataFrame)
+
+   Class representing the simulation parameters.
+
+   It is basically a wrapper for a pandas.DataFrame, which contains everything about the simulation parameters.
+
+   .. py:method:: get_value(self, name: str)
+
+      Get the parameter value from the given name.
+
+      :param name: parameter name
+      :return: the value of the parameter with the given name.
+
+
+   .. py:method:: set_value(self, name: str, new_value)
+
+      Set a value for the parameter of the given name.
+
+      :param name: parameter name
+      :param new_value: the new value for the parameter
+      :return:
+
+
+   .. py:method:: as_dataframe(self)
+
+      Get the ``pandas.DataFrame`` representing the Parameters object
+
+      :return: the dataframe representing the Parameters object
+
+
+   .. py:method:: is_value_present(self, name)
+
+      Check if the parameters object contains a value for the parameter of the given name
+
+      :param name: the name of the given value
+      :return: True if a value is present for the given parameter name; False otherwise.
+
+
+   .. py:method:: is_parameter(self, name)
+
+      Check if the given parameter name correspond to a parameter inside the parameters object
+
+      :param name: the name of the putative parameter
+      :return: True if there is a reference for the given parameter, False otherwise
+
+
+

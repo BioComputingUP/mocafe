@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mocafe.litforms &mdash; Mocafe 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="mocafe.litforms.prostate_cancer" href="prostate_cancer/index.html" />
+    <link rel="prev" title="mocafe.fenut.solvers" href="../fenut/solvers/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> Mocafe
+            <img src="../../../_static/200mocafe_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../demo_doc/index.html">Demo Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe</span></code></a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../angie/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe.angie</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../fenut/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe.fenut</span></code></a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe.litforms</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#submodules">Submodules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../bib.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Mocafe</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">API Reference</a> &raquo;</li>
+          <li><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe</span></code></a> &raquo;</li>
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe.litforms</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/autoapi/mocafe/litforms/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-mocafe.litforms">
+<span id="mocafe-litforms"></span><h1><a class="reference internal" href="#module-mocafe.litforms" title="mocafe.litforms"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe.litforms</span></code></a><a class="headerlink" href="#module-mocafe.litforms" title="Permalink to this headline"></a></h1>
+<p>This subpackage contains some Phase-Field models presented in the scientific literature. Each model is implemented as
+a module. Each module contains a list of functions, each returning a PDE of the model coded in UFL.</p>
+<p>Now the models implemented are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">prostate_cancer</span></code>, which implements a Phase Field prostate cancer model described by
+Lorenzo and collaborators <span id="id1">[<a class="reference internal" href="../../../bib.html#id2" title="Guillermo Lorenzo, Michael A Scott, Kevin Tew, Thomas J R Hughes, Yongjie Jessica Zhang, Lei Liu, Guillermo Vilanova, and Hector Gomez. Tissue-scale, personalized modeling and simulation of prostate cancer growth. Proceedings of the National Academy of Sciences, 2016. URL: www.pnas.org/cgi/doi/10.1073/pnas.1615791113, doi:10.1073/pnas.1615791113.">LST+16</a>]</span>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xu2016</span></code>, which implements a Phase Field cancer model described by
+Xu and collaborators <span id="id2">[<a class="reference internal" href="../../../bib.html#id10" title="Jiangping Xu, Guillermo Vilanova, and Hector Gomez. A Mathematical Model Coupling Tumor Growth and Angiogenesis. PLOS ONE, 11(2):e0149422, feb 2016. URL: https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0149422, doi:10.1371/JOURNAL.PONE.0149422.">XVG16</a>]</span>.</p></li>
+</ul>
+<p>You can find full documentation for each module in the “Submodules” section below.</p>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="prostate_cancer/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe.litforms.prostate_cancer</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="xu16/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe.litforms.xu16</span></code></a></li>
+</ul>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../fenut/solvers/index.html" class="btn btn-neutral float-left" title="mocafe.fenut.solvers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="prostate_cancer/index.html" class="btn btn-neutral float-right" title="mocafe.litforms.prostate_cancer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Franco Pradelli.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>  
+
+  <style>
+    /* Sidebar header (and topbar for mobile) */
+    .wy-side-nav-search, .wy-nav-top {
+      background: #343131;
+    }
+  </style>
+
+
+</body>
+</html>

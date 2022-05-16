@@ -1,3 +1,19 @@
+"""
+This subpackage contains all the modules to simulate an angiogenesis model in FEniCS,
+using an hybrid Phase-Field/agent approach. By default, the algorithms used are the same presented by
+Travasso and collaborators :cite:`Travasso2011a`.
+
+It is composed of the following modules:
+
+* ``af_sourcing``, which contains classes and methods to manage source cells.
+* ``forms``, which contains the implementation in Unified Form Language (UFL) of the PDEs presented in Travasso et al.
+  :cite:`Travasso2011a`.
+* ``tipcells``, which contains the classes and modules to manage tip cells.
+* ``base_classes``, which contains classes and methods shared among the angie modules.
+
+You can find full documentation for each module in the "Submodules" section below.
+
+"""
 import fenics
 from pathlib import Path
 import random
@@ -10,11 +26,11 @@ rank = comm.Get_rank()
 default_randomstate_file = Path(f"p{rank}.randomstate")
 
 
-def setup_random_state(equal_for_all_p: bool = True,
-                       save: bool = False,
-                       save_path: Path or None = None,
-                       load: bool = False,
-                       load_path: Path or None = None):
+def _setup_random_state(equal_for_all_p: bool = True,
+                        save: bool = False,
+                        save_path: Path or None = None,
+                        load: bool = False,
+                        load_path: Path or None = None):
     # if save is true, check if you have a save_path
     if save:
         if save_path is None:
@@ -26,21 +42,21 @@ def setup_random_state(equal_for_all_p: bool = True,
 
     if save and load:
         # load the random_state from the load_path and save it
-        load_random_state(load_path, equal_for_all_p)
-        save_random_state(save_path, equal_for_all_p)
+        _load_random_state(load_path, equal_for_all_p)
+        _save_random_state(save_path, equal_for_all_p)
     elif load:
         # just load random_state from the load_path
-        load_random_state(load_path, equal_for_all_p)
+        _load_random_state(load_path, equal_for_all_p)
     elif save:
         # save the random state to the save path and then load it (otherwise is not reproducible)
-        save_random_state(save_path, equal_for_all_p)
-        load_random_state(save_path, equal_for_all_p)
+        _save_random_state(save_path, equal_for_all_p)
+        _load_random_state(save_path, equal_for_all_p)
     else:
         if equal_for_all_p:
-            set_equal_randomstate_for_all_p()
+            _set_equal_randomstate_for_all_p()
 
 
-def set_equal_randomstate_for_all_p():
+def _set_equal_randomstate_for_all_p():
     """
     Set the randomstate of to MPI process 0 to all processes.
 
@@ -66,8 +82,8 @@ def set_equal_randomstate_for_all_p():
     random.setstate(p0_randomstate)
 
 
-def load_random_state(folder_name: str or Path,
-                      equal_for_all_p: bool = True):
+def _load_random_state(folder_name: str or Path,
+                       equal_for_all_p: bool = True):
     """
     Load a random state for each MPI process from a given folder. The default behaviour is to load the randomstate
     for MPI process 0 and set it to all processes. Otherwise, it can also load a different randomstate for each
@@ -91,8 +107,8 @@ def load_random_state(folder_name: str or Path,
         random.setstate(pickle.load(f))
 
 
-def save_random_state(folder_name: str or Path,
-                      equal_for_all_p: bool = True):
+def _save_random_state(folder_name: str or Path,
+                       equal_for_all_p: bool = True):
     """
     Save the random state for the simulation to reproduce it. The default behaviour is to save the randomstate for
     MPI process 0, that should be the same for all processes. However, it can also save a different randomstate for

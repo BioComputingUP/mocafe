@@ -1,0 +1,87 @@
+:py:mod:`mocafe.fenut.solvers`
+==============================
+
+.. py:module:: mocafe.fenut.solvers
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   mocafe.fenut.solvers.PETScProblem
+   mocafe.fenut.solvers.SNESProblem
+   mocafe.fenut.solvers.PETScNewtonSolver
+   mocafe.fenut.solvers.BestSolverFinder
+
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   mocafe.fenut.solvers.comm
+   mocafe.fenut.solvers.rank
+
+
+.. py:data:: comm
+   
+
+   
+
+.. py:data:: rank
+   
+
+   
+
+.. py:class:: PETScProblem(J, F, bcs)
+
+   Bases: :py:obj:`fenics.NonlinearProblem`
+
+   INTERNAL USE
+
+   Defines a nonlinear problem directly calling the PETSc linear algebra backend. This is the preferred way of
+   defining a problem.
+
+   .. py:method:: F(self, b, x)
+
+
+   .. py:method:: J(self, A, x)
+
+
+
+.. py:class:: SNESProblem(F, u, bcs)
+
+   .. py:method:: F(self, snes, x, F)
+
+
+   .. py:method:: J(self, snes, x, J, P)
+
+
+
+.. py:class:: PETScNewtonSolver(solver_parameters: dict, comm=fenics.MPI.comm_world)
+
+   Bases: :py:obj:`fenics.NewtonSolver`
+
+   INTERNAL USE
+
+   Defines a solver for a nonlinear problem directly calling the PETSc linear algebra backend.
+
+   .. py:method:: solver_setup(self, A, P, problem, iteration)
+
+
+
+.. py:class:: BestSolverFinder
+
+   .. py:method:: find_quicker_gmres_pc(self, weak_form, function, jacobian)
+
+
+   .. py:method:: find_qucker_snes_solver(self, weak_form, function)
+
+
+

@@ -1,0 +1,127 @@
+:py:mod:`mocafe.fenut.mansimdata`
+=================================
+
+.. py:module:: mocafe.fenut.mansimdata
+
+.. autoapi-nested-parse::
+
+   Useful methods to manage simulation data
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   mocafe.fenut.mansimdata.setup_data_folder
+   mocafe.fenut.mansimdata.save_sim_info
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   mocafe.fenut.mansimdata.comm
+   mocafe.fenut.mansimdata.rank
+   mocafe.fenut.mansimdata.default_data_folder_name
+   mocafe.fenut.mansimdata.test_sim_name
+   mocafe.fenut.mansimdata.sim_info_file
+   mocafe.fenut.mansimdata.default_runtime_folder_name
+   mocafe.fenut.mansimdata.default_saved_sim_folder_name
+
+
+.. py:data:: comm
+   
+
+   
+
+.. py:data:: rank
+   
+
+   
+
+.. py:data:: default_data_folder_name
+   :annotation: = sim_data
+
+   
+
+.. py:data:: test_sim_name
+   :annotation: = test
+
+   
+
+.. py:data:: sim_info_file
+   
+
+   
+
+.. py:data:: default_runtime_folder_name
+   :annotation: = runtime
+
+   
+
+.. py:data:: default_saved_sim_folder_name
+   :annotation: = saved_sim
+
+   
+
+.. py:function:: setup_data_folder(folder_path: str, auto_enumerate: bool = True) -> pathlib.Path
+
+   Creates a folder at the given folder path and returns it as pathlib.Path object to use for the simulation
+   files.
+
+   If just the folder path is specified the folder will be simply created. For instance, calling the following:
+
+   .. code-block:: default
+
+       setup_data_folder(folder_name="my_sim_data")
+
+   Will just create the folder "my_sim_data" in the current root directory.
+
+   The ``auto_enumerate`` argument can be used to specify if you need coded folders for the same simulation. This
+   is useful especially when one needs to save multiple simulation results under the same folder without having
+   to decide a new folder path for each simulation. Indeed, if you call:
+
+   .. code-block:: default
+
+       setup_data_folder(folder_path="my_sim_data", auto_enumerate=True)
+
+   This method will return:
+
+   - the folder ``./my_sim_data/0000`` the first time the method is called
+   - the folder ``./my_sim_data/0001`` the second time the method is called
+   - ... and so on
+
+   Works in parallel with MPI.
+
+   :param folder_path: the path of the folder to generate
+   :param auto_enumerate: if set to True, this method will create coded folder under the given ``folder_path`` in the
+       order: 0000, 0001, ..., and so on.
+   :return: the generated folder
+
+
+.. py:function:: save_sim_info(data_folder: pathlib.Path, parameters: Parameters or dict, execution_time: float or None = None, sim_name: str = default_data_folder_name, dateandtime: str = 'auto', sim_description: str = None, error_msg: str = None) -> None
+
+   Save simulation infos as html file. The simulation infos will be stored in the provided data_folder.
+
+   :param data_folder: the data folder containing the simulation files
+   :param execution_time: the execution time of the simulation
+   :param parameters: the parameters used for the simulation (can be a dict of parameters files, each identified
+       by a name)
+   :param sim_name: the simulation name
+   :param dateandtime: date and time of the simulation. If it is equal to "auto" the time and date are automatically
+       added by the method
+   :param sim_description: rationale of the simulation. If set to input the method will ask the user to type the
+       rationale in the command line; otherwise the given rationale will be set in the "rationale" field of the
+       sim_info.html file. Default is None.
+   :param error_msg: if an error occurred during the simulation, save the error message
+   :return: nothing
+
+

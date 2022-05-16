@@ -1,5 +1,0 @@
-``mocafe.litforms.xu16``
-===================================
-
-.. automodule:: mocafe.litforms.xu16
-    :members:

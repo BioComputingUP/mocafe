@@ -1,0 +1,74 @@
+:py:mod:`mocafe.math`
+=====================
+
+.. py:module:: mocafe.math
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   mocafe.math.sigmoid
+   mocafe.math.shf
+   mocafe.math.estimate_cancer_area
+   mocafe.math.estimate_capillaries_area
+
+
+
+.. py:function:: sigmoid(variable, c: float, a: float, b: float, slope: float)
+
+   Simple sigmoid function defined as:
+
+   .. math::
+       y(x) = \frac{a \cdot e^{slope \cdot c} + b \cdot e^{r \cdot x}}{e^{slope \cdot c} + e^{slope \cdot c}}
+
+   Where: :math:`a` represent the value of the sigmoid for x -> -Inf; :math:`b` represent the value of the sigmoid
+   for x -> +Inf; :math:`c` represent the center of the sigmoid (where the derivative is max); .math:`slope`
+   represent the slope of the sigmoid.
+
+
+   :param variable: variable x for which the sigmoid is defined
+   :param c: central value of the sigmoid
+   :param a: value of the sigmoid for variable -> -inf
+   :param b: value of the sigmoid for variable -> +inf
+   :param slope: slope of the sigmoid
+   :return: the value of the sigmoid for the given value of the variable
+
+
+.. py:function:: shf(variable, slope: float = 100)
+
+   Smoothed Heavyside Function (SHF) using the sigmoid function, which reads:
+
+   .. math::
+       \frac{e^{slope * variable}}{(1 + e^{slope * variable})}
+
+
+   :param variable: varible for the SHF
+   :param slope: slope of the SHF. Default is 100
+   :return: the value of the sigmoid for the given value of the variable
+
+
+.. py:function:: estimate_cancer_area(phi: fenics.Function)
+
+   Estimate cancer area for the phase field :math:`\varphi` representing the cancer, where the phase field must
+   have values between 0 and 1
+
+   :param phi: phase field representing the cancer
+   :return: the area of the given cancer
+
+
+.. py:function:: estimate_capillaries_area(c: fenics.Function, V: fenics.FunctionSpace)
+
+   Estimate capillaries area for the phase field c representing the vessels. In order to work c must be
+   between -1 and 1.
+
+   :param c: phase field representing capillaries
+   :param V: function space of c
+   :return: the area of the given field
+
+

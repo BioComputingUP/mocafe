@@ -1,0 +1,28 @@
+:py:mod:`mocafe`
+================
+
+.. py:module:: mocafe
+
+
+Subpackages
+-----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 3
+
+   angie/index.rst
+   fenut/index.rst
+   litforms/index.rst
+
+
+Submodules
+----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+
+   __main__/index.rst
+   expressions/index.rst
+   math/index.rst
+
+
