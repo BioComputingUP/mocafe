@@ -94,9 +94,9 @@ import mocafe.litforms.prostate_cancer as pc_model
 fenics.set_log_level(fenics.LogLevel.ERROR)
 
 # %%
-# Then, we define the MPI rank for each process. Generally speaking, this is necessary for running the simulation in
+# Then, we define the MPI _rank for each process. Generally speaking, this is necessary for running the simulation in
 # parallel using ``mpirun``, even though in this simulation is not largely used, as we are going to see.
-comm = fenics.MPI.comm_world
+comm = fenics.MPI._comm_world
 rank = comm.Get_rank()
 
 # %%
@@ -300,7 +300,7 @@ n_steps = 1000
 
 # %%
 # Then, we define a progress bar with ``tqdm`` in order to monitor the iteration progress. Notice that the progress
-# bar is defined only if the rank of the process is 0. This is necessary to avoid every process to print out a
+# bar is defined only if the _rank of the process is 0. This is necessary to avoid every process to print out a
 # different progress bar.
 if rank == 0:
     progress_bar = tqdm(total=n_steps, ncols=100)
@@ -440,7 +440,7 @@ for current_step in range(n_steps):
 #   sigma_xdmf.write(sigma0, t)  # write the value of sigma at time t
 #
 #   # update progress bar
-#   if rank == 0:
+#   if _rank == 0:
 #       progress_bar.update(1)
 #
 #
@@ -477,8 +477,8 @@ for current_step in range(n_steps):
 #
 #   # initial setup
 #   fenics.set_log_level(fenics.LogLevel.ERROR)
-#   comm = fenics.MPI.comm_world
-#   rank = comm.Get_rank()
+#   _comm = fenics.MPI._comm_world
+#   _rank = _comm.Get_rank()
 #
 #   file_folder = Path(__file__).parent.resolve()
 #   data_folder = setup_data_folder(folder_path=f"{file_folder / Path('demo_out')}/prostate_cancer_2d",
@@ -557,7 +557,7 @@ for current_step in range(n_steps):
 #   # Simulation: setup
 #   n_steps = 1000
 #
-#   if rank == 0:
+#   if _rank == 0:
 #         progress_bar = tqdm(total=n_steps, ncols=100)
 #   else:
 #         progress_bar = None
@@ -569,7 +569,7 @@ for current_step in range(n_steps):
 #   from petsc4py import PETSc
 #
 #   # define solver
-#   snes_solver = PETSc.SNES().create(comm)
+#   snes_solver = PETSc.SNES().create(_comm)
 #   snes_solver.setFromOptions()
 #
 #   t = 0
@@ -597,5 +597,5 @@ for current_step in range(n_steps):
 #         sigma_xdmf.write(sigma0, t)  # write the value of sigma at time t
 #
 #         # update progress bar
-#         if rank == 0:
+#         if _rank == 0:
 #             progress_bar.update(1)

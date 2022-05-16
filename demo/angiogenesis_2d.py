@@ -158,8 +158,8 @@ from mocafe.angie.forms import angiogenesis_form, angiogenic_factor_form
 import mocafe.fenut.parameters as mpar
 
 # %%
-# Then, as seen in previous examples, we initialize the MPI comm, the process root, the log level and the data folder
-comm = fenics.MPI.comm_world
+# Then, as seen in previous examples, we initialize the MPI _comm, the process root, the log level and the data folder
+comm = fenics.MPI._comm_world
 rank = comm.Get_rank()
 # only process 0 logs
 fenics.parameters["std_out_all_processes"] = False
@@ -511,7 +511,7 @@ for step in range(1, n_steps + 1):
 #
 # .. code-block:: default
 #
-#   if rank == 0:
+#   if _rank == 0:
 #     pbar.update(1)
 #
 #
@@ -546,8 +546,8 @@ for step in range(1, n_steps + 1):
 #   import mocafe.fenut.parameters as mpar
 #
 #   # MPI
-#   comm = fenics.MPI.comm_world
-#   rank = comm.Get_rank()
+#   _comm = fenics.MPI._comm_world
+#   _rank = _comm.Get_rank()
 #   # only process 0 logs
 #   fenics.parameters["std_out_all_processes"] = False
 #   # set log level ERROR
@@ -630,7 +630,7 @@ for step in range(1, n_steps + 1):
 #
 #   t = 0.
 #   n_steps = int(parameters.get_value("n_steps"))
-#   if rank == 0:
+#   if _rank == 0:
 #       pbar = tqdm(total=n_steps, ncols=100, position=1, desc="angiogenesis_2d")
 #   else:
 #       pbar = None
@@ -672,5 +672,5 @@ for step in range(1, n_steps + 1):
 #       file_c.write(c_0, t)
 #       tipcells_xdmf.write(tipcells_field, t)
 #
-#       if rank == 0:
+#       if _rank == 0:
 #           pbar.update(1)

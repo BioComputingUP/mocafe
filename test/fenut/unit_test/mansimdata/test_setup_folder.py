@@ -1,7 +1,7 @@
 import fenics
 import mocafe.fenut.mansimdata as mansim
 
-comm = fenics.MPI.comm_world
+comm = fenics.MPI._comm_world
 rank = comm.Get_rank()
 
 

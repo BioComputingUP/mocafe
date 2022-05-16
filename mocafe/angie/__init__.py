@@ -3,7 +3,7 @@ from pathlib import Path
 import random
 import pickle
 
-comm = fenics.MPI.comm_world
+comm = fenics.MPI._comm_world
 rank = comm.Get_rank()
 
 # default random state file
@@ -71,7 +71,7 @@ def load_random_state(folder_name: str or Path,
     """
     Load a random state for each MPI process from a given folder. The default behaviour is to load the randomstate
     for MPI process 0 and set it to all processes. Otherwise, it can also load a different randomstate for each
-    MPI process. In any case, the randomstates must be saved in the given folder as 'p{rank}.randomstate' (e.g.
+    MPI process. In any case, the randomstates must be saved in the given folder as 'p{_rank}.randomstate' (e.g.
     p0.randomstate for process 0).
     *Note: using MPI, each process has a different random state.*
     :param folder_name: the folder containing the randomstate to load
@@ -96,13 +96,13 @@ def save_random_state(folder_name: str or Path,
     """
     Save the random state for the simulation to reproduce it. The default behaviour is to save the randomstate for
     MPI process 0, that should be the same for all processes. However, it can also save a different randomstate for
-    each process. The default format for randomstate file is 'p{rank}.randomstate' (e.g. p0.randomstate)
+    each process. The default format for randomstate file is 'p{_rank}.randomstate' (e.g. p0.randomstate)
     :param folder_name: the folder name or Path where to save the randomstate
     :param equal_for_all_p: default is True. Set to false to save a different randomstate for each process.
     :return: nothing
     """
     if rank == 0:
-        # create folder in rank 0
+        # create folder in _rank 0
         folder_path = folder_name if type(folder_name) is Path else Path(folder_name)
         folder_path.mkdir(exist_ok=True, parents=True)
     else:

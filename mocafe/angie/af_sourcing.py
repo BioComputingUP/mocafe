@@ -23,14 +23,14 @@ from mocafe.angie import base_classes
 from mocafe.fenut.parameters import Parameters
 from mocafe.fenut.log import InfoCsvAdapter, DebugAdapter
 
-# Get MPI communicator and rank to be used in the module
-comm = fenics.MPI.comm_world
-rank = comm.Get_rank()
+# Get MPI communicator and _rank to be used in the module
+_comm = fenics.MPI._comm_world
+_rank = _comm.Get_rank()
 
-# configure logger
-logger = logging.getLogger(__name__)
-info_adapter = InfoCsvAdapter(logger, {"rank": rank, "module": __name__})  # mainly for process optimization
-debug_adapter = DebugAdapter(logger, {"rank": rank, "module": __name__})  # all kinds of information
+# configure _logger
+_logger = logging.getLogger(__name__)
+_info_adapter = InfoCsvAdapter(_logger, {"_rank": _rank, "module": __name__})  # mainly for process optimization
+_debug_adapter = DebugAdapter(_logger, {"_rank": _rank, "module": __name__})  # all kinds of information
 
 
 class SourceCell(base_classes.BaseCell):
@@ -141,12 +141,12 @@ class SourceMap:
         """
         # remove from global list
         self.global_source_cells.remove(source_cell)
-        debug_adapter.debug(f"Removed source cell {source_cell.__hash__()} at position {source_cell.get_position()}"
+        _debug_adapter.debug(f"Removed source cell {source_cell.__hash__()} at position {source_cell.get_position()}"
                             f"from the global list")
         # if in local, remove from local list too
         if source_cell in self.local_source_cells:
             self.local_source_cells.remove(source_cell)
-            debug_adapter.debug(
+            _debug_adapter.debug(
                 f"Removed source cell {source_cell.__hash__()} at position {source_cell.get_position()}"
                 f"from the local list")
 
@@ -212,13 +212,13 @@ class RandomSourceMap(SourceMap):
         global_pickable_vertex_index = \
             [index for index, coordinate in zip(global_vertex_indices, lmc) if where_fun(fenics.Point(coordinate))]
         # gather lmc in proc 0
-        lmc_arrays = comm.gather(lmc, 0)
+        lmc_arrays = _comm.gather(lmc, 0)
         # gather indices in proc 0
-        vertex_maps = comm.gather(global_vertex_indices, 0)
+        vertex_maps = _comm.gather(global_vertex_indices, 0)
         # gather pickable coordinats indices in proc 0
-        pickable_vertex_maps = comm.gather(global_pickable_vertex_index, 0)
+        pickable_vertex_maps = _comm.gather(global_pickable_vertex_index, 0)
 
-        if rank == 0:
+        if _rank == 0:
             # init global coordinates array
             global_coordinates = np.zeros((n_global_vertices, lmc.shape[1]))
             # get global pickable coordinates
@@ -233,7 +233,7 @@ class RandomSourceMap(SourceMap):
             # pick n of them (if available)
             n_pickable_points = len(pickable_points)
             if n_pickable_points <= n_points:
-                logger.warning(f"The mesh looks too small for selecting {n_points} random source, since it was asked"
+                _logger.warning(f"The mesh looks too small for selecting {n_points} random source, since it was asked"
                                f"to select {n_points} among {n_pickable_points}"
                                f"pickable points. Returning all available pickable points.")
                 global_sources_coordinates = pickable_points
@@ -241,7 +241,7 @@ class RandomSourceMap(SourceMap):
                 global_sources_coordinates = random.sample(pickable_points, n_points)
         else:
             global_sources_coordinates = None
-        global_sources_coordinates = comm.bcast(global_sources_coordinates, 0)
+        global_sources_coordinates = _comm.bcast(global_sources_coordinates, 0)
         return global_sources_coordinates
 
 
@@ -267,11 +267,11 @@ class SourcesManager:
             self.default_clock_checker = base_classes.ClockChecker(mesh, parameters.get_value("d"))
             self.default_clock_checker_is_present = True
         elif not parameters.is_parameter("d"):
-            logger.debug("Reference for the parameter 'd' not found. Can't init the default clock checker.")
+            _logger.debug("Reference for the parameter 'd' not found. Can't init the default clock checker.")
             self.default_clock_checker = None
             self.default_clock_checker_is_present = False
         elif not parameters.is_value_present("d"):
-            logger.debug("The parameter 'd' is present in the parameters object but the value is not set. "
+            _logger.debug("The parameter 'd' is present in the parameters object but the value is not set. "
                          "Can't init the default clock checker.")
             self.default_clock_checker = None
             self.default_clock_checker_is_present = False
@@ -285,7 +285,7 @@ class SourcesManager:
         """
         # prepare list of cells to remove
         to_remove = []
-        debug_adapter.debug(f"Starting to remove source cells")
+        _debug_adapter.debug(f"Starting to remove source cells")
 
         # if distance is specified
         if "d" in kwargs.keys():
@@ -300,16 +300,16 @@ class SourcesManager:
 
         for source_cell in self.source_map.get_local_source_cells():
             source_cell_position = source_cell.get_position()
-            debug_adapter.debug(f"Checking cell {source_cell.__hash__()} at position {source_cell_position}")
+            _debug_adapter.debug(f"Checking cell {source_cell.__hash__()} at position {source_cell_position}")
             clock_check_test_result = clock_checker.clock_check(source_cell_position,
                                                                 c,
                                                                 self.parameters.get_value("phi_th"),
                                                                 lambda val, thr: val > thr)
-            debug_adapter.debug(f"Clock Check test result is {clock_check_test_result}")
+            _debug_adapter.debug(f"Clock Check test result is {clock_check_test_result}")
             # if the clock test is positive, add the source cells in the list of the cells to remove
             if clock_check_test_result:
                 to_remove.append(source_cell)
-                debug_adapter.debug(f"Appended source cell {source_cell.__hash__()} at position "
+                _debug_adapter.debug(f"Appended source cell {source_cell.__hash__()} at position "
                                     f"{source_cell_position} to the 'to_remove' list")
 
         self._remove_sources(to_remove)
@@ -322,19 +322,19 @@ class SourcesManager:
         :param local_to_remove:
         :return:
         """
-        # get root rank
+        # get root _rank
         root = 0
 
         # share cells to remove among processes
-        local_to_remove_list = comm.gather(local_to_remove, root)
-        if rank == root:
+        local_to_remove_list = _comm.gather(local_to_remove, root)
+        if _rank == root:
             # remove sublists
             global_to_remove = [item for sublist in local_to_remove_list for item in sublist]
             # remove duplicates
             global_to_remove = list(set(global_to_remove))
         else:
             global_to_remove = None
-        global_to_remove = comm.bcast(global_to_remove, root)
+        global_to_remove = _comm.bcast(global_to_remove, root)
 
         # each process cancels the sources
         for source_cell in global_to_remove:
