@@ -103,32 +103,6 @@ Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5)
 <p>For a use example see the <a class="reference internal" href="../../demo_doc/angiogenesis_2d.html#angiogenesis-2d-demo"><span class="std std-ref">Angiogenesis</span></a> and the
 <a class="reference internal" href="../../demo_doc/angiogenesis_2d.html#angiogenesis-2d-demo"><span class="std std-ref">Angiogenesis 3D</span></a> demos.</p>
 <dl class="py class">
-<dt class="sig sig-object py" id="mocafe.angie.af_sourcing.ClockChecker">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.angie.af_sourcing.</span></span><span class="sig-name descname"><span class="pre">ClockChecker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.cpp.mesh.Mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_point</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'east'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.af_sourcing.ClockChecker" title="Permalink to this definition"></a></dt>
-<dd><p>Class representing a clock checker, i.e. an object that checks if a given condition is met in the surroundings of
-a point of the mesh.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="mocafe.angie.af_sourcing.ClockChecker.clock_check">
-<span class="sig-name descname"><span class="pre">clock_check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dolfin.function.function.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.af_sourcing.ClockChecker.clock_check" title="Permalink to this definition"></a></dt>
-<dd><p>clock-check the given function in the surrounding of the given point</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>point</strong> – center of the clock-check</p></li>
-<li><p><strong>function</strong> – function to check</p></li>
-<li><p><strong>threshold</strong> – threshold that the function has to surpass</p></li>
-<li><p><strong>condition</strong> – lambda function representing the condition to be met</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>True if the condition is met; False otherwise</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
 <dt class="sig sig-object py" id="mocafe.angie.af_sourcing.ConstantSourcesField">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.angie.af_sourcing.</span></span><span class="sig-name descname"><span class="pre">ConstantSourcesField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mocafe.angie.af_sourcing.SourceMap" title="mocafe.angie.af_sourcing.SourceMap"><span class="pre">mocafe.angie.af_sourcing.SourceMap</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../fenut_sub_code_doc/parameters.html#mocafe.fenut.parameters.Parameters" title="mocafe.fenut.parameters.Parameters"><span class="pre">mocafe.fenut.parameters.Parameters</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.af_sourcing.ConstantSourcesField" title="Permalink to this definition"></a></dt>
 <dd><p>FEniCS Expression representing the distribution of the angiogenic factor expressed by the source cells.</p>
