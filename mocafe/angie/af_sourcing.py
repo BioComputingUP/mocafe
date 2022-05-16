@@ -265,7 +265,7 @@ class SourcesManager:
         self.mesh = mesh
         self.parameters: Parameters = parameters
         if parameters.is_parameter("d") and parameters.is_value_present("d"):
-            self.default_clock_checker = ClockChecker(mesh, parameters.get_value("d"))
+            self.default_clock_checker = base_classes.ClockChecker(mesh, parameters.get_value("d"))
             self.default_clock_checker_is_present = True
         elif not parameters.is_parameter("d"):
             logger.debug("Reference for the parameter 'd' not found. Can't init the default clock checker.")
@@ -290,7 +290,7 @@ class SourcesManager:
 
         # if distance is specified
         if "d" in kwargs.keys():
-            clock_checker = ClockChecker(self.mesh, kwargs["d"])
+            clock_checker = base_classes.ClockChecker(self.mesh, kwargs["d"])
         else:
             if self.default_clock_checker_is_present:
                 clock_checker = self.default_clock_checker
@@ -435,119 +435,6 @@ class ConstantSourcesField(fenics.UserExpression):
 
     def value_shape(self):
         return ()
-
-
-class ClockChecker:
-    """
-    Class representing a clock checker, i.e. an object that checks if a given condition is met in the surroundings of
-    a point of the mesh.
-    """
-    def __init__(self, mesh: fenics.Mesh, radius, start_point="east"):
-        """
-        inits a ClockChecker, which will check if a condition is met inside the given radius
-
-        :param mesh: mesh
-        :param radius: radius where to check if the condition is met
-        :param start_point: starting point where to start checking. If the point is `east`, the clock checker will
-            start checking from the point with the lower value of x[0]; if the point is `west` the clock cheker will
-            start from the point with higher value of x[0]
-        """
-        self.radius = radius
-        self.mesh = mesh
-        self.mesh_dim = mesh.geometric_dimension()
-        if (start_point == "east") or (start_point == "west"):
-            self.check_points = self._build_surrounding_points(start_point)
-        else:
-            raise ValueError("ClockChecker can be just 'east' or 'west' type")
-
-    def _build_surrounding_points(self, start_point):
-        """
-        Internal use.
-
-        Builds the points that need to be checked in the surrounding of the given point during the clock check.
-        The points are already given in an order that should optimize the search, namely from the further to
-        the closer.
-
-        In 2D, the points are evenly distributed around n circles surrounding the given point. n is computed as the
-        closest integer to self.radius / self.hmin. For each circle, the number of p
-
-        :param start_point: east or west
-        """
-        # init points list
-        points_list = []
-
-        if self.mesh_dim == 2:
-            # compute number of circles
-            n_circles = int(np.round(self.radius / self.mesh.hmin()))
-            if n_circles == 0:
-                n_circles = 1
-            # compute number of points for circles, from the largest to the shortest (the order is for optimization)
-            n_points_for_circle = \
-                [int(np.round(2 * np.pi * circle_number)) for circle_number in range(n_circles, 0, -1)]
-            # compute radiuses of circles, from the largest to the shortest
-            shortest_radius = self.radius / n_circles
-            circles_radiuses = [circle_number * shortest_radius for circle_number in range(n_circles, 0, -1)]
-            # create points for each circle and append them to the list
-            reverse = (start_point == "west")
-            for n_points, radius in zip(n_points_for_circle, circles_radiuses):
-                angle_step = (2 * np.pi) / n_points
-                angles = np.arange(0, (2 * np.pi) + angle_step, angle_step)
-                circle_points = [radius * np.array([np.cos(angle), np.sin(angle)]) for angle in angles]
-                circle_points.sort(key=lambda x: x[0], reverse=reverse)
-                points_list.extend(circle_points)
-            # append origin
-            points_list.append(np.array([0., 0.]))
-
-        elif self.mesh_dim == 3:
-            # compute number of spheres
-            n_spheres = int(np.round(self.radius / self.mesh.hmin()))
-            if n_spheres == 0:
-                n_spheres = 1
-            # compute sphere radiuses, from largest to shortest
-            shortest_radius = self.radius / n_spheres
-            sphere_radiuses = [sphere_number * shortest_radius for sphere_number in range(n_spheres, 0, -1)]
-            # compute the number of points for each sphere, from the largest to the shortest
-            sqrt_pi = np.sqrt(np.pi)
-            hmin = self.mesh.hmin()
-            n_points_for_sphere = \
-                [int(np.round(np.round(((2 * sqrt_pi * rad) / hmin)) + 1)) ** 2 for rad in sphere_radiuses]
-            # evaluate points
-            reverse = (start_point == "west")
-            for n_points, radius in zip(n_points_for_sphere, sphere_radiuses):
-                # evaluate points with fibonacci algorithm
-                fibonacci_points = base_classes.fibonacci_sphere(n_points)
-                # rescale points
-                sphere_points = [radius * point for point in fibonacci_points]
-                # sort points
-                sphere_points.sort(key=lambda x: x[0], reverse=reverse)
-                points_list.extend(sphere_points)
-            # append origin
-            points_list.append(np.array([0., 0., 0.]))
-        else:
-            raise NotImplementedError(f"Clock checker is not implemented for meshes of dim {self.mesh_dim}. "
-                                      f"Only for dim 2 and 3.")
-        return points_list
-
-    def clock_check(self, point, function: fenics.Function, threshold, condition):
-        """
-        clock-check the given function in the surrounding of the given point
-
-        :param point: center of the clock-check
-        :param function: function to check
-        :param threshold: threshold that the function has to surpass
-        :param condition: lambda function representing the condition to be met
-        :return: True if the condition is met; False otherwise
-        """
-        # cast point to the right type
-        if type(point) is fenics.Point:
-            point = np.array([point.array()[i] for i in range(self.mesh_dim)])
-        # check if point is inside local mesh
-        for check_point in self.check_points:
-            current_check_point = point + check_point
-            if fu.is_point_inside_mesh(self.mesh, fenics.Point(current_check_point)):
-                if condition(function(current_check_point), threshold):
-                    return True
-        return False
 
 
 # class AFExpressionFunction:
