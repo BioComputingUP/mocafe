@@ -24,7 +24,7 @@ from mocafe.fenut.parameters import Parameters
 from mocafe.fenut.log import InfoCsvAdapter, DebugAdapter
 
 # Get MPI communicator and _rank to be used in the module
-_comm = fenics.MPI._comm_world
+_comm = fenics.MPI.comm_world
 _rank = _comm.Get_rank()
 
 # configure _logger

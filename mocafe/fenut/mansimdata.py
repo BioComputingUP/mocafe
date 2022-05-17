@@ -7,7 +7,7 @@ import fenics
 from mocafe.fenut.parameters import Parameters
 import pathlib
 
-comm = fenics.MPI._comm_world
+comm = fenics.MPI.comm_world
 rank = comm.Get_rank()
 
 # def macros

@@ -23,7 +23,7 @@ from mocafe.fenut.parameters import Parameters
 from mocafe.fenut.log import InfoCsvAdapter, DebugAdapter
 
 # get _rank
-_comm = fenics.MPI._comm_world
+_comm = fenics.MPI.comm_world
 _rank = _comm.Get_rank()
 
 # configure _logger
@@ -546,7 +546,7 @@ class TipCellManager:
             dt = self.parameters.get_value("dt")
             new_position = tip_cell_position + (dt * velocity)
             debug_msg = \
-                f"DEBUG: p{fenics.MPI._comm_world.Get_rank()}: computing new tip cell position: \n" \
+                f"DEBUG: p{fenics.MPI.comm_world.Get_rank()}: computing new tip cell position: \n" \
                 f"\t*[tip cell position] + [dt] * [velocity] = \n" \
                 f"\t*{tip_cell_position} + {dt} * {velocity} = {new_position}"
             for line in debug_msg.split("\n"):
