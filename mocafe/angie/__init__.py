@@ -14,12 +14,12 @@ It is composed of the following modules:
 You can find full documentation for each module in the "Submodules" section below.
 
 """
-import fenics
+from mpi4py import MPI
 from pathlib import Path
 import random
 import pickle
 
-comm = fenics.MPI._comm_world
+comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 
 # default random state file

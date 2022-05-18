@@ -1,12 +1,12 @@
 from pathlib import Path
 import logging
-import fenics
+from mpi4py import MPI
 
 # get header for csv log file
 log_header = ["timestamp", "mpi_p", "module", "activity"]
 
 # get _rank
-comm = fenics.MPI.comm_world
+comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 
 # define default log folder tree
@@ -78,7 +78,6 @@ def confgure_root_logger_with_standard_settings(data_folder: Path):
     # create log folder or clean previous content that might be in the folder
     current_debug_log_folder = _create_clean_log_folder(current_debug_log_folder)
     current_info_log_folder = _create_clean_log_folder(current_info_log_folder)
-
 
     # get root _logger
     root_logger = logging.getLogger()

@@ -11,20 +11,21 @@ If you use this model in your research, remember to cite the original paper desc
 For a use example see the :ref:`Angiogenesis <Angiogenesis 2D Demo>` and the
 :ref:`Angiogenesis 3D <Angiogenesis 2D Demo>` demos.
 """
-
+import sys
 import types
-import fenics
+import dolfinx.mesh
+import dolfinx.fem
 import random
-import mshr.cpp
 import numpy as np
 import logging
 import mocafe.fenut.fenut as fu
+from mpi4py import MPI
 from mocafe.angie import base_classes
 from mocafe.fenut.parameters import Parameters
 from mocafe.fenut.log import InfoCsvAdapter, DebugAdapter
 
 # Get MPI communicator and _rank to be used in the module
-_comm = fenics.MPI._comm_world
+_comm = MPI.COMM_WORLD
 _rank = _comm.Get_rank()
 
 # configure _logger
@@ -59,7 +60,7 @@ class SourceMap:
     of each source cell at any point of the simulation, providing access to it to other objects and methods.
     """
     def __init__(self,
-                 mesh: fenics.Mesh,
+                 mesh: dolfinx.mesh.Mesh,
                  source_points: list,
                  parameters: Parameters):
         """
@@ -157,10 +158,10 @@ class RandomSourceMap(SourceMap):
     A SourceMap of randomly distributed sources in a given spatial domain
     """
     def __init__(self,
-                 mesh: fenics.Mesh,
+                 mesh: dolfinx.mesh.Mesh,
                  n_sources: int,
-                 parameters: fenics.Parameters,
-                 where: types.FunctionType or mshr.cpp.CSGGeometry or fenics.SubDomain or None = None):
+                 parameters: Parameters,
+                 where: types.FunctionType or types.LambdaType):
         """
         inits a SourceMap of randomly distributed source cell in the mesh. One can specify the number of source
         cells to be initialized (argument ``n_sources``) and where the source cells will be placed
@@ -178,14 +179,10 @@ class RandomSourceMap(SourceMap):
         :param where: where to place the randomly distributed source cells. Default is None.
         """
         # check type of function
-        if isinstance(where, types.FunctionType):
+        if isinstance(where, types.FunctionType) or isinstance(where, types.LambdaType):
             where_fun = where
-        elif isinstance(where, mshr.cpp.CSGGeometry) \
-                or issubclass(type(where), mshr.cpp.CSGGeometry):
-            where_fun = where.inside
         else:
-            raise TypeError(f"Argument 'where' can be only of type {types.FunctionType}, {mshr.cpp.CSGGeometry},"
-                            f"{fenics.SubDomain} or None. "
+            raise TypeError(f"Argument 'where' can be only of type {types.FunctionType}, {types.LambdaType} \n"
                             f"Detected {type(where)} instead")
 
         # check type of n_sources
@@ -201,17 +198,13 @@ class RandomSourceMap(SourceMap):
                                               parameters)
 
     def _pick_n_global_vertices_where_asked(self, n_points, where_fun):
-        # get mesh topology
-        topology = self.mesh.topology()
-        # get global vertex index (unique for all the procs)
-        global_vertex_indices = topology.global_indices(0)
-        # get number of global vertex
-        n_global_vertices = self.mesh.num_entities_global(0)
+        # get global vertex index (unique identifier of coordinates for all the procs)
+        global_vertex_indices = self.mesh.geometry.input_global_indices
         # get local mesh coordinates
-        lmc = self.mesh.coordinates()
+        lmc = self.mesh.geometry.x
         # extract the index of the pickable points
         global_pickable_vertex_index = \
-            [index for index, coordinate in zip(global_vertex_indices, lmc) if where_fun(fenics.Point(coordinate))]
+            [index for index, coordinate in zip(global_vertex_indices, lmc) if where_fun(coordinate)]
         # gather lmc in proc 0
         lmc_arrays = _comm.gather(lmc, 0)
         # gather indices in proc 0
@@ -221,6 +214,7 @@ class RandomSourceMap(SourceMap):
 
         if _rank == 0:
             # init global coordinates array
+            n_global_vertices = self.mesh.topology.index_map(0).size_global
             global_coordinates = np.zeros((n_global_vertices, lmc.shape[1]))
             # get global pickable coordinates
             for coordinates, indices in zip(lmc_arrays, vertex_maps):
@@ -252,7 +246,7 @@ class SourcesManager:
     cells when they are near the blood vessels and of translating the source cell map in a FEniCS phase field function
     """
     def __init__(self, source_map: SourceMap,
-                 mesh: fenics.Mesh,
+                 mesh: dolfinx.mesh.Mesh,
                  parameters: Parameters):
         """
         inits a source cells manager for a given source map.
@@ -264,6 +258,8 @@ class SourcesManager:
         self.source_map = source_map
         self.mesh = mesh
         self.parameters: Parameters = parameters
+        self.value_min = parameters.get_value("T_min")
+        self.value_max = parameters.get_value("T_s")
         if parameters.is_parameter("d") and parameters.is_value_present("d"):
             self.default_clock_checker = base_classes.ClockChecker(mesh, parameters.get_value("d"))
             self.default_clock_checker_is_present = True
@@ -277,7 +273,7 @@ class SourcesManager:
             self.default_clock_checker = None
             self.default_clock_checker_is_present = False
 
-    def remove_sources_near_vessels(self, c: fenics.Function, **kwargs):
+    def remove_sources_near_vessels(self, c: dolfinx.fem.Function, **kwargs):
         """
         Removes the source cells near the blood vessels
 
@@ -341,7 +337,7 @@ class SourcesManager:
         for source_cell in global_to_remove:
             self.source_map.remove_global_source(source_cell)
 
-    def apply_sources(self, af: fenics.Function):
+    def apply_sources(self, af: dolfinx.fem.Function):
         """
         Apply the sources at the current time to the angiogenic factor field af, respecting the expression function.
 
@@ -349,65 +345,75 @@ class SourcesManager:
         :return: nothing
 
         """
-        # get Function Space of af
-        V_af = af.function_space()
-        # check if V_af is sub space
-        try:
-            V_af.collapse()
-            is_V_sub_space = True
-        except RuntimeError:
-            is_V_sub_space = False
-        # interpolate according to V_af
-        if not is_V_sub_space:
-            # interpolate source field
-            s_f = fenics.interpolate(ConstantSourcesField(self.source_map, self.parameters),
-                                     V_af)
-            # assign s_f to T where s_f equals 1
-            self._assign_values_to_vector(af, s_f)
-        else:
-            # collapse subspace
-            V_collapsed = V_af.collapse()
-            # interpolate source field
-            s_f = fenics.interpolate(ConstantSourcesField(self.source_map, self.parameters),
-                                     V_collapsed)
-            # create assigner to collapsed
-            assigner_to_collapsed = fenics.FunctionAssigner(V_collapsed, V_af)
-            # assign T to local variable T_temp
-            T_temp = fenics.Function(V_collapsed)
-            assigner_to_collapsed.assign(T_temp, af)
-            # assign values to T_temp
-            self._assign_values_to_vector(T_temp, s_f)
-            # create inverse assigner
-            assigner_to_sub = fenics.FunctionAssigner(V_af, V_collapsed)
-            # assign T_temp to T
-            assigner_to_sub.assign(af, T_temp)
+        # create a field for sources copying af
+        s_f = af.copy()
+        # interpolate the custom sources expression on it
+        s_f_exp = ConstantSourcesField(self.source_map, self.parameters)
+        s_f.interpolate(s_f_exp.eval)
+        # overwrite af only where s_f is not nan
+        s_f_not_nan = ~np.isnan(np.array(s_f.vector.array))
+        af.vector.array[s_f_not_nan] = s_f.vector.array[s_f_not_nan]
 
-    def _assign_values_to_vector(self, af, s_f):
-        """
-        INTERNAL USE
-        Assign the positive values of the source field function to the angiogenic factor field.
+        # # get Function Space of af
+        # V_af = af.function_space
+        #
+        # # check if V_af is sub space
+        # if V_af.component():
+        #     is_V_sub_space = True
+        # else:
+        #     is_V_sub_space = False
 
-        :param af: angiogenic factor function
-        :param s_f: source field function
-        :return: nothing
-        """
-        # get local values for T and source_field
-        s_f_loc_values = s_f.vector().get_local()
-        T_loc_values = af.vector().get_local()
-        # change T value only where s_f is grater than 0
-        where_s_f_is_over_zero = s_f_loc_values > 0.
-        T_loc_values[where_s_f_is_over_zero] = \
-            T_loc_values[where_s_f_is_over_zero] + s_f_loc_values[where_s_f_is_over_zero]
-        af.vector().set_local(T_loc_values)
-        af.vector().update_ghost_values()  # necessary, otherwise I get errors
+        # # interpolate according to V_af
+        # if not is_V_sub_space:
+        #     # interpolate source field
+        #     s_f = dolfinx.fem.Function(V_af)
+        #     s_f.interpolate(ConstantSourcesField(self.source_map, self.parameters))
+        #     # assign s_f to T where s_f equals 1
+        #     self._assign_values_to_vector(af, s_f)
+        # else:
+        #     # collapse subspace
+        #     V_collapsed = V_af.collapse()[0]
+        #     # interpolate source field
+        #     s_f = dolfinx.fem.Function(V_collapsed)
+        #     s_f.interpolate(ConstantSourcesField(self.source_map, self.parameters))
+        #     # create assigner to collapsed
+        #     assigner_to_collapsed = fenics.FunctionAssigner(V_collapsed, V_af)
+        #     # assign T to local variable T_temp
+        #     T_temp = fenics.Function(V_collapsed)
+        #     assigner_to_collapsed.assign(T_temp, af)
+        #     # assign values to T_temp
+        #     self._assign_values_to_vector(T_temp, s_f)
+        #     # create inverse assigner
+        #     assigner_to_sub = fenics.FunctionAssigner(V_af, V_collapsed)
+        #     # assign T_temp to T
+        #     assigner_to_sub.assign(af, T_temp)
+
+    # def _assign_values_to_vector(self, af, s_f):
+    #     """
+    #     INTERNAL USE
+    #     Assign the positive values of the source field function to the angiogenic factor field.
+    #
+    #     :param af: angiogenic factor function
+    #     :param s_f: source field function
+    #     :return: nothing
+    #     """
+    #     # get local values for T and source_field
+    #     s_f_loc_values = s_f.vector().get_local()
+    #     T_loc_values = af.vector().get_local()
+    #     # change T value only where s_f is grater than 0
+    #     where_s_f_is_over_zero = s_f_loc_values > 0.
+    #     T_loc_values[where_s_f_is_over_zero] = \
+    #         T_loc_values[where_s_f_is_over_zero] + s_f_loc_values[where_s_f_is_over_zero]
+    #     af.vector().set_local(T_loc_values)
+    #     af.vector().update_ghost_values()  # necessary, otherwise I get errors
 
 
-class ConstantSourcesField(fenics.UserExpression):
+class ConstantSourcesField:
     """
-    FEniCS Expression representing the distribution of the angiogenic factor expressed by the source cells.
+    Custom Expression representing the distribution of the angiogenic factor expressed by the source cells.
     """
-    def __floordiv__(self, other):
-        pass
+    # def __floordiv__(self, other):
+    #     pass
 
     def __init__(self, source_map: SourceMap, parameters: Parameters):
         """
@@ -420,21 +426,27 @@ class ConstantSourcesField(fenics.UserExpression):
         super(ConstantSourcesField, self).__init__()
         self.sources_positions = [source_cell.get_position() for source_cell in source_map.get_local_source_cells()]
         self.sources_positions_not_empty = len(self.sources_positions) != 0
-        self.value_min = parameters.get_value("T_min")
+        self.value_min = np.nan  # old: parameters.get_value("T_min")
         self.value_max = parameters.get_value("T_s")
         self.radius = parameters.get_value("R_c")
 
-    def eval(self, values, x):
-        # check if point is inside any cell
-        point_value = self.value_min
+    def eval(self, x):
+        # if there are source cells
         if self.sources_positions_not_empty:
-            is_inside_array = np.sum((x - self.sources_positions) ** 2, axis=1) < (self.radius ** 2)
-            if any(is_inside_array):
-                point_value = self.value_max
-        values[0] = point_value
+            # create a list to store booleans
+            is_inside_any_source = None
+            for source_position in self.sources_positions:
+                is_inside_current_source = np.sum((x.T - source_position) ** 2, axis=1) < (self.radius ** 2)
+                if is_inside_any_source is None:  # True at first iteration
+                    is_inside_any_source = is_inside_current_source
+                else:
+                    is_inside_any_source = is_inside_any_source | is_inside_current_source
+            return np.where(is_inside_any_source, self.value_max, self.value_min)
+        else:
+            return self.value_min * np.ones(x.shape[1])
 
-    def value_shape(self):
-        return ()
+    # def value_shape(self):
+    #     return ()
 
 
 # class AFExpressionFunction:

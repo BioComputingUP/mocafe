@@ -2,9 +2,13 @@
 Base classes used only by mocafe.angie
 """
 import math
-import fenics
+import dolfinx
 import mocafe.fenut.fenut as fu
 import numpy as np
+from mpi4py import MPI
+
+_comm = MPI.COMM_WORLD
+_rank = _comm.Get_rank()
 
 
 class BaseCell:
@@ -20,7 +24,7 @@ class BaseCell:
         :param point: position of the cell
         :param creation_step: creation step of the cell, used for internal purposes
         """
-        if type(point) is not np.ndarray:
+        if not isinstance(point, np.ndarray):
             raise TypeError(r"A cell position can be only an array of type np.ndarray. Please change array type")
 
         self.initial_position = point
@@ -89,7 +93,7 @@ class ClockChecker:
     Class representing a clock checker, i.e. an object that checks if a given condition is met in the surroundings of
     a point of the mesh.
     """
-    def __init__(self, mesh: fenics.Mesh, radius, start_point="east"):
+    def __init__(self, mesh: dolfinx.mesh.Mesh, radius, start_point="east"):
         """
         inits a ClockChecker, which will check if a condition is met inside the given radius
 
@@ -101,7 +105,8 @@ class ClockChecker:
         """
         self.radius = radius
         self.mesh = mesh
-        self.mesh_dim = mesh.geometric_dimension()
+        self.mesh_dim = mesh.geometry.dim
+        self.mesh_bbt = dolfinx.geometry.BoundingBoxTree(mesh, mesh.topology.dim)
         if (start_point == "east") or (start_point == "west"):
             self.check_points = self._build_surrounding_points(start_point)
         else:
@@ -123,9 +128,20 @@ class ClockChecker:
         # init points list
         points_list = []
 
+        # compute min cell dimension across all the domains
+        local_hmin = dolfinx.cpp.mesh.h(self.mesh,
+                                        self.mesh_dim,
+                                        range(self.mesh.topology.index_map(0).size_local)).min()
+        global_hmin_values = _comm.gather(local_hmin, 0)
+        if _rank == 0:
+            hmin = min(global_hmin_values)
+        else:
+            hmin = None
+        hmin = _comm.bcast(hmin, 0)
+
         if self.mesh_dim == 2:
             # compute number of circles
-            n_circles = int(np.round(self.radius / self.mesh.hmin()))
+            n_circles = int(np.round(self.radius / hmin))
             if n_circles == 0:
                 n_circles = 1
             # compute number of points for circles, from the largest to the shortest (the order is for optimization)
@@ -147,7 +163,7 @@ class ClockChecker:
 
         elif self.mesh_dim == 3:
             # compute number of spheres
-            n_spheres = int(np.round(self.radius / self.mesh.hmin()))
+            n_spheres = int(np.round(self.radius / hmin))
             if n_spheres == 0:
                 n_spheres = 1
             # compute sphere radiuses, from largest to shortest
@@ -155,7 +171,6 @@ class ClockChecker:
             sphere_radiuses = [sphere_number * shortest_radius for sphere_number in range(n_spheres, 0, -1)]
             # compute the number of points for each sphere, from the largest to the shortest
             sqrt_pi = np.sqrt(np.pi)
-            hmin = self.mesh.hmin()
             n_points_for_sphere = \
                 [int(np.round(np.round(((2 * sqrt_pi * rad) / hmin)) + 1)) ** 2 for rad in sphere_radiuses]
             # evaluate points
@@ -175,7 +190,7 @@ class ClockChecker:
                                       f"Only for dim 2 and 3.")
         return points_list
 
-    def clock_check(self, point, function: fenics.Function, threshold, condition):
+    def clock_check(self, point, function: dolfinx.fem.Function, threshold, condition):
         """
         clock-check the given function in the surrounding of the given point
 
@@ -185,13 +200,15 @@ class ClockChecker:
         :param condition: lambda function representing the condition to be met
         :return: True if the condition is met; False otherwise
         """
-        # cast point to the right type
-        if type(point) is fenics.Point:
-            point = np.array([point.array()[i] for i in range(self.mesh_dim)])
-        # check if point is inside local mesh
         for check_point in self.check_points:
+            # compute current check point
             current_check_point = point + check_point
-            if fu.is_point_inside_mesh(self.mesh, fenics.Point(current_check_point)):
-                if condition(function(current_check_point), threshold):
+            # compute cells colliding with check point
+            collisions = dolfinx.geometry.compute_collisions(self.mesh_bbt, current_check_point)
+            from mpi4py import MPI
+            print(f"r{MPI.COMM_WORLD.Get_rank()}: collisions:", collisions)
+            exit(0)
+            if fu.is_point_inside_mesh(self.mesh, current_check_point):
+                if condition(function.eval(current_check_point), threshold):
                     return True
         return False

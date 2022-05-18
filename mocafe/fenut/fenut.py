@@ -4,31 +4,17 @@ Requires FEniCS 2019.1 to work.
 
 """
 
-import fenics
-import shutil
+import dolfinx
+import ufl
+from mpi4py import MPI
 import json
 import numpy as np
 
-_comm_world = fenics.MPI.comm_world
+_comm_world = MPI.COMM_WORLD
 _rank = _comm_world.Get_rank()
 
 
-def setup_pvd_files(file_names: list, data_folder):
-    """
-    returns a list of ``.pvd`` files with the given list of names. ``.pvd`` files can be used to store FEniCS Functions,
-    even though XDMF files are preferred.
-
-    This method is useful when a relative long list of files is needed for a simulation.
-
-    :param file_names: the list of strings containing the files name.
-    :param data_folder: the folder where to place the files
-    :return: the FEniCS objects representing the files.
-    """
-    vtk_files = [fenics.File(str(data_folder) + "/" + file_name + ".pvd", "compressed") for file_name in file_names]
-    return vtk_files
-
-
-def setup_xdmf_files(file_names: list, data_folder, comm=fenics.MPI.comm_world):
+def setup_xdmf_files(file_names: list, data_folder, comm=_comm_world):
     """
     returns a list of ``.xdmf`` files with the given list of names. ``.xdmf`` files are the preferred way to store
     FEniCS functions for elaboration and visualization.
@@ -40,7 +26,8 @@ def setup_xdmf_files(file_names: list, data_folder, comm=fenics.MPI.comm_world):
     :param comm: MPI communicator. Default is COMM_WORLD and this is usually the best choice for normal simulations.
     :return: the FEniCS objects representing the files.
     """
-    xdmf_files = [fenics.XDMFFile(comm, str(data_folder) + "/" + file_name + ".xdmf") for file_name in file_names]
+    xdmf_files = [dolfinx.io.XDMFFile(comm, str(data_folder) + "/" + file_name + ".xdmf", "w")
+                  for file_name in file_names]
     return xdmf_files
 
 
@@ -95,7 +82,7 @@ def load_parameters(parameters_file="parameters.json"):
     return parameters
 
 
-def get_mixed_function_space(mesh: fenics.Mesh,
+def get_mixed_function_space(mesh: dolfinx.mesh.Mesh,
                              n_variables: int,
                              element_type: str = "CG",
                              degree: int = 1):
@@ -109,18 +96,17 @@ def get_mixed_function_space(mesh: fenics.Mesh,
     :param degree: the degree of the elements you want to use. Default is 1.
     :return: the function space for the given mesh.
     """
-    if mesh.geometric_dimension() == 2:
-        element = fenics.FiniteElement(element_type, fenics.triangle, degree)
-    elif mesh.geometric_dimension() == 3:
-        element = fenics.FiniteElement(element_type, fenics.tetrahedron, degree)
-    else:
-        raise RuntimeError
-    mixed_element = fenics.MixedElement([element] * n_variables)
-    function_space = fenics.FunctionSpace(mesh, mixed_element)
+    # create element
+    element = ufl.FiniteElement(element_type, mesh.ufl_cell(), degree)
+    # create ufl mixed element
+    elements = [element] * n_variables
+    mixed_element = ufl.MixedElement(*elements)
+    # get function space
+    function_space = dolfinx.fem.FunctionSpace(mesh, mixed_element)
     return function_space
 
 
-def build_local_box(local_mesh: fenics.Mesh,
+def build_local_box(local_mesh: dolfinx.mesh.Mesh,
                     border_width: float):
     """
     Builds a local box for a given mesh.
@@ -132,7 +118,7 @@ def build_local_box(local_mesh: fenics.Mesh,
     :param border_width: the width of the border of the local box
     :return: the local box
     """
-    local_coordinates = local_mesh.coordinates()
+    local_coordinates = local_mesh.geometry.x
     max_values = np.max(local_coordinates, axis=0) + border_width
     min_values = np.min(local_coordinates, axis=0) - border_width
     if len(max_values) == 2:
@@ -193,8 +179,8 @@ def flatten_list_of_lists(list_of_lists):
     return [elem for sublist in list_of_lists for elem in sublist]
 
 
-def is_point_inside_mesh(mesh: fenics.Mesh,
-                         point):
+def is_point_inside_mesh(mesh: dolfinx.mesh.Mesh,
+                         point: np.ndarray or list):
     """
     Check if the given point is inside the given mesh. In parallel, checks if the point is inside the local mesh.
 
@@ -202,12 +188,12 @@ def is_point_inside_mesh(mesh: fenics.Mesh,
     :param point: the given point
     :return: True if the point is inside the mesh; False otherwise
     """
-    if not isinstance(point, fenics.Point):
-        if isinstance(point, np.ndarray):
-            # convert in fenics point
-            point = fenics.Point(point)
-        else:
-            raise TypeError(f"given point of unknown type {type(point)}")
-    bbt = mesh.bounding_box_tree()
-    is_point_inside = bbt.compute_first_entity_collision(point) <= mesh.num_cells()
-    return is_point_inside
+    # compute bounding box tree for the mesh, necessary
+    bbt = dolfinx.geometry.BoundingBoxTree(mesh, mesh.topology.dim)
+    # compute collisions, if inside mesh the list is not empty
+    collisions = dolfinx.geometry.compute_collisions(bbt, point)
+    # return false if list is empty, else True
+    if collisions:
+        return True
+    else:
+        return False

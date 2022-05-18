@@ -3,12 +3,12 @@ Useful methods to manage simulation data
 """
 
 import datetime
-import fenics
+from mpi4py import MPI
 import mocafe
 from mocafe.fenut.parameters import Parameters
 import pathlib
 
-comm = fenics.MPI.comm_world
+comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 
 # def macros
