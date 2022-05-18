@@ -8,6 +8,9 @@ import numpy as np
 
 
 class BaseCell:
+    """
+    Class representing a discrete cell agent. This class is inherited by both Tip Cells and Source Cells.
+    """
     def __init__(self,
                  point: np.ndarray,
                  creation_step):
