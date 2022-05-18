@@ -23,14 +23,14 @@ from mocafe.angie import base_classes
 from mocafe.fenut.parameters import Parameters
 from mocafe.fenut.log import InfoCsvAdapter, DebugAdapter
 
-# Get MPI communicator and rank to be used in the module
-comm = fenics.MPI.comm_world
-rank = comm.Get_rank()
+# Get MPI communicator and _rank to be used in the module
+_comm = fenics.MPI.comm_world
+_rank = _comm.Get_rank()
 
-# configure logger
-logger = logging.getLogger(__name__)
-info_adapter = InfoCsvAdapter(logger, {"rank": rank, "module": __name__})  # mainly for process optimization
-debug_adapter = DebugAdapter(logger, {"rank": rank, "module": __name__})  # all kinds of information
+# configure _logger
+_logger = logging.getLogger(__name__)
+_info_adapter = InfoCsvAdapter(_logger, {"_rank": _rank, "module": __name__})  # mainly for process optimization
+_debug_adapter = DebugAdapter(_logger, {"_rank": _rank, "module": __name__})  # all kinds of information
 
 
 class SourceCell(base_classes.BaseCell):
@@ -141,12 +141,12 @@ class SourceMap:
         """
         # remove from global list
         self.global_source_cells.remove(source_cell)
-        debug_adapter.debug(f"Removed source cell {source_cell.__hash__()} at position {source_cell.get_position()}"
+        _debug_adapter.debug(f"Removed source cell {source_cell.__hash__()} at position {source_cell.get_position()}"
                             f"from the global list")
         # if in local, remove from local list too
         if source_cell in self.local_source_cells:
             self.local_source_cells.remove(source_cell)
-            debug_adapter.debug(
+            _debug_adapter.debug(
                 f"Removed source cell {source_cell.__hash__()} at position {source_cell.get_position()}"
                 f"from the local list")
 
@@ -212,13 +212,13 @@ class RandomSourceMap(SourceMap):
         global_pickable_vertex_index = \
             [index for index, coordinate in zip(global_vertex_indices, lmc) if where_fun(fenics.Point(coordinate))]
         # gather lmc in proc 0
-        lmc_arrays = comm.gather(lmc, 0)
+        lmc_arrays = _comm.gather(lmc, 0)
         # gather indices in proc 0
-        vertex_maps = comm.gather(global_vertex_indices, 0)
+        vertex_maps = _comm.gather(global_vertex_indices, 0)
         # gather pickable coordinats indices in proc 0
-        pickable_vertex_maps = comm.gather(global_pickable_vertex_index, 0)
+        pickable_vertex_maps = _comm.gather(global_pickable_vertex_index, 0)
 
-        if rank == 0:
+        if _rank == 0:
             # init global coordinates array
             global_coordinates = np.zeros((n_global_vertices, lmc.shape[1]))
             # get global pickable coordinates
@@ -233,7 +233,7 @@ class RandomSourceMap(SourceMap):
             # pick n of them (if available)
             n_pickable_points = len(pickable_points)
             if n_pickable_points <= n_points:
-                logger.warning(f"The mesh looks too small for selecting {n_points} random source, since it was asked"
+                _logger.warning(f"The mesh looks too small for selecting {n_points} random source, since it was asked"
                                f"to select {n_points} among {n_pickable_points}"
                                f"pickable points. Returning all available pickable points.")
                 global_sources_coordinates = pickable_points
@@ -241,7 +241,7 @@ class RandomSourceMap(SourceMap):
                 global_sources_coordinates = random.sample(pickable_points, n_points)
         else:
             global_sources_coordinates = None
-        global_sources_coordinates = comm.bcast(global_sources_coordinates, 0)
+        global_sources_coordinates = _comm.bcast(global_sources_coordinates, 0)
         return global_sources_coordinates
 
 
@@ -264,14 +264,14 @@ class SourcesManager:
         self.mesh = mesh
         self.parameters: Parameters = parameters
         if parameters.is_parameter("d") and parameters.is_value_present("d"):
-            self.default_clock_checker = ClockChecker(mesh, parameters.get_value("d"))
+            self.default_clock_checker = base_classes.ClockChecker(mesh, parameters.get_value("d"))
             self.default_clock_checker_is_present = True
         elif not parameters.is_parameter("d"):
-            logger.debug("Reference for the parameter 'd' not found. Can't init the default clock checker.")
+            _logger.debug("Reference for the parameter 'd' not found. Can't init the default clock checker.")
             self.default_clock_checker = None
             self.default_clock_checker_is_present = False
         elif not parameters.is_value_present("d"):
-            logger.debug("The parameter 'd' is present in the parameters object but the value is not set. "
+            _logger.debug("The parameter 'd' is present in the parameters object but the value is not set. "
                          "Can't init the default clock checker.")
             self.default_clock_checker = None
             self.default_clock_checker_is_present = False
@@ -285,11 +285,11 @@ class SourcesManager:
         """
         # prepare list of cells to remove
         to_remove = []
-        debug_adapter.debug(f"Starting to remove source cells")
+        _debug_adapter.debug(f"Starting to remove source cells")
 
         # if distance is specified
         if "d" in kwargs.keys():
-            clock_checker = ClockChecker(self.mesh, kwargs["d"])
+            clock_checker = base_classes.ClockChecker(self.mesh, kwargs["d"])
         else:
             if self.default_clock_checker_is_present:
                 clock_checker = self.default_clock_checker
@@ -300,16 +300,16 @@ class SourcesManager:
 
         for source_cell in self.source_map.get_local_source_cells():
             source_cell_position = source_cell.get_position()
-            debug_adapter.debug(f"Checking cell {source_cell.__hash__()} at position {source_cell_position}")
+            _debug_adapter.debug(f"Checking cell {source_cell.__hash__()} at position {source_cell_position}")
             clock_check_test_result = clock_checker.clock_check(source_cell_position,
                                                                 c,
                                                                 self.parameters.get_value("phi_th"),
                                                                 lambda val, thr: val > thr)
-            debug_adapter.debug(f"Clock Check test result is {clock_check_test_result}")
+            _debug_adapter.debug(f"Clock Check test result is {clock_check_test_result}")
             # if the clock test is positive, add the source cells in the list of the cells to remove
             if clock_check_test_result:
                 to_remove.append(source_cell)
-                debug_adapter.debug(f"Appended source cell {source_cell.__hash__()} at position "
+                _debug_adapter.debug(f"Appended source cell {source_cell.__hash__()} at position "
                                     f"{source_cell_position} to the 'to_remove' list")
 
         self._remove_sources(to_remove)
@@ -322,19 +322,19 @@ class SourcesManager:
         :param local_to_remove:
         :return:
         """
-        # get root rank
+        # get root _rank
         root = 0
 
         # share cells to remove among processes
-        local_to_remove_list = comm.gather(local_to_remove, root)
-        if rank == root:
+        local_to_remove_list = _comm.gather(local_to_remove, root)
+        if _rank == root:
             # remove sublists
             global_to_remove = [item for sublist in local_to_remove_list for item in sublist]
             # remove duplicates
             global_to_remove = list(set(global_to_remove))
         else:
             global_to_remove = None
-        global_to_remove = comm.bcast(global_to_remove, root)
+        global_to_remove = _comm.bcast(global_to_remove, root)
 
         # each process cancels the sources
         for source_cell in global_to_remove:
@@ -434,119 +434,6 @@ class ConstantSourcesField(fenics.UserExpression):
 
     def value_shape(self):
         return ()
-
-
-class ClockChecker:
-    """
-    Class representing a clock checker, i.e. an object that checks if a given condition is met in the surroundings of
-    a point of the mesh.
-    """
-    def __init__(self, mesh: fenics.Mesh, radius, start_point="east"):
-        """
-        inits a ClockChecker, which will check if a condition is met inside the given radius
-
-        :param mesh: mesh
-        :param radius: radius where to check if the condition is met
-        :param start_point: starting point where to start checking. If the point is `east`, the clock checker will
-            start checking from the point with the lower value of x[0]; if the point is `west` the clock cheker will
-            start from the point with higher value of x[0]
-        """
-        self.radius = radius
-        self.mesh = mesh
-        self.mesh_dim = mesh.geometric_dimension()
-        if (start_point == "east") or (start_point == "west"):
-            self.check_points = self._build_surrounding_points(start_point)
-        else:
-            raise ValueError("ClockChecker can be just 'east' or 'west' type")
-
-    def _build_surrounding_points(self, start_point):
-        """
-        Internal use.
-
-        Builds the points that need to be checked in the surrounding of the given point during the clock check.
-        The points are already given in an order that should optimize the search, namely from the further to
-        the closer.
-
-        In 2D, the points are evenly distributed around n circles surrounding the given point. n is computed as the
-        closest integer to self.radius / self.hmin. For each circle, the number of p
-
-        :param start_point: east or west
-        """
-        # init points list
-        points_list = []
-
-        if self.mesh_dim == 2:
-            # compute number of circles
-            n_circles = int(np.round(self.radius / self.mesh.hmin()))
-            if n_circles == 0:
-                n_circles = 1
-            # compute number of points for circles, from the largest to the shortest (the order is for optimization)
-            n_points_for_circle = \
-                [int(np.round(2 * np.pi * circle_number)) for circle_number in range(n_circles, 0, -1)]
-            # compute radiuses of circles, from the largest to the shortest
-            shortest_radius = self.radius / n_circles
-            circles_radiuses = [circle_number * shortest_radius for circle_number in range(n_circles, 0, -1)]
-            # create points for each circle and append them to the list
-            reverse = (start_point == "west")
-            for n_points, radius in zip(n_points_for_circle, circles_radiuses):
-                angle_step = (2 * np.pi) / n_points
-                angles = np.arange(0, (2 * np.pi) + angle_step, angle_step)
-                circle_points = [radius * np.array([np.cos(angle), np.sin(angle)]) for angle in angles]
-                circle_points.sort(key=lambda x: x[0], reverse=reverse)
-                points_list.extend(circle_points)
-            # append origin
-            points_list.append(np.array([0., 0.]))
-
-        elif self.mesh_dim == 3:
-            # compute number of spheres
-            n_spheres = int(np.round(self.radius / self.mesh.hmin()))
-            if n_spheres == 0:
-                n_spheres = 1
-            # compute sphere radiuses, from largest to shortest
-            shortest_radius = self.radius / n_spheres
-            sphere_radiuses = [sphere_number * shortest_radius for sphere_number in range(n_spheres, 0, -1)]
-            # compute the number of points for each sphere, from the largest to the shortest
-            sqrt_pi = np.sqrt(np.pi)
-            hmin = self.mesh.hmin()
-            n_points_for_sphere = \
-                [int(np.round(np.round(((2 * sqrt_pi * rad) / hmin)) + 1)) ** 2 for rad in sphere_radiuses]
-            # evaluate points
-            reverse = (start_point == "west")
-            for n_points, radius in zip(n_points_for_sphere, sphere_radiuses):
-                # evaluate points with fibonacci algorithm
-                fibonacci_points = base_classes.fibonacci_sphere(n_points)
-                # rescale points
-                sphere_points = [radius * point for point in fibonacci_points]
-                # sort points
-                sphere_points.sort(key=lambda x: x[0], reverse=reverse)
-                points_list.extend(sphere_points)
-            # append origin
-            points_list.append(np.array([0., 0., 0.]))
-        else:
-            raise NotImplementedError(f"Clock checker is not implemented for meshes of dim {self.mesh_dim}. "
-                                      f"Only for dim 2 and 3.")
-        return points_list
-
-    def clock_check(self, point, function: fenics.Function, threshold, condition):
-        """
-        clock-check the given function in the surrounding of the given point
-
-        :param point: center of the clock-check
-        :param function: function to check
-        :param threshold: threshold that the function has to surpass
-        :param condition: lambda function representing the condition to be met
-        :return: True if the condition is met; False otherwise
-        """
-        # cast point to the right type
-        if type(point) is fenics.Point:
-            point = np.array([point.array()[i] for i in range(self.mesh_dim)])
-        # check if point is inside local mesh
-        for check_point in self.check_points:
-            current_check_point = point + check_point
-            if fu.is_point_inside_mesh(self.mesh, fenics.Point(current_check_point)):
-                if condition(function(current_check_point), threshold):
-                    return True
-        return False
 
 
 # class AFExpressionFunction:

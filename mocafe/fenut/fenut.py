@@ -9,8 +9,8 @@ import shutil
 import json
 import numpy as np
 
-comm_world = fenics.MPI.comm_world
-rank = comm_world.Get_rank()
+_comm_world = fenics.MPI.comm_world
+_rank = _comm_world.Get_rank()
 
 
 def setup_pvd_files(file_names: list, data_folder):

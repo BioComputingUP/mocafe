@@ -5,7 +5,7 @@ import fenics
 # get header for csv log file
 log_header = ["timestamp", "mpi_p", "module", "activity"]
 
-# get rank
+# get _rank
 comm = fenics.MPI.comm_world
 rank = comm.Get_rank()
 
@@ -24,7 +24,7 @@ class InfoCsvAdapter(logging.LoggerAdapter):
     This is mainly used for internal purposes, but can be used from the user as well.
     """
     def process(self, msg: str, kwargs):
-        return f"p{self.extra['rank']};{self.extra['module']};{msg}", kwargs
+        return f"p{self.extra['_rank']};{self.extra['module']};{msg}", kwargs
 
 
 class DebugAdapter(logging.LoggerAdapter):
@@ -34,7 +34,7 @@ class DebugAdapter(logging.LoggerAdapter):
     This is mainly used for internal purposes, but can be used from the user as well.
     """
     def process(self, msg: str, kwargs):
-        return f"p{self.extra['rank']} - {self.extra['module']}\n \t{msg}", kwargs
+        return f"p{self.extra['_rank']} - {self.extra['module']}\n \t{msg}", kwargs
 
 
 def _create_clean_log_folder(folder: Path):
@@ -61,7 +61,7 @@ def _create_clean_log_folder(folder: Path):
 
 def confgure_root_logger_with_standard_settings(data_folder: Path):
     """
-    Configures the root logger with the standard Mocafe settings.
+    Configures the root _logger with the standard Mocafe settings.
 
     This is mainly used for internal purposes, but can be used from the user as well.
 
@@ -80,7 +80,7 @@ def confgure_root_logger_with_standard_settings(data_folder: Path):
     current_info_log_folder = _create_clean_log_folder(current_info_log_folder)
 
 
-    # get root logger
+    # get root _logger
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.DEBUG)
 
@@ -91,7 +91,7 @@ def confgure_root_logger_with_standard_settings(data_folder: Path):
     # create dubug format
     debug_formatter = logging.Formatter("{asctime} - {message}", style="{")
     debug_fh.setFormatter(debug_formatter)
-    # add handler to root logger
+    # add handler to root _logger
     root_logger.addHandler(debug_fh)
 
     # Info
@@ -101,7 +101,7 @@ def confgure_root_logger_with_standard_settings(data_folder: Path):
     # create info format
     info_formatter = logging.Formatter("{asctime};{message}", style="{")
     info_fh.setFormatter(info_formatter)
-    # add handler to root logger
+    # add handler to root _logger
     root_logger.addHandler(info_fh)
 
     # Stream

@@ -80,7 +80,7 @@ from mocafe.angie.forms import angiogenesis_form, angiogenic_factor_form
 import mocafe.fenut.parameters as mpar
 from mocafe.fenut.solvers import SNESProblem
 
-# get MPI comm and rank
+# get MPI _comm and _rank
 comm = fenics.MPI.comm_world
 rank = comm.Get_rank()
 
@@ -366,12 +366,12 @@ for step in range(1, n_steps + 1):
 #   import mocafe.fenut.parameters as mpar
 #   from mocafe.fenut.solvers import SNESProblem
 #
-#   # get MPI comm and rank
-#   comm = fenics.MPI.comm_world
-#   rank = comm.Get_rank()
+#   # get MPI _comm and _rank
+#   _comm = fenics.MPI.comm_world
+#   _rank = _comm.Get_rank()
 #
 #   # create pbar for setup
-#   if rank == 0:
+#   if _rank == 0:
 #       setup_pbar = tqdm(total=8, desc="setting up")
 #   else:
 #       setup_pbar = None
@@ -404,7 +404,7 @@ for step in range(1, n_steps + 1):
 #
 #   # check if mesh has already been created
 #   if mesh_file.exists():
-#       if rank == 0:
+#       if _rank == 0:
 #           setup_pbar.update(1)
 #           setup_pbar.set_description("loading mesh")
 #
@@ -412,7 +412,7 @@ for step in range(1, n_steps + 1):
 #       mesh = fenics.Mesh()
 #       mesh_xdmf.read(mesh)
 #   else:
-#       if rank == 0:
+#       if _rank == 0:
 #           setup_pbar.update(1)
 #           setup_pbar.set_description("creating mesh")
 #
@@ -432,7 +432,7 @@ for step in range(1, n_steps + 1):
 #   grad_af_function_space = fenics.VectorFunctionSpace(mesh, "CG", 1)
 #
 #
-#   if rank == 0:
+#   if _rank == 0:
 #       setup_pbar.update(1)
 #       setup_pbar.set_description("generating initial conditions")
 #
@@ -442,7 +442,7 @@ for step in range(1, n_steps + 1):
 #                             R_v=initial_vessel_radius,
 #                             Lz=Lz)
 #
-#   if rank == 0:
+#   if _rank == 0:
 #       setup_pbar.update(1)
 #       setup_pbar.set_description("interpolating c_0 and af_0")
 #
@@ -451,7 +451,7 @@ for step in range(1, n_steps + 1):
 #
 #
 #   # define source map
-#   if rank == 0:
+#   if _rank == 0:
 #       setup_pbar.update(1)
 #       setup_pbar.set_description("creating sources map")
 #
@@ -466,7 +466,7 @@ for step in range(1, n_steps + 1):
 #   # apply sources to af
 #   af_0 = fenics.interpolate(fenics.Constant(0.), function_space.sub(0).collapse())
 #
-#   if rank == 0:
+#   if _rank == 0:
 #       setup_pbar.update(1)
 #       setup_pbar.set_description("applying sources")
 #
@@ -480,7 +480,7 @@ for step in range(1, n_steps + 1):
 #   tipcells_field = fenics.Function(function_space.sub(0).collapse())
 #
 #   # init grad af
-#   if rank == 0:
+#   if _rank == 0:
 #       setup_pbar.update(1)
 #       setup_pbar.set_description("projecting grad_af")
 #
@@ -491,7 +491,7 @@ for step in range(1, n_steps + 1):
 #   )
 #
 #
-#   if rank == 0:
+#   if _rank == 0:
 #       setup_pbar.update(1)
 #       setup_pbar.set_description("defining weak form")
 #
@@ -511,13 +511,13 @@ for step in range(1, n_steps + 1):
 #                                              parameters)
 #
 #   # update
-#   if rank == 0:
+#   if _rank == 0:
 #       setup_pbar.update(1)
 #       setup_pbar.set_description("starting simulation")
 #
 #   t = 0.
 #   n_steps = 200
-#   if rank == 0:
+#   if _rank == 0:
 #       pbar = tqdm(total=n_steps, ncols=100, position=1, desc="simulation")
 #   else:
 #       pbar = None
@@ -529,7 +529,7 @@ for step in range(1, n_steps + 1):
 #   from petsc4py import PETSc
 #
 #   # create snes solver
-#   snes_solver = PETSc.SNES().create(comm)
+#   snes_solver = PETSc.SNES().create(_comm)
 #   snes_solver.setFromOptions()
 #
 #   # start iteration in time
@@ -577,5 +577,5 @@ for step in range(1, n_steps + 1):
 #       file_c.write(c_0, t)
 #       tipcells_xdmf.write(tipcells_field, t)
 #
-#       if rank == 0:
+#       if _rank == 0:
 #           pbar.update(1)

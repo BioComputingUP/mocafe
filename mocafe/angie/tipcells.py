@@ -16,21 +16,20 @@ import fenics
 import numpy as np
 import mocafe.fenut.fenut as fu
 from mocafe.angie import af_sourcing
-from mocafe.angie.base_classes import BaseCell
+from mocafe.angie.base_classes import BaseCell, ClockChecker
 import random
 import logging
 from mocafe.fenut.parameters import Parameters
 from mocafe.fenut.log import InfoCsvAdapter, DebugAdapter
-import sys
 
-# get rank
-comm = fenics.MPI.comm_world
-rank = comm.Get_rank()
+# get _rank
+_comm = fenics.MPI.comm_world
+_rank = _comm.Get_rank()
 
-# configure logger
-logger = logging.getLogger(__name__)
-info_adapter = InfoCsvAdapter(logger, {"rank": rank, "module": __name__})
-debug_adapter = DebugAdapter(logger, {"rank": rank, "module": __name__})
+# configure _logger
+_logger = logging.getLogger(__name__)
+_info_adapter = InfoCsvAdapter(_logger, {"_rank": _rank, "module": __name__})
+_debug_adapter = DebugAdapter(_logger, {"_rank": _rank, "module": __name__})
 
 
 class TipCell(BaseCell):
@@ -160,7 +159,7 @@ class TipCellsField(fenics.UserExpression):
         point_value = self.phi_min
         if self.tip_cells_positions:
             try:
-                is_inside_array = np.sum((x - self.tip_cells_positions) ** 2, axis=1) < (self.tip_cells_radiuses ** 2)
+                is_inside_array = np.sum((x - self.tip_cells_positions) ** 2, axis=1) <= (self.tip_cells_radiuses ** 2)
             except ValueError as e:
                 raise ValueError(f"Found error with the following params: \n"
                                  f"* {self.tip_cells_positions} \n"
@@ -203,7 +202,7 @@ class TipCellManager:
         self.alpha_p = parameters.get_value("alpha_p")
         self.T_p = parameters.get_value("T_p")
         self.min_tipcell_distance = parameters.get_value("min_tipcell_distance")
-        self.clock_checker = af_sourcing.ClockChecker(mesh, self.cell_radius, start_point="west")
+        self.clock_checker = ClockChecker(mesh, self.cell_radius, start_point="west")
         self.local_box = self._build_local_box(self.cell_radius)
         self.latest_t_c_f_function = None
 
@@ -295,21 +294,22 @@ class TipCellManager:
         :param current_step: current simulation step. it is used for internal purpose
         :return:
         """
-        # define root rank
+        # define root _rank
         root = 0
         # logging
-        info_adapter.info(f"Called {self.activate_tip_cell.__name__}")
+        _info_adapter.info(f"Called {self.activate_tip_cell.__name__}")
         # get local mesh points
         local_mesh_points = self.mesh.coordinates()
         # initialize local possible locations list
         local_possible_locations = []
         # Debug: setup cunters to check which test is not passed
-        debug_adapter.debug(f"Searching for new tip cells")
+        _debug_adapter.debug(f"Searching for new tip cells")
         n_points_to_check = len(local_mesh_points)
         n_points_distant = 0
         n_points_phi_09 = 0
         n_points_over_Tc = 0
         n_points_over_Gm = 0
+        n_points_distant_to_edge = 0
         for point in local_mesh_points:
             if self._point_distant_to_tip_cells(fenics.Point(point)):
                 n_points_distant += 1
@@ -319,7 +319,10 @@ class TipCellManager:
                         n_points_over_Tc += 1
                         if np.linalg.norm(grad_af(point)) > self.G_m:
                             n_points_over_Gm += 1
-                            local_possible_locations.append(point)
+                            if not self.clock_checker.clock_check(point, c, 0.,
+                                                                  lambda value, thr: value < thr):
+                                n_points_distant_to_edge += 1
+                                local_possible_locations.append(point)
         debug_msg = \
             f"Finished checking. I found: \n" \
             f"\t* {n_points_distant} / {n_points_to_check} distant to the current tip cells \n" \
@@ -328,13 +331,13 @@ class TipCellManager:
             f"\t* {n_points_over_Gm} / {n_points_to_check} which were at G > {self.G_m} \n" \
             f"\t* {n_points_over_Gm} / {n_points_to_check} new possible locations"
         for line in debug_msg.split("\n"):
-            debug_adapter.debug(line)
+            _debug_adapter.debug(line)
 
         # gather possible locations on root
-        local_possible_locations_lists = comm.gather(local_possible_locations, root)
+        local_possible_locations_lists = _comm.gather(local_possible_locations, root)
 
         # pick new cell position on root
-        if rank == root:
+        if _rank == root:
             possible_locations = [item for sublist in local_possible_locations_lists for item in sublist]
             # get one, if there is a possible location
             if possible_locations:
@@ -345,7 +348,7 @@ class TipCellManager:
             new_tip_cell_position = None
 
         # broadcast new tip cell position
-        new_tip_cell_position = comm.bcast(new_tip_cell_position, root)
+        new_tip_cell_position = _comm.bcast(new_tip_cell_position, root)
 
         # create tip cell and add it to the list
         if new_tip_cell_position is not None:
@@ -353,7 +356,7 @@ class TipCellManager:
                                    self.cell_radius,
                                    current_step)
             self._add_tip_cell(new_tip_cell)
-            debug_adapter.debug(f"Created new tip cell at point {new_tip_cell_position}")
+            _debug_adapter.debug(f"Created new tip cell at point {new_tip_cell_position}")
 
     def _remove_tip_cells(self, local_to_remove):
         """
@@ -363,24 +366,24 @@ class TipCellManager:
         :param local_to_remove: list of tip cells to remove
         :return: nothing
         """
-        # define root rank
+        # define root _rank
         root = 0
         # get global to remove list
-        local_to_remove_array = comm.gather(local_to_remove, root)
-        if rank == root:
+        local_to_remove_array = _comm.gather(local_to_remove, root)
+        if _rank == root:
             global_to_remove = fu.flatten_list_of_lists(local_to_remove_array)
             # remove duplicates
             global_to_remove = list(set(global_to_remove))
         else:
             global_to_remove = None
-        global_to_remove = comm.bcast(global_to_remove, root)
-        debug_adapter.debug(f"Created global_to_remove list. It includes:")
+        global_to_remove = _comm.bcast(global_to_remove, root)
+        _debug_adapter.debug(f"Created global_to_remove list. It includes:")
         for tip_cell in global_to_remove:
-            debug_adapter.debug(f"\t* tip_cell at position {tip_cell.get_position()}")
+            _debug_adapter.debug(f"\t* tip_cell at position {tip_cell.get_position()}")
 
         # remove cells from global and local
         for tip_cell in global_to_remove:
-            debug_adapter.debug(f"Removing tip cell at position {tip_cell.get_position()}")
+            _debug_adapter.debug(f"Removing tip cell at position {tip_cell.get_position()}")
             self.global_tip_cells_list.remove(tip_cell)
             if tip_cell in self.local_tip_cells_list:
                 self.local_tip_cells_list.remove(tip_cell)
@@ -411,7 +414,7 @@ class TipCellManager:
         :param grad_af: gradient of the angiogenic factor
         :return: nothing
         """
-        info_adapter.info(f"Called {self.revert_tip_cells.__name__}")
+        _info_adapter.info(f"Called {self.revert_tip_cells.__name__}")
         # init lists
         local_to_remove = []
         local_to_check_if_outside_global_mesh = []
@@ -429,24 +432,24 @@ class TipCellManager:
                 local_to_check_if_outside_global_mesh.append(tip_cell)
 
         """2. For local tip cells which are outside the local mesh, check if they are outside the global mesh. """
-        global_to_check_if_outside_global_mesh = comm.gather(local_to_check_if_outside_global_mesh, 0)
-        if rank == 0:
+        global_to_check_if_outside_global_mesh = _comm.gather(local_to_check_if_outside_global_mesh, 0)
+        if _rank == 0:
             global_to_check_if_outside_global_mesh = fu.flatten_list_of_lists(global_to_check_if_outside_global_mesh)
-        global_to_check_if_outside_global_mesh = comm.bcast(global_to_check_if_outside_global_mesh, 0)
+        global_to_check_if_outside_global_mesh = _comm.bcast(global_to_check_if_outside_global_mesh, 0)
         for tip_cell in global_to_check_if_outside_global_mesh:
             is_inside_local_mesh = fu.is_point_inside_mesh(self.mesh, tip_cell.get_position())
-            is_inside_local_mesh_array = comm.gather(is_inside_local_mesh, 0)
-            if rank == 0:
+            is_inside_local_mesh_array = _comm.gather(is_inside_local_mesh, 0)
+            if _rank == 0:
                 is_inside_global_mesh = any(is_inside_local_mesh_array)
             else:
                 is_inside_global_mesh = None
-            is_inside_global_mesh = comm.bcast(is_inside_global_mesh, 0)
+            is_inside_global_mesh = _comm.bcast(is_inside_global_mesh, 0)
             if not is_inside_global_mesh:
                 local_to_remove.append(tip_cell)
 
         """3. Remove local tip cells near to each other, due to Delta-Notch signalling."""
         near_tcs_to_remove = []  # init list of cells to remove
-        if rank == 0:
+        if _rank == 0:
             global_tc_list = self.global_tip_cells_list.copy()  # get a copy of the global tip cells (tc) list
             tc_groups_dict = {}  # init dictionary for tc groups
             random.shuffle(global_tc_list)  # sort the list of tc randomly to ensure casual selection
@@ -479,7 +482,7 @@ class TipCellManager:
             pass
 
         # get the global near tcs to remove
-        near_tcs_to_remove = comm.bcast(near_tcs_to_remove, 0)
+        near_tcs_to_remove = _comm.bcast(near_tcs_to_remove, 0)
         # add the tcs to remove to local_to_remove
         for tc in near_tcs_to_remove:
             if (tc in self.local_tip_cells_list) and (tc not in local_to_remove):
@@ -500,7 +503,7 @@ class TipCellManager:
         # init tip cell field
         tip_cells_field_expression = TipCellsField(self.parameters, self.mesh.geometric_dimension())
 
-        # define root rank
+        # define root _rank
         root = 0
         # initialize cells went out of mesh
         tip_cells_out_of_mesh = []
@@ -520,9 +523,9 @@ class TipCellManager:
                 T_at_point = None
 
             # gather valocity and T_at_point
-            velocity_array = comm.gather(velocity, root)
-            T_at_point_array = comm.gather(T_at_point, root)
-            if rank == root:
+            velocity_array = _comm.gather(velocity, root)
+            T_at_point_array = _comm.gather(T_at_point, root)
+            if _rank == root:
                 # remove nones
                 velocity_array_no_nones = [v for v in velocity_array
                                            if v is not None]
@@ -536,8 +539,8 @@ class TipCellManager:
                 velocity = None
                 T_at_point = None
             # bcast velocity and T_at_point
-            velocity = comm.bcast(velocity, root)
-            T_at_point = comm.bcast(T_at_point, root)
+            velocity = _comm.bcast(velocity, root)
+            T_at_point = _comm.bcast(T_at_point, root)
 
             # compute new position
             dt = self.parameters.get_value("dt")
@@ -547,17 +550,17 @@ class TipCellManager:
                 f"\t*[tip cell position] + [dt] * [velocity] = \n" \
                 f"\t*{tip_cell_position} + {dt} * {velocity} = {new_position}"
             for line in debug_msg.split("\n"):
-                debug_adapter.debug(line)
+                _debug_adapter.debug(line)
 
             # check if new position is local mesh
             is_new_position_in_local_mesh = fu.is_point_inside_mesh(self.mesh, new_position)
             # check if new position is in global mesh
-            is_new_position_in_local_mesh_array = comm.gather(is_new_position_in_local_mesh, 0)
-            if rank == 0:
+            is_new_position_in_local_mesh_array = _comm.gather(is_new_position_in_local_mesh, 0)
+            if _rank == 0:
                 is_new_position_in_global_mesh = any(is_new_position_in_local_mesh_array)
             else:
                 is_new_position_in_global_mesh = None
-            is_new_position_in_global_mesh = comm.bcast(is_new_position_in_global_mesh, 0)
+            is_new_position_in_global_mesh = _comm.bcast(is_new_position_in_global_mesh, 0)
 
             # if new position is not in global mesh
             if not is_new_position_in_global_mesh:
@@ -667,7 +670,7 @@ class TipCellManager:
         :param grad_af: gradient of the angiogenic factor field
         :return:
         """
-        info_adapter.info(f"Called {self.move_tip_cells.__name__}")
+        _info_adapter.info(f"Called {self.move_tip_cells.__name__}")
         # update tip cell positions
         tip_cells_field_expression = self._update_tip_cell_positions_and_get_field(af, grad_af)
         # apply tip_cells_field to c
