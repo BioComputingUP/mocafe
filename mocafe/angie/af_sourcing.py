@@ -24,7 +24,7 @@ from mocafe.fenut.parameters import Parameters
 from mocafe.fenut.log import InfoCsvAdapter, DebugAdapter
 
 # Get MPI communicator and _rank to be used in the module
-_comm = fenics.MPI.comm_world
+_comm = fenics.MPI._comm_world
 _rank = _comm.Get_rank()
 
 # configure _logger
@@ -37,6 +37,7 @@ class SourceCell(base_classes.BaseCell):
     """
     Class representing a source cell, i.e. a cell of the non-vascular tissue which expresses an angiogenic factor. It
     is just a wrapper of BaseCell.
+
     """
 
     def __init__(self,
@@ -47,7 +48,7 @@ class SourceCell(base_classes.BaseCell):
 
         :param point: center of the tip cell, as ndarray
         :param creation_step: the step of the simulation at which the cell is created. It is used together with the
-        position to generate an unique identifier of the cell.
+            position to generate an unique identifier of the cell.
         """
         super(SourceCell, self).__init__(point, creation_step)
 
