@@ -155,11 +155,11 @@ class ClockChecker:
             for n_points, radius in zip(n_points_for_circle, circles_radiuses):
                 angle_step = (2 * np.pi) / n_points
                 angles = np.arange(0, (2 * np.pi) + angle_step, angle_step)
-                circle_points = [radius * np.array([np.cos(angle), np.sin(angle)]) for angle in angles]
+                circle_points = [radius * np.array([np.cos(angle), np.sin(angle), 0.]) for angle in angles]
                 circle_points.sort(key=lambda x: x[0], reverse=reverse)
                 points_list.extend(circle_points)
             # append origin
-            points_list.append(np.array([0., 0.]))
+            points_list.append(np.array([0., 0., 0.]))
 
         elif self.mesh_dim == 3:
             # compute number of spheres
@@ -188,6 +188,7 @@ class ClockChecker:
         else:
             raise NotImplementedError(f"Clock checker is not implemented for meshes of dim {self.mesh_dim}. "
                                       f"Only for dim 2 and 3.")
+
         return points_list
 
     def clock_check(self, point, function: dolfinx.fem.Function, threshold, condition):
@@ -200,15 +201,22 @@ class ClockChecker:
         :param condition: lambda function representing the condition to be met
         :return: True if the condition is met; False otherwise
         """
+
         for check_point in self.check_points:
             # compute current check point
             current_check_point = point + check_point
-            # compute cells colliding with check point
-            collisions = dolfinx.geometry.compute_collisions(self.mesh_bbt, current_check_point)
-            from mpi4py import MPI
-            print(f"r{MPI.COMM_WORLD.Get_rank()}: collisions:", collisions)
-            exit(0)
-            if fu.is_point_inside_mesh(self.mesh, current_check_point):
-                if condition(function.eval(current_check_point), threshold):
+            # compute cells colliding with current check point
+            candidate_cells = dolfinx.geometry.compute_collisions(self.mesh_bbt, current_check_point)
+            colliding_cells = dolfinx.geometry.compute_colliding_cells(self.mesh, candidate_cells, current_check_point)
+            # check if empty
+            if len(colliding_cells) > 0:
+                # if not, pick one cell for evaluation (no matter which)
+                current_cell = colliding_cells[0]
+                # evaluate condition on point and cell
+                if condition(function.eval(current_check_point, current_cell), threshold):
                     return True
+
+            # if fu.is_point_inside_mesh(self.mesh, current_check_point):
+            #     if condition(function.eval(current_check_point), threshold):
+            #         return True
         return False
