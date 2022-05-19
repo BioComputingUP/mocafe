@@ -12,11 +12,17 @@ For a use example see the :ref:`Angiogenesis <Angiogenesis 2D Demo>` and the
 :ref:`Angiogenesis 3D <Angiogenesis 2D Demo>` demos.
 """
 
-import fenics
+import ufl
+import dolfinx
+from petsc4py import PETSc
 from mocafe.fenut.parameters import Parameters
 
 
-def vascular_proliferation_form(alpha_p, af, af_p, c, v):
+def vascular_proliferation_form(alpha_p,
+                                af: dolfinx.fem.Function,
+                                af_p,
+                                c: dolfinx.fem.Function or ufl.variable.Variable,
+                                v: ufl.TestFunction):
     r"""
     Returns the UFL Form for the proliferation term of the vascular tissue as defined by the paper of Travasso et al.
     (2011) :cite:`Travasso2011a`.
@@ -50,27 +56,27 @@ def vascular_proliferation_form(alpha_p, af, af_p, c, v):
     # def the max value for the proliferation function
     proliferation_function_max = alpha_p * af_p
     # take the bigger between the two of them
-    proliferation_function_hysteresis = fenics.conditional(fenics.gt(proliferation_function,
-                                                                     proliferation_function_max),
-                                                           proliferation_function_max,
-                                                           proliferation_function)
+    proliferation_function_hysteresis = ufl.conditional(ufl.gt(proliferation_function,
+                                                               proliferation_function_max),
+                                                        proliferation_function_max,
+                                                        proliferation_function)
     # multiply the proliferation term with the vessel field
     proliferation_term = proliferation_function_hysteresis * c
     # take it oly if bigger than 0
-    proliferation_term_heaviside = fenics.conditional(fenics.gt(proliferation_term, 0.),
-                                                      proliferation_term,
-                                                      fenics.Constant(0.))
+    proliferation_term_heaviside = ufl.conditional(ufl.gt(proliferation_term, 0.),
+                                                   proliferation_term,
+                                                   0.)
     # build the form
-    proliferation_term_form = proliferation_term_heaviside * v * fenics.dx
+    proliferation_term_form = proliferation_term_heaviside * v * ufl.dx
     return proliferation_term_form
 
 
-def cahn_hillard_form(c: fenics.Variable,
-                      c0: fenics.Function,
-                      mu: fenics.Function,
-                      mu0: fenics.Function,
-                      q: fenics.TestFunction,
-                      v: fenics.TestFunction,
+def cahn_hillard_form(c,
+                      c0: dolfinx.fem.Function,
+                      mu: dolfinx.fem.Function,
+                      mu0: dolfinx.fem.Function,
+                      q: dolfinx.fem.Function,
+                      v: dolfinx.fem.Function,
                       dt,
                       theta,
                       chem_potential,
@@ -118,27 +124,27 @@ def cahn_hillard_form(c: fenics.Variable,
     :return: the UFL form of the Cahn-Hillard Equation
     """
     # Define form for mu (theta method)
-    mu_mid = (fenics.Constant(1.0) - theta) * mu0 + theta * mu
+    mu_mid = (ufl.Constant(c0.function_space.mesh, PETSc.ScalarType(1.0)) - theta) * mu0 + theta * mu
 
     # chem potential derivative
-    dfdc = fenics.diff(chem_potential, c)
+    dfdc = ufl.diff(chem_potential, c)
 
     # define form
-    l0 = ((c - c0) / dt) * q * fenics.dx + M * fenics.dot(fenics.grad(mu_mid), fenics.grad(q)) * fenics.dx
-    l1 = mu * v * fenics.dx - dfdc * v * fenics.dx - lmbda * fenics.dot(fenics.grad(c), fenics.grad(v)) * fenics.dx
+    l0 = ((c - c0) / dt) * q * ufl.dx + M * ufl.dot(ufl.grad(mu_mid), ufl.grad(q)) * ufl.dx
+    l1 = mu * v * ufl.dx - dfdc * v * ufl.dx - lmbda * ufl.dot(ufl.grad(c), ufl.grad(v)) * ufl.dx
     form = l0 + l1
 
     # return form
     return form
 
 
-def angiogenesis_form(c: fenics.Function,
-                      c0: fenics.Function,
-                      mu: fenics.Function,
-                      mu0: fenics.Function,
-                      v1: fenics.TestFunction,
-                      v2: fenics.TestFunction,
-                      af: fenics.Function,
+def angiogenesis_form(c: dolfinx.fem.Function,
+                      c0: dolfinx.fem.Function,
+                      mu: dolfinx.fem.Function,
+                      mu0: dolfinx.fem.Function,
+                      v1: ufl.TestFunction,
+                      v2: ufl.TestFunction,
+                      af: dolfinx.fem.Function,
                       parameters: Parameters):
     r"""
     Returns the UFL form for the Phase-Field model for angiogenesis reported by Travasso et al. (2011)
@@ -181,7 +187,7 @@ def angiogenesis_form(c: fenics.Function,
     theta = 0.5
 
     # define chemical potential for the phase field
-    c = fenics.variable(c)
+    c = ufl.variable(c)
     chem_potential = ((c ** 4) / 4) - ((c ** 2) / 2)
 
     # define total form
@@ -194,10 +200,10 @@ def angiogenesis_form(c: fenics.Function,
     return form
 
 
-def angiogenic_factor_form(af: fenics.Function,
-                           af_0: fenics.Function,
-                           c: fenics.Function,
-                           v: fenics.TestFunction,
+def angiogenic_factor_form(af: dolfinx.fem.Function,
+                           af_0: dolfinx.fem.Function,
+                           c: dolfinx.fem.Function,
+                           v: ufl.TestFunction,
                            parameters: Parameters):
     r"""
     Returns the UFL form for the equation for the angiogenic factor reported by Travasso et al. (2011)
@@ -225,14 +231,15 @@ def angiogenic_factor_form(af: fenics.Function,
     dt = parameters.get_value("dt")
     # define reaction term
     reaction_term = alfa * af * c
-    reaction_term_non_negative = fenics.conditional(fenics.gt(reaction_term, fenics.Constant(0.0)),
-                                                    reaction_term,
-                                                    fenics.Constant(0.))
-    reaction_term_form = reaction_term_non_negative * v * fenics.dx
+    reaction_term_non_negative = ufl.conditional(
+        condition=ufl.gt(reaction_term, dolfinx.fem.Constant(af_0.function_space.mesh, PETSc.ScalarType(0.))),
+        true_value=reaction_term,
+        false_value=dolfinx.fem.Constant(af_0.function_space.mesh, PETSc.ScalarType(0.)))
+    reaction_term_form = reaction_term_non_negative * v * ufl.dx
     # define time discretization
-    time_discretization = ((af - af_0) / dt) * v * fenics.dx
+    time_discretization = ((af - af_0) / dt) * v * ufl.dx
     # define diffusion
-    diffusion = D * fenics.dot(fenics.grad(af), fenics.grad(v)) * fenics.dx
+    diffusion = D * ufl.dot(ufl.grad(af), ufl.grad(v)) * ufl.dx
     # add terms
     F = time_discretization + diffusion + reaction_term_form
 
