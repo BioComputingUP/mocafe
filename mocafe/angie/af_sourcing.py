@@ -412,8 +412,6 @@ class ConstantSourcesField:
     """
     Custom Expression representing the distribution of the angiogenic factor expressed by the source cells.
     """
-    # def __floordiv__(self, other):
-    #     pass
 
     def __init__(self, source_map: SourceMap, parameters: Parameters):
         """
@@ -444,9 +442,6 @@ class ConstantSourcesField:
             return np.where(is_inside_any_source, self.value_max, self.value_min)
         else:
             return self.value_min * np.ones(x.shape[1])
-
-    # def value_shape(self):
-    #     return ()
 
 
 # class AFExpressionFunction:
