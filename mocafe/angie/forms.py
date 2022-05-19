@@ -124,7 +124,7 @@ def cahn_hillard_form(c,
     :return: the UFL form of the Cahn-Hillard Equation
     """
     # Define form for mu (theta method)
-    mu_mid = (ufl.Constant(c0.function_space.mesh, PETSc.ScalarType(1.0)) - theta) * mu0 + theta * mu
+    mu_mid = (1.0 - theta) * mu0 + theta * mu
 
     # chem potential derivative
     dfdc = ufl.diff(chem_potential, c)

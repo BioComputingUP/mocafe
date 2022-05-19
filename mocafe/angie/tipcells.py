@@ -12,10 +12,10 @@ For a use example see the :ref:`Angiogenesis <Angiogenesis 2D Demo>` and the
 :ref:`Angiogenesis 3D <Angiogenesis 2D Demo>` demos.
 """
 
-import fenics
+import dolfinx
+from mpi4py import MPI
 import numpy as np
 import mocafe.fenut.fenut as fu
-from mocafe.angie import af_sourcing
 from mocafe.angie.base_classes import BaseCell, ClockChecker
 import random
 import logging
@@ -23,7 +23,7 @@ from mocafe.fenut.parameters import Parameters
 from mocafe.fenut.log import InfoCsvAdapter, DebugAdapter
 
 # get _rank
-_comm = fenics.MPI._comm_world
+_comm = MPI.COMM_WORLD
 _rank = _comm.Get_rank()
 
 # configure _logger
@@ -74,7 +74,7 @@ class TipCell(BaseCell):
         return self.get_distance(x) <= self.radius
 
 
-class TipCellsField(fenics.UserExpression):
+class TipCellsField:
     r"""
     Expression representing the capillary field value inside the tip cells.
 
@@ -94,8 +94,8 @@ class TipCellsField(fenics.UserExpression):
                     & = 0 \quad \textrm{if} \quad af \le 0
 
     """
-    def __floordiv__(self, other):
-        pass
+    # def __floordiv__(self, other):
+    #     pass
 
     def __init__(self, parameters: Parameters, mesh_dim: int):
         """
@@ -106,7 +106,7 @@ class TipCellsField(fenics.UserExpression):
         super(TipCellsField, self).__init__()
         self.alpha_p = parameters.get_value("alpha_p")
         self.T_p = parameters.get_value("T_p")
-        self.phi_min = parameters.get_value("phi_min")
+        # self.phi_min = parameters.get_value("phi_min")
         self.phi_max = parameters.get_value("phi_max")
         self.tip_cells_positions = []
         self.tip_cells_radiuses = np.array([])
@@ -148,40 +148,63 @@ class TipCellsField(fenics.UserExpression):
         """
         return self.phi_c_dimensionality_constant * ((self.alpha_p * T_value * radius) / velocity_norm)
 
-    def eval(self, values, x):
+    def eval(self, x):
         """
-        evaluate the field value for the given point
+        evaluate the field value for the given points
 
-        :param values: internal FEniCS parameter
-        :param x: given point
+        :param x: the given points
         :return: nothing
         """
-        point_value = self.phi_min
+        nan_array = np.empty(x.shape[1])
+        nan_array[:] = np.nan
+        # check if there are tip cells
         if self.tip_cells_positions:
-            try:
-                is_inside_array = np.sum((x - self.tip_cells_positions) ** 2, axis=1) <= (self.tip_cells_radiuses ** 2)
-            except ValueError as e:
-                raise ValueError(f"Found error with the following params: \n"
-                                 f"* {self.tip_cells_positions} \n"
-                                 f"* {x} \n"
-                                 f"* {self.tip_cells_radiuses} \n")
-            if any(is_inside_array):
-                radius = self.tip_cells_radiuses[is_inside_array]
-                velocity_norm = self.velocity_norms[is_inside_array]
-                T_value = self.T_values[is_inside_array]
-                phi_c = self.compute_phi_c(T_value, radius, velocity_norm)
-                point_value = np.max(phi_c)
-        values[0] = point_value
+            array_to_return = nan_array.copy()
+            for tc_idx, tc_pos in enumerate(self.tip_cells_positions):
+                # get points inside current tip cells
+                is_inside_current_tc = np.sum((x.T - tc_pos) ** 2, axis=1) < (self.tip_cells_radiuses[tc_idx] ** 2)
+                # compute phi_c
+                current_phi_c = self.compute_phi_c(self.T_values[tc_idx],
+                                                   self.tip_cells_radiuses[tc_idx],
+                                                   self.velocity_norms[tc_idx])
+                # if a value is inside the tip cell and is nan, set it to phi_c
+                is_inside_current_tc_and_is_nan = is_inside_current_tc & np.isnan(array_to_return)
+                array_to_return[is_inside_current_tc_and_is_nan] = current_phi_c
+                # if a value is inside the tip cell and is not nan (i.e. was already inside another tip cell), get max
+                is_inside_current_tc_and_is_not_nan = is_inside_current_tc & ~np.isnan(array_to_return)
+                array_to_return[is_inside_current_tc_and_is_not_nan] = np.maximum(
+                    array_to_return[is_inside_current_tc_and_is_not_nan],
+                    current_phi_c
+                )
 
-    def value_shape(self):
-        return ()
+            return array_to_return
+
+            # try:
+            #     is_inside_array = np.sum((x - self.tip_cells_positions) ** 2, axis=1) <= (self.tip_cells_radiuses ** 2)
+            # except ValueError:
+            #     raise ValueError(f"Found error with the following params: \n"
+            #                      f"* {self.tip_cells_positions} \n"
+            #                      f"* {x} \n"
+            #                      f"* {self.tip_cells_radiuses} \n")
+            # if any(is_inside_array):
+            #     radius = self.tip_cells_radiuses[is_inside_array]
+            #     velocity_norm = self.velocity_norms[is_inside_array]
+            #     T_value = self.T_values[is_inside_array]
+            #     phi_c = self.compute_phi_c(T_value, radius, velocity_norm)
+            #     point_value = np.max(phi_c)
+        else:
+            return nan_array
+
+    # def value_shape(self):
+    #     return ()
 
 
 class TipCellManager:
     """
     Class to manage the tip cells throughout the simulation.
     """
-    def __init__(self, mesh: fenics.Mesh,
+    def __init__(self,
+                 mesh: dolfinx.mesh.Mesh,
                  parameters: Parameters):
         """
         inits a TipCellManager
@@ -192,7 +215,7 @@ class TipCellManager:
         self.global_tip_cells_list = []
         self.local_tip_cells_list = []
         self.mesh = mesh
-        mesh.bounding_box_tree()  # done for MPI; otherwise idle (bounding box must be built on all processes)
+        self.mesh_bbt = dolfinx.geometry.BoundingBoxTree(mesh, mesh.topology.dim)
         self.parameters = parameters
         self.T_c = parameters.get_value("T_c")
         self.G_m = parameters.get_value("G_m")
@@ -214,7 +237,7 @@ class TipCellManager:
         """
         return self.global_tip_cells_list
 
-    def _point_distant_to_tip_cells(self, point: fenics.Point):
+    def _point_distant_to_tip_cells(self, point: np.ndarray):
         """
         INTERNAL USE.
         Check if the given point is distant from all the tip cells. The point is "distant" if the distance between
@@ -226,7 +249,7 @@ class TipCellManager:
         """
         if self.global_tip_cells_list:
             for tip_cell in self.global_tip_cells_list:
-                if point.distance(fenics.Point(tip_cell.get_position())) < self.min_tipcell_distance:
+                if tip_cell.get_distance(point) < self.min_tipcell_distance:
                     return False
         return True
 
@@ -299,7 +322,7 @@ class TipCellManager:
         # logging
         _info_adapter.info(f"Called {self.activate_tip_cell.__name__}")
         # get local mesh points
-        local_mesh_points = self.mesh.coordinates()
+        local_mesh_points = self.mesh.geometry.x
         # initialize local possible locations list
         local_possible_locations = []
         # Debug: setup cunters to check which test is not passed
@@ -311,18 +334,29 @@ class TipCellManager:
         n_points_over_Gm = 0
         n_points_distant_to_edge = 0
         for point in local_mesh_points:
-            if self._point_distant_to_tip_cells(fenics.Point(point)):
+            # get cell for point
+            candidate_cells = dolfinx.geometry.compute_collisions(self.mesh_bbt, point)
+            colliding_cells = dolfinx.geometry.compute_colliding_cells(self.mesh, candidate_cells, point)
+            # check if empty
+            if len(colliding_cells) > 0:
+                # if not, pick one cell for evaluation (no matter which)
+                current_cell = colliding_cells[0]
+            else:
+                raise RuntimeError(f"FATAL: Point {point} in the local mesh has no collisions with cells.")
+            # evaluate conditions
+            if self._point_distant_to_tip_cells(point):
                 n_points_distant += 1
-                if c(point) > self.phi_th:
+                if c.eval(point, current_cell) > self.phi_th:
                     n_points_phi_09 += 1
-                    if af(point) > self.T_c:
+                    if af.eval(point, current_cell) > self.T_c:
                         n_points_over_Tc += 1
-                        if np.linalg.norm(grad_af(point)) > self.G_m:
+                        if np.linalg.norm(grad_af.eval(point, current_cell)) > self.G_m:
                             n_points_over_Gm += 1
                             if not self.clock_checker.clock_check(point, c, 0.,
                                                                   lambda value, thr: value < thr):
                                 n_points_distant_to_edge += 1
                                 local_possible_locations.append(point)
+
         debug_msg = \
             f"Finished checking. I found: \n" \
             f"\t* {n_points_distant} / {n_points_to_check} distant to the current tip cells \n" \
@@ -421,11 +455,19 @@ class TipCellManager:
 
         """1. For each local tip cell, check if the activation conditions are still met."""
         for tip_cell in self.local_tip_cells_list:
+            # get tip cell position
             position = tip_cell.get_position()
-            # check if tip cell is inside local mesh
-            if fu.is_point_inside_mesh(self.mesh, position):
+            # get cell for point
+            candidate_cells = dolfinx.geometry.compute_collisions(self.mesh_bbt, position)
+            colliding_cells = dolfinx.geometry.compute_colliding_cells(self.mesh, candidate_cells, position)
+            # check if empty
+            if len(colliding_cells) > 0:
+                # if not, pick one cell for evaluation (no matter which)
+                current_cell = colliding_cells[0]
                 # check if conditions are met
-                if (af(position) < self.T_c) or (np.linalg.norm(grad_af(position)) < self.G_m):
+                af_at_point = af.eval(position, current_cell)
+                g_at_point = np.linalg.norm(grad_af.eval(position, current_cell))
+                if (af_at_point < self.T_c) or (g_at_point < self.G_m):
                     local_to_remove.append(tip_cell)
             else:
                 # else add to the list for checking if in global mesh
@@ -501,7 +543,7 @@ class TipCellManager:
         :return: the updated tip cells field
         """
         # init tip cell field
-        tip_cells_field_expression = TipCellsField(self.parameters, self.mesh.geometric_dimension())
+        tip_cells_field_expression = TipCellsField(self.parameters, self.mesh.topology.dim)
 
         # define root _rank
         root = 0
@@ -512,12 +554,20 @@ class TipCellManager:
         for tip_cell in self.global_tip_cells_list:
             # get position
             tip_cell_position = tip_cell.get_position()
-            # the process that has access to tip cell position computes the mesh_related values
-            if fu.is_point_inside_mesh(self.mesh, tip_cell_position):
+            # get cell for point
+            candidate_cells = dolfinx.geometry.compute_collisions(self.mesh_bbt, tip_cell_position)
+            colliding_cells = dolfinx.geometry.compute_colliding_cells(self.mesh, candidate_cells, tip_cell_position)
+            # check if empty
+            if len(colliding_cells) > 0:
+                # if not, pick one cell for evaluation (no matter which)
+                current_cell = colliding_cells[0]
+                # compute grad_af at point
+                grad_af_at_point = grad_af.eval(tip_cell_position, current_cell)
                 # compute velocity
-                velocity = self.compute_tip_cell_velocity(grad_af, self.parameters.get_value("chi"), tip_cell_position)
+                velocity = self.compute_tip_cell_velocity(grad_af_at_point,
+                                                          self.parameters.get_value("chi"))
                 # compute value of T in position
-                T_at_point = af(tip_cell_position)
+                T_at_point = af.eval(tip_cell_position, current_cell)
             else:
                 velocity = None
                 T_at_point = None
@@ -546,7 +596,7 @@ class TipCellManager:
             dt = self.parameters.get_value("dt")
             new_position = tip_cell_position + (dt * velocity)
             debug_msg = \
-                f"DEBUG: p{fenics.MPI._comm_world.Get_rank()}: computing new tip cell position: \n" \
+                f"DEBUG: p{_rank}: computing new tip cell position: \n" \
                 f"\t*[tip cell position] + [dt] * [velocity] = \n" \
                 f"\t*{tip_cell_position} + {dt} * {velocity} = {new_position}"
             for line in debug_msg.split("\n"):
@@ -586,69 +636,79 @@ class TipCellManager:
         # return tip cells field
         return tip_cells_field_expression
 
-    def _assign_values_to_vector(self, c, t_c_f_function):
-        """
-        Assign the positive values of ``t_c_f_function`` to the capillaries field c.
-
-        :param c: capillaries field
-        :param t_c_f_function: tip cell field function
-        :return: nothing
-        """
-        # get local values for T and source_field
-        t_c_f_loc_values = t_c_f_function.vector().get_local()
-        phi_loc_values = c.vector().get_local()
-        # set T to 1. where source_field is 1
-        where_t_c_f_greater_than_0 = t_c_f_loc_values > 0.
-        phi_loc_values[where_t_c_f_greater_than_0] = t_c_f_loc_values[where_t_c_f_greater_than_0]
-        c.vector().set_local(phi_loc_values)
-        c.vector().update_ghost_values()  # necessary, otherwise errors
+    # def _assign_values_to_vector(self, c, t_c_f_function):
+    #     """
+    #     Assign the positive values of ``t_c_f_function`` to the capillaries field c.
+    #
+    #     :param c: capillaries field
+    #     :param t_c_f_function: tip cell field function
+    #     :return: nothing
+    #     """
+    #     # get local values for T and source_field
+    #     t_c_f_loc_values = t_c_f_function.vector().get_local()
+    #     phi_loc_values = c.vector().get_local()
+    #     # set T to 1. where source_field is 1
+    #     where_t_c_f_greater_than_0 = t_c_f_loc_values > 0.
+    #     phi_loc_values[where_t_c_f_greater_than_0] = t_c_f_loc_values[where_t_c_f_greater_than_0]
+    #     c.vector().set_local(phi_loc_values)
+    #     c.vector().update_ghost_values()  # necessary, otherwise errors
 
     def _apply_tip_cells_field(self, c, tip_cells_field_expression):
         """
         INTERNAL USE.
         Applies the tip cells field in the given ``tip_cells_field_expression`` to the capillaries field ``c``.
 
-        More precisely, all the values in the tip cell field greater than zero are pasted over the the capillaries
+        More precisely, all the values in the tip cell field which are not NaN are pasted over the the capillaries
         field.
 
         :param c: the capillaries field
         :param tip_cells_field_expression: the tip cells field expression
         :return: the tip cell field as a FEniCS function
         """
-        # get Function Space of af
-        V_c = c.function_space()
+        # create a field for tip cells as a copy of c
+        t_c_function = c.copy()
+        # interpolate the given tip cells expression on the field
+        t_c_function.interpolate(tip_cells_field_expression.eval)
+        # copy non-nan values of t_c_function to c
+        t_c_f_nan = np.isnan(t_c_function.vector.array)
+        c.vector.array[~t_c_f_nan] = t_c_function.vector.array[~t_c_f_nan]
+        # set all the others to phi min
+        c.vector.array[t_c_f_nan] = self.parameters.get_value("phi_min")
 
-        # check if V_c is sub space
-        try:
-            V_c.collapse()
-            is_V_sub_space = True
-        except RuntimeError:
-            is_V_sub_space = False
-
-        if not is_V_sub_space:
-            # interpolate tip_cells_field
-            t_c_f_function = fenics.interpolate(tip_cells_field_expression, V_c)
-            # assign t_c_f_function to c where is greater than 0
-            self._assign_values_to_vector(c, t_c_f_function)
-        else:
-            # collapse subspace
-            V_collapsed = V_c.collapse()
-            # interpolate tip cells field
-            t_c_f_function = fenics.interpolate(tip_cells_field_expression, V_collapsed)
-            # create assigner to collapsed
-            assigner_to_collapsed = fenics.FunctionAssigner(V_collapsed, V_c)
-            # assign c to local variable phi_temp
-            phi_temp = fenics.Function(V_collapsed)
-            assigner_to_collapsed.assign(phi_temp, c)
-            # assign values to phi_temp
-            self._assign_values_to_vector(phi_temp, t_c_f_function)
-            # create inverse assigner
-            assigner_to_sub = fenics.FunctionAssigner(V_c, V_collapsed)
-            # assign phi_temp to c
-            assigner_to_sub.assign(c, phi_temp)
+        # # get Function Space of af
+        # V_c = c.function_space()
+        #
+        # # check if V_c is sub space
+        # try:
+        #     V_c.collapse()
+        #     is_V_sub_space = True
+        # except RuntimeError:
+        #     is_V_sub_space = False
+        #
+        # if not is_V_sub_space:
+        #     # interpolate tip_cells_field
+        #     t_c_f_function = fenics.interpolate(tip_cells_field_expression, V_c)
+        #     # assign t_c_f_function to c where is greater than 0
+        #     self._assign_values_to_vector(c, t_c_f_function)
+        # else:
+        #     # collapse subspace
+        #     V_collapsed = V_c.collapse()
+        #     # interpolate tip cells field
+        #     t_c_f_function = fenics.interpolate(tip_cells_field_expression, V_collapsed)
+        #     # create assigner to collapsed
+        #     assigner_to_collapsed = fenics.FunctionAssigner(V_collapsed, V_c)
+        #     # assign c to local variable phi_temp
+        #     phi_temp = fenics.Function(V_collapsed)
+        #     assigner_to_collapsed.assign(phi_temp, c)
+        #     # assign values to phi_temp
+        #     self._assign_values_to_vector(phi_temp, t_c_f_function)
+        #     # create inverse assigner
+        #     assigner_to_sub = fenics.FunctionAssigner(V_c, V_collapsed)
+        #     # assign phi_temp to c
+        #     assigner_to_sub.assign(c, phi_temp)
 
         # return tip cells field function for monitoring
-        return t_c_f_function
+        return t_c_function
 
     def move_tip_cells(self, c, af, grad_af):
         r"""
@@ -676,7 +736,7 @@ class TipCellManager:
         # apply tip_cells_field to c
         self.latest_t_c_f_function = self._apply_tip_cells_field(c, tip_cells_field_expression)
 
-    def compute_tip_cell_velocity(self, grad_af, chi, tip_cell_position):
+    def compute_tip_cell_velocity(self, grad_af_at_point, chi):
         r"""
         Compute the tip cell velocity given its position, the gradient of the angiogenic factor, and the constant chi.
 
@@ -688,17 +748,16 @@ class TipCellManager:
 
         Where :math:`G` is the norm of the angiogenic factor gradient (:math:`\nabla af`).
 
-        :param grad_af:
-        :param chi:
-        :param tip_cell_position:
-        :return:
+        :param grad_af_at_point: the gradient at the tip cell position
+        :param chi: the chemotactic constant
+        :return: the tip cell velocity
         """
-        grad_T_at_point = grad_af(tip_cell_position)
-        G_at_point = np.linalg.norm(grad_T_at_point)
+        # eval G
+        G_at_point = np.linalg.norm(grad_af_at_point)
         if G_at_point < self.G_M:
-            velocity = chi * grad_T_at_point
+            velocity = chi * grad_af_at_point
         else:
-            velocity = chi * grad_T_at_point * (self.G_M / G_at_point)
+            velocity = chi * grad_af_at_point * (self.G_M / G_at_point)
 
         return velocity
 
