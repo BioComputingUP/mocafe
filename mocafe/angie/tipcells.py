@@ -673,7 +673,7 @@ class TipCellManager:
         t_c_f_nan = np.isnan(t_c_function.vector.array)
         c.vector.array[~t_c_f_nan] = t_c_function.vector.array[~t_c_f_nan]
         # set all the others to phi min
-        c.vector.array[t_c_f_nan] = self.parameters.get_value("phi_min")
+        t_c_function.vector.array[t_c_f_nan] = self.parameters.get_value("phi_min")
 
         # # get Function Space of af
         # V_c = c.function_space()
