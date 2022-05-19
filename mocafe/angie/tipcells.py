@@ -670,10 +670,10 @@ class TipCellManager:
         # interpolate the given tip cells expression on the field
         t_c_function.interpolate(tip_cells_field_expression.eval)
         # copy non-nan values of t_c_function to c
-        t_c_f_nan = np.isnan(t_c_function.vector.array)
-        c.vector.array[~t_c_f_nan] = t_c_function.vector.array[~t_c_f_nan]
+        t_c_f_nan = np.isnan(t_c_function.x.array)
+        c.x.array[~t_c_f_nan] = t_c_function.x.array[~t_c_f_nan]
         # set all the others to phi min
-        t_c_function.vector.array[t_c_f_nan] = self.parameters.get_value("phi_min")
+        t_c_function.x.array[t_c_f_nan] = self.parameters.get_value("phi_min")
 
         # # get Function Space of af
         # V_c = c.function_space()

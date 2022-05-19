@@ -351,8 +351,8 @@ class SourcesManager:
         s_f_exp = ConstantSourcesField(self.source_map, self.parameters)
         s_f.interpolate(s_f_exp.eval)
         # overwrite af only where s_f is not nan
-        s_f_not_nan = ~np.isnan(np.array(s_f.vector.array))
-        af.vector.array[s_f_not_nan] = s_f.vector.array[s_f_not_nan]
+        s_f_not_nan = ~np.isnan(np.array(s_f.x.array))
+        af.x.array[s_f_not_nan] = s_f.x.array[s_f_not_nan]
 
         # # get Function Space of af
         # V_af = af.function_space
