@@ -424,7 +424,6 @@ class ConstantSourcesField:
         super(ConstantSourcesField, self).__init__()
         self.sources_positions = [source_cell.get_position() for source_cell in source_map.get_local_source_cells()]
         self.sources_positions_not_empty = len(self.sources_positions) != 0
-        self.value_min = np.nan  # old: parameters.get_value("T_min")
         self.value_max = parameters.get_value("T_s")
         self.radius = parameters.get_value("R_c")
 
@@ -433,15 +432,19 @@ class ConstantSourcesField:
         if self.sources_positions_not_empty:
             # create a list to store booleans
             is_inside_any_source = None
+            # for each source check if there are points inside
             for source_position in self.sources_positions:
                 is_inside_current_source = np.sum((x.T - source_position) ** 2, axis=1) < (self.radius ** 2)
                 if is_inside_any_source is None:  # True at first iteration
                     is_inside_any_source = is_inside_current_source
                 else:
                     is_inside_any_source = is_inside_any_source | is_inside_current_source
-            return np.where(is_inside_any_source, self.value_max, self.value_min)
+            # return max value if the point is inside, nan everywhere else
+            return np.where(is_inside_any_source, self.value_max, np.nan)
         else:
-            return self.value_min * np.ones(x.shape[1])
+            nan_array = np.empty(x.shape[1])
+            nan_array[:] = np.nan
+            return nan_array
 
 
 # class AFExpressionFunction:
