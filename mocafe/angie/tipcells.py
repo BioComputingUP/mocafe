@@ -759,6 +759,10 @@ class TipCellManager:
         else:
             velocity = chi * grad_af_at_point * (self.G_M / G_at_point)
 
+        # add element if necessary
+        if (self.mesh.topology.dim == 2) and (len(velocity) == 2):
+            velocity = np.array([velocity[0], velocity[1], 0.])
+
         return velocity
 
     def get_latest_tip_cell_function(self):

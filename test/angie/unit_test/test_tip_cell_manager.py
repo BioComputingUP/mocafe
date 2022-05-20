@@ -195,3 +195,36 @@ def test_delta_notch_3_cells_revert(parameters, T0, gradT0, mesh):
         f"Tip Cell in position {tipcell1_pos} should be in the list"
     assert tipcell3 in tip_cell_manager.get_global_tip_cells_list(), \
         f"Tip Cell in position {tipcell3_pos} should be in the list"
+
+
+def test_move_tip_cells(parameters, phi0, T0, gradT0, mesh):
+    # create tip cell manager
+    tip_cells_manager = TipCellManager(mesh, parameters)
+    # activate tip cell
+    tip_cells_manager.activate_tip_cell(phi0, T0, gradT0, 0)
+    # move
+    tip_cells_manager.move_tip_cells(phi0, T0, gradT0)
+    # get last tip cells field
+    latest_tcf = tip_cells_manager.get_latest_tip_cell_function()
+
+    # check if any is nan
+    is_any_local_value_nan = np.any(np.isnan(latest_tcf.x.array))
+    # check if any global nan
+    is_any_local_value_nan = MPI.COMM_WORLD.gather(is_any_local_value_nan, 0)
+    if MPI.COMM_WORLD.Get_rank() == 0:
+        is_any_global_value_nan = np.all(is_any_local_value_nan)
+    else:
+        is_any_global_value_nan = None
+    is_any_global_value_nan = MPI.COMM_WORLD.bcast(is_any_global_value_nan, 0)
+    assert not is_any_global_value_nan, "All value should be not nan"
+
+    # check if there are positive points
+    is_any_local_value_positive = np.any(latest_tcf.x.array > 0)
+    # check if any global is positive
+    is_any_local_value_positive = MPI.COMM_WORLD.gather(is_any_local_value_positive, 0)
+    if MPI.COMM_WORLD.Get_rank() == 0:
+        is_any_global_value_positive = np.any(is_any_local_value_positive)
+    else:
+        is_any_global_value_positive = None
+    is_any_global_value_positive = MPI.COMM_WORLD.bcast(is_any_global_value_positive, 0)
+    assert is_any_global_value_positive, "At least some values should be positive"
