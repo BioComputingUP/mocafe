@@ -26,6 +26,8 @@ class BaseCell:
         """
         if not isinstance(point, np.ndarray):
             raise TypeError(r"A cell position can be only an array of type np.ndarray. Please change array type")
+        if len(point) != 3:
+            raise ValueError(f"In FEniCSx each point must be of length 3, even in 2D")
 
         self.initial_position = point
         self.creation_step = creation_step

@@ -1,8 +1,11 @@
-import fenics
-import sys
+import dolfinx
+import ufl
 import numpy as np
 import pytest
 from mocafe.angie.tipcells import TipCellManager, TipCell
+from mocafe.math import project
+from mpi4py import MPI
+
 
 
 # @pytest.fixture
@@ -16,48 +19,43 @@ from mocafe.angie.tipcells import TipCellManager, TipCell
 #     return file_list
 
 
-@pytest.fixture
-def mesh():
-    # define mesh
-    nx = ny = 300
-    mesh = fenics.RectangleMesh(fenics.Point(0., 0.),
-                                fenics.Point(nx, ny),
-                                nx, ny)
-    return mesh
+# @pytest.fixture
+# def mesh():
+#     # define mesh
+#     nx = ny = 300
+#     mesh = fenics.RectangleMesh(fenics.Point(0., 0.),
+#                                 fenics.Point(nx, ny),
+#                                 nx, ny)
+#     return mesh
 
 
 @pytest.fixture
 def T0(parameters, mesh):
     T_c = parameters.get_value("T_c")
     G_M = parameters.get_value("G_M")
-    V = fenics.FunctionSpace(mesh, "CG", 1)
-    c = T_c + 0.01
-    m = 4 * (G_M + 0.01)
-    T_exp = fenics.Expression("c + (m * x[0])",
-                              degree=1,
-                              c=c,
-                              m=m)
-    T0 = fenics.interpolate(T_exp, V)
+    V = dolfinx.fem.FunctionSpace(mesh, ("CG", 1))
+    c = T_c + 0.01  # a bit more than the threshold
+    m = 4 * (G_M + 0.01)  # more than the threshold
+    T0 = dolfinx.fem.Function(V)
+    T0.interpolate(lambda x: c + (m * x[0]))
     return T0
 
 
 @pytest.fixture
 def phi0(mesh):
-    V = fenics.FunctionSpace(mesh, "CG", 1)
+    V = dolfinx.fem.FunctionSpace(mesh, ("CG", 1))
     phi_min = -1
     phi_max = 1
-    phi_exp = fenics.Expression("x[0] < 30 ? phi_max : phi_min",
-                                degree=1,
-                                phi_max=phi_max,
-                                phi_min=phi_min)
-    phi0 = fenics.interpolate(phi_exp, V)
+    phi0 = dolfinx.fem.Function(V)
+    phi0.interpolate(lambda x: np.where(x[0] < 30, phi_max, phi_min))
     return phi0
 
 
 @pytest.fixture
 def gradT0(mesh, T0):
-    V_vec = fenics.VectorFunctionSpace(mesh, "CG", 1)
-    gradT0 = fenics.project(fenics.grad(T0), V_vec, mesh=mesh)
+    V_vec = dolfinx.fem.VectorFunctionSpace(mesh, ("CG", 1))
+    gradT0 = dolfinx.fem.Function(V_vec)
+    project(ufl.grad(T0), gradT0, [])
     return gradT0
 
 
@@ -72,11 +70,11 @@ def test_activate_tip_cell(T0, phi0, gradT0, mesh, parameters):
     # check if ok
     if len(tip_cell_manager.get_global_tip_cells_list()) == 1:
         if tip_cell_manager.get_global_tip_cells_list()[0].get_position()[0] < 30:
-            print(f"p{fenics.MPI.comm_world.Get_rank()}: "
+            print(f"p{MPI.COMM_WORLD.Get_rank()}: "
                   f"Activated tip cell in {tip_cell_manager.get_global_tip_cells_list()[0].get_position()}")
             test_result = True
     else:
-        print(f"p{fenics.MPI.comm_world.Get_rank()}: "
+        print(f"p{MPI.COMM_WORLD.Get_rank()}: "
               f" n activated tip cells = {len(tip_cell_manager.get_global_tip_cells_list())}")
         test_result = False
 
@@ -94,7 +92,7 @@ def test_activate_3_tip_cells(parameters, T0, phi0, gradT0, mesh):
     tip_cell_list_len_is_3 = len(tip_cell_list) == 3
     are_cells_distant = True
     for index, tip_cell in enumerate(tip_cell_list):
-        print(f"p{fenics.MPI.comm_world.Get_rank()}: activated tip cells in pos:"
+        print(f"p{MPI.COMM_WORLD.Get_rank()}: activated tip cells in pos:"
               f"    {tip_cell.get_position()}")
         other_indexes = [i for i in range(len(tip_cell_list))]
         other_indexes.remove(index)
@@ -112,28 +110,27 @@ def test_revert_tip_cells(phi0, T0, gradT0, mesh, parameters):
 
     # set test result
     ref_len = [1, 2, 0]
-    actual_len = []
     for i in range(3):
+        # change T0 at step 2
         if i == 2:
-            T0.assign(fenics.Constant(0.))
+            T0.interpolate(lambda x: np.zeros(x.shape[1]))
+        # activate
         tip_cell_manager.activate_tip_cell(phi0, T0, gradT0, i)
+        # revert
         tip_cell_manager.revert_tip_cells(T0, gradT0)
-        n_tip_cells = len(tip_cell_manager.get_global_tip_cells_list())
-        print(f"p{fenics.MPI.comm_world.Get_rank()}: step {i}: "
-              f"len = {len(tip_cell_manager.get_global_tip_cells_list())}")
-        actual_len.append(n_tip_cells)
-    assert np.allclose(ref_len, actual_len), \
-        "There should be 1 tip cell at step 0, 2 tip cells at step 1, and 0 at step 2"
+        # check if the number of tip cells is correct
+        assert len(tip_cell_manager.get_global_tip_cells_list()) == ref_len[i], \
+            f"The global tip cell list should be {ref_len[i]}"
 
 
-def test_delta_notch_reversion(T0, gradT0, mesh, parameters):
+def test_delta_notch_revert(T0, gradT0, mesh, parameters):
     # create tip cell manager
     tip_cell_manager = TipCellManager(mesh, parameters)
 
     # create 2 tip cells close to each other
-    tipcell1_pos = np.array([100., 100.])
+    tipcell1_pos = np.array([100., 100., 0.])
     tipcell1 = TipCell(tipcell1_pos, 4., 0)
-    tipcell2_pos = np.array([104., 100.])
+    tipcell2_pos = np.array([104., 100., 0])
     tipcell2 = TipCell(tipcell2_pos, 4., 0)
 
     # check if tip cells have been created correcty
@@ -148,8 +145,8 @@ def test_delta_notch_reversion(T0, gradT0, mesh, parameters):
     assert len(tip_cell_manager.get_global_tip_cells_list()) == 2
 
     # modify T0 and gradT0 to ensure the removal is not due to T0 or gradT0 level
-    T0.assign(fenics.Constant(1.))
-    gradT0.assign(fenics.Expression(("1.", "1"), degree=1))
+    T0.interpolate(lambda x: np.ones(x.shape[1]))
+    gradT0.interpolate(lambda x: [np.ones(x.shape[1]), np.ones(x.shape[1])])
 
     # remove tip cells
     tip_cell_manager.revert_tip_cells(T0, gradT0)
@@ -158,7 +155,7 @@ def test_delta_notch_reversion(T0, gradT0, mesh, parameters):
         "One Tip Cell should be removed due to Delta-Notch signaling."
 
 
-def test_delta_notch_3_cells(parameters, T0, gradT0, mesh):
+def test_delta_notch_3_cells_revert(parameters, T0, gradT0, mesh):
     # create tip cell manager
     tip_cell_manager = TipCellManager(mesh, parameters)
 
@@ -166,11 +163,11 @@ def test_delta_notch_3_cells(parameters, T0, gradT0, mesh):
     min_distance = parameters.get_value("min_tipcell_distance")
 
     # create 2 tip cells close to each other
-    tipcell1_pos = np.array([100., 100.])
+    tipcell1_pos = np.array([100., 100., 0.])
     tipcell1 = TipCell(tipcell1_pos, 4., 0)
-    tipcell2_pos = tipcell1_pos + np.array([min_distance / 1.5, 0.])  # <-- only this should be removed
+    tipcell2_pos = tipcell1_pos + np.array([min_distance / 1.5, 0., 0.])  # <-- only this should be removed
     tipcell2 = TipCell(tipcell2_pos, 4., 0)
-    tipcell3_pos = tipcell2_pos + np.array([min_distance / 1.5, 0.])
+    tipcell3_pos = tipcell2_pos + np.array([min_distance / 1.5, 0., 0.])
     tipcell3 = TipCell(tipcell3_pos, 4., 0)
 
     # check if tip cells have been created correctly
@@ -187,8 +184,8 @@ def test_delta_notch_3_cells(parameters, T0, gradT0, mesh):
     assert len(tip_cell_manager.get_global_tip_cells_list()) == 3
 
     # modify T0 and gradT0 to ensure the removal is not due to T0 or gradT0 level
-    T0.assign(fenics.Constant(1.))
-    gradT0.assign(fenics.Expression(("1.", "1"), degree=1))
+    T0.interpolate(lambda x: np.ones(x.shape[1]))
+    gradT0.interpolate(lambda x: [np.ones(x.shape[1]), np.ones(x.shape[1])])
 
     # remove tip cells
     tip_cell_manager.revert_tip_cells(T0, gradT0)

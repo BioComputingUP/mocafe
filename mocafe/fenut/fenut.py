@@ -121,7 +121,7 @@ def build_local_box(local_mesh: dolfinx.mesh.Mesh,
     local_coordinates = local_mesh.geometry.x
     max_values = np.max(local_coordinates, axis=0) + border_width
     min_values = np.min(local_coordinates, axis=0) - border_width
-    if len(max_values) == 2:
+    if local_mesh.topology.dim == 2:
         local_box = {
             "dim": 2,
             "x_min": min_values[0],
@@ -129,7 +129,7 @@ def build_local_box(local_mesh: dolfinx.mesh.Mesh,
             "y_min": min_values[1],
             "y_max": max_values[1]
         }
-    elif len(max_values) == 3:
+    elif local_mesh.topology.dim == 3:
         local_box = {
             "dim": 3,
             "x_min": min_values[0],
