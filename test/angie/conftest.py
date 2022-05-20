@@ -43,8 +43,9 @@ def setup_function_space(mesh):
 
 
 @pytest.fixture
-def phi_vessel_total(mesh):
-    phi = dolfinx.fem.Constant(mesh, 1.)
+def phi_vessel_total(setup_function_space):
+    phi = dolfinx.fem.Function(setup_function_space)
+    phi.interpolate(lambda x: np.ones(x.shape[1]))
     return phi
 
 

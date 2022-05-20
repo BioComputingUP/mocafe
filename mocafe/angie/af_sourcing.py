@@ -307,7 +307,7 @@ class SourcesManager:
             if clock_check_test_result:
                 to_remove.append(source_cell)
                 _debug_adapter.debug(f"Appended source cell {source_cell.__hash__()} at position "
-                                    f"{source_cell_position} to the 'to_remove' list")
+                                     f"{source_cell_position} to the 'to_remove' list")
 
         self._remove_sources(to_remove)
 
