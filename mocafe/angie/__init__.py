@@ -19,11 +19,11 @@ from pathlib import Path
 import random
 import pickle
 
-comm = fenics.MPI.comm_world
-rank = comm.Get_rank()
+_comm = fenics.MPI.comm_world
+_rank = _comm.Get_rank()
 
 # default random state file
-default_randomstate_file = Path(f"p{rank}.randomstate")
+_default_randomstate_file = Path(f"p{_rank}.randomstate")
 
 
 def _setup_random_state(equal_for_all_p: bool = True,
@@ -77,7 +77,7 @@ def _set_equal_randomstate_for_all_p():
     else:
         p0_randomstate = None
     # broadcast randomstate to all processes
-    p0_randomstate = comm.bcast(p0_randomstate, 0)
+    p0_randomstate = _comm.bcast(p0_randomstate, 0)
     # set p0_randomstate to all procesess
     random.setstate(p0_randomstate)
 
@@ -101,7 +101,7 @@ def _load_random_state(folder_name: str or Path,
     if equal_for_all_p:
         randomstate_file_path = folder_path / Path("p0.randomstate")
     else:
-        randomstate_file_path = folder_path / default_randomstate_file
+        randomstate_file_path = folder_path / _default_randomstate_file
     # use the file to set the randomstate
     with open(str(randomstate_file_path), "rb") as f:
         random.setstate(pickle.load(f))

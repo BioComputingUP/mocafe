@@ -47,7 +47,7 @@ Please refer to the [demo gallery](https://biocomputingup.github.io/mocafe/build
 | Model                                                                                                                                                                           | 2D                                                     | 3D                                                     |
 |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------|--------------------------------------------------------|
 | A **prostate cancer model** first proposed by Lorenzo et al. in 2016 [^Lorenzo2016], both in 2D and in 3D;                                                                      | ![2D_prostate_cancer](https://i.imgur.com/zlLAeso.png) | ![3D_prostate_cancer](https://i.imgur.com/VOQ8c7u.png) |
-| An **angiogenesis model** first proposed by Travasso et al. in 2011 [^Travasso2011], both in 2D and in 3D (3D adaptation first reported by Guerra et al. in 2012 [^Guerra2012]) | ![2D_angiogenesis](https://i.imgur.com/Mk03qg0.png)    | ![3D_angiogenesis](https://i.imgur.com/6R1mJ4d.png)    |
+| An **angiogenesis model** first proposed by Travasso et al. in 2011 [^Travasso2011], both in 2D and in 3D (3D adaptation first reported by Guerra et al. in 2012 [^Guerra2012]) | ![2D_angiogenesis](https://i.imgur.com/JqZ6Lr3.png)    | ![3D_angiogenesis](https://i.imgur.com/6R1mJ4d.png)    |
  
 ## Release History  
   
