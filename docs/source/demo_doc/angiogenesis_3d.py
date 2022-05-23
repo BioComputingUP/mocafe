@@ -81,7 +81,7 @@ import mocafe.fenut.parameters as mpar
 from mocafe.fenut.solvers import SNESProblem
 
 # get MPI _comm and _rank
-comm = fenics.MPI._comm_world
+comm = fenics.MPI.comm_world
 rank = comm.Get_rank()
 
 # create pbar for setup
@@ -367,7 +367,7 @@ for step in range(1, n_steps + 1):
 #   from mocafe.fenut.solvers import SNESProblem
 #
 #   # get MPI _comm and _rank
-#   _comm = fenics.MPI._comm_world
+#   _comm = fenics.MPI.comm_world
 #   _rank = _comm.Get_rank()
 #
 #   # create pbar for setup

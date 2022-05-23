@@ -33,21 +33,3 @@ Submodules
    tipcells/index.rst
 
 
-Package Contents
-----------------
-
-.. py:data:: comm
-   
-
-   
-
-.. py:data:: rank
-   
-
-   
-
-.. py:data:: default_randomstate_file
-   
-
-   
-

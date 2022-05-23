@@ -90,7 +90,7 @@ however, using FEniCS the script is just slightly different from the one we've p
     from mocafe.fenut.parameters import from_dict
     import mocafe.litforms.prostate_cancer as pc_model
 
-    comm = fenics.MPI._comm_world
+    comm = fenics.MPI.comm_world
     rank = comm.Get_rank()
 
     file_folder = Path(__file__).parent.resolve()
@@ -329,7 +329,7 @@ Full code
   from mocafe.fenut.parameters import from_dict
   import mocafe.litforms.prostate_cancer as pc_model
 
-  _comm = fenics.MPI._comm_world
+  _comm = fenics.MPI.comm_world
   _rank = _comm.Get_rank()
 
   file_folder = Path(__file__).parent.resolve()

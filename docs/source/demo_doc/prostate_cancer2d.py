@@ -96,7 +96,7 @@ fenics.set_log_level(fenics.LogLevel.ERROR)
 # %%
 # Then, we define the MPI _rank for each process. Generally speaking, this is necessary for running the simulation in
 # parallel using ``mpirun``, even though in this simulation is not largely used, as we are going to see.
-comm = fenics.MPI._comm_world
+comm = fenics.MPI.comm_world
 rank = comm.Get_rank()
 
 # %%
@@ -477,7 +477,7 @@ for current_step in range(n_steps):
 #
 #   # initial setup
 #   fenics.set_log_level(fenics.LogLevel.ERROR)
-#   _comm = fenics.MPI._comm_world
+#   _comm = fenics.MPI.comm_world
 #   _rank = _comm.Get_rank()
 #
 #   file_folder = Path(__file__).parent.resolve()

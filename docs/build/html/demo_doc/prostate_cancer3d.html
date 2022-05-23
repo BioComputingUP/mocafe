@@ -177,7 +177,7 @@ however, using FEniCS the script is just slightly different from the one we’ve
 <span class="kn">from</span> <span class="nn">mocafe.fenut.parameters</span> <span class="kn">import</span> <span class="n">from_dict</span>
 <span class="kn">import</span> <span class="nn">mocafe.litforms.prostate_cancer</span> <span class="k">as</span> <span class="nn">pc_model</span>
 
-<span class="n">comm</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">MPI</span><span class="o">.</span><span class="n">_comm_world</span>
+<span class="n">comm</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">MPI</span><span class="o">.</span><span class="n">comm_world</span>
 <span class="n">rank</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
 
 <span class="n">file_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
@@ -367,7 +367,7 @@ expernal softwares as ParaView. If you don’t now how to do it, you can check o
 <span class="kn">from</span> <span class="nn">mocafe.fenut.parameters</span> <span class="kn">import</span> <span class="n">from_dict</span>
 <span class="kn">import</span> <span class="nn">mocafe.litforms.prostate_cancer</span> <span class="k">as</span> <span class="nn">pc_model</span>
 
-<span class="n">_comm</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">MPI</span><span class="o">.</span><span class="n">_comm_world</span>
+<span class="n">_comm</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">MPI</span><span class="o">.</span><span class="n">comm_world</span>
 <span class="n">_rank</span> <span class="o">=</span> <span class="n">_comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
 
 <span class="n">file_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>

@@ -134,7 +134,7 @@ parallel using ``mpirun``, even though in this simulation is not largely used, a
 
 .. code-block:: default
 
-    comm = fenics.MPI._comm_world
+    comm = fenics.MPI.comm_world
     rank = comm.Get_rank()
 
 
@@ -645,7 +645,7 @@ Full code
 
   # initial setup
   fenics.set_log_level(fenics.LogLevel.ERROR)
-  _comm = fenics.MPI._comm_world
+  _comm = fenics.MPI.comm_world
   _rank = _comm.Get_rank()
 
   file_folder = Path(__file__).parent.resolve()

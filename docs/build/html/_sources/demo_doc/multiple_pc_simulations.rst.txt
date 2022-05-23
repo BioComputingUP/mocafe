@@ -319,7 +319,7 @@ Full code
 
     # initial setup
     fenics.set_log_level(fenics.LogLevel.ERROR)
-    comm = fenics.MPI._comm_world
+    comm = fenics.MPI.comm_world
     rank = comm.Get_rank()
 
     # get this file folder

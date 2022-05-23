@@ -159,7 +159,7 @@ import mocafe.fenut.parameters as mpar
 
 # %%
 # Then, as seen in previous examples, we initialize the MPI _comm, the process root, the log level and the data folder
-comm = fenics.MPI._comm_world
+comm = fenics.MPI.comm_world
 rank = comm.Get_rank()
 # only process 0 logs
 fenics.parameters["std_out_all_processes"] = False
@@ -546,7 +546,7 @@ for step in range(1, n_steps + 1):
 #   import mocafe.fenut.parameters as mpar
 #
 #   # MPI
-#   _comm = fenics.MPI._comm_world
+#   _comm = fenics.MPI.comm_world
 #   _rank = _comm.Get_rank()
 #   # only process 0 logs
 #   fenics.parameters["std_out_all_processes"] = False
