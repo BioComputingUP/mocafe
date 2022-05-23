@@ -19,7 +19,7 @@ from pathlib import Path
 import random
 import pickle
 
-comm = fenics.MPI._comm_world
+comm = fenics.MPI.comm_world
 rank = comm.Get_rank()
 
 # default random state file

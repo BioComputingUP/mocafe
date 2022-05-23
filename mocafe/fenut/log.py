@@ -6,7 +6,7 @@ import fenics
 log_header = ["timestamp", "mpi_p", "module", "activity"]
 
 # get _rank
-comm = fenics.MPI._comm_world
+comm = fenics.MPI.comm_world
 rank = comm.Get_rank()
 
 # define default log folder tree

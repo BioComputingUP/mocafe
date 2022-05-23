@@ -6,7 +6,7 @@ from mocafe.fenut.log import \
     default_debug_log_folder, \
     default_debug_log_file, default_info_log_folder, default_info_log_file
 
-comm = fenics.MPI._comm_world
+comm = fenics.MPI.comm_world
 rank = comm.Get_rank()
 
 test_logger = logging.getLogger("test")

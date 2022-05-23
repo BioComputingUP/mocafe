@@ -72,11 +72,11 @@ def test_activate_tip_cell(T0, phi0, gradT0, mesh, parameters):
     # check if ok
     if len(tip_cell_manager.get_global_tip_cells_list()) == 1:
         if tip_cell_manager.get_global_tip_cells_list()[0].get_position()[0] < 30:
-            print(f"p{fenics.MPI._comm_world.Get_rank()}: "
+            print(f"p{fenics.MPI.comm_world.Get_rank()}: "
                   f"Activated tip cell in {tip_cell_manager.get_global_tip_cells_list()[0].get_position()}")
             test_result = True
     else:
-        print(f"p{fenics.MPI._comm_world.Get_rank()}: "
+        print(f"p{fenics.MPI.comm_world.Get_rank()}: "
               f" n activated tip cells = {len(tip_cell_manager.get_global_tip_cells_list())}")
         test_result = False
 
@@ -94,7 +94,7 @@ def test_activate_3_tip_cells(parameters, T0, phi0, gradT0, mesh):
     tip_cell_list_len_is_3 = len(tip_cell_list) == 3
     are_cells_distant = True
     for index, tip_cell in enumerate(tip_cell_list):
-        print(f"p{fenics.MPI._comm_world.Get_rank()}: activated tip cells in pos:"
+        print(f"p{fenics.MPI.comm_world.Get_rank()}: activated tip cells in pos:"
               f"    {tip_cell.get_position()}")
         other_indexes = [i for i in range(len(tip_cell_list))]
         other_indexes.remove(index)
@@ -119,7 +119,7 @@ def test_revert_tip_cells(phi0, T0, gradT0, mesh, parameters):
         tip_cell_manager.activate_tip_cell(phi0, T0, gradT0, i)
         tip_cell_manager.revert_tip_cells(T0, gradT0)
         n_tip_cells = len(tip_cell_manager.get_global_tip_cells_list())
-        print(f"p{fenics.MPI._comm_world.Get_rank()}: step {i}: "
+        print(f"p{fenics.MPI.comm_world.Get_rank()}: step {i}: "
               f"len = {len(tip_cell_manager.get_global_tip_cells_list())}")
         actual_len.append(n_tip_cells)
     assert np.allclose(ref_len, actual_len), \
