@@ -319,7 +319,7 @@ class TipCellManager:
                         n_points_over_Tc += 1
                         if np.linalg.norm(grad_af(point)) > self.G_m:
                             n_points_over_Gm += 1
-                            if not self.clock_checker.clock_check(point, c, 0.,
+                            if not self.clock_checker.clock_check(point, c, -self.phi_th,
                                                                   lambda value, thr: value < thr):
                                 n_points_distant_to_edge += 1
                                 local_possible_locations.append(point)
