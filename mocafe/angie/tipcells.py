@@ -352,7 +352,7 @@ class TipCellManager:
                         n_points_over_Tc += 1
                         if np.linalg.norm(grad_af.eval(point, current_cell)) > self.G_m:
                             n_points_over_Gm += 1
-                            if not self.clock_checker.clock_check(point, c, 0.,
+                            if not self.clock_checker.clock_check(point, c, -self.phi_th,
                                                                   lambda value, thr: value < thr):
                                 n_points_distant_to_edge += 1
                                 local_possible_locations.append(point)
@@ -363,9 +363,9 @@ class TipCellManager:
             f"\t* {n_points_phi_09} / {n_points_to_check} which were at phi > {self.phi_th} \n" \
             f"\t* {n_points_over_Tc} / {n_points_to_check} which were at T > {self.T_c} \n" \
             f"\t* {n_points_over_Gm} / {n_points_to_check} which were at G > {self.G_m} \n" \
-            f"\t* {n_points_over_Gm} / {n_points_to_check} new possible locations"
-        for line in debug_msg.split("\n"):
-            _debug_adapter.debug(line)
+            f"\t* {n_points_distant_to_edge} / {n_points_to_check} which are distant to capillaries edge\n" \
+            f"\t* {len(local_possible_locations)} / {n_points_to_check} new possible locations"
+        _debug_adapter.debug(debug_msg)
 
         # gather possible locations on root
         local_possible_locations_lists = _comm.gather(local_possible_locations, root)
@@ -390,7 +390,9 @@ class TipCellManager:
                                    self.cell_radius,
                                    current_step)
             self._add_tip_cell(new_tip_cell)
-            _debug_adapter.debug(f"Created new tip cell at point {new_tip_cell_position}")
+            _debug_adapter.debug(f"Created new tip cell at point {new_tip_cell_position} at step {current_step}")
+        else:
+            _debug_adapter.debug(f"No new tip cell created at step {current_step}")
 
     def _remove_tip_cells(self, local_to_remove):
         """
@@ -411,9 +413,14 @@ class TipCellManager:
         else:
             global_to_remove = None
         global_to_remove = _comm.bcast(global_to_remove, root)
-        _debug_adapter.debug(f"Created global_to_remove list. It includes:")
-        for tip_cell in global_to_remove:
-            _debug_adapter.debug(f"\t* tip_cell at position {tip_cell.get_position()}")
+
+        # if not empty, debug
+        if global_to_remove:
+            debug_msg = f"global_to_remove list not empty. It includes: \n"
+            for tip_cell in global_to_remove:
+                debug_msg += f"\t* tip_cell at position {tip_cell.get_position()}\n"
+
+            _debug_adapter.debug(debug_msg)
 
         # remove cells from global and local
         for tip_cell in global_to_remove:
@@ -469,9 +476,14 @@ class TipCellManager:
                 g_at_point = np.linalg.norm(grad_af.eval(position, current_cell))
                 if (af_at_point < self.T_c) or (g_at_point < self.G_m):
                     local_to_remove.append(tip_cell)
+                    debug_msg = f"Appending tip cell in pos {position} to local to remove because " \
+                                f"af_at_point < T_c ({af_at_point} < {self.T_c}) or " \
+                                f"g_at_point < G_m ({g_at_point} < {self.G_m})"
+                    _debug_adapter.debug(debug_msg)
             else:
                 # else add to the list for checking if in global mesh
                 local_to_check_if_outside_global_mesh.append(tip_cell)
+
 
         """2. For local tip cells which are outside the local mesh, check if they are outside the global mesh. """
         global_to_check_if_outside_global_mesh = _comm.gather(local_to_check_if_outside_global_mesh, 0)
@@ -488,6 +500,9 @@ class TipCellManager:
             is_inside_global_mesh = _comm.bcast(is_inside_global_mesh, 0)
             if not is_inside_global_mesh:
                 local_to_remove.append(tip_cell)
+                debug_msg = f"Appending tip cell in pos {tip_cell.get_position()} to local to remove because " \
+                            f"it is outside the global mesh."
+                _debug_adapter.debug(debug_msg)
 
         """3. Remove local tip cells near to each other, due to Delta-Notch signalling."""
         near_tcs_to_remove = []  # init list of cells to remove
@@ -529,6 +544,10 @@ class TipCellManager:
         for tc in near_tcs_to_remove:
             if (tc in self.local_tip_cells_list) and (tc not in local_to_remove):
                 local_to_remove.append(tc)
+                debug_msg = f"Appending tip cell in pos {tc.get_position()} to local to remove because " \
+                            f"it is near other tip cells."
+                _debug_adapter.debug(debug_msg)
+
 
         "4 (final). Remove tip cells added to local_to_remove"
         self._remove_tip_cells(local_to_remove)
