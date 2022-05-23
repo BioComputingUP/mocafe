@@ -3,11 +3,11 @@ import pytest
 from mocafe.angie.af_sourcing import RandomSourceMap
 import pathlib
 from mocafe.fenut.parameters import from_ods_sheet, Parameters
-from mocafe.angie import setup_random_state
+from mocafe.angie import _setup_random_state
 import os
 
 """Global fixtures"""
-setup_random_state(load=True, load_path=f"{os.path.dirname(__file__)}")
+_setup_random_state(load=True, load_path=f"{os.path.dirname(__file__)}")
 
 
 @pytest.fixture
