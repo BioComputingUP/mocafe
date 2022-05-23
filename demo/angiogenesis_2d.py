@@ -147,28 +147,39 @@ Notch-Signalling inhibition if they are close to each other.
 # ^^^^^
 # With Mocafe, the implementation of the model is not very different from any other FEniCS script. Let's start
 # importing everything we need:
-import fenics
-import mshr
-from tqdm import tqdm
+import dolfinx
+import ufl
 from pathlib import Path
-import mocafe.fenut.fenut as fu
+import numpy as np
+from mpi4py import MPI
+from tqdm import tqdm
+
+import sys  # todo remove
+mocafe_path = Path(__file__).parent.resolve().parent
+sys.path.append(str(mocafe_path))
+
 import mocafe.fenut.mansimdata as mansimd
-from mocafe.angie import af_sourcing, tipcells
-from mocafe.angie.forms import angiogenesis_form, angiogenic_factor_form
+import mocafe.fenut.fenut as fu
 import mocafe.fenut.parameters as mpar
+from mocafe.angie import af_sourcing
+from mocafe.math import project
+from mocafe.angie.forms import angiogenesis_form, angiogenic_factor_form
+from mocafe.angie import tipcells
+from petsc4py import PETSc
+from mocafe.fenut.log import confgure_root_logger_with_standard_settings
+
 
 # %%
 # Then, as seen in previous examples, we initialize the MPI _comm, the process root, the log level and the data folder
-comm = fenics.MPI.comm_world
+comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
-# only process 0 logs
-fenics.parameters["std_out_all_processes"] = False
 # set log level ERROR
-fenics.set_log_level(fenics.LogLevel.ERROR)
+dolfinx.log.set_log_level(dolfinx.log.LogLevel.ERROR)
 # define data folder
 file_folder = Path(__file__).parent.resolve()
 data_folder = mansimd.setup_data_folder(folder_path=f"{file_folder/Path('demo_out')}/angiogenesis_2d",
                                         auto_enumerate=False)
+confgure_root_logger_with_standard_settings(data_folder)
 
 # %%
 # Then we initialize the xdmf files for the capillaries and the angiogenic factor. Notice that we also initialize
@@ -204,10 +215,9 @@ Lx = parameters.get_value("Lx")
 Ly = parameters.get_value("Ly")
 nx = int(parameters.get_value("nx"))
 ny = int(parameters.get_value("ny"))
-mesh = fenics.RectangleMesh(fenics.Point(0., 0.),
-                            fenics.Point(Lx, Ly),
-                            nx,
-                            ny)
+mesh = dolfinx.mesh.create_rectangle(comm=MPI.COMM_WORLD,
+                                     points=[[0., 0.], [Lx, Ly]],
+                                     n=[nx, ny])
 
 # %%
 # Spatial discretization
@@ -217,7 +227,8 @@ mesh = fenics.RectangleMesh(fenics.Point(0., 0.),
 # define function space for c and af
 function_space = fu.get_mixed_function_space(mesh, 3, "CG", 1)
 # define function space for grad_T
-grad_af_function_space = fenics.VectorFunctionSpace(mesh, "CG", 1)
+grad_af_function_space = dolfinx.fem.VectorFunctionSpace(mesh, ("CG", 1))
+
 
 # %%
 # Notice that the function space for c and af is actually composed of 3 subspaces, since we also need to count the
@@ -234,6 +245,12 @@ grad_af_function_space = fenics.VectorFunctionSpace(mesh, "CG", 1)
 # This is an easy pick for FEniCS, since it will automatically apply this condition for us without requiring any
 # command from the user.
 #
+# To place the initial conditions, the first thing to do is to define a function ``u_0`` based on the function space
+# which is going to contain all the initial conditions.
+u_0 = dolfinx.fem.Function(function_space)
+af_0, c_0, mu_0 = u_0.split()
+
+# %%
 # The initial condition for :math:`c`, according to the simulations reported in the original paper, is a single vessel
 # in the left part of the domain. The initial vessel width is 37,5 :math:`\mu m` and its value is stored in the
 # parameters ``.ods`` file, so we retrieve it as follows:
@@ -242,16 +259,13 @@ initial_vessel_width = parameters.get_value("initial_vessel_width")
 # %%
 # Thus, the initial condition for ``c`` is simply a function which is 1 in the left part of the domain, for the x
 # coordinate included in [0, 37.5], and -1 otherwise. We can simply define such a function using the FEniCS interface
-# for expressions as follows:
-c_0_exp = fenics.Expression("(x[0] < i_v_w) ? 1 : -1",
-                            degree=2,
-                            i_v_w=initial_vessel_width)
-c_0 = fenics.interpolate(c_0_exp, function_space.sub(0).collapse())
+# as follows:
+c_0.interpolate(lambda x: np.where(x[0] < initial_vessel_width, 1, -1))
 
 # %%
-# Together with the initial condition for c, we need to define an initial condition for mu. However, this can be
-# simply 0 across all the domain and can be easily defined as follows:
-mu_0 = fenics.interpolate(fenics.Constant(0.), function_space.sub(0).collapse())
+# Together with the initial condition for c, we would need to define an initial condition for mu, which can be
+# simply 0 across all the domain. However, this is the standard value for the FEniCS function, so we don't need to do
+# anything with the function we already defined.
 
 # %%
 # Finally, we need to define an initial condition of the angiogenic factor :math:`af`. According to the original paper,
@@ -259,38 +273,24 @@ mu_0 = fenics.interpolate(fenics.Constant(0.), function_space.sub(0).collapse())
 # :math:`af_s`. Thus, we need to define first the source cells if we want to set up the initial condition
 # for the angiogenic factor.
 #
-# In the original paper, the source cells where placed randomly in the right part of the domain, relatively far
-# from the initial vessel. Creating this set up in Mocafe is relatively easy. We start by defining the number
+# In the original paper, the source cells were placed randomly in the right part of the domain, relatively at a
+# distance 'd' from the initial vessel.
+# Creating this set up in Mocafe is relatively easy. We start by defining the number
 # of source cells we want, which we stored in the parameters file:
 n_sources = int(parameters.get_value("n_sources"))
 
 # %%
-# Then, we define the part of the domain where we want the source cells to be placed; in this case, it is a rectangle
-# including all the mesh except the initial vessel and a part of width :math:`d`:
-random_sources_domain = mshr.Rectangle(fenics.Point(initial_vessel_width + parameters.get_value("d"), 0),
-                                       fenics.Point(Lx, Ly))
-
-# %%
-# Finally, we initialize a so called ``RandomSourceMap``, which will create the source cells for us:
+# Then we initialize a so called ``RandomSourceMap``, which will create the source cells for us:
 sources_map = af_sourcing.RandomSourceMap(mesh,
                                           n_sources,
                                           parameters,
-                                          where=random_sources_domain)
+                                          where=lambda x: x[0] > initial_vessel_width + parameters.get_value("d"))
 
 # %%
 # A ``SourceMap`` is a Mocafe object which contains the position of all the source cells at a given time throughout
 # the entire simulation. As you can see, you just need to input the mesh, the parameters, the number of sources
-# and where you want the sources to be placed. In this implementation, we defined the part of the domain where we
-# needed the source cell as ``mshr.Rectangle``, but the ``where`` argument can take as input also a function which
+# and where you want the sources to be placed. The ``where`` parameter must be a function which
 # return a boolean for each point of the domain (True if the point can host a source cell, False otherwise).
-# For instance we could have initialized the same source map as above simply doing:
-#
-# .. code-block:: default
-#
-#   sources_map = af_sourcing.RandomSourceMap(mesh,
-#                                             n_sources,
-#                                             parameters,
-#                                             where=lambda x: x[0] > initial_vessel_width + parameters.get_value("d"))
 #
 # However, the source map is not sufficient to define the initial condition we need. To do so, we need an additional
 # Mocafe object, a ``SourcesManager``:
@@ -299,19 +299,22 @@ sources_manager = af_sourcing.SourcesManager(sources_map, mesh, parameters)
 # %%
 # As the name suggests, a ``SourcesManager`` is an object responsible for the actual management of the sources in the
 # given source map. One of the function it provides is exactly what we need, that is to apply the sources to a given
-# FEniCS function. Thus, to define the initial condition we need, is sufficient to define a function which is zero
-# everywhere:
-af_0 = fenics.interpolate(fenics.Constant(0.), function_space.sub(0).collapse())
-
-# %%
-# And to call the method ``apply_sources`` on it, which will take care of modifying the value of the function in
+# FEniCS function. Thus, to define the initial condition we need, is sufficient to call the method ``apply_sources``
+# on function we created for the angiogenic factors, which will take care of modifying the value of the function in
 # the points inside the source cells.
 sources_manager.apply_sources(af_0)
 
 # %%
 # Finally, we can save the initial conditions to the xdmf files defined above:
-file_af.write(af_0, 0)
-file_c.write(c_0, 0)
+
+# write af
+file_af.write_mesh(mesh)
+af_0.name = "af"
+file_af.write_function(af_0, 0)
+# write c
+file_c.write_mesh(mesh)
+c_0.name = "c"
+file_c.write_function(c_0, 0)
 
 # %%
 # Visualizing the field that we just defined with `Paraview <https://www.paraview.org/>`_, what we get is exactly what
@@ -326,26 +329,24 @@ file_c.write(c_0, 0)
 # ^^^^^^^^^^^^^^^^^^^^^
 # After having defined the initial conditions for the system, we continue with the definition of the system
 # itself. As usual, we define the test functions necessary for computing the solution with the finite element method:
-v1, v2, v3 = fenics.TestFunctions(function_space)
+v1, v2, v3 = ufl.TestFunctions(function_space)
 
 # %%
 # Then, we define the three functions involved in the PDE system: :math:`c`, :math:`\mu`, and :math:`af`:
-u = fenics.Function(function_space)
-af, c, mu = fenics.split(u)
+u = dolfinx.fem.Function(function_space)
+af, c, mu = ufl.split(u)
 
 # %%
 # Moreover, we define two additional functions: one for the gradient of the angiogenic factor and one for the tip cells.
 # Again, remember that the latter is defined just for visualization purposes and is not necessary for the simulation.
-grad_af = fenics.Function(grad_af_function_space)
-tipcells_field = fenics.Function(function_space.sub(0).collapse())
+grad_af = dolfinx.fem.Function(grad_af_function_space)
+tipcells_field = dolfinx.fem.Function(function_space.sub(0).collapse()[0])
 
 # %%
 # Then, since we have already defined the initial condition for :math:`af`, we can already compute its gradient and
-# assign it to the variable defined above. Notice that this is quite simple in FEniCS, because it just requires to call
+# assign it to the variable defined above. todo Change Notice that this is quite simple in FEniCS, because it just requires to call
 # the method ``grad`` on the function and to project it in the function space:
-grad_af.assign(  # assign to grad_af
-    fenics.project(fenics.grad(af_0), grad_af_function_space)  # the projection on the fun space of grad(af_0)
-)
+project(ufl.grad(af_0), grad_af)
 
 # %%
 # Finally, we proceed to the definition of the weak from for the system. As in the case of the prostate cancer, one
@@ -378,8 +379,21 @@ tip_cell_manager = tipcells.TipCellManager(mesh,
 # Notice that the rules for activating, deactivating and moving the tip cells are already implemented in the object
 # class and all we need to do is passing the mesh and the simulation parameters to the constructor.
 #
-# Then, we can proceed similarly to any other simulation, defining the Jacobian for the weak form:
-jacobian = fenics.derivative(weak_form, u)
+# Then, we can proceed to the definition of the nonlinear problem:
+problem = dolfinx.fem.petsc.NonlinearProblem(weak_form, u)
+
+# %%
+# And of the solver:
+solver = dolfinx.nls.petsc.NewtonSolver(comm, problem)
+solver.convergence_criterion = "incremental"
+solver.rtol = 1e-6
+ksp = solver.krylov_solver
+opts = PETSc.Options()
+option_prefix = ksp.getOptionsPrefix()
+opts[f"{option_prefix}ksp_type"] = "preonly"
+opts[f"{option_prefix}pc_type"] = "lu"
+opts[f"{option_prefix}pc_factor_mat_solver_type"] = "mumps"
+ksp.setFromOptions()
 
 # %%
 # And initializing the time iteration
@@ -409,27 +423,34 @@ for step in range(1, n_steps + 1):
     tip_cell_manager.move_tip_cells(c_0, af_0, grad_af)
 
     # get tip cells field
-    tipcells_field.assign(tip_cell_manager.get_latest_tip_cell_function())
+    tipcells_field = tip_cell_manager.get_latest_tip_cell_function()
 
-    # update fields
-    fenics.solve(weak_form == 0, u, J=jacobian)
+    # solve problem
+    solver.solve(u)
 
     # assign u to the initial conditions functions
-    fenics.assign([af_0, c_0, mu_0], u)
+    u_0.x.array[:] = u.x.array
+    af_0, c_0, mu_0 = u_0.split()
 
     # update source field
     sources_manager.apply_sources(af_0)
 
     # compute grad_T
-    grad_af.assign(fenics.project(fenics.grad(af_0), grad_af_function_space))
+    project(ufl.grad(af_0), grad_af)
 
     # save data
-    file_af.write(af_0, t)
-    file_c.write(c_0, t)
-    tipcells_xdmf.write(tipcells_field, t)
+    af_0.name = "af"
+    file_af.write_function(af_0, t)
+    c_0.name = "c"
+    file_c.write_function(c_0, t)
+    if step == 1:
+        tipcells_xdmf.write_mesh(mesh)
+    tipcells_field.name = "tipcells"
+    tipcells_xdmf.write_function(tipcells_field, t)
 
     if rank == 0:
         pbar.update(1)
+
 
 # %%
 # Notice that additionally to the system solution a number of operations are performed at each time stem which require
