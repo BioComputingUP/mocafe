@@ -714,11 +714,14 @@ class TipCellManager:
         t_c_function = c.copy()
         # interpolate the given tip cells expression on the field
         t_c_function.interpolate(tip_cells_field_expression.eval)
+        t_c_function.x.scatter_forward()  # update ghost values
         # copy non-nan values of t_c_function to c
         t_c_f_nan = np.isnan(t_c_function.x.array)
         c.x.array[~t_c_f_nan] = t_c_function.x.array[~t_c_f_nan]
+        c.x.scatter_forward()  # update ghost values
         # set all the others to phi min
         t_c_function.x.array[t_c_f_nan] = self.parameters.get_value("phi_min")
+        t_c_function.x.scatter_forward()
 
         # # get Function Space of af
         # V_c = c.function_space()

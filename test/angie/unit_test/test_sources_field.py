@@ -12,6 +12,7 @@ def sources_field(source_map, parameters, setup_function_space):
     # interpolate
     T = dolfinx.fem.Function(setup_function_space)
     T.interpolate(T_exp.eval)
+    T.x.scatter_forward()
     return T
 
 

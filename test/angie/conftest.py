@@ -46,6 +46,7 @@ def setup_function_space(mesh):
 def phi_vessel_total(setup_function_space):
     phi = dolfinx.fem.Function(setup_function_space)
     phi.interpolate(lambda x: np.ones(x.shape[1]))
+    phi.x.scatter_forward()
     return phi
 
 
@@ -53,4 +54,5 @@ def phi_vessel_total(setup_function_space):
 def phi_vessel_half(setup_function_space):
     phi = dolfinx.fem.Function(setup_function_space)
     phi.interpolate(lambda x: np.where(x[0] < 150, 1., -1.))
+    phi.x.scatter_forward()
     return phi

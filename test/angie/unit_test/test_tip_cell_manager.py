@@ -38,6 +38,7 @@ def T0(parameters, mesh):
     m = 4 * (G_M + 0.01)  # more than the threshold
     T0 = dolfinx.fem.Function(V)
     T0.interpolate(lambda x: c + (m * x[0]))
+    T0.x.scatter_forward()
     return T0
 
 
@@ -48,6 +49,7 @@ def phi0(mesh):
     phi_max = 1
     phi0 = dolfinx.fem.Function(V)
     phi0.interpolate(lambda x: np.where(x[0] < 30, phi_max, phi_min))
+    phi0.x.scatter_forward()
     return phi0
 
 
@@ -114,6 +116,7 @@ def test_revert_tip_cells(phi0, T0, gradT0, mesh, parameters):
         # change T0 at step 2
         if i == 2:
             T0.interpolate(lambda x: np.zeros(x.shape[1]))
+            T0.x.scatter_forward()
         # activate
         tip_cell_manager.activate_tip_cell(phi0, T0, gradT0, i)
         # revert
@@ -146,7 +149,9 @@ def test_delta_notch_revert(T0, gradT0, mesh, parameters):
 
     # modify T0 and gradT0 to ensure the removal is not due to T0 or gradT0 level
     T0.interpolate(lambda x: np.ones(x.shape[1]))
+    T0.x.scatter_forward()
     gradT0.interpolate(lambda x: [np.ones(x.shape[1]), np.ones(x.shape[1])])
+    gradT0.x.scatter_forward()
 
     # remove tip cells
     tip_cell_manager.revert_tip_cells(T0, gradT0)
@@ -185,7 +190,9 @@ def test_delta_notch_3_cells_revert(parameters, T0, gradT0, mesh):
 
     # modify T0 and gradT0 to ensure the removal is not due to T0 or gradT0 level
     T0.interpolate(lambda x: np.ones(x.shape[1]))
+    T0.x.scatter_forward()
     gradT0.interpolate(lambda x: [np.ones(x.shape[1]), np.ones(x.shape[1])])
+    gradT0.x.scatter_forward()
 
     # remove tip cells
     tip_cell_manager.revert_tip_cells(T0, gradT0)

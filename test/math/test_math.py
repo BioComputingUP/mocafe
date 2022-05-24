@@ -14,6 +14,7 @@ def test_estimate_field01_integral():
     # define a constant function on it
     constant_function = dolfinx.fem.Function(V)
     constant_function.interpolate(lambda x: np.ones(x.shape[1]))
+    constant_function.x.scatter_forward()
     # compute the integral
     integral = estimate_field01_integral(constant_function)
     # should be one

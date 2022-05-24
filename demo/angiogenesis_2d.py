@@ -261,6 +261,7 @@ initial_vessel_width = parameters.get_value("initial_vessel_width")
 # coordinate included in [0, 37.5], and -1 otherwise. We can simply define such a function using the FEniCS interface
 # as follows:
 c_0.interpolate(lambda x: np.where(x[0] < initial_vessel_width, 1, -1))
+c_0.x.scatter_forward()  # update ghost values
 
 # %%
 # Together with the initial condition for c, we would need to define an initial condition for mu, which can be
