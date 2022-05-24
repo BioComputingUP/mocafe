@@ -353,8 +353,6 @@ project(ufl.grad(af_0), grad_af)
 file_grad_af.write_mesh(mesh)
 af_0.name = "grad_af"
 file_grad_af.write_function(grad_af, 0)
-print(f"p{rank}: Done!")
-exit(0)
 
 # %%
 # Finally, we proceed to the definition of the weak from for the system. As in the case of the prostate cancer, one
