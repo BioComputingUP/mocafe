@@ -5,6 +5,7 @@ import math
 import dolfinx
 import numpy as np
 from mpi4py import MPI
+from mocafe.fenut.fenut import get_colliding_cells_for_points
 
 _comm = MPI.COMM_WORLD
 _rank = _comm.Get_rank()
@@ -214,18 +215,13 @@ class ClockChecker:
         for check_point in self.check_points:
             # compute current check point
             ccp = point + check_point
-            # define list (otherwise errors)
-            ccp_list = np.array([ccp, ])
-            # compute cells near the current check points
-            candidate_cells = dolfinx.geometry.compute_collisions(self.mesh_bbt, ccp_list)
-            # compute the cells actually colliding with the current check points
-            colliding_cells = dolfinx.geometry.compute_colliding_cells(self.mesh, candidate_cells, ccp_list)
-            # get an array of cells
-            colliding_cells_array = colliding_cells.links(0)
-            # check if empty
-            if len(colliding_cells_array) > 0:
+            # get points and colliding cells
+            ccp_on_proc, cells = get_colliding_cells_for_points([ccp], self.mesh, self.mesh_bbt)
+            # check if cpp on proc
+            is_ccp_on_mesh = (len(ccp_on_proc) == 1)
+            if is_ccp_on_mesh:
                 # if not, pick one cell for evaluation (no matter which one)
-                current_cell = colliding_cells_array[0]
+                current_cell = cells[0]
                 # evaluate condition on point and cell
                 if condition(function.eval(ccp, current_cell)):
                     # if condition is true, break cycle and return True

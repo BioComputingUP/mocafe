@@ -197,3 +197,38 @@ def is_point_inside_mesh(mesh: dolfinx.mesh.Mesh,
         return True
     else:
         return False
+
+
+def get_colliding_cells_for_points(points_list: list,
+                                   mesh: dolfinx.mesh.Mesh,
+                                   bbt: dolfinx.geometry.BoundingBoxTree):
+    """
+    Useful function to get the colliding cells with a point, in order to check the value of a function
+
+    :param points_list: the list of points, as python list
+    :param mesh: the mesh
+    :param bbt: the bounding box tree of the mesh
+    :return:
+    """
+    # check if list of ndarray
+    if not all([isinstance(p, np.ndarray) for p in points_list]):
+        raise TypeError("The input must be a list of points, as nd.array")
+    # set the correct type and shape
+    points_list_array = np.array(points_list)
+    # for each point, compute a colliding cells and append to the lists
+    points_on_proc = []
+    cells = []
+    cell_candidates = dolfinx.geometry.compute_collisions(bbt, points_list_array)  # get candidates
+    colliding_cells = dolfinx.geometry.compute_colliding_cells(mesh, cell_candidates, points_list_array)  # get actual
+    for i, point in enumerate(points_list_array):
+        if len(colliding_cells.links(i)) > 0:
+            # get one of the colliding cells (no matter which):
+            cc = colliding_cells.links(i)[0]
+            # append to points_list_array the association
+            points_on_proc.append(point)
+            cells.append(cc)
+    # return the two lists
+    return points_on_proc, cells
+
+
+
