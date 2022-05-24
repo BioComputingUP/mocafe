@@ -3,7 +3,6 @@ Base classes used only by mocafe.angie
 """
 import math
 import dolfinx
-import mocafe.fenut.fenut as fu
 import numpy as np
 from mpi4py import MPI
 
@@ -193,32 +192,43 @@ class ClockChecker:
 
         return points_list
 
-    def clock_check(self, point, function: dolfinx.fem.Function, threshold, condition):
+    def clock_check(self, point, function: dolfinx.fem.Function, condition):
         """
-        clock-check the given function in the surrounding of the given point
+        Clock-check the given function in the surrounding of the given point
+
+        For instance, the following:
+
+            clock_checker = ClockChecker(mesh, radius=4.)
+            clock_checker.clock_check(point, foo, lambda: foo_val: foo_val < 0.)
+
+        Will return True if exist at least one point inside the circle of radius 4 which surrounds the point
+        for which the function foo has a value lower than 0. Notice that all the points inside the circle will
+        be checked, not just those on the border. Also the point ``point`` is included.
 
         :param point: center of the clock-check
         :param function: function to check
-        :param threshold: threshold that the function has to surpass
         :param condition: lambda function representing the condition to be met
         :return: True if the condition is met; False otherwise
         """
 
         for check_point in self.check_points:
             # compute current check point
-            current_check_point = point + check_point
-            # compute cells colliding with current check point
-            candidate_cells = dolfinx.geometry.compute_collisions(self.mesh_bbt, current_check_point)
-            colliding_cells = dolfinx.geometry.compute_colliding_cells(self.mesh, candidate_cells, current_check_point)
+            ccp = point + check_point
+            # define list (otherwise errors)
+            ccp_list = np.array([ccp, ])
+            # compute cells near the current check points
+            candidate_cells = dolfinx.geometry.compute_collisions(self.mesh_bbt, ccp_list)
+            # compute the cells actually colliding with the current check points
+            colliding_cells = dolfinx.geometry.compute_colliding_cells(self.mesh, candidate_cells, ccp_list)
+            # get an array of cells
+            colliding_cells_array = colliding_cells.links(0)
             # check if empty
-            if len(colliding_cells) > 0:
-                # if not, pick one cell for evaluation (no matter which)
-                current_cell = colliding_cells[0]
+            if len(colliding_cells_array) > 0:
+                # if not, pick one cell for evaluation (no matter which one)
+                current_cell = colliding_cells_array[0]
                 # evaluate condition on point and cell
-                if condition(function.eval(current_check_point, current_cell), threshold):
+                if condition(function.eval(ccp, current_cell)):
+                    # if condition is true, break cycle and return True
                     return True
-
-            # if fu.is_point_inside_mesh(self.mesh, current_check_point):
-            #     if condition(function.eval(current_check_point), threshold):
-            #         return True
+        # if no point meets the condition, return False
         return False

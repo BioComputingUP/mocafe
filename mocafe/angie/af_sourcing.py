@@ -300,8 +300,7 @@ class SourcesManager:
             _debug_adapter.debug(f"Checking cell {source_cell.__hash__()} at position {source_cell_position}")
             clock_check_test_result = clock_checker.clock_check(source_cell_position,
                                                                 c,
-                                                                self.parameters.get_value("phi_th"),
-                                                                lambda val, thr: val > thr)
+                                                                lambda c_val: c_val > self.parameters.get_value("phi_th"))
             _debug_adapter.debug(f"Clock Check test result is {clock_check_test_result}")
             # if the clock test is positive, add the source cells in the list of the cells to remove
             if clock_check_test_result:

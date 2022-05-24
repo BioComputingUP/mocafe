@@ -187,8 +187,8 @@ confgure_root_logger_with_standard_settings(data_folder)
 # However, this is just for visualization purposes and it is not necessary for the model because, as we already
 # mentioned above, the tip cells dynamics is merged to the capillaries dynamics thorugh the update of the field
 # :math:`c`.
-file_names = ["c", "af", "tipcells"]
-file_c, file_af, tipcells_xdmf = fu.setup_xdmf_files(file_names, data_folder)
+file_names = ["c", "af", "tipcells", "grad_af"]
+file_c, file_af, tipcells_xdmf, file_grad_af = fu.setup_xdmf_files(file_names, data_folder)
 
 # %%
 # Finally, we need the parameters of the model. This time we exploit one of the functions of Mocafe to retrieve
@@ -347,6 +347,13 @@ tipcells_field = dolfinx.fem.Function(function_space.sub(0).collapse()[0])
 # assign it to the variable defined above. todo Change Notice that this is quite simple in FEniCS, because it just requires to call
 # the method ``grad`` on the function and to project it in the function space:
 project(ufl.grad(af_0), grad_af)
+
+# write to file
+file_grad_af.write_mesh(mesh)
+af_0.name = "grad_af"
+file_grad_af.write_function(grad_af, 0)
+print(f"p{rank}: Done!")
+exit(0)
 
 # %%
 # Finally, we proceed to the definition of the weak from for the system. As in the case of the prostate cancer, one
