@@ -225,7 +225,7 @@ class TipCellManager:
         self.alpha_p = parameters.get_value("alpha_p")
         self.T_p = parameters.get_value("T_p")
         self.min_tipcell_distance = parameters.get_value("min_tipcell_distance")
-        self.clock_checker = ClockChecker(mesh, self.cell_radius, start_point="west")
+        self.clock_checker = ClockChecker(mesh, self.cell_radius)
         self.local_box = self._build_local_box(self.cell_radius)
         self.latest_t_c_f_function = None
 
@@ -327,61 +327,55 @@ class TipCellManager:
         local_possible_locations = []
         # Debug: setup cunters to check which test is not passed
         _debug_adapter.debug(f"Searching for new tip cells")
-        n_points_to_check = len(local_mesh_points)
-        # n_points_distant = 0
-        # n_points_phi_09 = 0
-        # n_points_over_Tc = 0
-        # n_points_over_Gm = 0
-        # n_points_distant_to_edge = 0
-        # # compute points and colliding cells
+        n_points_distant = 0
+        n_points_phi_09 = 0
+        n_points_over_Tc = 0
+        n_points_over_Gm = 0
+        n_points_distant_to_edge = 0
+        # compute points and colliding cells
         points_on_proc, cells = fu.get_colliding_cells_for_points(local_mesh_points,
                                                                   self.mesh,
                                                                   self.mesh_bbt)
-        # compute points distant to tip cells
-        distant_to_tipcells = np.array([self._point_distant_to_tip_cells(point)
-                                        for point in points_on_proc])
-        n_points_distant = np.sum(distant_to_tipcells)
-        # compute c values over phi_th
-        c_values = c.eval(points_on_proc, cells)
-        c_over_phi_th = c_values > self.phi_th
-        n_points_phi_09 = np.sum(c_over_phi_th)
-        # compute af values over T_c
-        af_values = af.eval(points_on_proc, cells)
-        af_over_T_c = af_values > self.T_c
-        n_points_over_Tc = np.sum(af_over_T_c)
-        # compute G values over G_m
-        g_values = np.linalg.norm(grad_af.eval(points_on_proc, cells))
-        g_over_G_m = g_values > self.G_m
-        n_points_over_Gm = np.sum(g_over_G_m)
-        # check points distant to edge
-        distant_to_edge = np.array([not self.clock_checker.clock_check(point, c, lambda c_val: c_val < -self.phi_th)
-                                    for point in points_on_proc])
-        n_points_distant_to_edge = np.sum(distant_to_edge)
-        # get local possible locations
-        local_possible_locations = list(points_on_proc[c_over_phi_th & af_over_T_c & g_over_G_m & distant_to_edge])
+        n_points_to_check = len(points_on_proc)
+        # # compute points distant to tip cells
+        # distant_to_tipcells = np.array([self._point_distant_to_tip_cells(point)
+        #                                 for point in points_on_proc])
+        # n_points_distant = np.sum(distant_to_tipcells)
+        # # compute c values over phi_th
+        # c_values = c.eval(points_on_proc, cells).reshape((n_points_to_check, ))
+        # c_over_phi_th = c_values > self.phi_th
+        # n_points_phi_09 = np.sum(c_over_phi_th)
+        # # compute af values over T_c
+        # af_values = af.eval(points_on_proc, cells).reshape((n_points_to_check, ))
+        # af_over_T_c = af_values > self.T_c
+        # n_points_over_Tc = np.sum(af_over_T_c)
+        # # compute G values over G_m
+        # grad_af_values = grad_af.eval(points_on_proc, cells)
+        # g_values = np.array([np.linalg.norm(grad_af_val) for grad_af_val in grad_af_values])
+        # g_over_G_m = g_values > self.G_m
+        # n_points_over_Gm = np.sum(g_over_G_m)
+        # # check points distant to edge
+        # distant_to_edge = np.array([not self.clock_checker.clock_check(point, c, lambda c_val: c_val < -self.phi_th)
+        #                             for point in points_on_proc])
+        # n_points_distant_to_edge = np.sum(distant_to_edge)
+        # # get where conditions are met
+        # where_conditions_are_met = distant_to_tipcells & c_over_phi_th & af_over_T_c & g_over_G_m & distant_to_edge
+        # points_on_proc = np.array(points_on_proc)
+        # local_possible_locations = list(points_on_proc[where_conditions_are_met])
 
-        # for point in local_mesh_points:
-        #     # get cell for point
-        #     candidate_cells = dolfinx.geometry.compute_collisions(self.mesh_bbt, point)
-        #     colliding_cells = dolfinx.geometry.compute_colliding_cells(self.mesh, candidate_cells, point)
-        #     # check if empty
-        #     if len(colliding_cells) > 0:
-        #         # if not, pick one cell for evaluation (no matter which)
-        #         current_cell = colliding_cells[0]
-        #     else:
-        #         raise RuntimeError(f"FATAL: Point {point} in the local mesh has no collisions with cells.")
-        #     # evaluate conditions
-        #     if self._point_distant_to_tip_cells(point):
-        #         n_points_distant += 1
-        #         if c.eval(point, current_cell) > self.phi_th:
-        #             n_points_phi_09 += 1
-        #             if af.eval(point, current_cell) > self.T_c:
-        #                 n_points_over_Tc += 1
-        #                 if np.linalg.norm(grad_af.eval(point, current_cell)) > self.G_m:
-        #                     n_points_over_Gm += 1
-        #                     if not self.clock_checker.clock_check(point, c, lambda c_val: c_val < -self.phi_th):
-        #                         n_points_distant_to_edge += 1
-        #                         local_possible_locations.append(point)
+        for point, cell in zip(points_on_proc, cells):
+            # evaluate conditions
+            if self._point_distant_to_tip_cells(point):
+                n_points_distant += 1
+                if c.eval(point, cell) >= self.phi_th:
+                    n_points_phi_09 += 1
+                    if af.eval(point, cell) >= self.T_c:
+                        n_points_over_Tc += 1
+                        if np.linalg.norm(grad_af.eval(point, cell)) >= self.G_m:
+                            n_points_over_Gm += 1
+                            if not self.clock_checker.clock_check(point, c, lambda c_val: c_val < -self.phi_th):
+                                n_points_distant_to_edge += 1
+                                local_possible_locations.append(point)
 
         debug_msg = \
             f"Finished checking. I found: \n" \
@@ -497,8 +491,8 @@ class TipCellManager:
             # check if empty
             if is_tcp_on_proc:
                 # check if conditions are met
-                af_at_point = af.eval(tcp_on_proc, tcp_cell)[0]
-                g_at_point = np.linalg.norm(grad_af.eval(tcp_on_proc, tcp_cell))[0]
+                af_at_point = af.eval(tcp_on_proc, tcp_cell)
+                g_at_point = np.linalg.norm(grad_af.eval(tcp_on_proc, tcp_cell))
                 if (af_at_point < self.T_c) or (g_at_point < self.G_m):
                     local_to_remove.append(tip_cell)
                     debug_msg = f"Appending tip cell in pos {tcp} to local to remove because " \
@@ -508,7 +502,6 @@ class TipCellManager:
             else:
                 # else add to the list for checking if in global mesh
                 local_to_check_if_outside_global_mesh.append(tip_cell)
-
 
         """2. For local tip cells which are outside the local mesh, check if they are outside the global mesh. """
         global_to_check_if_outside_global_mesh = _comm.gather(local_to_check_if_outside_global_mesh, 0)
@@ -573,7 +566,6 @@ class TipCellManager:
                             f"it is near other tip cells."
                 _debug_adapter.debug(debug_msg)
 
-
         "4 (final). Remove tip cells added to local_to_remove"
         self._remove_tip_cells(local_to_remove)
 
@@ -607,12 +599,12 @@ class TipCellManager:
             # check if empty
             if is_tcp_on_proc:
                 # compute grad_af at point
-                grad_af_at_point = grad_af.eval(tcp_on_proc, tcp_cell)[0]
+                grad_af_at_point = grad_af.eval(tcp_on_proc, tcp_cell)
                 # compute velocity
                 velocity = self.compute_tip_cell_velocity(grad_af_at_point,
                                                           self.parameters.get_value("chi"))
                 # compute value of T in position
-                T_at_point = af.eval(tcp_on_proc, tcp_cell)[0]
+                T_at_point = af.eval(tcp_on_proc, tcp_cell)
             else:
                 velocity = None
                 T_at_point = None
@@ -639,11 +631,11 @@ class TipCellManager:
 
             # compute new position
             dt = self.parameters.get_value("dt")
-            new_position = tip_cell_position + (dt * velocity)
+            new_position = tcp + (dt * velocity)
             debug_msg = \
                 f"DEBUG: p{_rank}: computing new tip cell position: \n" \
                 f"\t*[tip cell position] + [dt] * [velocity] = \n" \
-                f"\t*{tip_cell_position} + {dt} * {velocity} = {new_position}"
+                f"\t*{tcp} + {dt} * {velocity} = {new_position}"
             for line in debug_msg.split("\n"):
                 _debug_adapter.debug(line)
 

@@ -179,7 +179,7 @@ dolfinx.log.set_log_level(dolfinx.log.LogLevel.ERROR)
 file_folder = Path(__file__).parent.resolve()
 data_folder = mansimd.setup_data_folder(folder_path=f"{file_folder/Path('demo_out')}/angiogenesis_2d",
                                         auto_enumerate=False)
-confgure_root_logger_with_standard_settings(data_folder)
+# confgure_root_logger_with_standard_settings(data_folder)
 
 # %%
 # Then we initialize the xdmf files for the capillaries and the angiogenic factor. Notice that we also initialize
@@ -436,6 +436,7 @@ for step in range(1, n_steps + 1):
 
     # assign u to the initial conditions functions
     u_0.x.array[:] = u.x.array
+    u_0.x.scatter_forward()
     af_0, c_0, mu_0 = u_0.split()
 
     # update source field
