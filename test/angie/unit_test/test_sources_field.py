@@ -23,15 +23,17 @@ def mesh_bbt(mesh):
 def test_value_in_source_points(source_map, sources_field, mesh, mesh_bbt):
     test_result = True
     for source_cell in source_map.get_global_source_cells():
-        source_cell_position = source_cell.get_position()
-        # get fem_cell for point
-        candidate_fem_cells = dolfinx.geometry.compute_collisions(mesh_bbt, source_cell_position)
-        colliding_fem_cells = dolfinx.geometry.compute_colliding_cells(mesh, candidate_fem_cells, source_cell_position)
+        # get source cell position (scp)
+        scp = source_cell.get_position()
+        # get collisions
+        scp_on_proc, scp_cells = fu.get_colliding_cells_for_points([scp],
+                                                                   mesh,
+                                                                   mesh_bbt)
+        # check if scp is on current proc
+        is_scp_on_proc = (len(scp_on_proc) > 0)
         # check if empty
-        if len(colliding_fem_cells) > 0:
-            # if not, pick one cell for evaluation (no matter which)
-            current_fem_cell = colliding_fem_cells[0]
-            if sources_field.eval(source_cell_position, current_fem_cell) < 0.9:
+        if is_scp_on_proc:
+            if sources_field.eval(scp_on_proc, scp_cells)[0] < 0.9:
                 test_result = False
                 break
 
@@ -53,15 +55,15 @@ def test_value_near_source_points(source_map, sources_field, mesh, parameters, m
         source_cell_position = source_cell.get_position()
         test_positions = [source_cell_position + vector for vector in random_vectors]
         for test_position in test_positions:
-            # get fem_cell for point
-            candidate_fem_cells = dolfinx.geometry.compute_collisions(mesh_bbt, test_position)
-            colliding_fem_cells = dolfinx.geometry.compute_colliding_cells(mesh, candidate_fem_cells,
-                                                                           test_position)
+            # get collisions
+            tp_on_proc, tp_cell = fu.get_colliding_cells_for_points([test_position],
+                                                                    mesh,
+                                                                    mesh_bbt)
+            # check if point on proc
+            is_tp_on_proc = (len(tp_on_proc) > 0)
             # check if empty
-            if len(colliding_fem_cells) > 0:
-                # if not, pick one cell for evaluation (no matter which)
-                current_fem_cell = colliding_fem_cells[0]
-                if sources_field.eval(test_position, current_fem_cell) < 0.5:
+            if is_tp_on_proc:
+                if sources_field.eval(tp_on_proc, tp_cell)[0] < 0.5:
                     test_result = False
                     break
 

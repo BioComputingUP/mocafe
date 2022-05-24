@@ -328,33 +328,60 @@ class TipCellManager:
         # Debug: setup cunters to check which test is not passed
         _debug_adapter.debug(f"Searching for new tip cells")
         n_points_to_check = len(local_mesh_points)
-        n_points_distant = 0
-        n_points_phi_09 = 0
-        n_points_over_Tc = 0
-        n_points_over_Gm = 0
-        n_points_distant_to_edge = 0
-        for point in local_mesh_points:
-            # get cell for point
-            candidate_cells = dolfinx.geometry.compute_collisions(self.mesh_bbt, point)
-            colliding_cells = dolfinx.geometry.compute_colliding_cells(self.mesh, candidate_cells, point)
-            # check if empty
-            if len(colliding_cells) > 0:
-                # if not, pick one cell for evaluation (no matter which)
-                current_cell = colliding_cells[0]
-            else:
-                raise RuntimeError(f"FATAL: Point {point} in the local mesh has no collisions with cells.")
-            # evaluate conditions
-            if self._point_distant_to_tip_cells(point):
-                n_points_distant += 1
-                if c.eval(point, current_cell) > self.phi_th:
-                    n_points_phi_09 += 1
-                    if af.eval(point, current_cell) > self.T_c:
-                        n_points_over_Tc += 1
-                        if np.linalg.norm(grad_af.eval(point, current_cell)) > self.G_m:
-                            n_points_over_Gm += 1
-                            if not self.clock_checker.clock_check(point, c, lambda c_val: c_val < -self.phi_th):
-                                n_points_distant_to_edge += 1
-                                local_possible_locations.append(point)
+        # n_points_distant = 0
+        # n_points_phi_09 = 0
+        # n_points_over_Tc = 0
+        # n_points_over_Gm = 0
+        # n_points_distant_to_edge = 0
+        # # compute points and colliding cells
+        points_on_proc, cells = fu.get_colliding_cells_for_points(local_mesh_points,
+                                                                  self.mesh,
+                                                                  self.mesh_bbt)
+        # compute points distant to tip cells
+        distant_to_tipcells = np.array([self._point_distant_to_tip_cells(point)
+                                        for point in points_on_proc])
+        n_points_distant = np.sum(distant_to_tipcells)
+        # compute c values over phi_th
+        c_values = c.eval(points_on_proc, cells)
+        c_over_phi_th = c_values > self.phi_th
+        n_points_phi_09 = np.sum(c_over_phi_th)
+        # compute af values over T_c
+        af_values = af.eval(points_on_proc, cells)
+        af_over_T_c = af_values > self.T_c
+        n_points_over_Tc = np.sum(af_over_T_c)
+        # compute G values over G_m
+        g_values = np.linalg.norm(grad_af.eval(points_on_proc, cells))
+        g_over_G_m = g_values > self.G_m
+        n_points_over_Gm = np.sum(g_over_G_m)
+        # check points distant to edge
+        distant_to_edge = np.array([not self.clock_checker.clock_check(point, c, lambda c_val: c_val < -self.phi_th)
+                                    for point in points_on_proc])
+        n_points_distant_to_edge = np.sum(distant_to_edge)
+        # get local possible locations
+        local_possible_locations = list(points_on_proc[c_over_phi_th & af_over_T_c & g_over_G_m & distant_to_edge])
+
+        # for point in local_mesh_points:
+        #     # get cell for point
+        #     candidate_cells = dolfinx.geometry.compute_collisions(self.mesh_bbt, point)
+        #     colliding_cells = dolfinx.geometry.compute_colliding_cells(self.mesh, candidate_cells, point)
+        #     # check if empty
+        #     if len(colliding_cells) > 0:
+        #         # if not, pick one cell for evaluation (no matter which)
+        #         current_cell = colliding_cells[0]
+        #     else:
+        #         raise RuntimeError(f"FATAL: Point {point} in the local mesh has no collisions with cells.")
+        #     # evaluate conditions
+        #     if self._point_distant_to_tip_cells(point):
+        #         n_points_distant += 1
+        #         if c.eval(point, current_cell) > self.phi_th:
+        #             n_points_phi_09 += 1
+        #             if af.eval(point, current_cell) > self.T_c:
+        #                 n_points_over_Tc += 1
+        #                 if np.linalg.norm(grad_af.eval(point, current_cell)) > self.G_m:
+        #                     n_points_over_Gm += 1
+        #                     if not self.clock_checker.clock_check(point, c, lambda c_val: c_val < -self.phi_th):
+        #                         n_points_distant_to_edge += 1
+        #                         local_possible_locations.append(point)
 
         debug_msg = \
             f"Finished checking. I found: \n" \
@@ -462,20 +489,19 @@ class TipCellManager:
         """1. For each local tip cell, check if the activation conditions are still met."""
         for tip_cell in self.local_tip_cells_list:
             # get tip cell position
-            position = tip_cell.get_position()
-            # get cell for point
-            candidate_cells = dolfinx.geometry.compute_collisions(self.mesh_bbt, position)
-            colliding_cells = dolfinx.geometry.compute_colliding_cells(self.mesh, candidate_cells, position)
+            tcp = tip_cell.get_position()
+            # get collisions
+            tcp_on_proc, tcp_cell = fu.get_colliding_cells_for_points([tcp], self.mesh, self.mesh_bbt)
+            # check if position on proc
+            is_tcp_on_proc = (len(tcp_on_proc) > 0)
             # check if empty
-            if len(colliding_cells) > 0:
-                # if not, pick one cell for evaluation (no matter which)
-                current_cell = colliding_cells[0]
+            if is_tcp_on_proc:
                 # check if conditions are met
-                af_at_point = af.eval(position, current_cell)
-                g_at_point = np.linalg.norm(grad_af.eval(position, current_cell))
+                af_at_point = af.eval(tcp_on_proc, tcp_cell)[0]
+                g_at_point = np.linalg.norm(grad_af.eval(tcp_on_proc, tcp_cell))[0]
                 if (af_at_point < self.T_c) or (g_at_point < self.G_m):
                     local_to_remove.append(tip_cell)
-                    debug_msg = f"Appending tip cell in pos {position} to local to remove because " \
+                    debug_msg = f"Appending tip cell in pos {tcp} to local to remove because " \
                                 f"af_at_point < T_c ({af_at_point} < {self.T_c}) or " \
                                 f"g_at_point < G_m ({g_at_point} < {self.G_m})"
                     _debug_adapter.debug(debug_msg)
@@ -571,21 +597,22 @@ class TipCellManager:
         # iterate on all tip cells
         for tip_cell in self.global_tip_cells_list:
             # get position
-            tip_cell_position = tip_cell.get_position()
-            # get cell for point
-            candidate_cells = dolfinx.geometry.compute_collisions(self.mesh_bbt, tip_cell_position)
-            colliding_cells = dolfinx.geometry.compute_colliding_cells(self.mesh, candidate_cells, tip_cell_position)
+            tcp = tip_cell.get_position()
+            # get collisions
+            tcp_on_proc, tcp_cell = fu.get_colliding_cells_for_points([tcp],
+                                                                      self.mesh,
+                                                                      self.mesh_bbt)
+            # check if tcp on proc
+            is_tcp_on_proc = (len(tcp_on_proc) > 0)
             # check if empty
-            if len(colliding_cells) > 0:
-                # if not, pick one cell for evaluation (no matter which)
-                current_cell = colliding_cells[0]
+            if is_tcp_on_proc:
                 # compute grad_af at point
-                grad_af_at_point = grad_af.eval(tip_cell_position, current_cell)
+                grad_af_at_point = grad_af.eval(tcp_on_proc, tcp_cell)[0]
                 # compute velocity
                 velocity = self.compute_tip_cell_velocity(grad_af_at_point,
                                                           self.parameters.get_value("chi"))
                 # compute value of T in position
-                T_at_point = af.eval(tip_cell_position, current_cell)
+                T_at_point = af.eval(tcp_on_proc, tcp_cell)[0]
             else:
                 velocity = None
                 T_at_point = None

@@ -1,9 +1,8 @@
-import fenics
 import numpy as np
 from mocafe.math import sigmoid
 
 
-class EllipseField(fenics.UserExpression):
+class EllipseField:
     """
     Expression representing an ellipse with a given value inside and a given value outside. The user can set
     the semiaxes and the center.
@@ -21,22 +20,13 @@ class EllipseField(fenics.UserExpression):
         self.inside_value = inside_value
         self.outside_value = outside_value
 
-    def eval(self, values, x):
+    def eval(self, x):
         x_in_ellipse = (((x[0] - self.center[0]) / self.semiax_x) ** 2) + \
                        (((x[1] - self.center[1]) / self.semiax_y) ** 2) <= 1.
-        if x_in_ellipse:
-            values[0] = self.inside_value
-        else:
-            values[0] = self.outside_value
-
-    def value_shape(self):
-        return ()
-
-    def __floordiv__(self, other):
-        pass
+        return np.where(x_in_ellipse, self.inside_value, self.outside_value)
 
 
-class EllipsoidField(fenics.UserExpression):
+class EllipsoidField:
     """
     Expression representing an ellipsoid with a given value inside and a given value outside. The user can set
     the semiaxes and the center.
@@ -57,23 +47,14 @@ class EllipsoidField(fenics.UserExpression):
         self.inside_value = inside_value
         self.outside_value = outside_value
 
-    def eval(self, values, x):
+    def eval(self, x):
         x_in_ellipsoid = (((x[0] - self.center[0]) / self.semiax_x) ** 2) + \
                          (((x[1] - self.center[1]) / self.semiax_y) ** 2) + \
                          (((x[2] - self.center[2]) / self.semiax_z) ** 2) <= 1.
-        if x_in_ellipsoid:
-            values[0] = self.inside_value
-        else:
-            values[0] = self.outside_value
-
-    def value_shape(self):
-        return ()
-
-    def __floordiv__(self, other):
-        pass
+        return np.where(x_in_ellipsoid, self.inside_value, self.outside_value)
 
 
-class SmoothCircle(fenics.UserExpression):
+class SmoothCircle:
     """
     Expression representing a Circle with a given center and radius, with given values inside and outside the circle.
     The border of the circle is a smooth sigmoidal function with the given slope.
@@ -100,15 +81,9 @@ class SmoothCircle(fenics.UserExpression):
         self.outside_value = outside_value
         self.slope = slope
 
-    def eval(self, values, x):
-        distance_from_center = fenics.sqrt(((x[0] - self.center[0]) ** 2) + ((x[1] - self.center[1]) ** 2))
-        values[0] = sigmoid(distance_from_center, self.radius, self.inside_value, self.outside_value, self.slope)
-
-    def value_shape(self):
-        return ()
-
-    def __floordiv__(self, other):
-        pass
+    def eval(self, x):
+        distance_from_center = np.sqrt(((x[0] - self.center[0]) ** 2) + ((x[1] - self.center[1]) ** 2))
+        return sigmoid(distance_from_center, self.radius, self.inside_value, self.outside_value, self.slope)
 
 
 class SmoothCircularTumor(SmoothCircle):
@@ -129,26 +104,5 @@ class SmoothCircularTumor(SmoothCircle):
         """
         super(SmoothCircularTumor, self).__init__(center, radius, 1., 0., slope)
 
-    def eval(self, values, x):
-        super(SmoothCircularTumor, self).eval(values, x)
-
-
-class PythonFunctionField(fenics.UserExpression):
-    """
-    Expression representing a field with values determined on the basis of the given python function.
-    """
-    def __init__(self,
-                 python_fun,
-                 *python_fun_params):
-        super(PythonFunctionField, self).__init__()
-        self.python_fun = python_fun
-        self.python_fun_params = python_fun_params
-
-    def eval(self, values, x):
-        values[0] = self.python_fun(x, *self.python_fun_params)
-
-    def value_shape(self):
-        return ()
-
-    def __floordiv__(self, other):
-        pass
+    def eval(self, x):
+        super(SmoothCircularTumor, self).eval(x)

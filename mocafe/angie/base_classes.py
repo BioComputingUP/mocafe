@@ -223,7 +223,7 @@ class ClockChecker:
                 # if not, pick one cell for evaluation (no matter which one)
                 current_cell = cells[0]
                 # evaluate condition on point and cell
-                if condition(function.eval(ccp, current_cell)):
+                if condition(function.eval(ccp_on_proc, current_cell)[0]):
                     # if condition is true, break cycle and return True
                     return True
         # if no point meets the condition, return False
