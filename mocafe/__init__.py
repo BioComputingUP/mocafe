@@ -16,10 +16,12 @@ See the extensive documentation for each subpackage and submodule in the section
 """
 
 import configparser
+from pathlib import Path
 
 # get version
 config = configparser.ConfigParser()
-with open("./setup.cfg", 'r') as cfg_file:
+pf = Path(__file__).parent.resolve().parent
+with open(f"{pf}/setup.cfg", 'r') as cfg_file:
     config.read_file(cfg_file)
 
 __version__ = config["metadata"]["version"]

@@ -11,6 +11,7 @@ If you use this model in your research, remember to cite the original paper desc
 For a use example see the :ref:`Angiogenesis <Angiogenesis 2D Demo>` and the
 :ref:`Angiogenesis 3D <Angiogenesis 2D Demo>` demos.
 """
+import sys
 
 import dolfinx
 from mpi4py import MPI
@@ -480,49 +481,59 @@ class TipCellManager:
         local_to_remove = []
         local_to_check_if_outside_global_mesh = []
 
-        """1. For each local tip cell, check if the activation conditions are still met."""
+        """1. Iterate on global tip cells."""
         for tip_cell in self.local_tip_cells_list:
             # get tip cell position
             tcp = tip_cell.get_position()
             # get collisions
             tcp_on_proc, tcp_cell = fu.get_colliding_cells_for_points([tcp], self.mesh, self.mesh_bbt)
-            # check if position on proc
+            # check if position on current proc
             is_tcp_on_proc = (len(tcp_on_proc) > 0)
-            # check if empty
-            if is_tcp_on_proc:
-                # check if conditions are met
-                af_at_point = af.eval(tcp_on_proc, tcp_cell)
-                g_at_point = np.linalg.norm(grad_af.eval(tcp_on_proc, tcp_cell))
-                if (af_at_point < self.T_c) or (g_at_point < self.G_m):
-                    local_to_remove.append(tip_cell)
-                    debug_msg = f"Appending tip cell in pos {tcp} to local to remove because " \
-                                f"af_at_point < T_c ({af_at_point} < {self.T_c}) or " \
-                                f"g_at_point < G_m ({g_at_point} < {self.G_m})"
-                    _debug_adapter.debug(debug_msg)
-            else:
-                # else add to the list for checking if in global mesh
-                local_to_check_if_outside_global_mesh.append(tip_cell)
 
-        """2. For local tip cells which are outside the local mesh, check if they are outside the global mesh. """
-        global_to_check_if_outside_global_mesh = _comm.gather(local_to_check_if_outside_global_mesh, 0)
-        if _rank == 0:
-            global_to_check_if_outside_global_mesh = fu.flatten_list_of_lists(global_to_check_if_outside_global_mesh)
-        global_to_check_if_outside_global_mesh = _comm.bcast(global_to_check_if_outside_global_mesh, 0)
-        for tip_cell in global_to_check_if_outside_global_mesh:
-            is_inside_local_mesh = fu.is_point_inside_mesh(self.mesh, tip_cell.get_position())
-            is_inside_local_mesh_array = _comm.gather(is_inside_local_mesh, 0)
-            if _rank == 0:
-                is_inside_global_mesh = any(is_inside_local_mesh_array)
+            """1a. For each tip cell position, check if is still in gobal mesh"""
+            _info_adapter.info(f"Is tcp on current proc? {is_tcp_on_proc}")
+            is_tcp_on_any_proc = _comm.allreduce(is_tcp_on_proc, MPI.LOR)
+            _info_adapter.info(f"Is tcp on any proc? {is_tcp_on_any_proc}")
+
+            if is_tcp_on_any_proc:
+                """1a1. If tcp is in global mesh, check if tip cells conditions are met"""
+                if is_tcp_on_proc:
+                    # check if conditions are met
+                    af_at_point = af.eval(tcp_on_proc, tcp_cell)
+                    g_at_point = np.linalg.norm(grad_af.eval(tcp_on_proc, tcp_cell))
+                    if (af_at_point < self.T_c) or (g_at_point < self.G_m):
+                        local_to_remove.append(tip_cell)
+                        debug_msg = f"Appending tip cell in pos {tcp} to local to remove because " \
+                                    f"af_at_point < T_c ({af_at_point} < {self.T_c}) or " \
+                                    f"g_at_point < G_m ({g_at_point} < {self.G_m})"
+                        _debug_adapter.debug(debug_msg)
             else:
-                is_inside_global_mesh = None
-            is_inside_global_mesh = _comm.bcast(is_inside_global_mesh, 0)
-            if not is_inside_global_mesh:
+                """1a2. Else, append tip cell to local to remove."""
                 local_to_remove.append(tip_cell)
                 debug_msg = f"Appending tip cell in pos {tip_cell.get_position()} to local to remove because " \
                             f"it is outside the global mesh."
                 _debug_adapter.debug(debug_msg)
 
-        """3. Remove local tip cells near to each other, due to Delta-Notch signalling."""
+        # """2. For local tip cells which are outside the local mesh, check if they are outside the global mesh. """
+        # global_to_check_if_outside_global_mesh = _comm.gather(local_to_check_if_outside_global_mesh, 0)
+        # if _rank == 0:
+        #     global_to_check_if_outside_global_mesh = fu.flatten_list_of_lists(global_to_check_if_outside_global_mesh)
+        # global_to_check_if_outside_global_mesh = _comm.bcast(global_to_check_if_outside_global_mesh, 0)
+        # for tip_cell in global_to_check_if_outside_global_mesh:
+        #     is_inside_local_mesh = fu.is_point_inside_mesh(self.mesh, tip_cell.get_position())
+        #     is_inside_local_mesh_array = _comm.gather(is_inside_local_mesh, 0)
+        #     if _rank == 0:
+        #         is_inside_global_mesh = any(is_inside_local_mesh_array)
+        #     else:
+        #         is_inside_global_mesh = None
+        #     is_inside_global_mesh = _comm.bcast(is_inside_global_mesh, 0)
+        #     if not is_inside_global_mesh:
+        #         local_to_remove.append(tip_cell)
+        #         debug_msg = f"Appending tip cell in pos {tip_cell.get_position()} to local to remove because " \
+        #                     f"it is outside the global mesh."
+        #         _debug_adapter.debug(debug_msg)
+
+        """2. Remove local tip cells near to each other, due to Delta-Notch signalling."""
         near_tcs_to_remove = []  # init list of cells to remove
         if _rank == 0:
             global_tc_list = self.global_tip_cells_list.copy()  # get a copy of the global tip cells (tc) list
@@ -619,7 +630,17 @@ class TipCellManager:
                 T_at_point_array_no_nones = [val for val in T_at_point_array
                                              if val is not None]
                 # get velocity
-                velocity = velocity_array_no_nones[0]
+                try:
+                    velocity = velocity_array_no_nones[0]
+                except IndexError as e:
+                    print(f"Rank {_rank} \n"
+                          f"Error! velocity_array_no_ones is: {velocity_array_no_nones}\n"
+                          f"with:  velocity array :           {velocity_array}\n"
+                          f"for    tip cell in pos :          {tcp}\n"
+                          f"where  af:                        {T_at_point_array}\n")
+                    sys.stdout.flush()
+                    raise e
+
                 # get T_value
                 T_at_point = T_at_point_array_no_nones[0]
             else:
