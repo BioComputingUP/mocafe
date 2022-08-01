@@ -19,7 +19,7 @@ default_saved_sim_folder_name = "saved_sim"
 
 
 def setup_data_folder(folder_path: str,
-                      auto_enumerate: bool = True) -> pathlib.Path:
+                      auto_enumerate: str or None = "code") -> pathlib.Path:
     """
     Creates a folder at the given folder path and returns it as pathlib.Path object to use for the simulation
     files.
@@ -28,23 +28,36 @@ def setup_data_folder(folder_path: str,
 
     .. code-block:: default
 
-        setup_data_folder(folder_name="my_sim_data")
+        setup_data_folder(folder_name="my_sim_data", auto_enumerate=None)
 
     Will just create the folder "my_sim_data" in the current root directory.
 
-    The ``auto_enumerate`` argument can be used to specify if you need coded folders for the same simulation. This
+    The ``auto_enumerate`` argument can be used to specify if you need multiple folders for the same simulation. This
     is useful especially when one needs to save multiple simulation results under the same folder without having
     to decide a new folder path for each simulation. Indeed, if you call:
 
     .. code-block:: default
 
-        setup_data_folder(folder_path="my_sim_data", auto_enumerate=True)
+        setup_data_folder(folder_path="my_sim_data", auto_enumerate="code")
 
     This method will return:
 
     - the folder ``./my_sim_data/0000`` the first time the method is called
     - the folder ``./my_sim_data/0001`` the second time the method is called
     - ... and so on
+
+    From version 1.1.0 folders can be coded also using date and time passing ``"datetime"`` as argument for
+    ``auto_enumerate``:
+
+    .. code-block:: default
+
+        setup_data_folder(folder_path="my_sim_data", auto_enumerate="code")
+
+    The folder you'll get will be:
+
+    - ``./my_sim_data/2022-04-26_09-14-41-550788``
+    - ``./my_sim_data/2022-04-26_09-14-43-570700``
+    - ... and so on.
 
     Works in parallel with MPI.
 
@@ -57,7 +70,7 @@ def setup_data_folder(folder_path: str,
         # rename folder_path
         data_folder = pathlib.Path(folder_path)
         # if you wank to keep all sim files, generate a new folder for each simulation
-        if auto_enumerate:
+        if auto_enumerate == "code":
             base_code = "0000"
             data_folder_coded = data_folder / pathlib.Path(f"{base_code}")
             if data_folder_coded.exists():
@@ -69,6 +82,15 @@ def setup_data_folder(folder_path: str,
                     sim_index += 1
             # the coded data folder at the end of the iteration is the data folder
             data_folder = data_folder_coded
+        elif auto_enumerate == "datetime":
+            curr_datetime = str(datetime.datetime.now()).replace(" ", "_").replace(":", "-").replace(".", "-")
+            data_folder = data_folder / pathlib.Path(f"{curr_datetime}")
+        elif auto_enumerate is None:
+            pass
+        else:
+            raise ValueError(f"auto_enumerate set to {auto_enumerate}. auto_enumerate can be only equal to 'code', "
+                             f"'datetime', and None.")
+
         # create data folder
         data_folder.mkdir(parents=True, exist_ok=True)
     else:
