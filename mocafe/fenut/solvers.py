@@ -162,15 +162,7 @@ class BestSolverFinder:
             "error": [],
             "duration": [],
         }
-        # # get ksp types
-        # ksp_types = [PETSc.KSP.Type().__getattribute__(attribute)
-        #              for attribute in dir(PETSc.KSP.Type) if attribute.isupper()]
-        # # get pc types
-        # pc_types = [PETSc.PC.Type().__getattribute__(attribute)
-        #             for attribute in dir(PETSc.PC.Type) if attribute.isupper()]
-        # # build parameters dicts
-        # parameters_lists = [["-ksp_type", ksp_type, "-pc_type", pc_type]
-        #                     for ksp_type, pc_type in product(ksp_types, pc_types)]
+        # # get SNES types
         snes_types = [PETSc.SNES.Type().__getattribute__(attribute)
                       for attribute in dir(PETSc.SNES.Type) if attribute.isupper()]
         parameters_lists = [["-snes_type", snes_type] for snes_type in snes_types]
