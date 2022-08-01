@@ -8,12 +8,17 @@
   
 > A Python package based on [FEniCS](https://fenicsproject.org/) to develop and simulate Phase Field mathematical models for cancer  
   
-The purpose of Mocafe is to provide an open source and efficient implementation of legacy Phase Field mathematical models of cancer development and angiogenesis. 
+The purpose of Mocafe is to provide an open source and efficient implementation of Phase Field mathematical models of cancer development and angiogenesis. 
 
 Use Mocafe to: 
-* reproduce legacy cancer phase field model (also in parallel with `MPI`);  
+* reproduce important cancer phase field model (also in parallel with `MPI`);  
 * understand them better inspecting the code, and changing the parameters;  
 * integrate these models in yours [FEniCS](https://fenicsproject.org/) scripts.
+
+## Cite
+Mocafe is published at:
+
+> Franco Pradelli, Giovanni Minervini, Silvio C E Tosatto, Mocafe: a comprehensive Python library for simulating cancer development with Phase Field Models, Bioinformatics, 2022;, btac521, https://doi.org/10.1093/bioinformatics/btac521
 
 ## Documentation
 To ease Mocafe usage by every user, we provide an extensive documentation along with the package. 
@@ -36,7 +41,7 @@ python3 -m mocafe
 ```
 
 ### Singularity users
-We prepared a Singularity recipy to easily create a Mocafe container to run on your system. See the 
+We prepared a Singularity definition file to easily create a Mocafe container to run on your system. See the 
 [Installation page](https://biocomputingup.github.io/mocafe/build/html/installation.html) for further details.
 
 ## Demos
