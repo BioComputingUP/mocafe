@@ -41,7 +41,7 @@ python3 -m mocafe
 ```
 
 ### Singularity users
-We prepared a Singularity recipy to easily create a Mocafe container to run on your system. See the 
+We prepared a Singularity definition file to easily create a Mocafe container to run on your system. See the 
 [Installation page](https://biocomputingup.github.io/mocafe/build/html/installation.html) for further details.
 
 ## Demos
