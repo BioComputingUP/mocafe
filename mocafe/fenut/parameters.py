@@ -64,9 +64,10 @@ class Parameters:
         :param param_df: the ``pandas.DataFrame`` containing the parameters names and values.
         """
         # set param_df as parameters dataframe
-        self.param_df: pd.DataFrame = param_df
+        self.param_df: pd.DataFrame = param_df.copy()
         # set param name as index
-        self.param_df.set_index("name", inplace=True)
+        if self.param_df.index.name != "name":
+            self.param_df.set_index("name", inplace=True)
 
     def get_value(self, name: str):
         """
