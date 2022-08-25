@@ -14,10 +14,11 @@ For a use example see the :ref:`Angiogenesis <Angiogenesis 2D Demo>` and the
 
 import fenics
 import numpy as np
-import mocafe.fenut.fenut as fu
-from mocafe.angie.base_classes import BaseCell, ClockChecker
+from typing import List
 import random
 import logging
+import mocafe.fenut.fenut as fu
+from mocafe.angie.base_classes import BaseCell, ClockChecker
 from mocafe.fenut.parameters import Parameters
 from mocafe.fenut.log import InfoCsvAdapter, DebugAdapter
 
@@ -181,15 +182,16 @@ class TipCellManager:
     Class to manage the tip cells throughout the simulation.
     """
     def __init__(self, mesh: fenics.Mesh,
-                 parameters: Parameters):
+                 parameters: Parameters,
+                 initial_tcs: List[TipCell] = None):
         """
         inits a TipCellManager
 
         :param mesh: mesh
         :param parameters: simulation parameters
+        :param initial_tcs: set a list of tip cells as initial tip cell list for the TipCellManager. Default is None,
+            which sets the initial tip cell list to an empty list.
         """
-        self.global_tip_cells_list = []
-        self.local_tip_cells_list = []
         self.mesh = mesh
         mesh.bounding_box_tree()  # done for MPI; otherwise idle (bounding box must be built on all processes)
         self.parameters = parameters
@@ -203,7 +205,14 @@ class TipCellManager:
         self.min_tipcell_distance = parameters.get_value("min_tipcell_distance")
         self.clock_checker = ClockChecker(mesh, self.cell_radius, start_point="west")
         self.local_box = self._build_local_box(self.cell_radius)
+        self.global_tip_cells_list = []
+        self.local_tip_cells_list = []
         self.latest_t_c_f_function = None
+        if initial_tcs is None:
+            pass
+        else:
+            for tc in initial_tcs:
+                self._add_tip_cell(tc)
 
     def get_global_tip_cells_list(self):
         """
