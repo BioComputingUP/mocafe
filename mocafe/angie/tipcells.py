@@ -15,7 +15,6 @@ For a use example see the :ref:`Angiogenesis <Angiogenesis 2D Demo>` and the
 import fenics
 import numpy as np
 import mocafe.fenut.fenut as fu
-from mocafe.angie import af_sourcing
 from mocafe.angie.base_classes import BaseCell, ClockChecker
 import random
 import logging
