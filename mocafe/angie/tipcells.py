@@ -766,6 +766,12 @@ class TipCellManager:
 
         :param tc_file: file where to store the json tip cell list.
         """
+        # check if input file is json file
+        if tc_file.endswith(".json"):
+            pass
+        else:
+            raise RuntimeError("Input file must be a json file.")
+
         if _rank == 0:
             # create dict from global tc list
             tc_dict = self._make_tip_cells_dict()
@@ -784,6 +790,11 @@ class TipCellManager:
         :param tc_file: file where to store the json tip cell list.
         :param step: time step
         """
+        # check if input file is json file
+        if tc_file.endswith(".json"):
+            pass
+        else:
+            raise RuntimeError("Input file must be a json file.")
         # check if this method has been called for the first time
         first_time_called = self.incremental_tip_cell_file is None
         # set file name
@@ -814,6 +825,11 @@ def load_tip_cells_from_json(json_file: str):
 
     :param json_file: file to load as tip cell list.
     """
+    # check if input file is json file
+    if json_file.endswith(".json"):
+        pass
+    else:
+        raise RuntimeError("Input file must be a json file.")
     # load json
     with open(json_file) as infile:
         tc_dict = json.load(infile)
