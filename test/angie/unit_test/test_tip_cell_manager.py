@@ -56,19 +56,17 @@ def test_activate_tip_cell(T0, phi0, gradT0, mesh, parameters):
     # activate
     tip_cell_manager.activate_tip_cell(phi0, T0, gradT0, 0)
 
-    test_result = False
-    # check if ok
-    if len(tip_cell_manager.get_global_tip_cells_list()) == 1:
-        if tip_cell_manager.get_global_tip_cells_list()[0].get_position()[0] < 30:
-            print(f"p{fenics.MPI.comm_world.Get_rank()}: "
-                  f"Activated tip cell in {tip_cell_manager.get_global_tip_cells_list()[0].get_position()}")
-            test_result = True
-    else:
-        print(f"p{fenics.MPI.comm_world.Get_rank()}: "
-              f" n activated tip cells = {len(tip_cell_manager.get_global_tip_cells_list())}")
-        test_result = False
+    # get global tip cell list
+    g_tc_list = tip_cell_manager.get_global_tip_cells_list()
 
-    assert test_result is True, "There should be just one tip cell activated"
+    # test length
+    assert len(g_tc_list) == 1, "There should be just one tip cell"
+
+    # test if tc is in the right position
+    activated_tc = g_tc_list[0]
+    assert activated_tc.get_position()[0] < 30, f"Tip cell should be where phi0 is high (x[0] < 30). " \
+                                                f"Tip cell found in position {activated_tc.get_position()}"
+
 
 
 def test_activate_3_tip_cells(parameters, T0, phi0, gradT0, mesh):
@@ -88,7 +86,7 @@ def test_activate_3_tip_cells(parameters, T0, phi0, gradT0, mesh):
         other_indexes.remove(index)
         for i in other_indexes:
             distance = tip_cell.get_distance(tip_cell_list[i].get_position())
-            if distance < 4 * parameters.get_value("R_c"):
+            if distance < parameters.get_value("min_tipcell_distance"):
                 are_cells_distant = False
 
     assert tip_cell_list_len_is_3 and are_cells_distant, "There should be 3 cells distant to each other"
