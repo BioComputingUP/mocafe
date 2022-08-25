@@ -215,6 +215,7 @@ class TipCellManager:
         else:
             for tc in initial_tcs:
                 self._add_tip_cell(tc)
+        self.incremental_tip_cell_file = None
 
     def get_global_tip_cells_list(self):
         """
@@ -744,6 +745,21 @@ class TipCellManager:
         else:
             return self.latest_t_c_f_function
 
+    def _make_tip_cells_dict(self):
+        """
+        INTERNAL USE
+
+        Creates a dictionary with the current tip cells data. Used for creating tip cells json objects
+        """
+        tc_dict = {}
+        for tc in self.global_tip_cells_list:
+            tc_dict[f"tc{hash(tc)}"] = {
+                "position": tc.position.tolist(),
+                "radius": tc.radius,
+                "creation step": tc.creation_step
+            }
+        return tc_dict
+
     def save_tip_cells(self, tc_file: str):
         """
         Stores the current global tip cell list in a readable json file.
@@ -752,17 +768,41 @@ class TipCellManager:
         """
         if _rank == 0:
             # create dict from global tc list
-            tc_dict = {}
-            for tc in self.global_tip_cells_list:
-                tc_dict[f"tc{hash(tc)}"] = {
-                    "position": tc.position.tolist(),
-                    "radius": tc.radius,
-                    "creation step": tc.creation_step
-                }
+            tc_dict = self._make_tip_cells_dict()
 
             # save to file
             with open(tc_file, "w") as outfile:
                 json.dump(tc_dict, outfile)
+
+        # wait for all the processes
+        _comm.Barrier()
+
+    def save_incremental_tip_cells(self, tc_file: str, step: int):
+        """
+        Stores the global tip cell list in a readable json file at every time step.
+
+        :param tc_file: file where to store the json tip cell list.
+        :param step: time step
+        """
+        # check if this method has been called for the first time
+        first_time_called = self.incremental_tip_cell_file is None
+        # set file name
+        if first_time_called:
+            self.incremental_tip_cell_file = tc_file
+        if _rank == 0:
+            # init dict
+            if first_time_called:
+                incremental_tc_dict = {}
+            else:
+                with open(self.incremental_tip_cell_file) as infile:
+                    incremental_tc_dict = json.load(infile)
+
+            # create dict from global tc list
+            incremental_tc_dict[f"step_{step}"] = self._make_tip_cells_dict()
+
+            # save to file
+            with open(self.incremental_tip_cell_file, "w") as outfile:
+                json.dump(incremental_tc_dict, outfile)
 
         # wait for all the processes
         _comm.Barrier()
