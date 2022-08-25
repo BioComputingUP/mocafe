@@ -17,6 +17,7 @@ import numpy as np
 from typing import List
 import random
 import logging
+import json
 import mocafe.fenut.fenut as fu
 from mocafe.angie.base_classes import BaseCell, ClockChecker
 from mocafe.fenut.parameters import Parameters
@@ -25,6 +26,7 @@ from mocafe.fenut.log import InfoCsvAdapter, DebugAdapter
 # get _rank
 _comm = fenics.MPI.comm_world
 _rank = _comm.Get_rank()
+_size = _comm.Get_size()
 
 # configure _logger
 _logger = logging.getLogger(__name__)
@@ -268,6 +270,32 @@ class TipCellManager:
         :param tip_cell: the tip cell to add
         :return: nothing
         """
+        # check if the tip cell to add it the same on all processes
+        if _size > 1:
+            # gather tcs to be added
+            tc_on_processes = _comm.gather(tip_cell, root=0)
+            # check if are all equal
+            if _rank == 0:
+                are_tc_equal = [tc == tip_cell for tc in tc_on_processes]
+                are_tc_all_equal = all(are_tc_equal)
+                error_msg = ""
+                for index, test_result in enumerate(are_tc_equal):
+                    if test_result:
+                        pass
+                    else:
+                        error_msg += f"Tip Cell on p{index} is different from Tip Cell on p0 \n"
+            else:
+                are_tc_all_equal = None
+                error_msg = None
+            are_tc_all_equal = _comm.bcast(are_tc_all_equal, root=0)
+            if are_tc_all_equal:
+                pass
+            else:
+                error_msg = _comm.bcast(error_msg, root=0)
+                error_msg = "Can't add different Tip Cells on different MPI processes. \n" + error_msg
+                raise RuntimeError(error_msg)
+
+        # add tip cell
         self.global_tip_cells_list.append(tip_cell)
         if self._is_in_local_box(tip_cell.get_position()):
             self.local_tip_cells_list.append(tip_cell)
@@ -715,3 +743,47 @@ class TipCellManager:
             raise RuntimeError("Tip cell function has not have been computed yet")
         else:
             return self.latest_t_c_f_function
+
+    def save_tip_cells(self, tc_file: str):
+        """
+        Stores the current global tip cell list in a readable json file.
+
+        :param tc_file: file where to store the json tip cell list.
+        """
+        if _rank == 0:
+            # create dict from global tc list
+            tc_dict = {}
+            for tc in self.global_tip_cells_list:
+                tc_dict[f"tc{hash(tc)}"] = {
+                    "position": tc.position.tolist(),
+                    "radius": tc.radius,
+                    "creation step": tc.creation_step
+                }
+
+            # save to file
+            with open(tc_file, "w") as outfile:
+                json.dump(tc_dict, outfile)
+
+        # wait for all the processes
+        _comm.Barrier()
+
+
+def load_tip_cells_from_json(json_file: str):
+    """
+    Creates a tip cell list from a json file with tip cells data.
+
+    :param json_file: file to load as tip cell list.
+    """
+    # load json
+    with open(json_file) as infile:
+        tc_dict = json.load(infile)
+    # create tip cells
+    tc_list = []
+    for tc_entry in tc_dict:
+        tc_list.append(
+            TipCell(np.array(tc_dict[tc_entry]["position"]),
+                    tc_dict[tc_entry]["radius"],
+                    tc_dict[tc_entry]["creation step"])
+        )
+    return tc_list
+

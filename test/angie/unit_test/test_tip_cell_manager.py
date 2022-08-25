@@ -2,7 +2,8 @@ import fenics
 import numpy as np
 import pytest
 import itertools
-from mocafe.angie.tipcells import TipCellManager, TipCell
+from pathlib import Path
+from mocafe.angie.tipcells import TipCellManager, TipCell, load_tip_cells_from_json
 
 
 @pytest.fixture
@@ -50,7 +51,7 @@ def gradT0(mesh, T0):
     return gradT0
 
 
-def test_activate_tip_cell(T0, phi0, gradT0, mesh, parameters):
+def test_activate_tip_cell(T0, phi0, gradT0, mesh, parameters, tmpdir):
     # create tip cell manager
     tip_cell_manager = TipCellManager(mesh, parameters)
 
@@ -81,6 +82,16 @@ def test_activate_tip_cell(T0, phi0, gradT0, mesh, parameters):
     assert all([tc.get_position()[0] < 30 for tc in g_tc_list2]), f"All Tip Cells should be where phi0 is high " \
                                                                   f"(x[0] < 30). Tip Cells positions are: " \
                                                                   f"{[tc.get_position() for tc in g_tc_list2]}"
+
+    # test if I can save tip cells
+    tc_file_r0 = f"{tmpdir}/tipcells.json"
+    tc_file_r0 = fenics.MPI.comm_world.bcast(tc_file_r0, root=0)
+    tip_cell_manager2.save_tip_cells(tc_file_r0)
+    assert Path(tc_file_r0).exists(), f"The tc file {tc_file_r0} should have been created. "
+
+    # test if I can load tip cells
+    tc_list = load_tip_cells_from_json(tc_file_r0)
+    assert tc_list == g_tc_list2
 
 
 def test_activate_3_tip_cells(parameters, T0, phi0, gradT0, mesh):
@@ -213,10 +224,11 @@ def test_delta_notch_3_cells(parameters, T0, gradT0, mesh):
 
 
 def test_different_initial_tc_lists_on_different_processes(mesh, parameters):
-    # create different tip cell list in different processes
-    init_tc_list = [TipCell(np.array([4, 4]), 4, 100),
-                    TipCell(np.array([10, 10]), 4, 101),
-                    TipCell(np.array([20, 20]), 4, fenics.MPI.comm_world.Get_rank())]
-    # check if error raises
-    with pytest.raises(RuntimeError):
-        TipCellManager(mesh, parameters, initial_tcs=init_tc_list)
+    if fenics.MPI.comm_world.Get_size() > 1:
+        # create different tip cell list in different processes
+        init_tc_list = [TipCell(np.array([4, 4]), 4, 100),
+                        TipCell(np.array([10, 10]), 4, 101),
+                        TipCell(np.array([20, 20]), 4, fenics.MPI.comm_world.Get_rank())]
+        # check if error raises
+        with pytest.raises(RuntimeError):
+            TipCellManager(mesh, parameters, initial_tcs=init_tc_list)
