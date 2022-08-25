@@ -210,3 +210,13 @@ def test_delta_notch_3_cells(parameters, T0, gradT0, mesh):
         f"Tip Cell in position {tipcell1_pos} should be in the list"
     assert tipcell3 in tip_cell_manager.get_global_tip_cells_list(), \
         f"Tip Cell in position {tipcell3_pos} should be in the list"
+
+
+def test_different_initial_tc_lists_on_different_processes(mesh, parameters):
+    # create different tip cell list in different processes
+    init_tc_list = [TipCell(np.array([4, 4]), 4, 100),
+                    TipCell(np.array([10, 10]), 4, 101),
+                    TipCell(np.array([20, 20]), 4, fenics.MPI.comm_world.Get_rank())]
+    # check if error raises
+    with pytest.raises(RuntimeError):
+        TipCellManager(mesh, parameters, initial_tcs=init_tc_list)
