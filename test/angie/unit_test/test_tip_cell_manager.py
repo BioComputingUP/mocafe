@@ -1,19 +1,7 @@
 import fenics
-import sys
 import numpy as np
 import pytest
 from mocafe.angie.tipcells import TipCellManager, TipCell
-
-
-# @pytest.fixture
-# def file_list():
-#     # setup root folder
-#     data_folder = "runtime/test/tipcell"
-#
-#     # define files
-#     file_names = ["c", "T", "grad_T"]
-#     file_list = fu.setup_xdmf_files(file_names, data_folder)
-#     return file_list
 
 
 @pytest.fixture
