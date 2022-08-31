@@ -36,4 +36,3 @@ def test_angiogenesis_forms(parameters):
         angiogenic_factor_form(foo, foo, foo, v_foo, parameters)
     with pytest.raises(RuntimeError):
         angiogenesis_form(foo, foo, foo, foo, v_foo, v_foo, foo, parameters)
-
