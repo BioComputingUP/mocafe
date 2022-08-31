@@ -203,6 +203,66 @@ def angiogenesis_form(c: fenics.Function,
     return form
 
 
+def angiogenesis_form_no_proliferation(c: fenics.Function,
+                      c0: fenics.Function,
+                      mu: fenics.Function,
+                      mu0: fenics.Function,
+                      v1: fenics.TestFunction,
+                      v2: fenics.TestFunction,
+                      parameters: Parameters = None,
+                      **kwargs):
+    r"""
+    (New in version 1.4)
+    Returns the UFL form for the Phase-Field model for angiogenesis reported by Travasso et al. (2011)
+    :cite:`Travasso2011a`, without the proliferation term.
+
+    The equation reads simply as:
+
+    .. math::
+       \frac{\partial c}{\partial t} = M \cdot \nabla^2 [\frac{df}{dc}\ - \epsilon \nabla^2 c]
+
+    Where :math: `c` is the unknown field representing the capillaries, and :
+
+    .. math:: f = \frac{1}{4} \cdot c^4 - \frac{1}{2} \cdot c^2
+
+    In this implementation, the equation is splitted in two equations of lower order, in order to make the weak form
+    solvable using standard Lagrange finite elements:
+
+    .. math::
+       \frac{\partial c}{\partial t} &= M \nabla^2 \cdot \mu\\
+       \mu &= \frac{d f}{d c} - \epsilon \nabla^{2}c
+
+    Specify a parameter for the form calling the function, e.g. with
+    ``angiogenesis_form(c, c0, mu, mu0, v1, v2, af, parameters, alpha_p=10, M=20)``. If both a Parameters object and a
+    parameter as input are given, the function will choose the input parameter.
+
+    :param c: capillaries field
+    :param c0: initial condition for the capillaries field
+    :param mu: auxiliary field
+    :param mu0: initial condition for the auxiliary field
+    :param v1: test function for c
+    :param v2: test function  for mu
+    :param af: angiogenic factor field
+    :param parameters: simulation parameters
+    :return:
+    """
+    # get parameters
+    dt, epsilon, M = _unpack_parameters_list(["dt", "epsilon", "M"],
+                                             parameters,
+                                             kwargs)
+    # define theta
+    theta = 0.5
+
+    # define chemical potential for the phase field
+    c = fenics.variable(c)
+    chem_potential = ((c ** 4) / 4) - ((c ** 2) / 2)
+
+    # define total form
+    form_cahn_hillard = cahn_hillard_form(c, c0, mu, mu0, v1, v2, dt, theta, chem_potential,
+                                          epsilon, M)
+    return form_cahn_hillard
+
+
 def angiogenic_factor_form(af: fenics.Function,
                            af_0: fenics.Function,
                            c: fenics.Function,
