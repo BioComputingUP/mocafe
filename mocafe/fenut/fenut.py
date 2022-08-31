@@ -5,7 +5,6 @@ Requires FEniCS 2019.1 to work.
 """
 
 import fenics
-import shutil
 import json
 import numpy as np
 
