@@ -29,7 +29,7 @@ def setup_pvd_files(file_names: list, data_folder):
 
 def setup_xdmf_files(file_names: list,
                      data_folder,
-                     xdmf_files_parameters: dict,
+                     xdmf_files_parameters: dict = None,
                      comm=fenics.MPI.comm_world):
     """
     returns a list of ``.xdmf`` files with the given list of names. ``.xdmf`` files are the preferred way to store
