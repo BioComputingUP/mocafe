@@ -204,13 +204,13 @@ def angiogenesis_form(c: fenics.Function,
 
 
 def angiogenesis_form_no_proliferation(c: fenics.Function,
-                      c0: fenics.Function,
-                      mu: fenics.Function,
-                      mu0: fenics.Function,
-                      v1: fenics.TestFunction,
-                      v2: fenics.TestFunction,
-                      parameters: Parameters = None,
-                      **kwargs):
+                                       c0: fenics.Function,
+                                       mu: fenics.Function,
+                                       mu0: fenics.Function,
+                                       v1: fenics.TestFunction,
+                                       v2: fenics.TestFunction,
+                                       parameters: Parameters = None,
+                                       **kwargs):
     r"""
     (New in version 1.4)
     Returns the UFL form for the Phase-Field model for angiogenesis reported by Travasso et al. (2011)
