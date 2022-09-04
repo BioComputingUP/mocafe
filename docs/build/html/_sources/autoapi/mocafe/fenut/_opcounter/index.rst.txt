@@ -1,0 +1,46 @@
+:orphan:
+
+:py:mod:`mocafe.fenut._opcounter`
+=================================
+
+.. py:module:: mocafe.fenut._opcounter
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   mocafe.fenut._opcounter.OpCounter
+
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   mocafe.fenut._opcounter.comm
+
+
+.. py:data:: comm
+   
+
+   
+
+.. py:class:: OpCounter(filename)
+
+   .. py:method:: start_op(self, op_name: str)
+
+
+   .. py:method:: end_op(self, op_name: str)
+
+
+   .. py:method:: write_csv(self)
+
+
+

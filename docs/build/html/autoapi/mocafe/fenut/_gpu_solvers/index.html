@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mocafe.fenut._gpu_solvers &mdash; Mocafe 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/graphviz.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> Mocafe
+            <img src="../../../../_static/200mocafe_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../demo_doc/index.html">Demo Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../bib.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Mocafe</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe.fenut._gpu_solvers</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/autoapi/mocafe/fenut/_gpu_solvers/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-mocafe.fenut._gpu_solvers">
+<span id="mocafe-fenut-gpu-solvers"></span><h1><a class="reference internal" href="#module-mocafe.fenut._gpu_solvers" title="mocafe.fenut._gpu_solvers"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe.fenut._gpu_solvers</span></code></a><a class="headerlink" href="#module-mocafe.fenut._gpu_solvers" title="Permalink to this headline"></a></h1>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline"></a></h2>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline"></a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mocafe.fenut._gpu_solvers.cupy_newton_solver" title="mocafe.fenut._gpu_solvers.cupy_newton_solver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy_newton_solver</span></code></a>(form: fenics.Form, sol: fenics.Function, V: fenics.FunctionSpace, u_prec: fenics.Function)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline"></a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mocafe.fenut._gpu_solvers.mempool" title="mocafe.fenut._gpu_solvers.mempool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mempool</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mocafe.fenut._gpu_solvers.rank" title="mocafe.fenut._gpu_solvers.rank"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rank</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mocafe.fenut._gpu_solvers.logger" title="mocafe.fenut._gpu_solvers.logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logger</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mocafe.fenut._gpu_solvers.logfolder" title="mocafe.fenut._gpu_solvers.logfolder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logfolder</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mocafe.fenut._gpu_solvers.logfile" title="mocafe.fenut._gpu_solvers.logfile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logfile</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mocafe.fenut._gpu_solvers.f" title="mocafe.fenut._gpu_solvers.f"><code class="xref py py-obj docutils literal notranslate"><span class="pre">f</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mocafe.fenut._gpu_solvers.ch" title="mocafe.fenut._gpu_solvers.ch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ch</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py data">
+<dt class="sig sig-object py" id="mocafe.fenut._gpu_solvers.mempool">
+<span class="sig-prename descclassname"><span class="pre">mocafe.fenut._gpu_solvers.</span></span><span class="sig-name descname"><span class="pre">mempool</span></span><a class="headerlink" href="#mocafe.fenut._gpu_solvers.mempool" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="mocafe.fenut._gpu_solvers.rank">
+<span class="sig-prename descclassname"><span class="pre">mocafe.fenut._gpu_solvers.</span></span><span class="sig-name descname"><span class="pre">rank</span></span><a class="headerlink" href="#mocafe.fenut._gpu_solvers.rank" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="mocafe.fenut._gpu_solvers.logger">
+<span class="sig-prename descclassname"><span class="pre">mocafe.fenut._gpu_solvers.</span></span><span class="sig-name descname"><span class="pre">logger</span></span><a class="headerlink" href="#mocafe.fenut._gpu_solvers.logger" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="mocafe.fenut._gpu_solvers.logfolder">
+<span class="sig-prename descclassname"><span class="pre">mocafe.fenut._gpu_solvers.</span></span><span class="sig-name descname"><span class="pre">logfolder</span></span><a class="headerlink" href="#mocafe.fenut._gpu_solvers.logfolder" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="mocafe.fenut._gpu_solvers.logfile">
+<span class="sig-prename descclassname"><span class="pre">mocafe.fenut._gpu_solvers.</span></span><span class="sig-name descname"><span class="pre">logfile</span></span><a class="headerlink" href="#mocafe.fenut._gpu_solvers.logfile" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="mocafe.fenut._gpu_solvers.f">
+<span class="sig-prename descclassname"><span class="pre">mocafe.fenut._gpu_solvers.</span></span><span class="sig-name descname"><span class="pre">f</span></span><a class="headerlink" href="#mocafe.fenut._gpu_solvers.f" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="mocafe.fenut._gpu_solvers.ch">
+<span class="sig-prename descclassname"><span class="pre">mocafe.fenut._gpu_solvers.</span></span><span class="sig-name descname"><span class="pre">ch</span></span><a class="headerlink" href="#mocafe.fenut._gpu_solvers.ch" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mocafe.fenut._gpu_solvers.cupy_newton_solver">
+<span class="sig-prename descclassname"><span class="pre">mocafe.fenut._gpu_solvers.</span></span><span class="sig-name descname"><span class="pre">cupy_newton_solver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">form</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.Form</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">V</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.FunctionSpace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u_prec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.Function</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.fenut._gpu_solvers.cupy_newton_solver" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Franco Pradelli.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>  
+
+  <style>
+    /* Sidebar header (and topbar for mobile) */
+    .wy-side-nav-search, .wy-nav-top {
+      background: #343131;
+    }
+  </style>
+
+
+</body>
+</html>

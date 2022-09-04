@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Angiogenesis &mdash; Mocafe 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Prostate cancer 3D" href="prostate_cancer3d.html" />
+    <link rel="prev" title="Prostate cancer" href="prostate_cancer2d.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Mocafe
+            <img src="../_static/200mocafe_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Demo Gallery</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="introduction_to_fenics.html">A brief introduction to FEniCS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="prostate_cancer2d.html">Prostate cancer</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Angiogenesis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-run-this-example-on-mocafe">How to run this example on Mocafe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#visualize-the-results-of-this-simulation">Visualize the results of this simulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#brief-introduction-to-the-mathematical-model">Brief introduction to the mathematical model</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#differential-equations">Differential equations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#computational-agent-based-model">Computational “agent-based” model</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#implementation">Implementation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#setup">Setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mesh-definition">Mesh definition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#spatial-discretization">Spatial discretization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#initial-boundary-conditions">Initial &amp; boundary conditions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#weak-form-definition">Weak form definition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#simulation-setup">Simulation setup</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#result">Result</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#visualize-the-result-with-paraview">Visualize the result with ParaView</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#full-code">Full code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="prostate_cancer3d.html">Prostate cancer 3D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multiple_pc_simulations.html">Save simulations meta-data 1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="angiogenesis_3d.html">Angiogenesis 3D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multiple_angiogenesis_simulations.html">Save simulations meta-data 2</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../autoapi/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bib.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Mocafe</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Demo Gallery</a> &raquo;</li>
+      <li>Angiogenesis</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/demo_doc/angiogenesis_2d.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-demo-doc-angiogenesis-2d-py"><span class="std std-ref">here</span></a>
+to download the full example code</p>
+</div>
+<section class="sphx-glr-example-title" id="angiogenesis">
+<span id="angiogenesis-2d-demo"></span><span id="sphx-glr-demo-doc-angiogenesis-2d-py"></span><h1>Angiogenesis<a class="headerlink" href="#angiogenesis" title="Permalink to this headline"></a></h1>
+<p>In this demo we will reproduce the angiogenesis phase field model described by Travasso et al. in 2011
+<span id="id1">[<a class="reference internal" href="../bib.html#id7" title="Rui D.M. Travasso, Eugenia Corvera Poiré, Mario Castro, Juan Carlos Rodrguez-Manzaneque, and A. Hernández-Machado. Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5):e19989, 2011. URL: http://www.fct.mctes.pt http://www.gulbenkian.pt/ http://www.conacyt.mx/ http://www.isciii.es/ http://www.micinn.es/, doi:10.1371/journal.pone.0019989.">TPoireC+11</a>]</span>. In this implementation, we will simulate a set of discrete cells expressing a generic angiogenic
+factor (e.g. VEGF), which lead to the sprouting of a 2D vascular network. In the following, we will refer to these cells
+as <em>source cells</em>, since are the only source of angiogenic factor in this model.</p>
+<div class="contents local topic" id="table-of-contents">
+<p class="topic-title">Table of Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#how-to-run-this-example-on-mocafe" id="id6">How to run this example on Mocafe</a></p></li>
+<li><p><a class="reference internal" href="#visualize-the-results-of-this-simulation" id="id7">Visualize the results of this simulation</a></p></li>
+<li><p><a class="reference internal" href="#brief-introduction-to-the-mathematical-model" id="id8">Brief introduction to the mathematical model</a></p>
+<ul>
+<li><p><a class="reference internal" href="#differential-equations" id="id9">Differential equations</a></p></li>
+<li><p><a class="reference internal" href="#computational-agent-based-model" id="id10">Computational “agent-based” model</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#implementation" id="id11">Implementation</a></p>
+<ul>
+<li><p><a class="reference internal" href="#setup" id="id12">Setup</a></p></li>
+<li><p><a class="reference internal" href="#mesh-definition" id="id13">Mesh definition</a></p></li>
+<li><p><a class="reference internal" href="#spatial-discretization" id="id14">Spatial discretization</a></p></li>
+<li><p><a class="reference internal" href="#initial-boundary-conditions" id="id15">Initial &amp; boundary conditions</a></p></li>
+<li><p><a class="reference internal" href="#weak-form-definition" id="id16">Weak form definition</a></p></li>
+<li><p><a class="reference internal" href="#simulation-setup" id="id17">Simulation setup</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#result" id="id18">Result</a></p></li>
+<li><p><a class="reference internal" href="#visualize-the-result-with-paraview" id="id19">Visualize the result with ParaView</a></p></li>
+</ul>
+</div>
+<section id="how-to-run-this-example-on-mocafe">
+<h2><a class="toc-backref" href="#id6">How to run this example on Mocafe</a><a class="headerlink" href="#how-to-run-this-example-on-mocafe" title="Permalink to this headline"></a></h2>
+<p>Make sure you have FEniCS and Mocafe installed and download the source script of this page (see above for the link).</p>
+<p>Then, download the parameters file for the simulation from
+<a class="reference download internal" download="" href="../_downloads/6131c614d7c7b7316338d040d69f499b/parameters.ods"><code class="xref download docutils literal notranslate"><span class="pre">this</span> <span class="pre">link</span></code></a> and place it inside the folder
+<code class="docutils literal notranslate"><span class="pre">demo_in/angiogenesis_2d</span></code>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">mkdir demo_in</span>
+<span class="go">mkdir demo_in/angiogenesis_2d</span>
+<span class="go">mv parameters.ods demo_in/angiogenesis_2d/</span>
+</pre></div>
+</div>
+<p>Then, simply run it using python:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python3 angiogenesis_2d.py</span>
+</pre></div>
+</div>
+<p>However, it is recommended to exploit parallelization to save simulation time:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">mpirun -n 4 python3 angiogenesis_2d.py</span>
+</pre></div>
+</div>
+<p>Notice that the number following the <code class="docutils literal notranslate"><span class="pre">-n</span></code> option is the number of MPI processes you using for parallelize the
+simulation. You can change it accordingly with your CPU.</p>
+</section>
+<section id="visualize-the-results-of-this-simulation">
+<span id="angiogenesis-2d-brief-introduction"></span><h2><a class="toc-backref" href="#id7">Visualize the results of this simulation</a><a class="headerlink" href="#visualize-the-results-of-this-simulation" title="Permalink to this headline"></a></h2>
+<p>You need to have <a class="reference external" href="https://www.paraview.org/">Paraview</a> to visualize the results. Once you have installed it,
+you can easly import the <code class="docutils literal notranslate"><span class="pre">.xdmf</span></code> files generated during the simulation and visualize the result.</p>
+</section>
+<section id="brief-introduction-to-the-mathematical-model">
+<h2><a class="toc-backref" href="#id8">Brief introduction to the mathematical model</a><a class="headerlink" href="#brief-introduction-to-the-mathematical-model" title="Permalink to this headline"></a></h2>
+<p>The model is composed of two main parts interacting together: a set of differential equation and a computational
+“agent-based” model. The first part takes into account the continuous dynamics of the angiogenic factor and
+of the capillaries field, while the latter is responsible for the discrete dynamics of the source cells (i.e. the
+cells expressing a generic angiogenic factor, such as VEGF) and of the tip cells (i.e. the cells of endothelial
+origin which lead the sprouting of the new vessels). A complete discussion of this model is above the purpose of this
+demo so, if you’re interested, we suggest you to refer to the original paper <span id="id2">[<a class="reference internal" href="../bib.html#id7" title="Rui D.M. Travasso, Eugenia Corvera Poiré, Mario Castro, Juan Carlos Rodrguez-Manzaneque, and A. Hernández-Machado. Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5):e19989, 2011. URL: http://www.fct.mctes.pt http://www.gulbenkian.pt/ http://www.conacyt.mx/ http://www.isciii.es/ http://www.micinn.es/, doi:10.1371/journal.pone.0019989.">TPoireC+11</a>]</span>.
+However, in the following we provide you a short introduction for your convenience.</p>
+<section id="differential-equations">
+<h3><a class="toc-backref" href="#id9">Differential equations</a><a class="headerlink" href="#differential-equations" title="Permalink to this headline"></a></h3>
+<p>The mathematical part is just composed of two partial differential equations (PDEs). The first PDE is for the
+angiogenic factor (<span class="math notranslate nohighlight">\(af\)</span>) and takes into account: a. its diffusion; b. its consumption by the endothelial
+capillary cells (the field c). The equation reads:</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial af}{\partial t} = \nabla (D_{af} \cdot \nabla af) - \alpha_T \cdot c \cdot af \cdot \Theta(c)\]</div>
+<p>Where the first part of the right-hand term comes from the Fick’s low of diffusion <span id="id3">[<a class="reference internal" href="../bib.html#id3" title="Wikipedia contributors. Fick's laws of diffusion — Wikipedia, the free encyclopedia. 2021. [Online; accessed 9-December-2021]. URL: https://en.wikipedia.org/w/index.php?title=Fick%27s_laws_of_diffusion&amp;oldid=1058693490.">Wikipediacontributors21</a>]</span>, while
+the second term is a decrease driven by the c field.</p>
+<p>The second PDE describes the dynamics of the capillaries, which are represented by a field <span class="math notranslate nohighlight">\(c\)</span> of extreme
+values -1 and +1, where high values represent a part of the domain where the capillary is present, while the low values
+represent the parts of the domain where the capillaries are not present. The equation reads:</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial c}{\partial t} = M_c \nabla^2 \cdot [-c + c^3 - \epsilon \nabla^2 c] + \alpha_p(af)c\Theta(c)\]</div>
+<p>Again, we have two terms composing the right-hand side of the equation: the first term is a Cahn-Hillard term, which
+is responsible for the interface dynamics of the field; the second just represents the proliferation of endothelial
+cells, which is driven by the angiogenic factor <span class="math notranslate nohighlight">\(af\)</span>. This dependence, however, is not linear: the proliferation
+rate <span class="math notranslate nohighlight">\(alpha_p(af)\)</span> grows linearly with af only up to a certain value of <span class="math notranslate nohighlight">\(af\)</span>, limiting the growth of
+endothelial cells:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\alpha_p(af) = \alpha_p \cdot af_p &amp; \quad \textrm{if} \quad af&gt;af_p \\
+            = \alpha_p \cdot af  &amp; \quad \textrm{if} \quad 0&lt;af \le af_p \\
+            = 0 &amp; \quad \textrm{if} \quad af \le 0\end{split}\]</div>
+<p>Also notice that the last PDE is of total degree 4, which makes the equation not solvable using the finite element
+method (FEM) with standard first-degree elements. For this reason, as we will show below, in this implementation
+the equation is actually splitted into two equations of degree 2, introducing an auxilliary variable <span class="math notranslate nohighlight">\(\mu\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\frac{\partial c}{\partial t} - \nabla \cdot M \nabla\mu  - \alpha_p(af)c\Theta(c) &amp;= 0 \quad
+\textrm{in} \quad \Omega\\\mu - [-c + c^3 - \epsilon \nabla^2 c] &amp;= 0 \quad \textrm{in} \quad \Omega.\end{aligned}\end{align} \]</div>
+</section>
+<section id="computational-agent-based-model">
+<h3><a class="toc-backref" href="#id10">Computational “agent-based” model</a><a class="headerlink" href="#computational-agent-based-model" title="Permalink to this headline"></a></h3>
+<p>In this implementation only two discrete cell populations are considered: the source cells and the tip cells.</p>
+<p>The source cells are the cells expressing the angiogenic factor. They represent hypoxic cells starving for nutrients
+and thus inducing the angiogenesis to survive. In practice, these are implemented as simple circles, relatively far
+from the original vessel, where the angiogenic factor concentration is constantly equal to <span class="math notranslate nohighlight">\(af_s\)</span> (which is 1
+in the present implementation). Moreover, to simulate the dependency of the hypoxic signalling on the local oxygen
+concentration, the source cells stop expressing the angiogenic factor when the capillaries are sufficiently near.</p>
+<p>The tip cells have a more complex behaviour, since at each time step of the simulation they can activate,
+deactivate, and move in the spatial domain. The activation of a tip cell can occur only inside an existent capillary,
+and it happens only if <span class="math notranslate nohighlight">\(af\)</span> and the norm of its gradient <span class="math notranslate nohighlight">\(|\nabla af|\)</span>, are above the thresholds
+<span class="math notranslate nohighlight">\(af_c\)</span> and <span class="math notranslate nohighlight">\(G_m\)</span>, respectively. Moreover, only points distant more than 4 times the radius of another
+tip cell can become a new tip cell. This limit was introduced to consider the self-inhibition in the tip cells
+activation caused by the Notch pathway. In case more than one point respect all these conditions at the same time
+step, one of them is selected randomly and only that point will be used to create a new tip cell. Thus, at each time
+step, no more than one new tip cell can activate.</p>
+<p>Once a tip cell is active, it moves inside the domain following the gradient of the angiogenic factor. The velocity
+vector is indeed computed as follows:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}v &amp; = \chi \nabla af &amp; \quad \textrm{if} \quad |\nabla af|&lt;G_M \\
+\; &amp; = \chi \frac{\nabla af}{|\nabla af|}G_M &amp; \quad \textrm{if} \quad |\nabla af| \ge G_M\end{split}\]</div>
+<p>Notice that the velocity cannot be higher in norm than <span class="math notranslate nohighlight">\(\chi G_M\)</span>. Once a tip cell moved, the capillaries
+phase field <span class="math notranslate nohighlight">\(c\)</span> is updated, adding a circle in the position of the tip cell with a constant value:</p>
+<div class="math notranslate nohighlight">
+\[c_c = \frac{\alpha_p(af)\pi R_c}{2 \|v\|}\]</div>
+<p>Where <span class="math notranslate nohighlight">\(R_c\)</span> is the radius of the tip cell.
+Notice that this is one of the key elements of the model, because it merges the continuous dynamics of the field
+<span class="math notranslate nohighlight">\(c\)</span> with the discrete dynamics of the tip cells.</p>
+<p>Finally, according to the original model, the tip cells deactivate when :math`af` or the norm of its gradient drop
+below the above-mentioned thresholds values. In the Mocafe implementation, however, we added a small change first
+introduced by Moreira-Soares et al. (2018) <span id="id4">[<a class="reference internal" href="../bib.html#id11" title="Maurício Moreira-Soares, Rita Coimbra, Luís Rebelo, João Carvalho, and Rui D.M. Travasso. Angiogenic Factors produced by Hypoxic Cells are a leading driver of Anastomoses in Sprouting Angiogenesis–a computational study. Scientific Reports 2018 8:1, 8(1):1–12, jun 2018. URL: https://www.nature.com/articles/s41598-018-27034-8, doi:10.1038/s41598-018-27034-8.">MSCR+18</a>]</span>, and the tip cells deactivate also due to
+Notch-Signalling inhibition if they are close to each other.</p>
+</section>
+</section>
+<section id="implementation">
+<h2><a class="toc-backref" href="#id11">Implementation</a><a class="headerlink" href="#implementation" title="Permalink to this headline"></a></h2>
+<section id="setup">
+<h3><a class="toc-backref" href="#id12">Setup</a><a class="headerlink" href="#setup" title="Permalink to this headline"></a></h3>
+<p>With Mocafe, the implementation of the model is not very different from any other FEniCS script. Let’s start
+importing everything we need:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fenics</span>
+<span class="kn">import</span> <span class="nn">mshr</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">mocafe.fenut.fenut</span> <span class="k">as</span> <span class="nn">fu</span>
+<span class="kn">import</span> <span class="nn">mocafe.fenut.mansimdata</span> <span class="k">as</span> <span class="nn">mansimd</span>
+<span class="kn">from</span> <span class="nn">mocafe.angie</span> <span class="kn">import</span> <span class="n">af_sourcing</span><span class="p">,</span> <span class="n">tipcells</span>
+<span class="kn">from</span> <span class="nn">mocafe.angie.forms</span> <span class="kn">import</span> <span class="n">angiogenesis_form</span><span class="p">,</span> <span class="n">angiogenic_factor_form</span>
+<span class="kn">import</span> <span class="nn">mocafe.fenut.parameters</span> <span class="k">as</span> <span class="nn">mpar</span>
+</pre></div>
+</div>
+<p>Then, as seen in previous examples, we initialize the MPI _comm, the process root, the log level and the data folder</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">comm</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">MPI</span><span class="o">.</span><span class="n">comm_world</span>
+<span class="n">rank</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
+<span class="c1"># only process 0 logs</span>
+<span class="n">fenics</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;std_out_all_processes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="c1"># set log level ERROR</span>
+<span class="n">fenics</span><span class="o">.</span><span class="n">set_log_level</span><span class="p">(</span><span class="n">fenics</span><span class="o">.</span><span class="n">LogLevel</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+<span class="c1"># define data folder</span>
+<span class="n">file_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+<span class="n">data_folder</span> <span class="o">=</span> <span class="n">mansimd</span><span class="o">.</span><span class="n">setup_data_folder</span><span class="p">(</span><span class="n">folder_path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;{file_folder/Path(&#39;demo_out&#39;)}/angiogenesis_2d&quot;</span><span class="p">,</span>
+                                        <span class="n">auto_enumerate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then we initialize the xdmf files for the capillaries and the angiogenic factor. Notice that we also initialize
+a file for the tip cells, since is often useful to visualize how tip cells behave during the simulation.
+However, this is just for visualization purposes and it is not necessary for the model because, as we already
+mentioned above, the tip cells dynamics is merged to the capillaries dynamics thorugh the update of the field
+<span class="math notranslate nohighlight">\(c\)</span>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">file_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;af&quot;</span><span class="p">,</span> <span class="s2">&quot;tipcells&quot;</span><span class="p">]</span>
+<span class="n">file_c</span><span class="p">,</span> <span class="n">file_af</span><span class="p">,</span> <span class="n">tipcells_xdmf</span> <span class="o">=</span> <span class="n">fu</span><span class="o">.</span><span class="n">setup_xdmf_files</span><span class="p">(</span><span class="n">file_names</span><span class="p">,</span> <span class="n">data_folder</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Finally, we need the parameters of the model. This time we exploit one of the functions of Mocafe to retrieve
+them from an ods sheet:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">file_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+<span class="n">parameters_file</span> <span class="o">=</span> <span class="n">file_folder</span><span class="o">/</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;demo_in/angiogenesis_2d/parameters.ods&quot;</span><span class="p">)</span>
+<span class="n">parameters</span> <span class="o">=</span> <span class="n">mpar</span><span class="o">.</span><span class="n">from_ods_sheet</span><span class="p">(</span><span class="n">parameters_file</span><span class="p">,</span> <span class="s2">&quot;SimParams&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Notice that it is often useful to keep the parameters separated from the script and then import them as shown above.
+This makes easier to save additional information together with the parameters (such as the unit of measure, the
+reference for the value, etc.); moreover, it reduces the risk of making mistakes in the revisions of the script.</p>
+</section>
+<section id="mesh-definition">
+<h3><a class="toc-backref" href="#id13">Mesh definition</a><a class="headerlink" href="#mesh-definition" title="Permalink to this headline"></a></h3>
+<p>Again, to simulate our system we need to define the space where the simulation takes place and the function space
+to approximate our solution.</p>
+<p>The mesh is a square of side Lx = Ly = 375 <span class="math notranslate nohighlight">\(\mu m\)</span>, divided in nx = ny = 300 points for each side.
+These values are stored inside the parameters ods file, and in the following we retrieve them and use them to
+initialize a FEniCS <code class="docutils literal notranslate"><span class="pre">RectangleMesh</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Lx</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;Lx&quot;</span><span class="p">)</span>
+<span class="n">Ly</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;Ly&quot;</span><span class="p">)</span>
+<span class="n">nx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;nx&quot;</span><span class="p">))</span>
+<span class="n">ny</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;ny&quot;</span><span class="p">))</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">RectangleMesh</span><span class="p">(</span><span class="n">fenics</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">),</span>
+                            <span class="n">fenics</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="n">Lx</span><span class="p">,</span> <span class="n">Ly</span><span class="p">),</span>
+                            <span class="n">nx</span><span class="p">,</span>
+                            <span class="n">ny</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="spatial-discretization">
+<h3><a class="toc-backref" href="#id14">Spatial discretization</a><a class="headerlink" href="#spatial-discretization" title="Permalink to this headline"></a></h3>
+<p>Then, we initialize the function space as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># define function space for c and af</span>
+<span class="n">function_space</span> <span class="o">=</span> <span class="n">fu</span><span class="o">.</span><span class="n">get_mixed_function_space</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="c1"># define function space for grad_T</span>
+<span class="n">grad_af_function_space</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">VectorFunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Notice that the function space for c and af is actually composed of 3 subspaces, since we also need to count the
+above-mentioned auxiliary variable <span class="math notranslate nohighlight">\(\mu\)</span>, that we will introduce soon. Also, notice that, since the gradient
+of <span class="math notranslate nohighlight">\(af\)</span> is a vector, we need a different function space to handle it, called <code class="docutils literal notranslate"><span class="pre">VectorFunctionSpace</span></code>.</p>
+</section>
+<section id="initial-boundary-conditions">
+<h3><a class="toc-backref" href="#id15">Initial &amp; boundary conditions</a><a class="headerlink" href="#initial-boundary-conditions" title="Permalink to this headline"></a></h3>
+<p>Since the model is a system of PDEs, we need both initial and boundary conditions to find a unique solution.</p>
+<p>In this implementation we will consider natural Neumann boundary conditions for both <span class="math notranslate nohighlight">\(c\)</span> and
+<span class="math notranslate nohighlight">\(af\)</span>, which means that the derivative in space of the two fields is zero along the entire boundary.
+This is an easy pick for FEniCS, since it will automatically apply this condition for us without requiring any
+command from the user.</p>
+<p>The initial condition for <span class="math notranslate nohighlight">\(c\)</span>, according to the simulations reported in the original paper, is a single vessel
+in the left part of the domain. The initial vessel width is 37,5 <span class="math notranslate nohighlight">\(\mu m\)</span> and its value is stored in the
+parameters <code class="docutils literal notranslate"><span class="pre">.ods</span></code> file, so we retrieve it as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">initial_vessel_width</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;initial_vessel_width&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Thus, the initial condition for <code class="docutils literal notranslate"><span class="pre">c</span></code> is simply a function which is 1 in the left part of the domain, for the x
+coordinate included in [0, 37.5], and -1 otherwise. We can simply define such a function using the FEniCS interface
+for expressions as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">c_0_exp</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">Expression</span><span class="p">(</span><span class="s2">&quot;(x[0] &lt; i_v_w) ? 1 : -1&quot;</span><span class="p">,</span>
+                            <span class="n">degree</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                            <span class="n">i_v_w</span><span class="o">=</span><span class="n">initial_vessel_width</span><span class="p">)</span>
+<span class="n">c_0</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">c_0_exp</span><span class="p">,</span> <span class="n">function_space</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">collapse</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Together with the initial condition for c, we need to define an initial condition for mu. However, this can be
+simply 0 across all the domain and can be easily defined as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mu_0</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">fenics</span><span class="o">.</span><span class="n">Constant</span><span class="p">(</span><span class="mf">0.</span><span class="p">),</span> <span class="n">function_space</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">collapse</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Finally, we need to define an initial condition of the angiogenic factor <span class="math notranslate nohighlight">\(af\)</span>. According to the original paper,
+initially <span class="math notranslate nohighlight">\(af\)</span> is 0 everywhere, except for the points inside the source cells where the value is
+<span class="math notranslate nohighlight">\(af_s\)</span>. Thus, we need to define first the source cells if we want to set up the initial condition
+for the angiogenic factor.</p>
+<p>In the original paper, the source cells where placed randomly in the right part of the domain, relatively far
+from the initial vessel. Creating this set up in Mocafe is relatively easy. We start by defining the number
+of source cells we want, which we stored in the parameters file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">n_sources</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;n_sources&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Then, we define the part of the domain where we want the source cells to be placed; in this case, it is a rectangle
+including all the mesh except the initial vessel and a part of width <span class="math notranslate nohighlight">\(d\)</span>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">random_sources_domain</span> <span class="o">=</span> <span class="n">mshr</span><span class="o">.</span><span class="n">Rectangle</span><span class="p">(</span><span class="n">fenics</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="n">initial_vessel_width</span> <span class="o">+</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">),</span> <span class="mi">0</span><span class="p">),</span>
+                                       <span class="n">fenics</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="n">Lx</span><span class="p">,</span> <span class="n">Ly</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Finally, we initialize a so called <code class="docutils literal notranslate"><span class="pre">RandomSourceMap</span></code>, which will create the source cells for us:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sources_map</span> <span class="o">=</span> <span class="n">af_sourcing</span><span class="o">.</span><span class="n">RandomSourceMap</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span>
+                                          <span class="n">n_sources</span><span class="p">,</span>
+                                          <span class="n">parameters</span><span class="p">,</span>
+                                          <span class="n">where</span><span class="o">=</span><span class="n">random_sources_domain</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A <code class="docutils literal notranslate"><span class="pre">SourceMap</span></code> is a Mocafe object which contains the position of all the source cells at a given time throughout
+the entire simulation. As you can see, you just need to input the mesh, the parameters, the number of sources
+and where you want the sources to be placed. In this implementation, we defined the part of the domain where we
+needed the source cell as <code class="docutils literal notranslate"><span class="pre">mshr.Rectangle</span></code>, but the <code class="docutils literal notranslate"><span class="pre">where</span></code> argument can take as input also a function which
+return a boolean for each point of the domain (True if the point can host a source cell, False otherwise).
+For instance we could have initialized the same source map as above simply doing:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sources_map</span> <span class="o">=</span> <span class="n">af_sourcing</span><span class="o">.</span><span class="n">RandomSourceMap</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span>
+                                          <span class="n">n_sources</span><span class="p">,</span>
+                                          <span class="n">parameters</span><span class="p">,</span>
+                                          <span class="n">where</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">initial_vessel_width</span> <span class="o">+</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>However, the source map is not sufficient to define the initial condition we need. To do so, we need an additional
+Mocafe object, a <code class="docutils literal notranslate"><span class="pre">SourcesManager</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sources_manager</span> <span class="o">=</span> <span class="n">af_sourcing</span><span class="o">.</span><span class="n">SourcesManager</span><span class="p">(</span><span class="n">sources_map</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As the name suggests, a <code class="docutils literal notranslate"><span class="pre">SourcesManager</span></code> is an object responsible for the actual management of the sources in the
+given source map. One of the function it provides is exactly what we need, that is to apply the sources to a given
+FEniCS function. Thus, to define the initial condition we need, is sufficient to define a function which is zero
+everywhere:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">af_0</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">fenics</span><span class="o">.</span><span class="n">Constant</span><span class="p">(</span><span class="mf">0.</span><span class="p">),</span> <span class="n">function_space</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">collapse</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>And to call the method <code class="docutils literal notranslate"><span class="pre">apply_sources</span></code> on it, which will take care of modifying the value of the function in
+the points inside the source cells.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sources_manager</span><span class="o">.</span><span class="n">apply_sources</span><span class="p">(</span><span class="n">af_0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Finally, we can save the initial conditions to the xdmf files defined above:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">file_af</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">af_0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">file_c</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">c_0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Visualizing the field that we just defined with <a class="reference external" href="https://www.paraview.org/">Paraview</a>, what we get is exactly what
+we expect: an initial vessel on the left side of the domain and a set of randomly distributed source cells:</p>
+<a class="reference internal image-reference" href="../_images/angiogenesis_2d_initial_condition.png"><img alt="../_images/angiogenesis_2d_initial_condition.png" src="../_images/angiogenesis_2d_initial_condition.png" style="width: 600px;" /></a>
+</section>
+<section id="weak-form-definition">
+<h3><a class="toc-backref" href="#id16">Weak form definition</a><a class="headerlink" href="#weak-form-definition" title="Permalink to this headline"></a></h3>
+<p>After having defined the initial conditions for the system, we continue with the definition of the system
+itself. As usual, we define the test functions necessary for computing the solution with the finite element method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">v3</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">TestFunctions</span><span class="p">(</span><span class="n">function_space</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then, we define the three functions involved in the PDE system: <span class="math notranslate nohighlight">\(c\)</span>, <span class="math notranslate nohighlight">\(\mu\)</span>, and <span class="math notranslate nohighlight">\(af\)</span>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">u</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">function_space</span><span class="p">)</span>
+<span class="n">af</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">mu</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Moreover, we define two additional functions: one for the gradient of the angiogenic factor and one for the tip cells.
+Again, remember that the latter is defined just for visualization purposes and is not necessary for the simulation.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">grad_af</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">grad_af_function_space</span><span class="p">)</span>
+<span class="n">tipcells_field</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">function_space</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">collapse</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Then, since we have already defined the initial condition for <span class="math notranslate nohighlight">\(af\)</span>, we can already compute its gradient and
+assign it to the variable defined above. Notice that this is quite simple in FEniCS, because it just requires to call
+the method <code class="docutils literal notranslate"><span class="pre">grad</span></code> on the function and to project it in the function space:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">grad_af</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span>  <span class="c1"># assign to grad_af</span>
+    <span class="n">fenics</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">fenics</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">af_0</span><span class="p">),</span> <span class="n">grad_af_function_space</span><span class="p">)</span>  <span class="c1"># the projection on the fun space of grad(af_0)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Finally, we proceed to the definition of the weak from for the system. As in the case of the prostate cancer, one
+could define the weak form using the FEniCS UFL, but for your convenience we already defined it for you and
+we wrapped the form in two methods: one for the angiogenic factor equation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">form_af</span> <span class="o">=</span> <span class="n">angiogenic_factor_form</span><span class="p">(</span><span class="n">af</span><span class="p">,</span> <span class="n">af_0</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and one for the <span class="math notranslate nohighlight">\(c\)</span> field equation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">form_ang</span> <span class="o">=</span> <span class="n">angiogenesis_form</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">c_0</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">mu_0</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">v3</span><span class="p">,</span> <span class="n">af</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>which can be composed together simply summing them, as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">weak_form</span> <span class="o">=</span> <span class="n">form_af</span> <span class="o">+</span> <span class="n">form_ang</span>
+</pre></div>
+</div>
+</section>
+<section id="simulation-setup">
+<h3><a class="toc-backref" href="#id17">Simulation setup</a><a class="headerlink" href="#simulation-setup" title="Permalink to this headline"></a></h3>
+<p>Now that everything is set up we can proceed to the actual simulation, which will be different from the one
+defined for the prostate cancer model because it will require us to handle the source cells and the tip cells.</p>
+<p>Just as for the source cells we defined a <code class="docutils literal notranslate"><span class="pre">SourceCellsManager</span></code>, for the tip cells we need to define a
+<code class="docutils literal notranslate"><span class="pre">TipCellsManager</span></code>, which will take care of the job of activating, deactivating and moving the tip cells.
+We initialize it simply calling:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tip_cell_manager</span> <span class="o">=</span> <span class="n">tipcells</span><span class="o">.</span><span class="n">TipCellManager</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span>
+                                           <span class="n">parameters</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And then we will use iteratively in the time simulation for our needs.
+Notice that the rules for activating, deactivating and moving the tip cells are already implemented in the object
+class and all we need to do is passing the mesh and the simulation parameters to the constructor.</p>
+<p>Then, we can proceed similarly to any other simulation, defining the Jacobian for the weak form:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jacobian</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">derivative</span><span class="p">(</span><span class="n">weak_form</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And initializing the time iteration</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">t</span> <span class="o">=</span> <span class="mf">0.</span>
+<span class="n">n_steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;n_steps&quot;</span><span class="p">))</span>
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="n">n_steps</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;angiogenesis_2d&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">pbar</span> <span class="o">=</span> <span class="kc">None</span>
+</pre></div>
+</div>
+<p>Now, we can start iterating</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_steps</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="c1"># update time</span>
+    <span class="n">t</span> <span class="o">+=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;dt&quot;</span><span class="p">)</span>
+
+    <span class="c1"># turn off near sources</span>
+    <span class="n">sources_manager</span><span class="o">.</span><span class="n">remove_sources_near_vessels</span><span class="p">(</span><span class="n">c_0</span><span class="p">)</span>
+
+    <span class="c1"># activate tip cell</span>
+    <span class="n">tip_cell_manager</span><span class="o">.</span><span class="n">activate_tip_cell</span><span class="p">(</span><span class="n">c_0</span><span class="p">,</span> <span class="n">af_0</span><span class="p">,</span> <span class="n">grad_af</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+
+    <span class="c1"># revert tip cells</span>
+    <span class="n">tip_cell_manager</span><span class="o">.</span><span class="n">revert_tip_cells</span><span class="p">(</span><span class="n">af_0</span><span class="p">,</span> <span class="n">grad_af</span><span class="p">)</span>
+
+    <span class="c1"># move tip cells</span>
+    <span class="n">tip_cell_manager</span><span class="o">.</span><span class="n">move_tip_cells</span><span class="p">(</span><span class="n">c_0</span><span class="p">,</span> <span class="n">af_0</span><span class="p">,</span> <span class="n">grad_af</span><span class="p">)</span>
+
+    <span class="c1"># get tip cells field</span>
+    <span class="n">tipcells_field</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">tip_cell_manager</span><span class="o">.</span><span class="n">get_latest_tip_cell_function</span><span class="p">())</span>
+
+    <span class="c1"># update fields</span>
+    <span class="n">fenics</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">weak_form</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">J</span><span class="o">=</span><span class="n">jacobian</span><span class="p">)</span>
+
+    <span class="c1"># assign u to the initial conditions functions</span>
+    <span class="n">fenics</span><span class="o">.</span><span class="n">assign</span><span class="p">([</span><span class="n">af_0</span><span class="p">,</span> <span class="n">c_0</span><span class="p">,</span> <span class="n">mu_0</span><span class="p">],</span> <span class="n">u</span><span class="p">)</span>
+
+    <span class="c1"># update source field</span>
+    <span class="n">sources_manager</span><span class="o">.</span><span class="n">apply_sources</span><span class="p">(</span><span class="n">af_0</span><span class="p">)</span>
+
+    <span class="c1"># compute grad_T</span>
+    <span class="n">grad_af</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">fenics</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">fenics</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">af_0</span><span class="p">),</span> <span class="n">grad_af_function_space</span><span class="p">))</span>
+
+    <span class="c1"># save data</span>
+    <span class="n">file_af</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">af_0</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+    <span class="n">file_c</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">c_0</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+    <span class="n">tipcells_xdmf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">tipcells_field</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Notice that additionally to the system solution a number of operations are performed at each time stem which require
+a bit of clarification. Let’s see the code step by step then.</p>
+<p>The first thing we did just after the time update is removing the sources near the vessels, calling:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sources_manager</span><span class="o">.</span><span class="n">remove_sources_near_vessels</span><span class="p">(</span><span class="n">c_0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>With this single line, we are asking the sources manager to check the field <code class="docutils literal notranslate"><span class="pre">c_0</span></code>, which represent the vessels,
+and to remove all the source cells the center of which is closer than the distance <span class="math notranslate nohighlight">\(d\)</span>. Notice that we don’t
+pass the distance as argument of the method because it’s already contained in the parameters file we passed to the
+object constructor, but we could also pass it in the method through the ‘d’ key:
+<code class="docutils literal notranslate"><span class="pre">sources_manager.remove_sources_near_vessels(c_0,</span> <span class="pre">d=given_value)</span></code></p>
+<p>The second thing we did is to handle the tip cells using the three statements:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># activate tip cell</span>
+<span class="n">tip_cell_manager</span><span class="o">.</span><span class="n">activate_tip_cell</span><span class="p">(</span><span class="n">c_0</span><span class="p">,</span> <span class="n">af_0</span><span class="p">,</span> <span class="n">grad_af</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+
+<span class="c1"># revert tip cells</span>
+<span class="n">tip_cell_manager</span><span class="o">.</span><span class="n">revert_tip_cells</span><span class="p">(</span><span class="n">af_0</span><span class="p">,</span> <span class="n">grad_af</span><span class="p">)</span>
+
+<span class="c1"># move tip cells</span>
+<span class="n">tip_cell_manager</span><span class="o">.</span><span class="n">move_tip_cells</span><span class="p">(</span><span class="n">c_0</span><span class="p">,</span> <span class="n">af_0</span><span class="p">,</span> <span class="n">grad_af</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Which respectively activate, deactivate and move the tip cells according to the algorithm we briefly discussed
+in the section <a class="reference internal" href="#angiogenesis-2d-brief-introduction"><span class="std std-ref">Brief introduction to the mathematical model</span></a> and that
+is extensively explained in the original paper :cite`Travasso2011a`. Notice that, similarly to the methods before,
+all the default threshold values do not need to be passed in the methods because they are already defined in the
+parameters file. Also notice that, in case there are no active tip cells in the current time step,
+the second and the third statement have no effect.</p>
+<p>Then, we save the current tip cells in the above-defined tip cells field for visualizing them, using the method
+<code class="docutils literal notranslate"><span class="pre">get_latest_tip_cell_function()</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tipcells_field</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">tip_cell_manager</span><span class="o">.</span><span class="n">get_latest_tip_cell_function</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>After having took care of all these things, we simply solve the PDE model and assign the computed values of the
+solution to the <code class="docutils literal notranslate"><span class="pre">c_0</span></code>, <code class="docutils literal notranslate"><span class="pre">mu_0</span></code> and <code class="docutils literal notranslate"><span class="pre">af_0</span></code> fields, in order to have them as initial condition for the next
+step:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">fenics</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">weak_form</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">J</span><span class="o">=</span><span class="n">jacobian</span><span class="p">)</span>
+
+<span class="c1"># assign u to the initial conditions functions</span>
+<span class="n">fenics</span><span class="o">.</span><span class="n">assign</span><span class="p">([</span><span class="n">af_0</span><span class="p">,</span> <span class="n">c_0</span><span class="p">,</span> <span class="n">mu_0</span><span class="p">],</span> <span class="n">u</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Finally, we apply the remaining sources to the new <code class="docutils literal notranslate"><span class="pre">af_0</span></code> function:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># update source field</span>
+<span class="n">sources_manager</span><span class="o">.</span><span class="n">apply_sources</span><span class="p">(</span><span class="n">af_0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>we compute the new value for the gradient of <code class="docutils literal notranslate"><span class="pre">af</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">grad_af</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">fenics</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">fenics</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">af_0</span><span class="p">),</span> <span class="n">grad_af_function_space</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>we write everything on the <code class="docutils literal notranslate"><span class="pre">.xdmf</span> <span class="pre">files</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># save data</span>
+<span class="n">file_af</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">af_0</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+<span class="n">file_c</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">c_0</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+<span class="n">tipcells_xdmf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">tipcells_field</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and we update the progress bar, in order to inform the user on the progress of the simulation.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+  <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="result">
+<h2><a class="toc-backref" href="#id18">Result</a><a class="headerlink" href="#result" title="Permalink to this headline"></a></h2>
+<p>We uploaded on Youtube the result on this simulation. You can check it out below or at
+<a class="reference external" href="https://youtu.be/xTOa6dTCWgk">this link</a></p>
+<div class="video_wrapper" style="">
+<iframe allowfullscreen="true" src="https://www.youtube.com/embed/xTOa6dTCWgk" style="border: 0; height: 345px; width: 560px">
+</iframe></div></section>
+<section id="visualize-the-result-with-paraview">
+<h2><a class="toc-backref" href="#id19">Visualize the result with ParaView</a><a class="headerlink" href="#visualize-the-result-with-paraview" title="Permalink to this headline"></a></h2>
+<p>The result of the simulation is stored in the <code class="docutils literal notranslate"><span class="pre">.xdmf</span></code> file generated, which are easy to load and visualize in
+expernal softwares as ParaView. If you don’t now how to do it, you can check out the tutorial below or at
+<a class="reference external" href="https://youtu.be/TiqoMD-eGM4">this Youtube link</a>.</p>
+<div class="video_wrapper" style="">
+<iframe allowfullscreen="true" src="https://www.youtube.com/embed/TiqoMD-eGM4" style="border: 0; height: 345px; width: 560px">
+</iframe></div></section>
+</section>
+<section id="full-code">
+<h1>Full code<a class="headerlink" href="#full-code" title="Permalink to this headline"></a></h1>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fenics</span>
+<span class="kn">import</span> <span class="nn">mshr</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">mocafe.fenut.fenut</span> <span class="k">as</span> <span class="nn">fu</span>
+<span class="kn">import</span> <span class="nn">mocafe.fenut.mansimdata</span> <span class="k">as</span> <span class="nn">mansimd</span>
+<span class="kn">from</span> <span class="nn">mocafe.angie</span> <span class="kn">import</span> <span class="n">af_sourcing</span><span class="p">,</span> <span class="n">tipcells</span>
+<span class="kn">from</span> <span class="nn">mocafe.angie.forms</span> <span class="kn">import</span> <span class="n">angiogenesis_form</span><span class="p">,</span> <span class="n">angiogenic_factor_form</span>
+<span class="kn">import</span> <span class="nn">mocafe.fenut.parameters</span> <span class="k">as</span> <span class="nn">mpar</span>
+
+<span class="c1"># MPI</span>
+<span class="n">_comm</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">MPI</span><span class="o">.</span><span class="n">comm_world</span>
+<span class="n">_rank</span> <span class="o">=</span> <span class="n">_comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
+<span class="c1"># only process 0 logs</span>
+<span class="n">fenics</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;std_out_all_processes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="c1"># set log level ERROR</span>
+<span class="n">fenics</span><span class="o">.</span><span class="n">set_log_level</span><span class="p">(</span><span class="n">fenics</span><span class="o">.</span><span class="n">LogLevel</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+<span class="c1"># define data folder</span>
+<span class="n">file_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+<span class="n">data_folder</span> <span class="o">=</span> <span class="n">mansimd</span><span class="o">.</span><span class="n">setup_data_folder</span><span class="p">(</span><span class="n">folder_path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;{file_folder / Path(&#39;demo_out&#39;)}/angiogenesis_2d&quot;</span><span class="p">,</span>
+                                        <span class="n">auto_enumerate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">file_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;af&quot;</span><span class="p">,</span> <span class="s2">&quot;tipcells&quot;</span><span class="p">]</span>
+<span class="n">file_c</span><span class="p">,</span> <span class="n">file_af</span><span class="p">,</span> <span class="n">tipcells_xdmf</span> <span class="o">=</span> <span class="n">fu</span><span class="o">.</span><span class="n">setup_xdmf_files</span><span class="p">(</span><span class="n">file_names</span><span class="p">,</span> <span class="n">data_folder</span><span class="p">)</span>
+
+<span class="n">file_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+<span class="n">parameters_file</span> <span class="o">=</span> <span class="n">file_folder</span> <span class="o">/</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;demo_in/angiogenesis_2d/parameters.ods&quot;</span><span class="p">)</span>
+<span class="n">parameters</span> <span class="o">=</span> <span class="n">mpar</span><span class="o">.</span><span class="n">from_ods_sheet</span><span class="p">(</span><span class="n">parameters_file</span><span class="p">,</span> <span class="s2">&quot;SimParams&quot;</span><span class="p">)</span>
+
+<span class="c1"># Mesh definition</span>
+<span class="n">Lx</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;Lx&quot;</span><span class="p">)</span>
+<span class="n">Ly</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;Ly&quot;</span><span class="p">)</span>
+<span class="n">nx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;nx&quot;</span><span class="p">))</span>
+<span class="n">ny</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;ny&quot;</span><span class="p">))</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">RectangleMesh</span><span class="p">(</span><span class="n">fenics</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">),</span>
+                            <span class="n">fenics</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="n">Lx</span><span class="p">,</span> <span class="n">Ly</span><span class="p">),</span>
+                            <span class="n">nx</span><span class="p">,</span>
+                            <span class="n">ny</span><span class="p">)</span>
+
+<span class="c1"># Spatial discretization</span>
+<span class="c1"># define function space for c and af</span>
+<span class="n">function_space</span> <span class="o">=</span> <span class="n">fu</span><span class="o">.</span><span class="n">get_mixed_function_space</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="c1"># define function space for grad_T</span>
+<span class="n">grad_af_function_space</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">VectorFunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Initial conditions</span>
+<span class="n">initial_vessel_width</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;initial_vessel_width&quot;</span><span class="p">)</span>
+<span class="n">c_0_exp</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">Expression</span><span class="p">(</span><span class="s2">&quot;(x[0] &lt; i_v_w) ? 1 : -1&quot;</span><span class="p">,</span>
+                            <span class="n">degree</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                            <span class="n">i_v_w</span><span class="o">=</span><span class="n">initial_vessel_width</span><span class="p">)</span>
+<span class="n">c_0</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">c_0_exp</span><span class="p">,</span> <span class="n">function_space</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">collapse</span><span class="p">())</span>
+
+<span class="n">mu_0</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">fenics</span><span class="o">.</span><span class="n">Constant</span><span class="p">(</span><span class="mf">0.</span><span class="p">),</span> <span class="n">function_space</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">collapse</span><span class="p">())</span>
+
+<span class="n">n_sources</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;n_sources&quot;</span><span class="p">))</span>
+<span class="n">random_sources_domain</span> <span class="o">=</span> <span class="n">mshr</span><span class="o">.</span><span class="n">Rectangle</span><span class="p">(</span><span class="n">fenics</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="n">initial_vessel_width</span> <span class="o">+</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">),</span> <span class="mi">0</span><span class="p">),</span>
+                                       <span class="n">fenics</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="n">Lx</span><span class="p">,</span> <span class="n">Ly</span><span class="p">))</span>
+<span class="n">sources_map</span> <span class="o">=</span> <span class="n">af_sourcing</span><span class="o">.</span><span class="n">RandomSourceMap</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span>
+                                          <span class="n">n_sources</span><span class="p">,</span>
+                                          <span class="n">parameters</span><span class="p">,</span>
+                                          <span class="n">where</span><span class="o">=</span><span class="n">random_sources_domain</span><span class="p">)</span>
+
+<span class="n">sources_manager</span> <span class="o">=</span> <span class="n">af_sourcing</span><span class="o">.</span><span class="n">SourcesManager</span><span class="p">(</span><span class="n">sources_map</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+<span class="n">af_0</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">fenics</span><span class="o">.</span><span class="n">Constant</span><span class="p">(</span><span class="mf">0.</span><span class="p">),</span> <span class="n">function_space</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">collapse</span><span class="p">())</span>
+<span class="n">sources_manager</span><span class="o">.</span><span class="n">apply_sources</span><span class="p">(</span><span class="n">af_0</span><span class="p">)</span>
+
+<span class="n">file_af</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">af_0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">file_c</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">c_0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Weak form defintion</span>
+<span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">v3</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">TestFunctions</span><span class="p">(</span><span class="n">function_space</span><span class="p">)</span>
+
+<span class="n">u</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">function_space</span><span class="p">)</span>
+<span class="n">af</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">mu</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+
+<span class="n">grad_af</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">grad_af_function_space</span><span class="p">)</span>
+<span class="n">tipcells_field</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">function_space</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">collapse</span><span class="p">())</span>
+
+<span class="n">grad_af</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span>  <span class="c1"># assign to grad_af</span>
+    <span class="n">fenics</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">fenics</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">af_0</span><span class="p">),</span> <span class="n">grad_af_function_space</span><span class="p">)</span>  <span class="c1"># the projection on the fun space of grad(af_0)</span>
+<span class="p">)</span>
+
+<span class="n">form_af</span> <span class="o">=</span> <span class="n">angiogenic_factor_form</span><span class="p">(</span><span class="n">af</span><span class="p">,</span> <span class="n">af_0</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+<span class="n">form_ang</span> <span class="o">=</span> <span class="n">angiogenesis_form</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">c_0</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">mu_0</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">v3</span><span class="p">,</span> <span class="n">af</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+<span class="n">weak_form</span> <span class="o">=</span> <span class="n">form_af</span> <span class="o">+</span> <span class="n">form_ang</span>
+
+<span class="c1"># Solution</span>
+<span class="n">tip_cell_manager</span> <span class="o">=</span> <span class="n">tipcells</span><span class="o">.</span><span class="n">TipCellManager</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span>
+                                           <span class="n">parameters</span><span class="p">)</span>
+
+<span class="n">jacobian</span> <span class="o">=</span> <span class="n">fenics</span><span class="o">.</span><span class="n">derivative</span><span class="p">(</span><span class="n">weak_form</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="mf">0.</span>
+<span class="n">n_steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;n_steps&quot;</span><span class="p">))</span>
+<span class="k">if</span> <span class="n">_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="n">n_steps</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;angiogenesis_2d&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">pbar</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="c1"># start iterating</span>
+<span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_steps</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="c1"># update time</span>
+    <span class="n">t</span> <span class="o">+=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;dt&quot;</span><span class="p">)</span>
+
+    <span class="c1"># turn off near sources</span>
+    <span class="n">sources_manager</span><span class="o">.</span><span class="n">remove_sources_near_vessels</span><span class="p">(</span><span class="n">c_0</span><span class="p">)</span>
+
+    <span class="c1"># activate tip cell</span>
+    <span class="n">tip_cell_manager</span><span class="o">.</span><span class="n">activate_tip_cell</span><span class="p">(</span><span class="n">c_0</span><span class="p">,</span> <span class="n">af_0</span><span class="p">,</span> <span class="n">grad_af</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+
+    <span class="c1"># revert tip cells</span>
+    <span class="n">tip_cell_manager</span><span class="o">.</span><span class="n">revert_tip_cells</span><span class="p">(</span><span class="n">af_0</span><span class="p">,</span> <span class="n">grad_af</span><span class="p">)</span>
+
+    <span class="c1"># move tip cells</span>
+    <span class="n">tip_cell_manager</span><span class="o">.</span><span class="n">move_tip_cells</span><span class="p">(</span><span class="n">c_0</span><span class="p">,</span> <span class="n">af_0</span><span class="p">,</span> <span class="n">grad_af</span><span class="p">)</span>
+
+    <span class="c1"># get tip cells field</span>
+    <span class="n">tipcells_field</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">tip_cell_manager</span><span class="o">.</span><span class="n">get_latest_tip_cell_function</span><span class="p">())</span>
+
+    <span class="c1"># update fields</span>
+    <span class="n">fenics</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">weak_form</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">J</span><span class="o">=</span><span class="n">jacobian</span><span class="p">)</span>
+
+    <span class="c1"># assign u to the initial conditions functions</span>
+    <span class="n">fenics</span><span class="o">.</span><span class="n">assign</span><span class="p">([</span><span class="n">af_0</span><span class="p">,</span> <span class="n">c_0</span><span class="p">,</span> <span class="n">mu_0</span><span class="p">],</span> <span class="n">u</span><span class="p">)</span>
+
+    <span class="c1"># update source field</span>
+    <span class="n">sources_manager</span><span class="o">.</span><span class="n">apply_sources</span><span class="p">(</span><span class="n">af_0</span><span class="p">)</span>
+
+    <span class="c1"># compute grad_T</span>
+    <span class="n">grad_af</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">fenics</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">fenics</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">af_0</span><span class="p">),</span> <span class="n">grad_af_function_space</span><span class="p">))</span>
+
+    <span class="c1"># save data</span>
+    <span class="n">file_af</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">af_0</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+    <span class="n">file_c</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">c_0</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+    <span class="n">tipcells_xdmf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">tipcells_field</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-demo-doc-angiogenesis-2d-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/2b679b7fa17c70a8e0476898e479b6d1/angiogenesis_2d.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">angiogenesis_2d.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/449d6c910de0ee5cc6e0a4d3112665a6/angiogenesis_2d.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">angiogenesis_2d.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="prostate_cancer2d.html" class="btn btn-neutral float-left" title="Prostate cancer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="prostate_cancer3d.html" class="btn btn-neutral float-right" title="Prostate cancer 3D" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Franco Pradelli.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>  
+
+  <style>
+    /* Sidebar header (and topbar for mobile) */
+    .wy-side-nav-search, .wy-nav-top {
+      background: #343131;
+    }
+  </style>
+
+
+</body>
+</html>

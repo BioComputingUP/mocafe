@@ -1,0 +1,109 @@
+:py:mod:`mocafe.expressions`
+============================
+
+.. py:module:: mocafe.expressions
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   mocafe.expressions.EllipseField
+   mocafe.expressions.EllipsoidField
+   mocafe.expressions.SmoothCircle
+   mocafe.expressions.SmoothCircularTumor
+   mocafe.expressions.PythonFunctionField
+
+
+
+
+.. py:class:: EllipseField(center: numpy.ndarray, semiax_x: float, semiax_y: float, inside_value: float, outside_value: float)
+
+   Bases: :py:obj:`fenics.UserExpression`
+
+   Expression representing an ellipse with a given value inside and a given value outside. The user can set
+   the semiaxes and the center.
+
+   .. py:method:: eval(self, values, x)
+
+
+   .. py:method:: value_shape(self)
+
+
+   .. py:method:: __floordiv__(self, other)
+
+      UFL does not support integer division.
+
+
+
+.. py:class:: EllipsoidField(center: numpy.ndarray, semiax_x: float, semiax_y: float, semiax_z: float, inside_value: float, outside_value: float)
+
+   Bases: :py:obj:`fenics.UserExpression`
+
+   Expression representing an ellipsoid with a given value inside and a given value outside. The user can set
+   the semiaxes and the center.
+
+   .. py:method:: eval(self, values, x)
+
+
+   .. py:method:: value_shape(self)
+
+
+   .. py:method:: __floordiv__(self, other)
+
+      UFL does not support integer division.
+
+
+
+.. py:class:: SmoothCircle(center: numpy.ndarray, radius: float, inside_value: float, outside_value: float, slope: float = 100.0)
+
+   Bases: :py:obj:`fenics.UserExpression`
+
+   Expression representing a Circle with a given center and radius, with given values inside and outside the circle.
+   The border of the circle is a smooth sigmoidal function with the given slope.
+
+   .. py:method:: eval(self, values, x)
+
+
+   .. py:method:: value_shape(self)
+
+
+   .. py:method:: __floordiv__(self, other)
+
+      UFL does not support integer division.
+
+
+
+.. py:class:: SmoothCircularTumor(center: numpy.ndarray, radius: float, slope: float = 100.0)
+
+   Bases: :py:obj:`SmoothCircle`
+
+   Expression representing a circular phase field tumor with a given center and radius, which has value 1. inside
+   the circle and 0. outside. The border of the circle is a smooth sigmoidal function with the given slope.
+
+   .. py:method:: eval(self, values, x)
+
+
+
+.. py:class:: PythonFunctionField(python_fun, *python_fun_params)
+
+   Bases: :py:obj:`fenics.UserExpression`
+
+   Expression representing a field with values determined on the basis of the given python function.
+
+   .. py:method:: eval(self, values, x)
+
+
+   .. py:method:: value_shape(self)
+
+
+   .. py:method:: __floordiv__(self, other)
+
+      UFL does not support integer division.
+
+
+

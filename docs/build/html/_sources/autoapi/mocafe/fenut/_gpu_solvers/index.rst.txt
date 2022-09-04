@@ -1,0 +1,73 @@
+:orphan:
+
+:py:mod:`mocafe.fenut._gpu_solvers`
+===================================
+
+.. py:module:: mocafe.fenut._gpu_solvers
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   mocafe.fenut._gpu_solvers.cupy_newton_solver
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   mocafe.fenut._gpu_solvers.mempool
+   mocafe.fenut._gpu_solvers.rank
+   mocafe.fenut._gpu_solvers.logger
+   mocafe.fenut._gpu_solvers.logfolder
+   mocafe.fenut._gpu_solvers.logfile
+   mocafe.fenut._gpu_solvers.f
+   mocafe.fenut._gpu_solvers.ch
+
+
+.. py:data:: mempool
+   
+
+   
+
+.. py:data:: rank
+   
+
+   
+
+.. py:data:: logger
+   
+
+   
+
+.. py:data:: logfolder
+   
+
+   
+
+.. py:data:: logfile
+   
+
+   
+
+.. py:data:: f
+   
+
+   
+
+.. py:data:: ch
+   
+
+   
+
+.. py:function:: cupy_newton_solver(form: fenics.Form, sol: fenics.Function, V: fenics.FunctionSpace, u_prec: fenics.Function)
+
+

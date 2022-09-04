@@ -1,0 +1,139 @@
+:py:mod:`mocafe.fenut.fenut`
+============================
+
+.. py:module:: mocafe.fenut.fenut
+
+.. autoapi-nested-parse::
+
+   Module containing some useful methods and Classes to work with FEniCS.
+   Requires FEniCS 2019.1 to work.
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   mocafe.fenut.fenut.setup_pvd_files
+   mocafe.fenut.fenut.setup_xdmf_files
+   mocafe.fenut.fenut.divide_in_chunks
+   mocafe.fenut.fenut.load_parameters
+   mocafe.fenut.fenut.get_mixed_function_space
+   mocafe.fenut.fenut.build_local_box
+   mocafe.fenut.fenut.is_in_local_box
+   mocafe.fenut.fenut.flatten_list_of_lists
+   mocafe.fenut.fenut.is_point_inside_mesh
+
+
+
+.. py:function:: setup_pvd_files(file_names: list, data_folder)
+
+   returns a list of ``.pvd`` files with the given list of names. ``.pvd`` files can be used to store FEniCS Functions,
+   even though XDMF files are preferred.
+
+   This method is useful when a relative long list of files is needed for a simulation.
+
+   :param file_names: the list of strings containing the files name.
+   :param data_folder: the folder where to place the files
+   :return: the FEniCS objects representing the files.
+
+
+.. py:function:: setup_xdmf_files(file_names: list, data_folder, comm=fenics.MPI.comm_world)
+
+   returns a list of ``.xdmf`` files with the given list of names. ``.xdmf`` files are the preferred way to store
+   FEniCS functions for elaboration and visualization.
+
+   This method is useful when a relative long list of files is needed for a simulation.
+
+   :param file_names: the list of strings containing the files name.
+   :param data_folder: the folder where to place the files
+   :param comm: MPI communicator. Default is COMM_WORLD and this is usually the best choice for normal simulations.
+   :return: the FEniCS objects representing the files.
+
+
+.. py:function:: divide_in_chunks(given_list, n_chnks)
+
+   Divides the elements of a given list in ``n_chnks`` list with almost the same number of elements. The result is
+   a list of lists.
+
+   More precisely, the total number of element of the given list is divided by ``n_chnks``. If the number is not
+   divisible by ``n_chnks``, the remainder will be distributed over the lists.
+
+   Below are provided some examples:
+
+   >>> a = [1, 2, 3, 4, 5, 6, 7]
+   >>> divide_in_chunks(a, 3)
+   [[1, 2, 3], [4, 5], [6, 7]]
+
+   >>> b = [1, 2, 3, 4, 5, 6, 7, 8]
+   >>> divide_in_chunks(b, 2)
+   [[1, 2, 3, 4], [5, 6, 7, 8]]
+
+   Notice that the order is conserved.
+
+   :param given_list: the list to be divided in chunks
+   :param n_chnks: the number of desidered chunks.
+   :return: a list of lists, where each element is one of the chunks.
+
+
+.. py:function:: load_parameters(parameters_file='parameters.json')
+
+   DEPRECATED: use Parameters class instead
+   :param parameters_file:
+   :return:
+
+
+.. py:function:: get_mixed_function_space(mesh: fenics.Mesh, n_variables: int, element_type: str = 'CG', degree: int = 1)
+
+   Builds a mixed function space for the given mesh with n_variables elements of the same given element_type.
+   :param mesh: the mesh to build the function space on.
+   :param n_variables: the number of elements composing the mixed elements space, usually equal to the number of
+   variables you need to simulate.
+   :param element_type: the type of element you want to use, identified with the fenics string. Default is Continuos
+   Glaerkin, 'CG'.
+   :param degree: the degree of the elements you want to use. Default is 1.
+   :return: the function space for the given mesh.
+
+
+.. py:function:: build_local_box(local_mesh: fenics.Mesh, border_width: float)
+
+   Builds a local box for a given mesh.
+
+   A local box is useful for parallel computation and might be useful for different purposes. In general, defines
+   a square space, bigger than the local mesh, which may contain elements of interest for the local mesh
+
+   :param local_mesh: the local mesh for the current MPI process
+   :param border_width: the width of the border of the local box
+   :return: the local box
+
+
+.. py:function:: is_in_local_box(local_box, position)
+
+   Given a local box, checks if the given point is inside that local box.
+
+   :param local_box: the local box
+   :param position: the position to check
+   :return: True if the position is inside the local box. False otherwise
+
+
+.. py:function:: flatten_list_of_lists(list_of_lists)
+
+   Flattens a list of lists in a flat list
+   :param list_of_lists: the given list of lists
+   :return: the flat list
+
+
+.. py:function:: is_point_inside_mesh(mesh: fenics.Mesh, point)
+
+   Check if the given point is inside the given mesh. In parallel, checks if the point is inside the local mesh.
+
+   :param mesh: the given Mesh
+   :param point: the given point
+   :return: True if the point is inside the mesh; False otherwise
+
+

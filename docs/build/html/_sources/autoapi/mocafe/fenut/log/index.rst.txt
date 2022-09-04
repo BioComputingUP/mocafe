@@ -1,0 +1,135 @@
+:py:mod:`mocafe.fenut.log`
+==========================
+
+.. py:module:: mocafe.fenut.log
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   mocafe.fenut.log.InfoCsvAdapter
+   mocafe.fenut.log.DebugAdapter
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   mocafe.fenut.log.confgure_root_logger_with_standard_settings
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   mocafe.fenut.log.log_header
+   mocafe.fenut.log.comm
+   mocafe.fenut.log.rank
+   mocafe.fenut.log.default_main_log_folder
+   mocafe.fenut.log.default_debug_log_folder
+   mocafe.fenut.log.default_info_log_folder
+   mocafe.fenut.log.default_debug_log_file
+   mocafe.fenut.log.default_info_log_file
+
+
+.. py:data:: log_header
+   :annotation: = ['timestamp', 'mpi_p', 'module', 'activity']
+
+   
+
+.. py:data:: comm
+   
+
+   
+
+.. py:data:: rank
+   
+
+   
+
+.. py:data:: default_main_log_folder
+   
+
+   
+
+.. py:data:: default_debug_log_folder
+   
+
+   
+
+.. py:data:: default_info_log_folder
+   
+
+   
+
+.. py:data:: default_debug_log_file
+   
+
+   
+
+.. py:data:: default_info_log_file
+   
+
+   
+
+.. py:class:: InfoCsvAdapter(logger, extra)
+
+   Bases: :py:obj:`logging.LoggerAdapter`
+
+   Standard logging adapter for logging the "INFO" level as a csv file.
+
+   This is mainly used for internal purposes, but can be used from the user as well.
+
+   .. py:method:: process(self, msg: str, kwargs)
+
+      Process the logging message and keyword arguments passed in to
+      a logging call to insert contextual information. You can either
+      manipulate the message itself, the keyword args or both. Return
+      the message and kwargs modified (or not) to suit your needs.
+
+      Normally, you'll only need to override this one method in a
+      LoggerAdapter subclass for your specific needs.
+
+
+
+.. py:class:: DebugAdapter(logger, extra)
+
+   Bases: :py:obj:`logging.LoggerAdapter`
+
+   Standerd logging adapter ffor logging the "DEBUG" level.
+
+   This is mainly used for internal purposes, but can be used from the user as well.
+
+   .. py:method:: process(self, msg: str, kwargs)
+
+      Process the logging message and keyword arguments passed in to
+      a logging call to insert contextual information. You can either
+      manipulate the message itself, the keyword args or both. Return
+      the message and kwargs modified (or not) to suit your needs.
+
+      Normally, you'll only need to override this one method in a
+      LoggerAdapter subclass for your specific needs.
+
+
+
+.. py:function:: confgure_root_logger_with_standard_settings(data_folder: pathlib.Path)
+
+   Configures the root _logger with the standard Mocafe settings.
+
+   This is mainly used for internal purposes, but can be used from the user as well.
+
+   The user can define its own logging configurations using the ``logging`` Python module.
+
+   :param data_folder: the folder where to place the logging files and folder.
+   :return: nothing
+
+

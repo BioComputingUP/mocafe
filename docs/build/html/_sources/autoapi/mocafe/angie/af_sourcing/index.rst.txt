@@ -1,0 +1,143 @@
+:py:mod:`mocafe.angie.af_sourcing`
+==================================
+
+.. py:module:: mocafe.angie.af_sourcing
+
+.. autoapi-nested-parse::
+
+   This module contains classes and methods to manage discrete angiogenic factor sources in Mocafe. This discrete agents
+   might represent hypoxic cells inducing angiogenesis, as presented by Travasso et al. :cite:`Travasso2011a`.
+
+   If you use this model in your research, remember to cite the original paper describing the model:
+
+       Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., & Hernández-Machado, A. (2011).
+       Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5), e19989.
+       https://doi.org/10.1371/journal.pone.0019989
+
+   For a use example see the :ref:`Angiogenesis <Angiogenesis 2D Demo>` and the
+   :ref:`Angiogenesis 3D <Angiogenesis 2D Demo>` demos.
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   mocafe.angie.af_sourcing.SourceCell
+   mocafe.angie.af_sourcing.SourceMap
+   mocafe.angie.af_sourcing.RandomSourceMap
+   mocafe.angie.af_sourcing.SourcesManager
+   mocafe.angie.af_sourcing.ConstantSourcesField
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   mocafe.angie.af_sourcing.sources_in_circle_points
+
+
+
+.. py:class:: SourceCell(point: numpy.ndarray, creation_step)
+
+   Bases: :py:obj:`mocafe.angie.base_classes.BaseCell`
+
+   Class representing a source cell, i.e. a cell of the non-vascular tissue which expresses an angiogenic factor. It
+   is just a wrapper of BaseCell.
+
+
+
+.. py:class:: SourceMap(mesh: fenics.Mesh, source_points: list, parameters: mocafe.fenut.parameters.Parameters)
+
+   Class representing the spatial map of the source cell positions. This class is responsible for keeping the position
+   of each source cell at any point of the simulation, providing access to it to other objects and methods.
+
+   .. py:method:: get_global_source_cells(self)
+
+      Get the global list of source cell (equal for each MPI process)
+
+      :return: the global list of source cells
+
+
+   .. py:method:: get_local_source_cells(self)
+
+      Get the local list of source cells (for the current MPI process)
+
+      :return:
+
+
+   .. py:method:: remove_global_source(self, source_cell: SourceCell)
+
+      Remove a source cell from the global source cell list. If the cell is part of the local source cells,
+      it is removed also from that list.
+
+      :param source_cell: the source cell to remove
+      :return:
+
+
+
+.. py:class:: RandomSourceMap(mesh: fenics.Mesh, n_sources: int, parameters: fenics.Parameters, where: types.FunctionType or mshr.cpp.CSGGeometry or fenics.SubDomain or None = None)
+
+   Bases: :py:obj:`SourceMap`
+
+   A SourceMap of randomly distributed sources in a given spatial domain
+
+
+.. py:class:: SourcesManager(source_map: SourceMap, mesh: fenics.Mesh, parameters: mocafe.fenut.parameters.Parameters)
+
+   Class representing the manager of the position of the source cells. This class takes care of removing the source
+   cells when they are near the blood vessels and of translating the source cell map in a FEniCS phase field function
+
+   .. py:method:: remove_sources_near_vessels(self, c: fenics.Function, **kwargs)
+
+      Removes the source cells near the blood vessels
+
+      :param c: blood vessel field
+      :return:
+
+
+   .. py:method:: apply_sources(self, af: fenics.Function)
+
+      Apply the sources at the current time to the angiogenic factor field af, respecting the expression function.
+
+      :param af: FEniCS function representing the angiogenic factor
+      :return: nothing
+
+
+
+
+.. py:class:: ConstantSourcesField(source_map: SourceMap, parameters: mocafe.fenut.parameters.Parameters)
+
+   Bases: :py:obj:`fenics.UserExpression`
+
+   FEniCS Expression representing the distribution of the angiogenic factor expressed by the source cells.
+
+   .. py:method:: __floordiv__(self, other)
+
+      UFL does not support integer division.
+
+
+   .. py:method:: eval(self, values, x)
+
+
+   .. py:method:: value_shape(self)
+
+
+
+.. py:function:: sources_in_circle_points(center: numpy.ndarray, circle_radius, cell_radius)
+
+   Generate the points where to place the source cells to place the source cells in a circle. The circle is full of
+   source cells.
+
+   :param center: center of the circle
+   :param circle_radius: radius of the circle
+   :param cell_radius: radius of the cells
+   :return: the list of source cells positions
+
+

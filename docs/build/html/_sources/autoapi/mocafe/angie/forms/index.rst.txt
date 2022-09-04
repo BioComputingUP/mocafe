@@ -1,0 +1,171 @@
+:py:mod:`mocafe.angie.forms`
+============================
+
+.. py:module:: mocafe.angie.forms
+
+.. autoapi-nested-parse::
+
+   Weak forms of the Phase-Field models related to angiogenesis. Each weak form is a FEniCS UFL Form which can be used
+   calling a specific method, that returns the form itself.
+
+   If you use this model in your research, remember to cite the original paper describing the model:
+
+       Travasso, R. D. M., Poiré, E. C., Castro, M., Rodrguez-Manzaneque, J. C., & Hernández-Machado, A. (2011).
+       Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5), e19989.
+       https://doi.org/10.1371/journal.pone.0019989
+
+   For a use example see the :ref:`Angiogenesis <Angiogenesis 2D Demo>` and the
+   :ref:`Angiogenesis 3D <Angiogenesis 2D Demo>` demos.
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   mocafe.angie.forms.vascular_proliferation_form
+   mocafe.angie.forms.cahn_hillard_form
+   mocafe.angie.forms.angiogenesis_form
+   mocafe.angie.forms.angiogenic_factor_form
+
+
+
+.. py:function:: vascular_proliferation_form(alpha_p, af, af_p, c, v)
+
+   Returns the UFL Form for the proliferation term of the vascular tissue as defined by the paper of Travasso et al.
+   (2011) :cite:`Travasso2011a`.
+
+   The corresponding term of the equation is (H is the Heaviside function):
+
+   .. math::
+      \alpha_p(af_p) \cdot c \cdot H(c)
+
+   Where :math: `af` is the angiogenic factor concentration, and :math: `\alpha_p(af)` represents the proliferation
+   rate, that is defined as the follwing function of :math: `af`. The definition of the latter function is the
+   following:
+
+   .. math::
+      \alpha_p(af) &= \alpha_p \cdot af_p \quad \textrm{if} \quad af>af_p \\
+                   &= \alpha_p \cdot af  \quad \textrm{if} \quad 0<af \le af_p \\
+                   & = 0 \quad \textrm{if} \quad af \le 0
+
+   Where :math: `\alpha-p` and :math: `af_p` are constants.
+
+   :param alpha_p: costant of the proliferation rate function for the capillaries
+   :param af: FEniCS function representing the angiogenic factor distribution
+   :param af_p: maximum concentration of angiogenic factor leading to proliferation. If af > af_p, the proliferation
+       rate remains alpha_p * af_p
+   :param c: FEniCS function representing the capillaries
+   :param v: FEniCS test function
+   :return: the UFL form for the proliferation term
+
+
+.. py:function:: cahn_hillard_form(c: fenics.Variable, c0: fenics.Function, mu: fenics.Function, mu0: fenics.Function, q: fenics.TestFunction, v: fenics.TestFunction, dt, theta, chem_potential, lmbda, M)
+
+   Returns the UFL form of a for a general Cahn-Hillard equation, discretized in time using the theta method. The
+   method is the same reported by the FEniCS team in one of their demo `1. Cahn-Hillard equation`_ and is briefly
+   discussed below for your conveneince.
+
+   .. _1. Cahn-Hillard equation:
+      https://fenicsproject.org/olddocs/dolfin/2016.2.0/cpp/demo/documented/cahn-hilliard/cpp/documentation.html
+
+   The Cahn-Hillard equation reads as follows:
+
+   .. math::
+      \frac{\partial c}{\partial t} - \nabla \cdot M (\nabla(\frac{d f}{d c}
+            - \lambda \nabla^{2}c)) = 0 \quad \textrm{in} \ \Omega
+
+   Where :math: `c` is the unknown field to find, :math: `f` is some kind of energetic potential which defines the
+   phase separation, and :math: `M` is a scalar parameter.
+
+   The equation involves 4th order derivatives, so its weak form could not be handled with the standard Lagrange
+   finite element basis. However, the equation can be splitted in two second-order equations adding a second unknown
+   auxiliary field :math: `\mu`:
+
+   .. math::
+      \frac{\partial c}{\partial t} - \nabla \cdot M \nabla\mu  &= 0 \quad \textrm{in} \ \Omega, \\
+      \mu -  \frac{d f}{d c} + \lambda \nabla^{2}c &= 0 \quad \textrm{ in} \ \Omega.
+
+   In this way, it is possible to solve this equation using the standard Lagrange basis and, indeed, this
+   implementation uses this form.
+
+   :param c: main Cahn-Hillard field
+   :param c0: initial condition for the main Cahn-Hillard field
+   :param mu: auxiliary field for the Cahn-Hillard equation
+   :param mu0: initial condition for the auxiliary field
+   :param q: test function for c
+   :param v: test function for mu
+   :param dt: time step
+   :param theta: theta value for theta method
+   :param chem_potential: UFL form for the Cahn-Hillard potential
+   :param lmbda: energetic weight for the gradient of c
+   :param M: scalar parameter
+   :return: the UFL form of the Cahn-Hillard Equation
+
+
+.. py:function:: angiogenesis_form(c: fenics.Function, c0: fenics.Function, mu: fenics.Function, mu0: fenics.Function, v1: fenics.TestFunction, v2: fenics.TestFunction, af: fenics.Function, parameters: mocafe.fenut.parameters.Parameters)
+
+   Returns the UFL form for the Phase-Field model for angiogenesis reported by Travasso et al. (2011)
+   :cite:`Travasso2011a`.
+
+   The equation reads simply as the sum of a Cahn-Hillard term and a proliferation term (for further details see
+   the original paper):
+
+   .. math::
+      \frac{\partial c}{\partial t} = M \cdot \nabla^2 [\frac{df}{dc}\ - \epsilon \nabla^2 c]
+      + \alpha_p(T) \cdot c H(c)
+
+   Where :math: `c` is the unknown field representing the capillaries, and :
+
+   .. math:: f = \frac{1}{4} \cdot c^4 - \frac{1}{2} \cdot c^2
+
+   .. math::
+      \alpha_p(af) &= \alpha_p \cdot af_p \quad \textrm{if} \quad af>af_p \\
+                   &= \alpha_p \cdot af  \quad \textrm{if} \quad 0<af \le af_p \\
+                   & = 0 \quad \textrm{if} \quad af \le 0
+
+   In this implementation, the equation is splitted in two equations of lower order, in order to make the weak form
+   solvable using standard Lagrange finite elements:
+
+   .. math::
+      \frac{\partial c}{\partial t} &= M \nabla^2 \cdot \mu + \alpha_p(T) \cdot c H(c) \\
+      \mu &= \frac{d f}{d c} - \epsilon \nabla^{2}c
+
+   :param c: capillaries field
+   :param c0: initial condition for the capillaries field
+   :param mu: auxiliary field
+   :param mu0: initial condition for the auxiliary field
+   :param v1: test function for c
+   :param v2: test function  for mu
+   :param af: angiogenic factor field
+   :param parameters: simulation parameters
+   :return:
+
+
+.. py:function:: angiogenic_factor_form(af: fenics.Function, af_0: fenics.Function, c: fenics.Function, v: fenics.TestFunction, parameters: mocafe.fenut.parameters.Parameters)
+
+   Returns the UFL form for the equation for the angiogenic factor reported by Travasso et al. (2011)
+   :cite:`Travasso2011a`.
+
+   The equation simply considers the diffusion of the angiogenic factor and its consumption by the capillaries
+   (for further details see the original paper):
+
+   .. math::
+      \frac{\partial af}{\partial t} = D \nabla^2 af - \alpha_T \cdot af \cdot c \cdot H(c)
+
+   Where :math: `af` is the angiogenic factor field, :math: `c` is the capillaries field, and :math: `H(c)` is the
+   Heaviside function
+
+   :param af: angiogenic factor field
+   :param af_0: initial condition for the angiogenic factor field
+   :param c: capillaries field
+   :param v: test function for the equation
+   :param parameters: simulation parameters
+   :return:
+
+

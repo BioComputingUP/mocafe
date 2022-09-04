@@ -1,0 +1,165 @@
+@article{Lorenzo2016,
+abstract = {Recently, mathematical modeling and simulation of diseases and their treatments have enabled the prediction of clinical outcomes and the design of optimal therapies on a personalized (i.e., patient-specific) basis. This new trend in medical research has been termed “predictive medicine.” Prostate cancer (PCa) is a ma- jor health problem and an ideal candidate to explore tissue-scale, personalized modeling of cancer growth for two main reasons: First, it is a small organ, and, second, tumor growth can be esti- mated by measuring serum prostate-specific antigen (PSA, a PCa biomarker in blood), which may enable in vivo validation. In this paper, we present a simple continuous model that reproduces the growth patterns of PCa. We use the phase-field method to account for the transformation of healthy cells to cancer cells and use diffusion−reaction equations to compute nutrient consumption and PSA production. To accurately and efficiently compute tumor growth, our simulations leverage isogeometric analysis (IGA). Our model is shown to reproduce a known shape instability from a spheroidal pattern to fingered growth. Results of our computa- tions indicate that such shift is a tumor response to escape starva- tion, hypoxia, and, eventually, necrosis. Thus, branching enables the tumor to minimize the distance from inner cells to external nutrients, contributing to cancer survival and further develop- ment. We have also used our model to perform tissue-scale, per- sonalized simulation of a PCa patient, based on prostatic anatomy extracted from computed tomography images. This simulation shows tumor progression similar to that seen in clinical practice.},
+annote = {Lettura approfondita: vedi riassunto su OneNote: Lorenzo et al, 2016 - Tissue-scale, personalized modeling and simulation of prostate cancer growth
+
+Prima lettura
+
+In questo articolo presentano un modello phase field per lo sviluppo del tumore alla prostata. La domanda che accompagna l'articolo {\`{e}} quindi: quanto {\`{e}} accurato il modello?
+
+Risposta: il modello {\`{e}} molto accurato sia in vitro che in vivo. {\`{e}} stato confrontato sia con un cancro in vitro sia con lo sviluppo di un tumore in vitro inserendo il modello matematico in un modello 3D di una prostata di un paziente reale, dimostrando uno sviluppo del cancro molto simile.},
+author = {Lorenzo, Guillermo and Scott, Michael A and Tew, Kevin and Hughes, Thomas J R and Zhang, Yongjie Jessica and Liu, Lei and Vilanova, Guillermo and Gomez, Hector},
+doi = {10.1073/pnas.1615791113},
+file = {:home/francop/studenti_google_drive_unipd/1_materiali/1_letteratura/Lorenzo et al._2016_Tissue-scale, personalized modeling and simulation of prostate cancer growth.pdf:pdf},
+journal = {Proceedings of the National Academy of Sciences},
+keywords = {Approfondire},
+mendeley-groups = {Padova,Padova/Phase Field},
+mendeley-tags = {Approfondire},
+title = {{Tissue-scale, personalized modeling and simulation of prostate cancer growth}},
+url = {www.pnas.org/cgi/doi/10.1073/pnas.1615791113},
+year = {2016}
+}
+
+@misc{enwiki:1058693490,
+author = "{Wikipedia contributors}",
+title = "Fick's laws of diffusion --- {Wikipedia}{,} The Free Encyclopedia",
+year = "2021",
+url = "https://en.wikipedia.org/w/index.php?title=Fick%27s_laws_of_diffusion&oldid=1058693490",
+note = "[Online; accessed 9-December-2021]"
+}
+
+@book{LangtangenLogg2017,
+title = {Solving PDEs in Python},
+author = {Hans Petter Langtangen and Anders Logg},
+year = {2017},
+publisher = {Springer},
+doi = {10.1007/978-3-319-52462-7},
+isbn = {978-3-319-52461-0},
+}
+
+@article{Lorenzo2017,
+abstract = {Moving interface problems are ubiquitous in science and engineering. To develop an accurate and efficient methodology for this class of problems, we present algorithms for local h-adaptivity of hierarchical B-splines to be utilized in isogeometric analysis. We extend B{\'{e}}zier projection, an efficient quadrature-free local projection technique, to the hierarchical setting. In this case, extraction operators may not be invertible. To address this issue we develop a multi-level reconstruction operator which maintains the locality properties of the projection. We also introduce a balance parameter to control the overlap of hierarchical functions leading to improved numerical conditioning. We apply our algorithms to the simulation of localized prostate cancer growth. We model this disease using the phase-field method and a set of diffusion–reaction equations to account for the dynamics of nutrients and a key biomarker termed Prostate Specific Antigen. Our results include examples on simple 2D and 3D domains and a more compelling tissue-scale, patient-specific simulation, which is run over a prostate anatomy extracted from medical images. Our methods for local h-adaptivity efficiently capture the evolving interface between the tumor and the neighboring healthy tissue with remarkable accuracy in all cases.},
+annote = {Prima lettura
+Articolo che spiega pi{\`{u}} in dettaglio il modello di prostate cancer presentato su PNAS.
+In questa prima lettura mi sono focalizzato sulla sezione 8 visto che l'obbiettivo era quello di riprodurre la simulazione con i miei metodi. Quindi la lettura {\`{e}} stata tutt'altro che approfondita.},
+author = {Lorenzo, G. and Scott, M. A. and Tew, K. and Hughes, T. J.R. and Gomez, H.},
+doi = {10.1016/j.cma.2017.03.009},
+file = {:home/francop/studenti_google_drive_unipd/1_materiali/1_letteratura/Lorenzo et al._2017_Hierarchically refined and coarsened splines for moving interface problems, with particular application to phase-fie.pdf:pdf},
+issn = {00457825},
+journal = {Computer Methods in Applied Mechanics and Engineering},
+keywords = {B{\'{e}}zier projection,Hierarchical spline spaces,Isogeometric analysis,Local refinement and coarsening,Phase field,Tumor growth},
+mendeley-groups = {Padova},
+month = {jun},
+pages = {515--548},
+publisher = {Elsevier B.V.},
+title = {{Hierarchically refined and coarsened splines for moving interface problems, with particular application to phase-field models of prostate tumor growth}},
+volume = {319},
+year = {2017}
+}
+
+@Inbook{Larson2013,
+author="Larson, Mats G.
+and Bengzon, Fredrik",
+title="Non-linear Problems",
+bookTitle="The Finite Element Method: Theory, Implementation, and Applications",
+year="2013",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="225--239",
+abstract="Many real-world problems are governed by non-linear mathematical models. The drying of paint, the weather, or the mixing of fluids are just some examples of non-linear phenomenons. In fact, most of the physical, biological, and chemical processes going on around us everyday are described by more or less non-linear laws of nature. Thus, extensions of the finite element method to non-linear equations are of special interest. In this chapter we study the standard methods for tackling non-linear partial differential equations discretized with finite elements, namely, Newton's method and its simplified variant Piccard, or, fixed-point iteration.",
+isbn="978-3-642-33287-6",
+doi="10.1007/978-3-642-33287-6_9",
+url="https://doi.org/10.1007/978-3-642-33287-6_9"
+}
+
+@article{Travasso2011a,
+abstract = {Understanding tumor induced angiogenesis is a challenging problem with important consequences for diagnosis and treatment of cancer. Recently, strong evidences suggest the dual role of endothelial cells on the migrating tips and on the proliferating body of blood vessels, in consonance with further events behind lumen formation and vascular patterning. In this paper we present a multi-scale phase-field model that combines the benefits of continuum physics description and the capability of tracking individual cells. The model allows us to discuss the role of the endothelial cells' chemotactic response and proliferation rate as key factors that tailor the neovascular network. Importantly, we also test the predictions of our theoretical model against relevant experimental approaches in mice that displayed distinctive vascular patterns. The model reproduces the in vivo patterns of newly formed vascular networks, providing quantitative and qualitative results for branch density and vessel diameter on the order of the ones measured experimentally in mouse retinas. Our results highlight the ability of mathematical models to suggest relevant hypotheses with respect to the role of different parameters in this process, hence underlining the necessary collaboration between mathematical modeling, in vivo imaging and molecular biology techniques to improve current diagnostic and therapeutic tools. {\textcopyright} 2011 Travasso et al.},
+author = {Travasso, Rui D.M. and Poir{\'{e}}, Eugenia Corvera and Castro, Mario and Rodrguez-Manzaneque, Juan Carlos and Hern{\'{a}}ndez-Machado, A.},
+doi = {10.1371/journal.pone.0019989},
+file = {::},
+issn = {19326203},
+journal = {PLoS ONE},
+keywords = {Cancers and neoplasms,Capillaries,Endothelial cells,Hypoxia,Mathematical models,Mouse models,Notch signaling,Tumor angiogenesis},
+mendeley-groups = {Padova,Padova/Phase Field},
+number = {5},
+pages = {e19989},
+pmid = {21637756},
+publisher = {Public Library of Science},
+title = {{Tumor angiogenesis and vascular patterning: A mathematical model}},
+url = {http://www.fct.mctes.pt http://www.gulbenkian.pt/ http://www.conacyt.mx/ http://www.isciii.es/ http://www.micinn.es/},
+volume = {6},
+year = {2011}
+}
+
+@article{UFL2014,
+author = {Aln\ae{}s, Martin S. and Logg, Anders and \O{}lgaard, Kristian B. and Rognes, Marie E. and Wells, Garth N.},
+title = {Unified Form Language: A Domain-Specific Language for Weak Formulations of Partial Differential Equations},
+year = {2014},
+issue_date = {February 2014},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {40},
+number = {2},
+issn = {0098-3500},
+url = {https://doi.org/10.1145/2566630},
+doi = {10.1145/2566630},
+abstract = {We present the Unified Form Language (UFL), which is a domain-specific language for representing weak formulations of partial differential equations with a view to numerical approximation. Features of UFL include support for variational forms and functionals, automatic differentiation of forms and expressions, arbitrary function space hierarchies for multifield problems, general differential operators and flexible tensor algebra. With these features, UFL has been used to effortlessly express finite element methods for complex systems of partial differential equations in near-mathematical notation, resulting in compact, intuitive and readable programs. We present in this work the language and its construction. An implementation of UFL is freely available as an open-source software library. The library generates abstract syntax tree representations of variational problems, which are used by other software libraries to generate concrete low-level implementations. Some application examples are presented and libraries that support UFL are highlighted.},
+journal = {ACM Trans. Math. Softw.},
+month = {mar},
+articleno = {9},
+numpages = {37},
+keywords = {algorithmic differentiation, FEM, einstein notation, DSEL, functional, domain specific language, mixed element, weak form, automatic functional differentiation, PDE, DSL, symbolic differentiation, partial differential equation, embedded language, AD, weak formulation, tensor algebra, discretization, implicit summation, index notation, finite element method}
+}
+
+@article{FENICS2015,
+  doi = {10.11588/ANS.2015.100.20553},
+  url = {http://journals.ub.uni-heidelberg.de/index.php/ans/article/view/20553},
+  author = {Alnæs,  Martin and Blechta,  Jan and Hake,  Johan and Johansson,  August and Kehlet,  Benjamin and Logg,  Anders and Richardson,  Chris and Ring,  Johannes and Rognes,  Marie E and Wells,  Garth N},
+  language = {en},
+  title = {The FEniCS Project Version 1.5},
+  journal = {<p>Archive of Numerical Software},
+  volume = {Vol 3},
+  pages = {<strong>Starting Point and Frequency: </strong>Year: 2013</p>},
+  publisher = {University Library Heidelberg},
+  year = {2015},
+  copyright = {Authors who publish with this journal agree to the following terms: Authors retain copyright and grant the journal right of first publication with the descriptive part of the work simultaneously licensed under a Creative Commons Attribution License that allows others to share the work with an acknowledgment of the work's authorship and initial publication in this journal. The code part of the work is licensed under a suitable OSI approved Open Source license. Authors are able to enter into separate,  additional contractual arrangements for the non-exclusive distribution of the journal's published version of the work (e.g.,  post it to an institutional repository or publish it in a book),  with an acknowledgment of its initial publication in this journal. Authors are permitted and encouraged to post their work online (e.g.,  in institutional repositories or on their website) prior to and during the submission process,  as it can lead to productive exchanges,  as well as earlier and greater citation of published work.}
+}
+
+@article{Xu2016,
+abstract = {We present a mathematical model for vascular tumor growth. We use phase fields to model cellular growth and reaction-diffusion equations for the dynamics of angiogenic factors and nutrients. The model naturally predicts the shift from avascular to vascular growth at realistic scales. Our computations indicate that the negative regulation of the Delta-like ligand 4 signaling pathway slows down tumor growth by producing a larger density of non-functional capillaries. Our results show good quantitative agreement with experiments.},
+author = {Xu, Jiangping and Vilanova, Guillermo and Gomez, Hector},
+doi = {10.1371/JOURNAL.PONE.0149422},
+file = {:home/francop/studenti_google_drive_unipd/1_materiali/1_letteratura/Xu, Vilanova, Gomez_2016_A Mathematical Model Coupling Tumor Growth and Angiogenesis(2).pdf:pdf},
+issn = {1932-6203},
+journal = {PLOS ONE},
+keywords = {Angiogenesis,Cancers and neoplasms,Endothelial cells,Hypoxia,Lung and intrathoracic tumors,Malignant tumors,Prostate cancer,Tumor angiogenesis},
+mendeley-groups = {Padova,Padova/Phase Field},
+month = {feb},
+number = {2},
+pages = {e0149422},
+publisher = {Public Library of Science},
+title = {{A Mathematical Model Coupling Tumor Growth and Angiogenesis}},
+url = {https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0149422},
+volume = {11},
+year = {2016}
+}
+
+@article{MoreiraSoares2018,
+abstract = {Angiogenesis - the growth of new blood vessels from a pre-existing vasculature - is key in both physiological processes and on several pathological scenarios such as cancer progression or diabetic retinopathy. For the new vascular networks to be functional, it is required that the growing sprouts merge either with an existing functional mature vessel or with another growing sprout. This process is called anastomosis. We present a systematic 2D and 3D computational study of vessel growth in a tissue to address the capability of angiogenic factor gradients to drive anastomosis formation. We consider that these growth factors are produced only by tissue cells in hypoxia, i.e. until nearby vessels merge and become capable of carrying blood and irrigating their vicinity. We demonstrate that this increased production of angiogenic factors by hypoxic cells is able to promote vessel anastomoses events in both 2D and 3D. The simulations also verify that the morphology of these networks has an increased resilience toward variations in the endothelial cell's proliferation and chemotactic response. The distribution of tissue cells and the concentration of the growth factors they produce are the major factors in determining the final morphology of the network.},
+author = {Moreira-Soares, Maur{\'{i}}cio and Coimbra, Rita and Rebelo, Lu{\'{i}}s and Carvalho, Jo{\~{a}}o and Travasso, Rui D.M.},
+doi = {10.1038/s41598-018-27034-8},
+file = {:home/francop/studenti_google_drive_unipd/1_materiali/1_letteratura/Moreira-Soares et al._2018_Angiogenic Factors produced by Hypoxic Cells are a leading driver of Anastomoses in Sprouting Angiogenesis–.pdf:pdf},
+issn = {2045-2322},
+journal = {Scientific Reports 2018 8:1},
+keywords = {Applied mathematics,Biological physics,Computational biophysics,Computer modelling,Tumour angiogenesis},
+mendeley-groups = {Padova/Phase Field},
+month = {jun},
+number = {1},
+pages = {1--12},
+pmid = {29880828},
+publisher = {Nature Publishing Group},
+title = {{Angiogenic Factors produced by Hypoxic Cells are a leading driver of Anastomoses in Sprouting Angiogenesis–a computational study}},
+url = {https://www.nature.com/articles/s41598-018-27034-8},
+volume = {8},
+year = {2018}
+}
+
