@@ -19,6 +19,7 @@
         <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
         <script src="../../../../_static/jquery.js"></script>
         <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../../../_static/doctools.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
@@ -90,19 +91,19 @@
            <div itemprop="articleBody">
              
   <section id="module-mocafe.fenut.mansimdata">
-<span id="mocafe-fenut-mansimdata"></span><h1><a class="reference internal" href="#module-mocafe.fenut.mansimdata" title="mocafe.fenut.mansimdata"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe.fenut.mansimdata</span></code></a><a class="headerlink" href="#module-mocafe.fenut.mansimdata" title="Permalink to this headline"></a></h1>
+<span id="mocafe-fenut-mansimdata"></span><h1><a class="reference internal" href="#module-mocafe.fenut.mansimdata" title="mocafe.fenut.mansimdata"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe.fenut.mansimdata</span></code></a><a class="headerlink" href="#module-mocafe.fenut.mansimdata" title="Permalink to this heading"></a></h1>
 <p>Useful methods to manage simulation data</p>
 <section id="module-contents">
-<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline"></a></h2>
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading"></a></h2>
 <section id="functions">
-<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline"></a></h3>
-<table class="longtable docutils align-default">
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mocafe.fenut.mansimdata.setup_data_folder" title="mocafe.fenut.mansimdata.setup_data_folder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup_data_folder</span></code></a>(folder_path: str, auto_enumerate: bool = True) → pathlib.Path</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mocafe.fenut.mansimdata.setup_data_folder" title="mocafe.fenut.mansimdata.setup_data_folder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup_data_folder</span></code></a>(folder_path: str, auto_enumerate: str or None = 'code') → pathlib.Path</p></td>
 <td><p>Creates a folder at the given folder path and returns it as pathlib.Path object to use for the simulation</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#mocafe.fenut.mansimdata.save_sim_info" title="mocafe.fenut.mansimdata.save_sim_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_sim_info</span></code></a>(data_folder: pathlib.Path, parameters: Parameters or dict, execution_time: float or None = None, sim_name: str = default_data_folder_name, dateandtime: str = 'auto', sim_description: str = None, error_msg: str = None) → None</p></td>
@@ -112,8 +113,8 @@
 </table>
 </section>
 <section id="attributes">
-<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline"></a></h3>
-<table class="longtable docutils align-default">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
@@ -179,18 +180,18 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mocafe.fenut.mansimdata.setup_data_folder">
-<span class="sig-prename descclassname"><span class="pre">mocafe.fenut.mansimdata.</span></span><span class="sig-name descname"><span class="pre">setup_data_folder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_enumerate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pathlib.Path</span></span></span><a class="headerlink" href="#mocafe.fenut.mansimdata.setup_data_folder" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">mocafe.fenut.mansimdata.</span></span><span class="sig-name descname"><span class="pre">setup_data_folder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_enumerate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span> <span class="pre">or</span> <span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'code'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pathlib.Path</span></span></span><a class="headerlink" href="#mocafe.fenut.mansimdata.setup_data_folder" title="Permalink to this definition"></a></dt>
 <dd><p>Creates a folder at the given folder path and returns it as pathlib.Path object to use for the simulation
 files.</p>
 <p>If just the folder path is specified the folder will be simply created. For instance, calling the following:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">setup_data_folder</span><span class="p">(</span><span class="n">folder_name</span><span class="o">=</span><span class="s2">&quot;my_sim_data&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">setup_data_folder</span><span class="p">(</span><span class="n">folder_name</span><span class="o">=</span><span class="s2">&quot;my_sim_data&quot;</span><span class="p">,</span> <span class="n">auto_enumerate</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Will just create the folder “my_sim_data” in the current root directory.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">auto_enumerate</span></code> argument can be used to specify if you need coded folders for the same simulation. This
+<p>The <code class="docutils literal notranslate"><span class="pre">auto_enumerate</span></code> argument can be used to specify if you need multiple folders for the same simulation. This
 is useful especially when one needs to save multiple simulation results under the same folder without having
 to decide a new folder path for each simulation. Indeed, if you call:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">setup_data_folder</span><span class="p">(</span><span class="n">folder_path</span><span class="o">=</span><span class="s2">&quot;my_sim_data&quot;</span><span class="p">,</span> <span class="n">auto_enumerate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">setup_data_folder</span><span class="p">(</span><span class="n">folder_path</span><span class="o">=</span><span class="s2">&quot;my_sim_data&quot;</span><span class="p">,</span> <span class="n">auto_enumerate</span><span class="o">=</span><span class="s2">&quot;code&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>This method will return:</p>
@@ -198,6 +199,17 @@ to decide a new folder path for each simulation. Indeed, if you call:</p>
 <li><p>the folder <code class="docutils literal notranslate"><span class="pre">./my_sim_data/0000</span></code> the first time the method is called</p></li>
 <li><p>the folder <code class="docutils literal notranslate"><span class="pre">./my_sim_data/0001</span></code> the second time the method is called</p></li>
 <li><p>… and so on</p></li>
+</ul>
+<p>From version 1.1.0 folders can be coded also using date and time passing <code class="docutils literal notranslate"><span class="pre">&quot;datetime&quot;</span></code> as argument for
+<code class="docutils literal notranslate"><span class="pre">auto_enumerate</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">setup_data_folder</span><span class="p">(</span><span class="n">folder_path</span><span class="o">=</span><span class="s2">&quot;my_sim_data&quot;</span><span class="p">,</span> <span class="n">auto_enumerate</span><span class="o">=</span><span class="s2">&quot;code&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The folder you’ll get will be:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">./my_sim_data/2022-04-26_09-14-41-550788</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">./my_sim_data/2022-04-26_09-14-43-570700</span></code></p></li>
+<li><p>… and so on.</p></li>
 </ul>
 <p>Works in parallel with MPI.</p>
 <dl class="field-list simple">

@@ -72,7 +72,7 @@ Attributes
 
    
 
-.. py:function:: setup_data_folder(folder_path: str, auto_enumerate: bool = True) -> pathlib.Path
+.. py:function:: setup_data_folder(folder_path: str, auto_enumerate: str or None = 'code') -> pathlib.Path
 
    Creates a folder at the given folder path and returns it as pathlib.Path object to use for the simulation
    files.
@@ -81,23 +81,36 @@ Attributes
 
    .. code-block:: default
 
-       setup_data_folder(folder_name="my_sim_data")
+       setup_data_folder(folder_name="my_sim_data", auto_enumerate=None)
 
    Will just create the folder "my_sim_data" in the current root directory.
 
-   The ``auto_enumerate`` argument can be used to specify if you need coded folders for the same simulation. This
+   The ``auto_enumerate`` argument can be used to specify if you need multiple folders for the same simulation. This
    is useful especially when one needs to save multiple simulation results under the same folder without having
    to decide a new folder path for each simulation. Indeed, if you call:
 
    .. code-block:: default
 
-       setup_data_folder(folder_path="my_sim_data", auto_enumerate=True)
+       setup_data_folder(folder_path="my_sim_data", auto_enumerate="code")
 
    This method will return:
 
    - the folder ``./my_sim_data/0000`` the first time the method is called
    - the folder ``./my_sim_data/0001`` the second time the method is called
    - ... and so on
+
+   From version 1.1.0 folders can be coded also using date and time passing ``"datetime"`` as argument for
+   ``auto_enumerate``:
+
+   .. code-block:: default
+
+       setup_data_folder(folder_path="my_sim_data", auto_enumerate="code")
+
+   The folder you'll get will be:
+
+   - ``./my_sim_data/2022-04-26_09-14-41-550788``
+   - ``./my_sim_data/2022-04-26_09-14-43-570700``
+   - ... and so on.
 
    Works in parallel with MPI.
 

@@ -19,6 +19,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -107,7 +108,7 @@
 to download the full example code</p>
 </div>
 <section class="sphx-glr-example-title" id="save-simulations-meta-data-2">
-<span id="multiple-angio-demo"></span><span id="sphx-glr-demo-doc-multiple-angiogenesis-simulations-py"></span><h1>Save simulations meta-data 2<a class="headerlink" href="#save-simulations-meta-data-2" title="Permalink to this headline"></a></h1>
+<span id="multiple-angio-demo"></span><span id="sphx-glr-demo-doc-multiple-angiogenesis-simulations-py"></span><h1>Save simulations meta-data 2<a class="headerlink" href="#save-simulations-meta-data-2" title="Permalink to this heading"></a></h1>
 <p>Often phase field models are simulated using different parameters. However, managing different parameters values,
 simulation outputs, and other meta-data might be not trivial and can lead to mistakes and repeated simulations.</p>
 <p>For this reason Mocafe provides tool to make simulation management easier. To see this in action, we are going
@@ -134,7 +135,7 @@ values.</p>
 </ul>
 </div>
 <section id="how-to-run-this-example-on-mocafe">
-<h2><a class="toc-backref" href="#id3">How to run this example on Mocafe</a><a class="headerlink" href="#how-to-run-this-example-on-mocafe" title="Permalink to this headline"></a></h2>
+<h2><a class="toc-backref" href="#id3">How to run this example on Mocafe</a><a class="headerlink" href="#how-to-run-this-example-on-mocafe" title="Permalink to this heading"></a></h2>
 <p>Make sure you have FEniCS and Mocafe installed and download the source script of this page (see above for the link).
 Then, simply run it using python:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python3 multiple_angiogenesis_simulations.py</span>
@@ -148,11 +149,11 @@ Then, simply run it using python:</p>
 simulation. You can change it accordingly with your CPU.</p>
 </section>
 <section id="visualize-the-results-of-this-simulation">
-<h2><a class="toc-backref" href="#id4">Visualize the results of this simulation</a><a class="headerlink" href="#visualize-the-results-of-this-simulation" title="Permalink to this headline"></a></h2>
+<h2><a class="toc-backref" href="#id4">Visualize the results of this simulation</a><a class="headerlink" href="#visualize-the-results-of-this-simulation" title="Permalink to this heading"></a></h2>
 <p>You need to have <a class="reference external" href="https://www.paraview.org/">Paraview</a> to visualize the results. Once you have installed it,
 you can easly import the <code class="docutils literal notranslate"><span class="pre">.xdmf</span></code> files generated during the simulation and visualize the result.</p>
 <section id="implementation">
-<h3><a class="toc-backref" href="#id5">Implementation</a><a class="headerlink" href="#implementation" title="Permalink to this headline"></a></h3>
+<h3><a class="toc-backref" href="#id5">Implementation</a><a class="headerlink" href="#implementation" title="Permalink to this heading"></a></h3>
 <p>The simulated model is the same of the <a class="reference internal" href="angiogenesis_2d.html#angiogenesis-2d-demo"><span class="std std-ref">Angiogenesis 2D demo</span></a>, so most of
 the code would be just the same. Thus, we created a convenience method that will do most of the work
 for us, called <code class="docutils literal notranslate"><span class="pre">run_angiogenesis_simulation</span></code>:</p>
@@ -171,7 +172,7 @@ Still, you can see the complete implementation in the <a class="reference intern
 </ul>
 </section>
 <section id="managing-multiple-simulations">
-<h3><a class="toc-backref" href="#id6">Managing multiple simulations</a><a class="headerlink" href="#managing-multiple-simulations" title="Permalink to this headline"></a></h3>
+<h3><a class="toc-backref" href="#id6">Managing multiple simulations</a><a class="headerlink" href="#managing-multiple-simulations" title="Permalink to this heading"></a></h3>
 <p>In the Angiogenesis model original paper <span id="id1">[<a class="reference internal" href="../bib.html#id7" title="Rui D.M. Travasso, Eugenia Corvera Poiré, Mario Castro, Juan Carlos Rodrguez-Manzaneque, and A. Hernández-Machado. Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5):e19989, 2011. URL: http://www.fct.mctes.pt http://www.gulbenkian.pt/ http://www.conacyt.mx/ http://www.isciii.es/ http://www.micinn.es/, doi:10.1371/journal.pone.0019989.">TPoireC+11</a>]</span> they simulated the model for several conditions, which
 are carefully reported in the paper figures:</p>
 <ul class="simple">
@@ -270,11 +271,11 @@ a name and a description to each simulated condition.</p>
 </section>
 </section>
 <section id="result">
-<h2><a class="toc-backref" href="#id7">Result</a><a class="headerlink" href="#result" title="Permalink to this headline"></a></h2>
+<h2><a class="toc-backref" href="#id7">Result</a><a class="headerlink" href="#result" title="Permalink to this heading"></a></h2>
 <p>here you can find the screenshots of the results for each simulation compared with the original results reported
 by Travasso et al. <span id="id2">[<a class="reference internal" href="../bib.html#id7" title="Rui D.M. Travasso, Eugenia Corvera Poiré, Mario Castro, Juan Carlos Rodrguez-Manzaneque, and A. Hernández-Machado. Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5):e19989, 2011. URL: http://www.fct.mctes.pt http://www.gulbenkian.pt/ http://www.conacyt.mx/ http://www.isciii.es/ http://www.micinn.es/, doi:10.1371/journal.pone.0019989.">TPoireC+11</a>]</span>.</p>
 <section id="experiment-reported-in-figure-2-of-the-original-paper">
-<h3><a class="toc-backref" href="#id8">Experiment reported in Figure 2 of the original paper</a><a class="headerlink" href="#experiment-reported-in-figure-2-of-the-original-paper" title="Permalink to this headline"></a></h3>
+<h3><a class="toc-backref" href="#id8">Experiment reported in Figure 2 of the original paper</a><a class="headerlink" href="#experiment-reported-in-figure-2-of-the-original-paper" title="Permalink to this heading"></a></h3>
 <p>A lower value of the <span class="math notranslate nohighlight">\(\chi\)</span> parameter lead to a lower tip cell velocity, and thus to thicker and less developed
 vessels. This is clearly visible in the original publication comparing Fig 2C, which is the models simulated with a
 low <span class="math notranslate nohighlight">\(\chi\)</span> value, with Fig 2D, where the <span class="math notranslate nohighlight">\(\chi\)</span> value is normal. Below you can find a crop of the image
@@ -290,7 +291,7 @@ reasons for the differences in the results are many:</p>
 </ul>
 </section>
 <section id="experiment-reported-in-figure-3-of-the-original-paper">
-<h3><a class="toc-backref" href="#id9">Experiment reported in Figure 3 of the original paper</a><a class="headerlink" href="#experiment-reported-in-figure-3-of-the-original-paper" title="Permalink to this headline"></a></h3>
+<h3><a class="toc-backref" href="#id9">Experiment reported in Figure 3 of the original paper</a><a class="headerlink" href="#experiment-reported-in-figure-3-of-the-original-paper" title="Permalink to this heading"></a></h3>
 <p>A difference in the proliferation rate of the endothelial cells can lead to thicker or thinner vessels. This is shown
 in Figure 3 of the original publication, where they compared a simulation with a low proliferation rate (3C) and
 a simulation with an high proliferation rate. Below you can find a crop of the image reported in
@@ -306,7 +307,7 @@ reasons for the differences in the results are many:</p>
 </ul>
 </section>
 <section id="experiment-reported-in-figure-4-of-the-original-paper">
-<h3><a class="toc-backref" href="#id10">Experiment reported in Figure 4 of the original paper</a><a class="headerlink" href="#experiment-reported-in-figure-4-of-the-original-paper" title="Permalink to this headline"></a></h3>
+<h3><a class="toc-backref" href="#id10">Experiment reported in Figure 4 of the original paper</a><a class="headerlink" href="#experiment-reported-in-figure-4-of-the-original-paper" title="Permalink to this heading"></a></h3>
 <p>A difference in the angiogenic factor production by the sources can lead to a sparser or denser network of
 blood vessels. This is shown in Figure 4 of the original publication, where they compared a simulation with low
 angiogenic factor production (4C) with a simulation with high angiogenic factor production (4D).
@@ -321,7 +322,7 @@ reported in the original publication and it is critical for this simulation in p
 </section>
 </section>
 <section id="full-code">
-<span id="multiple-angiogenesis-demo-full-code"></span><h2><a class="toc-backref" href="#id11">Full code</a><a class="headerlink" href="#full-code" title="Permalink to this headline"></a></h2>
+<span id="multiple-angiogenesis-demo-full-code"></span><h2><a class="toc-backref" href="#id11">Full code</a><a class="headerlink" href="#full-code" title="Permalink to this heading"></a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fenics</span>
 <span class="kn">import</span> <span class="nn">mshr</span>
 <span class="kn">import</span> <span class="nn">time</span>

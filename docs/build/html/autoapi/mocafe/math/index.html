@@ -19,6 +19,7 @@
         <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -90,12 +91,12 @@
            <div itemprop="articleBody">
              
   <section id="module-mocafe.math">
-<span id="mocafe-math"></span><h1><a class="reference internal" href="#module-mocafe.math" title="mocafe.math"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe.math</span></code></a><a class="headerlink" href="#module-mocafe.math" title="Permalink to this headline"></a></h1>
+<span id="mocafe-math"></span><h1><a class="reference internal" href="#module-mocafe.math" title="mocafe.math"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe.math</span></code></a><a class="headerlink" href="#module-mocafe.math" title="Permalink to this heading"></a></h1>
 <section id="module-contents">
-<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline"></a></h2>
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading"></a></h2>
 <section id="functions">
-<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline"></a></h3>
-<table class="longtable docutils align-default">
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
@@ -110,8 +111,8 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#mocafe.math.estimate_cancer_area" title="mocafe.math.estimate_cancer_area"><code class="xref py py-obj docutils literal notranslate"><span class="pre">estimate_cancer_area</span></code></a>(phi: fenics.Function)</p></td>
 <td><p>Estimate cancer area for the phase field <span class="math notranslate nohighlight">\(\varphi\)</span> representing the cancer, where the phase field must</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mocafe.math.estimate_capillaries_area" title="mocafe.math.estimate_capillaries_area"><code class="xref py py-obj docutils literal notranslate"><span class="pre">estimate_capillaries_area</span></code></a>(c: fenics.Function, V: fenics.FunctionSpace)</p></td>
-<td><p>Estimate capillaries area for the phase field c representing the vessels. In order to work c must be</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mocafe.math.estimate_capillaries_area" title="mocafe.math.estimate_capillaries_area"><code class="xref py py-obj docutils literal notranslate"><span class="pre">estimate_capillaries_area</span></code></a>(c: fenics.Function, threshold: float = 0.0)</p></td>
+<td><p>Estimate capillaries area for the phase field c.</p></td>
 </tr>
 </tbody>
 </table>
@@ -176,14 +177,16 @@ have values between 0 and 1</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mocafe.math.estimate_capillaries_area">
-<span class="sig-prename descclassname"><span class="pre">mocafe.math.</span></span><span class="sig-name descname"><span class="pre">estimate_capillaries_area</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">V</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.FunctionSpace</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.math.estimate_capillaries_area" title="Permalink to this definition"></a></dt>
-<dd><p>Estimate capillaries area for the phase field c representing the vessels. In order to work c must be
-between -1 and 1.</p>
+<span class="sig-prename descclassname"><span class="pre">mocafe.math.</span></span><span class="sig-name descname"><span class="pre">estimate_capillaries_area</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.math.estimate_capillaries_area" title="Permalink to this definition"></a></dt>
+<dd><p>Estimate capillaries area for the phase field c.
+It is assumed that c has values between 1 and -1, where 1 is a point with value 1 is inside the capillaries, while
+the points with value -1 are outside. Thus, this function assumes that all values of the field above 0 are part of
+the capillaries. It also possible to set a different threshold.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>c</strong> – phase field representing capillaries</p></li>
-<li><p><strong>V</strong> – function space of c</p></li>
+<li><p><strong>threshold</strong> – threshold above a value of c is considered part of the capillaries. Default value is 0.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
