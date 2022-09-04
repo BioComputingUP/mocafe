@@ -3,3 +3,4 @@
 /mocafe/fenut/_gpu_solvers.py
 /mocafe/fenut/_opcounter.py
 /.cache/
+*__pycache__*
