@@ -1,4 +1,5 @@
 import fenics
+import numpy as np
 
 
 def sigmoid(variable,
@@ -54,20 +55,22 @@ def estimate_cancer_area(phi: fenics.Function):
     return fenics.assemble(phi * fenics.dx)
 
 
-def estimate_capillaries_area(c: fenics.Function,
-                              V: fenics.FunctionSpace):
+def estimate_capillaries_area(c: fenics.Function, threshold: float = 0.):
     """
-    Estimate capillaries area for the phase field c representing the vessels. In order to work c must be
-    between -1 and 1.
+    Estimate capillaries area for the phase field c.
+    It is assumed that c has values between 1 and -1, where 1 is a point with value 1 is inside the capillaries, while
+    the points with value -1 are outside. Thus, this function assumes that all values of the field above 0 are part of
+    the capillaries. It also possible to set a different threshold.
 
     :param c: phase field representing capillaries
-    :param V: function space of c
+    :param threshold: threshold above a value of c is considered part of the capillaries. Default value is 0.
     :return: the area of the given field
     """
     # rescale phase field c
-    c_rescaled = fenics.project(
-        fenics.Constant(1) + (fenics.Constant(0.5) * c),
-        c.function_space
+    c_rescaled = c.copy()  # copy original function
+    c_loc = c.vector().get_local()  # get values on local process
+    c_rescaled.vector().set_local(
+        np.where(c_loc >= threshold, 1., 0.)  # set to 1 if >= thershold, else 0
     )
     # estimate area of the rescaled field
     return estimate_cancer_area(c_rescaled)
