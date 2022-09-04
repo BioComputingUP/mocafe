@@ -56,6 +56,7 @@ Please refer to the [demo gallery](https://biocomputingup.github.io/mocafe/build
  
 ## Release History  
   
+* 04 Sep 2022: Improved and fixed method to estimate capillaries and cancer areas.
 * 01 Aug 2022: Added feature for saving simulations
 * 25 Jul 2022: Mocafe published
 * 24 Jan 2022: Released Mocafe 1.0.0 
