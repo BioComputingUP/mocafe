@@ -72,5 +72,6 @@ def estimate_capillaries_area(c: fenics.Function, threshold: float = 0.):
     c_rescaled.vector().set_local(
         np.where(c_loc >= threshold, 1., 0.)  # set to 1 if >= thershold, else 0
     )
+    c_rescaled.vector().update_ghost_values()
     # estimate area of the rescaled field
     return estimate_cancer_area(c_rescaled)

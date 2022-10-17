@@ -5,7 +5,6 @@ Requires FEniCS 2019.1 to work.
 """
 
 import fenics
-import shutil
 import json
 import numpy as np
 
@@ -28,7 +27,10 @@ def setup_pvd_files(file_names: list, data_folder):
     return vtk_files
 
 
-def setup_xdmf_files(file_names: list, data_folder, comm=fenics.MPI.comm_world):
+def setup_xdmf_files(file_names: list,
+                     data_folder,
+                     xdmf_files_parameters: dict = None,
+                     comm=fenics.MPI.comm_world):
     """
     returns a list of ``.xdmf`` files with the given list of names. ``.xdmf`` files are the preferred way to store
     FEniCS functions for elaboration and visualization.
@@ -37,10 +39,14 @@ def setup_xdmf_files(file_names: list, data_folder, comm=fenics.MPI.comm_world):
 
     :param file_names: the list of strings containing the files name.
     :param data_folder: the folder where to place the files
+    :param xdmf_files_parameters: (new in 1.4) set parameters to generated xdmf files
     :param comm: MPI communicator. Default is COMM_WORLD and this is usually the best choice for normal simulations.
     :return: the FEniCS objects representing the files.
     """
     xdmf_files = [fenics.XDMFFile(comm, str(data_folder) + "/" + file_name + ".xdmf") for file_name in file_names]
+    for xdmf_f in xdmf_files:
+        for k, i in xdmf_files_parameters.items():
+            xdmf_f.parameters[k] = i
     return xdmf_files
 
 

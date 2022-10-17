@@ -14,16 +14,19 @@ For a use example see the :ref:`Angiogenesis <Angiogenesis 2D Demo>` and the
 
 import fenics
 import numpy as np
-import mocafe.fenut.fenut as fu
-from mocafe.angie.base_classes import BaseCell, ClockChecker
+from typing import List
 import random
 import logging
-from mocafe.fenut.parameters import Parameters
+import json
+import mocafe.fenut.fenut as fu
+from mocafe.angie.base_classes import BaseCell, ClockChecker
+from mocafe.fenut.parameters import Parameters, _unpack_parameter
 from mocafe.fenut.log import InfoCsvAdapter, DebugAdapter
 
 # get _rank
 _comm = fenics.MPI.comm_world
 _rank = _comm.Get_rank()
+_size = _comm.Get_size()
 
 # configure _logger
 _logger = logging.getLogger(__name__)
@@ -96,22 +99,25 @@ class TipCellsField(fenics.UserExpression):
     def __floordiv__(self, other):
         pass
 
-    def __init__(self, parameters: Parameters, mesh_dim: int):
+    def __init__(self, mesh_dim: int = None, parameters: Parameters = None, **kwargs):
         """
         inits the TipCellField for the given simulation parameters
 
         :param parameters: simulation parameters
         """
         super(TipCellsField, self).__init__()
-        self.alpha_p = parameters.get_value("alpha_p")
-        self.T_p = parameters.get_value("T_p")
-        self.phi_min = parameters.get_value("phi_min")
-        self.phi_max = parameters.get_value("phi_max")
+        self.alpha_p = _unpack_parameter("alpha_p", parameters, kwargs)
+        self.T_p = _unpack_parameter("T_p", parameters, kwargs)
+        self.phi_min = _unpack_parameter("phi_min", parameters, kwargs)
+        self.phi_max = _unpack_parameter("phi_max", parameters, kwargs)
         self.tip_cells_positions = []
         self.tip_cells_radiuses = np.array([])
         self.velocity_norms = np.array([])
         self.T_values = np.array([])
-        self.phi_c_dimensionality_constant = (np.pi / 2) if mesh_dim == 2 else (4. / 3.)
+        if mesh_dim is not None:
+            self.phi_c_dimensionality_constant = (np.pi / 2) if mesh_dim == 2 else (4. / 3.)
+        else:
+            raise RuntimeError("Mesh dim not defined")
 
     def add_tip_cell(self, tip_cell: TipCell, velocity, af_at_point):
         """
@@ -159,7 +165,7 @@ class TipCellsField(fenics.UserExpression):
         if self.tip_cells_positions:
             try:
                 is_inside_array = np.sum((x - self.tip_cells_positions) ** 2, axis=1) <= (self.tip_cells_radiuses ** 2)
-            except ValueError as e:
+            except ValueError:
                 raise ValueError(f"Found error with the following params: \n"
                                  f"* {self.tip_cells_positions} \n"
                                  f"* {x} \n"
@@ -181,29 +187,42 @@ class TipCellManager:
     Class to manage the tip cells throughout the simulation.
     """
     def __init__(self, mesh: fenics.Mesh,
-                 parameters: Parameters):
+                 parameters: Parameters = None,
+                 initial_tcs: List[TipCell] = None,
+                 **kwargs):
         """
         inits a TipCellManager
 
         :param mesh: mesh
         :param parameters: simulation parameters
+        :param initial_tcs: set a list of tip cells as initial tip cell list for the TipCellManager. Default is None,
+            which sets the initial tip cell list to an empty list.
         """
-        self.global_tip_cells_list = []
-        self.local_tip_cells_list = []
         self.mesh = mesh
         mesh.bounding_box_tree()  # done for MPI; otherwise idle (bounding box must be built on all processes)
         self.parameters = parameters
-        self.T_c = parameters.get_value("T_c")
-        self.G_m = parameters.get_value("G_m")
-        self.phi_th = parameters.get_value("phi_th")
-        self.cell_radius = parameters.get_value("R_c")
-        self.G_M = parameters.get_value("G_M")
-        self.alpha_p = parameters.get_value("alpha_p")
-        self.T_p = parameters.get_value("T_p")
-        self.min_tipcell_distance = parameters.get_value("min_tipcell_distance")
+        self.kwargs = kwargs
+        self.T_c = _unpack_parameter("T_c", parameters, kwargs)
+        self.G_m = _unpack_parameter("G_m", parameters, kwargs)
+        self.phi_th = _unpack_parameter("phi_th", parameters, kwargs)
+        self.cell_radius = _unpack_parameter("R_c", parameters, kwargs)
+        self.G_M = _unpack_parameter("G_M", parameters, kwargs)
+        self.alpha_p = _unpack_parameter("alpha_p", parameters, kwargs)
+        self.T_p = _unpack_parameter("T_p", parameters, kwargs)
+        self.chi = _unpack_parameter("chi", parameters, kwargs)
+        self.dt = _unpack_parameter("dt", parameters, kwargs)
+        self.min_tipcell_distance = _unpack_parameter("min_tipcell_distance", parameters, kwargs)
         self.clock_checker = ClockChecker(mesh, self.cell_radius, start_point="west")
         self.local_box = self._build_local_box(self.cell_radius)
+        self.global_tip_cells_list = []
+        self.local_tip_cells_list = []
         self.latest_t_c_f_function = None
+        if initial_tcs is None:
+            pass
+        else:
+            for tc in initial_tcs:
+                self._add_tip_cell(tc)
+        self.incremental_tip_cell_file = None
 
     def get_global_tip_cells_list(self):
         """
@@ -259,6 +278,32 @@ class TipCellManager:
         :param tip_cell: the tip cell to add
         :return: nothing
         """
+        # check if the tip cell to add it the same on all processes
+        if _size > 1:
+            # gather tcs to be added
+            tc_on_processes = _comm.gather(tip_cell, root=0)
+            # check if are all equal
+            if _rank == 0:
+                are_tc_equal = [tc == tip_cell for tc in tc_on_processes]
+                are_tc_all_equal = all(are_tc_equal)
+                error_msg = ""
+                for index, test_result in enumerate(are_tc_equal):
+                    if test_result:
+                        pass
+                    else:
+                        error_msg += f"Tip Cell on p{index} is different from Tip Cell on p0 \n"
+            else:
+                are_tc_all_equal = None
+                error_msg = None
+            are_tc_all_equal = _comm.bcast(are_tc_all_equal, root=0)
+            if are_tc_all_equal:
+                pass
+            else:
+                error_msg = _comm.bcast(error_msg, root=0)
+                error_msg = "Can't add different Tip Cells on different MPI processes. \n" + error_msg
+                raise RuntimeError(error_msg)
+
+        # add tip cell
         self.global_tip_cells_list.append(tip_cell)
         if self._is_in_local_box(tip_cell.get_position()):
             self.local_tip_cells_list.append(tip_cell)
@@ -500,7 +545,7 @@ class TipCellManager:
         :return: the updated tip cells field
         """
         # init tip cell field
-        tip_cells_field_expression = TipCellsField(self.parameters, self.mesh.geometric_dimension())
+        tip_cells_field_expression = TipCellsField(self.mesh.geometric_dimension(), self.parameters, **self.kwargs)
 
         # define root _rank
         root = 0
@@ -514,7 +559,7 @@ class TipCellManager:
             # the process that has access to tip cell position computes the mesh_related values
             if fu.is_point_inside_mesh(self.mesh, tip_cell_position):
                 # compute velocity
-                velocity = self.compute_tip_cell_velocity(grad_af, self.parameters.get_value("chi"), tip_cell_position)
+                velocity = self.compute_tip_cell_velocity(grad_af, self.chi, tip_cell_position)
                 # compute value of T in position
                 T_at_point = af(tip_cell_position)
             else:
@@ -542,12 +587,11 @@ class TipCellManager:
             T_at_point = _comm.bcast(T_at_point, root)
 
             # compute new position
-            dt = self.parameters.get_value("dt")
-            new_position = tip_cell_position + (dt * velocity)
+            new_position = tip_cell_position + (self.dt * velocity)
             debug_msg = \
                 f"DEBUG: p{fenics.MPI.comm_world.Get_rank()}: computing new tip cell position: \n" \
                 f"\t*[tip cell position] + [dt] * [velocity] = \n" \
-                f"\t*{tip_cell_position} + {dt} * {velocity} = {new_position}"
+                f"\t*{tip_cell_position} + {self.dt} * {velocity} = {new_position}"
             for line in debug_msg.split("\n"):
                 _debug_adapter.debug(line)
 
@@ -706,3 +750,101 @@ class TipCellManager:
             raise RuntimeError("Tip cell function has not have been computed yet")
         else:
             return self.latest_t_c_f_function
+
+    def _make_tip_cells_dict(self):
+        """
+        INTERNAL USE
+
+        Creates a dictionary with the current tip cells data. Used for creating tip cells json objects
+        """
+        tc_dict = {}
+        for tc in self.global_tip_cells_list:
+            tc_dict[f"tc{hash(tc)}"] = {
+                "position": tc.position.tolist(),
+                "radius": tc.radius,
+                "creation step": tc.creation_step
+            }
+        return tc_dict
+
+    def save_tip_cells(self, tc_file: str):
+        """
+        Stores the current global tip cell list in a readable json file.
+
+        :param tc_file: file where to store the json tip cell list.
+        """
+        # check if input file is json file
+        if tc_file.endswith(".json"):
+            pass
+        else:
+            raise RuntimeError("Input file must be a json file.")
+
+        if _rank == 0:
+            # create dict from global tc list
+            tc_dict = self._make_tip_cells_dict()
+
+            # save to file
+            with open(tc_file, "w") as outfile:
+                json.dump(tc_dict, outfile)
+
+        # wait for all the processes
+        _comm.Barrier()
+
+    def save_incremental_tip_cells(self, tc_file: str, step: int):
+        """
+        Stores the global tip cell list in a readable json file at every time step.
+
+        :param tc_file: file where to store the json tip cell list.
+        :param step: time step
+        """
+        # check if input file is json file
+        if tc_file.endswith(".json"):
+            pass
+        else:
+            raise RuntimeError("Input file must be a json file.")
+        # check if this method has been called for the first time
+        first_time_called = self.incremental_tip_cell_file is None
+        # set file name
+        if first_time_called:
+            self.incremental_tip_cell_file = tc_file
+        if _rank == 0:
+            # init dict
+            if first_time_called:
+                incremental_tc_dict = {}
+            else:
+                with open(self.incremental_tip_cell_file) as infile:
+                    incremental_tc_dict = json.load(infile)
+
+            # create dict from global tc list
+            incremental_tc_dict[f"step_{step}"] = self._make_tip_cells_dict()
+
+            # save to file
+            with open(self.incremental_tip_cell_file, "w") as outfile:
+                json.dump(incremental_tc_dict, outfile)
+
+        # wait for all the processes
+        _comm.Barrier()
+
+
+def load_tip_cells_from_json(json_file: str):
+    """
+    Creates a tip cell list from a json file with tip cells data.
+
+    :param json_file: file to load as tip cell list.
+    """
+    # check if input file is json file
+    if json_file.endswith(".json"):
+        pass
+    else:
+        raise RuntimeError("Input file must be a json file.")
+    # load json
+    with open(json_file) as infile:
+        tc_dict = json.load(infile)
+    # create tip cells
+    tc_list = []
+    for tc_entry in tc_dict:
+        tc_list.append(
+            TipCell(np.array(tc_dict[tc_entry]["position"]),
+                    tc_dict[tc_entry]["radius"],
+                    tc_dict[tc_entry]["creation step"])
+        )
+    return tc_list

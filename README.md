@@ -55,7 +55,8 @@ Please refer to the [demo gallery](https://biocomputingup.github.io/mocafe/build
 | An **angiogenesis model** first proposed by Travasso et al. in 2011 [^Travasso2011], both in 2D and in 3D (3D adaptation first reported by Guerra et al. in 2012 [^Guerra2012]) | ![2D_angiogenesis](https://i.imgur.com/JqZ6Lr3.png)    | ![3D_angiogenesis](https://i.imgur.com/6R1mJ4d.png)    |
  
 ## Release History  
-  
+
+* 05 Sep 2022: Improved saving simulation; added possibility to interrupt and restart simulation with `save_tip_cells` and `load_tip_cells_from_json`. Improved parameters management.
 * 04 Sep 2022: Improved and fixed method to estimate capillaries and cancer areas.
 * 01 Aug 2022: Added feature for saving simulations
 * 25 Jul 2022: Mocafe published

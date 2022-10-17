@@ -20,7 +20,7 @@ import numpy as np
 import logging
 import mocafe.fenut.fenut as fu
 from mocafe.angie import base_classes
-from mocafe.fenut.parameters import Parameters
+from mocafe.fenut.parameters import Parameters, _unpack_parameter
 from mocafe.fenut.log import InfoCsvAdapter, DebugAdapter
 
 # Get MPI communicator and _rank to be used in the module
@@ -61,7 +61,8 @@ class SourceMap:
     def __init__(self,
                  mesh: fenics.Mesh,
                  source_points: list,
-                 parameters: Parameters):
+                 parameters: Parameters = None,
+                 **kwargs):
         """
         inits a SourceMap, i.e. a class responsible for keeping the current position of each source cell at any point
         of the simulation, with a SourceCell in all the positions listed in source_points.
@@ -72,7 +73,8 @@ class SourceMap:
         """
         # initialize global SourceCells list in the given points
         self.mesh = mesh
-        self.local_box = self._build_local_box(parameters)
+        self.d = _unpack_parameter("d", parameters, kwargs)
+        self.local_box = fu.build_local_box(self.mesh, self.d)
         global_source_points = source_points
         # sort global source point for distance from origin
         global_source_points.sort(key=lambda x: np.sqrt(sum(x**2)))
@@ -93,18 +95,6 @@ class SourceMap:
             if self._is_in_local_box(position):
                 competence_source_cells.append(source_cell)
         return competence_source_cells
-
-    def _build_local_box(self, parameters: Parameters):
-        """
-        INTERNAL USE
-        Builds the local box for the MPI process. The local box is a square spatial domain that is used to check
-        if the source cells are near a blood vessel.
-
-        :param parameters:
-        :return:
-        """
-        d = parameters.get_value("d")
-        return fu.build_local_box(self.mesh, d)
 
     def _is_in_local_box(self, position):
         """
@@ -253,7 +243,8 @@ class SourcesManager:
     """
     def __init__(self, source_map: SourceMap,
                  mesh: fenics.Mesh,
-                 parameters: Parameters):
+                 parameters: Parameters = None,
+                 **kwargs):
         """
         inits a source cells manager for a given source map.
 
@@ -264,16 +255,13 @@ class SourcesManager:
         self.source_map = source_map
         self.mesh = mesh
         self.parameters: Parameters = parameters
-        if parameters.is_parameter("d") and parameters.is_value_present("d"):
-            self.default_clock_checker = base_classes.ClockChecker(mesh, parameters.get_value("d"))
+        self.phi_th = _unpack_parameter("phi_th", parameters, kwargs)
+        try:
+            d_value = _unpack_parameter("d", parameters, kwargs)
+            self.default_clock_checker = base_classes.ClockChecker(mesh, d_value)
             self.default_clock_checker_is_present = True
-        elif not parameters.is_parameter("d"):
-            _logger.debug("Reference for the parameter 'd' not found. Can't init the default clock checker.")
-            self.default_clock_checker = None
-            self.default_clock_checker_is_present = False
-        elif not parameters.is_value_present("d"):
-            _logger.debug("The parameter 'd' is present in the parameters object but the value is not set. "
-                         "Can't init the default clock checker.")
+        except RuntimeError as e:
+            _logger.debug(str(e))
             self.default_clock_checker = None
             self.default_clock_checker_is_present = False
 
@@ -304,7 +292,7 @@ class SourcesManager:
             _debug_adapter.debug(f"Checking cell {source_cell.__hash__()} at position {source_cell_position}")
             clock_check_test_result = clock_checker.clock_check(source_cell_position,
                                                                 c,
-                                                                self.parameters.get_value("phi_th"),
+                                                                self.phi_th,
                                                                 lambda val, thr: val > thr)
             _debug_adapter.debug(f"Clock Check test result is {clock_check_test_result}")
             # if the clock test is positive, add the source cells in the list of the cells to remove
@@ -409,7 +397,7 @@ class ConstantSourcesField(fenics.UserExpression):
     def __floordiv__(self, other):
         pass
 
-    def __init__(self, source_map: SourceMap, parameters: Parameters):
+    def __init__(self, source_map: SourceMap, parameters: Parameters = None, **kwargs):
         """
         inits a SourceField for the given SourceMap, in respect of the simulation parameters and of the expression
         function
@@ -420,9 +408,9 @@ class ConstantSourcesField(fenics.UserExpression):
         super(ConstantSourcesField, self).__init__()
         self.sources_positions = [source_cell.get_position() for source_cell in source_map.get_local_source_cells()]
         self.sources_positions_not_empty = len(self.sources_positions) != 0
-        self.value_min = parameters.get_value("T_min")
-        self.value_max = parameters.get_value("T_s")
-        self.radius = parameters.get_value("R_c")
+        self.value_min = _unpack_parameter("T_min", parameters, kwargs)
+        self.value_max = _unpack_parameter("T_s", parameters, kwargs)
+        self.radius = _unpack_parameter("R_c", parameters, kwargs)
 
     def eval(self, values, x):
         # check if point is inside any cell
