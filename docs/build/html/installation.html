@@ -19,7 +19,6 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -96,7 +95,7 @@
            <div itemprop="articleBody">
              
   <section id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h1>
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h1>
 <p>You have two options to install Mocafe:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#mocafe-apt"><span class="std std-ref">Install with apt and pip</span></a></p></li>
@@ -109,7 +108,7 @@
 </ul>
 <p><em>Notice:</em> WSL is available for Windows 10 onwards.</p>
 <section id="install-with-apt-and-pip">
-<span id="mocafe-apt"></span><h2>Install with <code class="docutils literal notranslate"><span class="pre">apt</span></code> and <code class="docutils literal notranslate"><span class="pre">pip</span></code><a class="headerlink" href="#install-with-apt-and-pip" title="Permalink to this heading"></a></h2>
+<span id="mocafe-apt"></span><h2>Install with <code class="docutils literal notranslate"><span class="pre">apt</span></code> and <code class="docutils literal notranslate"><span class="pre">pip</span></code><a class="headerlink" href="#install-with-apt-and-pip" title="Permalink to this headline"></a></h2>
 <p>The procedure requires three steps:</p>
 <ol class="arabic simple">
 <li><p>Install MPI</p></li>
@@ -117,7 +116,7 @@
 <li><p>Install Mocafe</p></li>
 </ol>
 <section id="install-mpi">
-<h3>Install MPI<a class="headerlink" href="#install-mpi" title="Permalink to this heading"></a></h3>
+<h3>Install MPI<a class="headerlink" href="#install-mpi" title="Permalink to this headline"></a></h3>
 <p>First of all, verify if you have MPI already installed on your system. You can do it easily with:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mpirun</span> <span class="o">--</span><span class="n">version</span>
 </pre></div>
@@ -142,7 +141,7 @@
 install MPI, such as <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt</span> <span class="pre">install</span> <span class="pre">mpich</span></code>.</p>
 </section>
 <section id="install-fenics">
-<h3>Install FEniCS<a class="headerlink" href="#install-fenics" title="Permalink to this heading"></a></h3>
+<h3>Install FEniCS<a class="headerlink" href="#install-fenics" title="Permalink to this headline"></a></h3>
 <p>Then, install FEniCS using <code class="docutils literal notranslate"><span class="pre">apt-get</span></code>:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo apt-get install software-properties-common</span>
 <span class="go">sudo add-apt-repository ppa:fenics-packages/fenics</span>
@@ -165,7 +164,7 @@ install MPI, such as <code class="docutils literal notranslate"><span class="pre
 </ul>
 </section>
 <section id="install-mocafe">
-<h3>Install Mocafe<a class="headerlink" href="#install-mocafe" title="Permalink to this heading"></a></h3>
+<h3>Install Mocafe<a class="headerlink" href="#install-mocafe" title="Permalink to this headline"></a></h3>
 <p>If FEniCS works, you can proceed to installing Mocafe using <code class="docutils literal notranslate"><span class="pre">pip</span></code>:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip3 install git+https://github.com/BioComputingUP/mocafe#egg=mocafe</span>
 </pre></div>
@@ -183,12 +182,12 @@ future. In that case, consider using the Mocafe container as explained below.</p
 </section>
 </section>
 <section id="install-singularity-container">
-<span id="mocafe-singularity"></span><h2>Install Singularity container<a class="headerlink" href="#install-singularity-container" title="Permalink to this heading"></a></h2>
+<span id="mocafe-singularity"></span><h2>Install Singularity container<a class="headerlink" href="#install-singularity-container" title="Permalink to this headline"></a></h2>
 <p>Singularity, like Docker, is a container platform which allows you to create and run containers that package up pieces
 of software in a way that is portable and reproducible. We preferred using Singularity instead of Docker because it is
 optimized to work on large HPC clusters and take full advantage of MPI.</p>
 <section id="install-singularity">
-<h3>Install Singularity<a class="headerlink" href="#install-singularity" title="Permalink to this heading"></a></h3>
+<h3>Install Singularity<a class="headerlink" href="#install-singularity" title="Permalink to this headline"></a></h3>
 <p>If you don’t have Singularity installed, just follow the instructions provided at the official documentation
 page for SingularityCE.</p>
 <p>You can find the SingularityCE documentation <a class="reference external" href="https://sylabs.io/docs">at this link</a>. To find the installation
@@ -202,7 +201,7 @@ instructions, just:</p>
 <code class="docutils literal notranslate"><span class="pre">go</span></code> language.</p>
 </section>
 <section id="install-and-test-mocafe-container">
-<h3>Install and test Mocafe container<a class="headerlink" href="#install-and-test-mocafe-container" title="Permalink to this heading"></a></h3>
+<h3>Install and test Mocafe container<a class="headerlink" href="#install-and-test-mocafe-container" title="Permalink to this headline"></a></h3>
 <p><strong>If you have Singularity</strong>:</p>
 <ol class="arabic">
 <li><p>Download the definition file <code class="docutils literal notranslate"><span class="pre">mocafe.def</span></code> from <a class="reference external" href="https://github.com/BioComputingUP/mocafe/blob/main/singularity/mocafe.def">here</a>,
@@ -249,7 +248,7 @@ find and use any file of your host system inside the container.</p>
 </section>
 </section>
 <section id="uninstalling">
-<h2>Uninstalling<a class="headerlink" href="#uninstalling" title="Permalink to this heading"></a></h2>
+<h2>Uninstalling<a class="headerlink" href="#uninstalling" title="Permalink to this headline"></a></h2>
 <p>In case you want to remove Mocafe and its dependencies from your system, you just need to follow the instructions
 provided below. Notice that uninstalling instruction change depending on the installation procedure you followed.</p>
 <p>In case you installed Mocafe using <code class="docutils literal notranslate"><span class="pre">apt</span></code> and <code class="docutils literal notranslate"><span class="pre">pip</span></code>:</p>
@@ -263,7 +262,7 @@ provided below. Notice that uninstalling instruction change depending on the ins
 <li><p>Remove Singularity (in case you don’t need it anymore); see section <a class="reference internal" href="#remove-singularity"><span class="std std-ref">Remove Singularity</span></a></p></li>
 </ol>
 <section id="uninstalling-mocafe">
-<span id="id1"></span><h3>Uninstalling Mocafe<a class="headerlink" href="#uninstalling-mocafe" title="Permalink to this heading"></a></h3>
+<span id="id1"></span><h3>Uninstalling Mocafe<a class="headerlink" href="#uninstalling-mocafe" title="Permalink to this headline"></a></h3>
 <p>To do so, you just need to type:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip uninstall mocafe</span>
 </pre></div>
@@ -277,14 +276,14 @@ removed with the command above. To remove them, you need to tell <code class="do
 <p>Of course, if you use any of the packages listed above for other purposes you should not remove them.</p>
 </section>
 <section id="remove-fenics-with-apt">
-<span id="remove-fenics-apt"></span><h3>Remove FEniCS with apt<a class="headerlink" href="#remove-fenics-with-apt" title="Permalink to this heading"></a></h3>
+<span id="remove-fenics-apt"></span><h3>Remove FEniCS with apt<a class="headerlink" href="#remove-fenics-with-apt" title="Permalink to this headline"></a></h3>
 <p>In case you installed FEniCS using apt, you can just remove it with all its dependencies using <code class="docutils literal notranslate"><span class="pre">apt</span> <span class="pre">autoremove</span></code>:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo apt autoremove fenics -y</span>
 </pre></div>
 </div>
 </section>
 <section id="remove-mocafe-container">
-<span id="id2"></span><h3>Remove Mocafe container<a class="headerlink" href="#remove-mocafe-container" title="Permalink to this heading"></a></h3>
+<span id="id2"></span><h3>Remove Mocafe container<a class="headerlink" href="#remove-mocafe-container" title="Permalink to this headline"></a></h3>
 <p>To remove correctly the Mocafe container from your system, you need to remove all the cached data:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">singularity cache clean mocafe.sif</span>
 </pre></div>
@@ -295,7 +294,7 @@ removed with the command above. To remove them, you need to tell <code class="do
 </div>
 </section>
 <section id="remove-singularity">
-<span id="id3"></span><h3>Remove Singularity<a class="headerlink" href="#remove-singularity" title="Permalink to this heading"></a></h3>
+<span id="id3"></span><h3>Remove Singularity<a class="headerlink" href="#remove-singularity" title="Permalink to this headline"></a></h3>
 <p>There is no “out of the box” method to remove Singularity from your system, since the recommended way to install
 it is to compile it from source.
 The easier way to remove it is to just remove the following folders from your computer:</p>

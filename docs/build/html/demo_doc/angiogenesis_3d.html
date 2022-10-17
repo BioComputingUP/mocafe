@@ -19,7 +19,6 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -109,7 +108,7 @@
 to download the full example code</p>
 </div>
 <section class="sphx-glr-example-title" id="angiogenesis-3d">
-<span id="angiogenesis-3d-demo"></span><span id="sphx-glr-demo-doc-angiogenesis-3d-py"></span><h1>Angiogenesis 3D<a class="headerlink" href="#angiogenesis-3d" title="Permalink to this heading"></a></h1>
+<span id="angiogenesis-3d-demo"></span><span id="sphx-glr-demo-doc-angiogenesis-3d-py"></span><h1>Angiogenesis 3D<a class="headerlink" href="#angiogenesis-3d" title="Permalink to this headline"></a></h1>
 <p>In this short demo we will show you how to simulate a phase field model described by Travasso et al. in 2011
 <span id="id1">[<a class="reference internal" href="../bib.html#id7" title="Rui D.M. Travasso, Eugenia Corvera Poiré, Mario Castro, Juan Carlos Rodrguez-Manzaneque, and A. Hernández-Machado. Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5):e19989, 2011. URL: http://www.fct.mctes.pt http://www.gulbenkian.pt/ http://www.conacyt.mx/ http://www.isciii.es/ http://www.micinn.es/, doi:10.1371/journal.pone.0019989.">TPoireC+11</a>]</span> using FEniCS and Mocafe in 3D. You’ll notice that the script is just the same of the 2D
 demo: you just need to change the spatial domain!</p>
@@ -134,7 +133,7 @@ demo: you just need to change the spatial domain!</p>
 </ul>
 </div>
 <section id="how-to-run-this-example-on-mocafe">
-<h2><a class="toc-backref" href="#id3">How to run this example on Mocafe</a><a class="headerlink" href="#how-to-run-this-example-on-mocafe" title="Permalink to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id3">How to run this example on Mocafe</a><a class="headerlink" href="#how-to-run-this-example-on-mocafe" title="Permalink to this headline"></a></h2>
 <p>Make sure you have FEniCS and Mocafe and download the source script of this page (see above for the link).</p>
 <p>Then, download the parameters file for the simulation from
 <a class="reference download internal" download="" href="../_downloads/a49ea1ef2d3802c6a1a8efdb06cc194d/parameters.ods"><code class="xref download docutils literal notranslate"><span class="pre">this</span> <span class="pre">link</span></code></a> and place it inside the folder
@@ -156,25 +155,25 @@ demo: you just need to change the spatial domain!</p>
 simulation. You can change it accordingly with your CPU.</p>
 </section>
 <section id="note-on-3d-simulations">
-<h2><a class="toc-backref" href="#id4">Note on 3D simulations</a><a class="headerlink" href="#note-on-3d-simulations" title="Permalink to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id4">Note on 3D simulations</a><a class="headerlink" href="#note-on-3d-simulations" title="Permalink to this headline"></a></h2>
 <p>The computational effort required to solve a system in 3D is of orders of magnitude higher than to solve the same
 system in 2D. Thus, a normal laptop might be not able to compute the solution in reasonable time. Consider using
 a powerful desktop computer or an HPC to simulate the system.</p>
 </section>
 <section id="visualize-the-results-of-this-simulation">
-<h2><a class="toc-backref" href="#id5">Visualize the results of this simulation</a><a class="headerlink" href="#visualize-the-results-of-this-simulation" title="Permalink to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id5">Visualize the results of this simulation</a><a class="headerlink" href="#visualize-the-results-of-this-simulation" title="Permalink to this headline"></a></h2>
 <p>You need to have <a class="reference external" href="https://www.paraview.org/">Paraview</a> to visualize the results. Once you have installed it,
 you can easly import the <code class="docutils literal notranslate"><span class="pre">.xdmf</span></code> files generated during the simulation and visualize the result.</p>
 </section>
 <section id="implementation">
-<h2><a class="toc-backref" href="#id6">Implementation</a><a class="headerlink" href="#implementation" title="Permalink to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id6">Implementation</a><a class="headerlink" href="#implementation" title="Permalink to this headline"></a></h2>
 <p>One of the great things of differential equations is that they are not really constrained to a specific space
 dimension. With appropriate initial and boundary conditions, you can possibly find the solution of a differential
 equation in any possible space. This is not always true for the software implementations of such differential
 equations; however, FEniCS and Mocafe are designed to follow just the same philosophy. So, you’ll notice this
 script is extremely similar to the one used for the 2D simulation.</p>
 <section id="setup">
-<h3><a class="toc-backref" href="#id7">Setup</a><a class="headerlink" href="#setup" title="Permalink to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id7">Setup</a><a class="headerlink" href="#setup" title="Permalink to this headline"></a></h3>
 <p>The setup is just the same as before; we just added a progress bar to follow the setup
 (that might take a while) and we changed the data folder, in order to separate the generated
 data. Also, notice that the parameters file is different. However, if you compare the file
@@ -222,7 +221,7 @@ variations.</p>
 </div>
 </section>
 <section id="definition-of-the-spatial-domain-and-the-function-space">
-<h3><a class="toc-backref" href="#id8">Definition of the spatial domain and the function space</a><a class="headerlink" href="#definition-of-the-spatial-domain-and-the-function-space" title="Permalink to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id8">Definition of the spatial domain and the function space</a><a class="headerlink" href="#definition-of-the-spatial-domain-and-the-function-space" title="Permalink to this headline"></a></h3>
 <p>This is the one of the only changes we need to do: we need to define a 3D domain. However, we can do that with ease
 using a <code class="docutils literal notranslate"><span class="pre">BoxMesh</span></code>. Of course, creating a 3D mesh takes longer than a 2D mesh; thus, we placed an if statement to
 make FEniCS generate the mesh at the first run of the script, save it in the data folder, and reload it in all the
@@ -271,7 +270,7 @@ consider an auxiliary variable <span class="math notranslate nohighlight">\(\mu\
 </div>
 </section>
 <section id="initial-boundary-conditions">
-<h3><a class="toc-backref" href="#id9">Initial &amp; boundary conditions</a><a class="headerlink" href="#initial-boundary-conditions" title="Permalink to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id9">Initial &amp; boundary conditions</a><a class="headerlink" href="#initial-boundary-conditions" title="Permalink to this headline"></a></h3>
 <p>Again, in this implementation we will consider natural Neumann boundary conditions for both <span class="math notranslate nohighlight">\(c\)</span> and
 :math`af`.</p>
 <p>As initial condition for <span class="math notranslate nohighlight">\(c\)</span>, the most natural choice to resemble the results of Travasso and his collaborators
@@ -341,7 +340,7 @@ difference that, in 3D, the cells are spheres instead of circles.</p>
 </div>
 </section>
 <section id="pde-system-definition">
-<h3><a class="toc-backref" href="#id10">PDE System definition</a><a class="headerlink" href="#pde-system-definition" title="Permalink to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id10">PDE System definition</a><a class="headerlink" href="#pde-system-definition" title="Permalink to this headline"></a></h3>
 <p>Exactly how the differential equations don’t change from 2D to 3D, the PDE definition remains the same. Indeed,
 you can notice that the code it’s just identical to the 2D demo, except for the update of <code class="docutils literal notranslate"><span class="pre">setup_pbar</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -363,7 +362,7 @@ you can notice that the code it’s just identical to the 2D demo, except for th
 </div>
 </section>
 <section id="simulation-setup">
-<h3><a class="toc-backref" href="#id11">Simulation setup</a><a class="headerlink" href="#simulation-setup" title="Permalink to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id11">Simulation setup</a><a class="headerlink" href="#simulation-setup" title="Permalink to this headline"></a></h3>
 <p>Now that everything is set up we can proceed to the actual simulation, that, just as before, will start with the
 definition of the <code class="docutils literal notranslate"><span class="pre">TipCellsManager</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tip_cell_manager</span> <span class="o">=</span> <span class="n">tipcells</span><span class="o">.</span><span class="n">TipCellManager</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span>
@@ -446,14 +445,14 @@ differential equations this time, but this is the only change we made to the 2D 
 </section>
 </section>
 <section id="result">
-<h2><a class="toc-backref" href="#id12">Result</a><a class="headerlink" href="#result" title="Permalink to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id12">Result</a><a class="headerlink" href="#result" title="Permalink to this headline"></a></h2>
 <p>We uploaded on Youtube the result on this simulation. You can check it out below or at
 <a class="reference external" href="https://youtu.be/ho-V58mqDv8">this link</a></p>
 <div class="video_wrapper" style="">
 <iframe allowfullscreen="true" src="https://www.youtube.com/embed/ho-V58mqDv8" style="border: 0; height: 345px; width: 560px">
 </iframe></div></section>
 <section id="visualize-the-result-with-paraview">
-<h2><a class="toc-backref" href="#id13">Visualize the result with ParaView</a><a class="headerlink" href="#visualize-the-result-with-paraview" title="Permalink to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id13">Visualize the result with ParaView</a><a class="headerlink" href="#visualize-the-result-with-paraview" title="Permalink to this headline"></a></h2>
 <p>The result of the simulation is stored in the <code class="docutils literal notranslate"><span class="pre">.xdmf</span></code> file generated, which are easy to load and visualize in
 expernal softwares as ParaView. If you don’t now how to do it, you can check out the tutorial below or at
 <a class="reference external" href="https://youtu.be/ATzlVEIjicI">this Youtube link</a>.</p>
@@ -461,7 +460,7 @@ expernal softwares as ParaView. If you don’t now how to do it, you can check o
 <iframe allowfullscreen="true" src="https://www.youtube.com/embed/ATzlVEIjicI" style="border: 0; height: 345px; width: 560px">
 </iframe></div></section>
 <section id="full-code">
-<h2><a class="toc-backref" href="#id14">Full code</a><a class="headerlink" href="#full-code" title="Permalink to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id14">Full code</a><a class="headerlink" href="#full-code" title="Permalink to this headline"></a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fenics</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>

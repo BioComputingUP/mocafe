@@ -19,7 +19,6 @@
         <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
         <script src="../../../../_static/jquery.js"></script>
         <script src="../../../../_static/underscore.js"></script>
-        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../../../_static/doctools.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
@@ -91,7 +90,7 @@
            <div itemprop="articleBody">
              
   <section id="module-mocafe.angie.af_sourcing">
-<span id="mocafe-angie-af-sourcing"></span><h1><a class="reference internal" href="#module-mocafe.angie.af_sourcing" title="mocafe.angie.af_sourcing"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe.angie.af_sourcing</span></code></a><a class="headerlink" href="#module-mocafe.angie.af_sourcing" title="Permalink to this heading"></a></h1>
+<span id="mocafe-angie-af-sourcing"></span><h1><a class="reference internal" href="#module-mocafe.angie.af_sourcing" title="mocafe.angie.af_sourcing"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe.angie.af_sourcing</span></code></a><a class="headerlink" href="#module-mocafe.angie.af_sourcing" title="Permalink to this headline"></a></h1>
 <p>This module contains classes and methods to manage discrete angiogenic factor sources in Mocafe. This discrete agents
 might represent hypoxic cells inducing angiogenesis, as presented by Travasso et al. <span id="id1">[<a class="reference internal" href="../../../../bib.html#id7" title="Rui D.M. Travasso, Eugenia Corvera Poiré, Mario Castro, Juan Carlos Rodrguez-Manzaneque, and A. Hernández-Machado. Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5):e19989, 2011. URL: http://www.fct.mctes.pt http://www.gulbenkian.pt/ http://www.conacyt.mx/ http://www.isciii.es/ http://www.micinn.es/, doi:10.1371/journal.pone.0019989.">TPoireC+11</a>]</span>.</p>
 <p>If you use this model in your research, remember to cite the original paper describing the model:</p>
@@ -103,10 +102,10 @@ Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5)
 <p>For a use example see the <a class="reference internal" href="../../../../demo_doc/angiogenesis_2d.html#angiogenesis-2d-demo"><span class="std std-ref">Angiogenesis</span></a> and the
 <a class="reference internal" href="../../../../demo_doc/angiogenesis_2d.html#angiogenesis-2d-demo"><span class="std std-ref">Angiogenesis 3D</span></a> demos.</p>
 <section id="module-contents">
-<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading"></a></h2>
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline"></a></h2>
 <section id="classes">
-<h3>Classes<a class="headerlink" href="#classes" title="Permalink to this heading"></a></h3>
-<table class="autosummary longtable docutils align-default">
+<h3>Classes<a class="headerlink" href="#classes" title="Permalink to this headline"></a></h3>
+<table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
@@ -131,8 +130,8 @@ Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5)
 </table>
 </section>
 <section id="functions">
-<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this heading"></a></h3>
-<table class="autosummary longtable docutils align-default">
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline"></a></h3>
+<table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
@@ -153,7 +152,7 @@ is just a wrapper of BaseCell.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="mocafe.angie.af_sourcing.SourceMap">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.angie.af_sourcing.</span></span><span class="sig-name descname"><span class="pre">SourceMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.Mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../fenut/parameters/index.html#mocafe.fenut.parameters.Parameters" title="mocafe.fenut.parameters.Parameters"><span class="pre">mocafe.fenut.parameters.Parameters</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.af_sourcing.SourceMap" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.angie.af_sourcing.</span></span><span class="sig-name descname"><span class="pre">SourceMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.Mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../fenut/parameters/index.html#mocafe.fenut.parameters.Parameters" title="mocafe.fenut.parameters.Parameters"><span class="pre">mocafe.fenut.parameters.Parameters</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.af_sourcing.SourceMap" title="Permalink to this definition"></a></dt>
 <dd><p>Class representing the spatial map of the source cell positions. This class is responsible for keeping the position
 of each source cell at any point of the simulation, providing access to it to other objects and methods.</p>
 <dl class="py method">
@@ -204,7 +203,7 @@ it is removed also from that list.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="mocafe.angie.af_sourcing.SourcesManager">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.angie.af_sourcing.</span></span><span class="sig-name descname"><span class="pre">SourcesManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mocafe.angie.af_sourcing.SourceMap" title="mocafe.angie.af_sourcing.SourceMap"><span class="pre">SourceMap</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.Mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../fenut/parameters/index.html#mocafe.fenut.parameters.Parameters" title="mocafe.fenut.parameters.Parameters"><span class="pre">mocafe.fenut.parameters.Parameters</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.af_sourcing.SourcesManager" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.angie.af_sourcing.</span></span><span class="sig-name descname"><span class="pre">SourcesManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mocafe.angie.af_sourcing.SourceMap" title="mocafe.angie.af_sourcing.SourceMap"><span class="pre">SourceMap</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.Mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../fenut/parameters/index.html#mocafe.fenut.parameters.Parameters" title="mocafe.fenut.parameters.Parameters"><span class="pre">mocafe.fenut.parameters.Parameters</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.af_sourcing.SourcesManager" title="Permalink to this definition"></a></dt>
 <dd><p>Class representing the manager of the position of the source cells. This class takes care of removing the source
 cells when they are near the blood vessels and of translating the source cell map in a FEniCS phase field function</p>
 <dl class="py method">
@@ -239,7 +238,7 @@ cells when they are near the blood vessels and of translating the source cell ma
 
 <dl class="py class">
 <dt class="sig sig-object py" id="mocafe.angie.af_sourcing.ConstantSourcesField">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.angie.af_sourcing.</span></span><span class="sig-name descname"><span class="pre">ConstantSourcesField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mocafe.angie.af_sourcing.SourceMap" title="mocafe.angie.af_sourcing.SourceMap"><span class="pre">SourceMap</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../fenut/parameters/index.html#mocafe.fenut.parameters.Parameters" title="mocafe.fenut.parameters.Parameters"><span class="pre">mocafe.fenut.parameters.Parameters</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.af_sourcing.ConstantSourcesField" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.angie.af_sourcing.</span></span><span class="sig-name descname"><span class="pre">ConstantSourcesField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mocafe.angie.af_sourcing.SourceMap" title="mocafe.angie.af_sourcing.SourceMap"><span class="pre">SourceMap</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../fenut/parameters/index.html#mocafe.fenut.parameters.Parameters" title="mocafe.fenut.parameters.Parameters"><span class="pre">mocafe.fenut.parameters.Parameters</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.af_sourcing.ConstantSourcesField" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">fenics.UserExpression</span></code></p>
 <p>FEniCS Expression representing the distribution of the angiogenic factor expressed by the source cells.</p>
 <dl class="py method">

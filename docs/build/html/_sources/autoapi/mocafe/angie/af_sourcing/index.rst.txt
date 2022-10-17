@@ -53,7 +53,7 @@ Functions
 
 
 
-.. py:class:: SourceMap(mesh: fenics.Mesh, source_points: list, parameters: mocafe.fenut.parameters.Parameters)
+.. py:class:: SourceMap(mesh: fenics.Mesh, source_points: list, parameters: mocafe.fenut.parameters.Parameters = None, **kwargs)
 
    Class representing the spatial map of the source cell positions. This class is responsible for keeping the position
    of each source cell at any point of the simulation, providing access to it to other objects and methods.
@@ -89,7 +89,7 @@ Functions
    A SourceMap of randomly distributed sources in a given spatial domain
 
 
-.. py:class:: SourcesManager(source_map: SourceMap, mesh: fenics.Mesh, parameters: mocafe.fenut.parameters.Parameters)
+.. py:class:: SourcesManager(source_map: SourceMap, mesh: fenics.Mesh, parameters: mocafe.fenut.parameters.Parameters = None, **kwargs)
 
    Class representing the manager of the position of the source cells. This class takes care of removing the source
    cells when they are near the blood vessels and of translating the source cell map in a FEniCS phase field function
@@ -112,7 +112,7 @@ Functions
 
 
 
-.. py:class:: ConstantSourcesField(source_map: SourceMap, parameters: mocafe.fenut.parameters.Parameters)
+.. py:class:: ConstantSourcesField(source_map: SourceMap, parameters: mocafe.fenut.parameters.Parameters = None, **kwargs)
 
    Bases: :py:obj:`fenics.UserExpression`
 
