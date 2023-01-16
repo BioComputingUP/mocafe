@@ -12,7 +12,6 @@ For a use example see the :ref:`Angiogenesis <Angiogenesis 2D Demo>` and the
 :ref:`Angiogenesis 3D <Angiogenesis 2D Demo>` demos.
 """
 import sys
-
 import dolfinx
 from mpi4py import MPI
 import numpy as np
@@ -95,8 +94,6 @@ class TipCellsField:
                     & = 0 \quad \textrm{if} \quad af \le 0
 
     """
-    # def __floordiv__(self, other):
-    #     pass
 
     def __init__(self, parameters: Parameters, mesh_dim: int):
         """
@@ -179,25 +176,8 @@ class TipCellsField:
                 )
 
             return array_to_return
-
-            # try:
-            #     is_inside_array = np.sum((x - self.tip_cells_positions) ** 2, axis=1) <= (self.tip_cells_radiuses ** 2)
-            # except ValueError:
-            #     raise ValueError(f"Found error with the following params: \n"
-            #                      f"* {self.tip_cells_positions} \n"
-            #                      f"* {x} \n"
-            #                      f"* {self.tip_cells_radiuses} \n")
-            # if any(is_inside_array):
-            #     radius = self.tip_cells_radiuses[is_inside_array]
-            #     velocity_norm = self.velocity_norms[is_inside_array]
-            #     T_value = self.T_values[is_inside_array]
-            #     phi_c = self.compute_phi_c(T_value, radius, velocity_norm)
-            #     point_value = np.max(phi_c)
         else:
             return nan_array
-
-    # def value_shape(self):
-    #     return ()
 
 
 class TipCellManager:
@@ -338,31 +318,6 @@ class TipCellManager:
                                                                   self.mesh,
                                                                   self.mesh_bbt)
         n_points_to_check = len(points_on_proc)
-        # # compute points distant to tip cells
-        # distant_to_tipcells = np.array([self._point_distant_to_tip_cells(point)
-        #                                 for point in points_on_proc])
-        # n_points_distant = np.sum(distant_to_tipcells)
-        # # compute c values over phi_th
-        # c_values = c.eval(points_on_proc, cells).reshape((n_points_to_check, ))
-        # c_over_phi_th = c_values > self.phi_th
-        # n_points_phi_09 = np.sum(c_over_phi_th)
-        # # compute af values over T_c
-        # af_values = af.eval(points_on_proc, cells).reshape((n_points_to_check, ))
-        # af_over_T_c = af_values > self.T_c
-        # n_points_over_Tc = np.sum(af_over_T_c)
-        # # compute G values over G_m
-        # grad_af_values = grad_af.eval(points_on_proc, cells)
-        # g_values = np.array([np.linalg.norm(grad_af_val) for grad_af_val in grad_af_values])
-        # g_over_G_m = g_values > self.G_m
-        # n_points_over_Gm = np.sum(g_over_G_m)
-        # # check points distant to edge
-        # distant_to_edge = np.array([not self.clock_checker.clock_check(point, c, lambda c_val: c_val < -self.phi_th)
-        #                             for point in points_on_proc])
-        # n_points_distant_to_edge = np.sum(distant_to_edge)
-        # # get where conditions are met
-        # where_conditions_are_met = distant_to_tipcells & c_over_phi_th & af_over_T_c & g_over_G_m & distant_to_edge
-        # points_on_proc = np.array(points_on_proc)
-        # local_possible_locations = list(points_on_proc[where_conditions_are_met])
 
         for point, cell in zip(points_on_proc, cells):
             # evaluate conditions
@@ -482,7 +437,7 @@ class TipCellManager:
         local_to_check_if_outside_global_mesh = []
 
         """1. Iterate on global tip cells."""
-        for tip_cell in self.local_tip_cells_list:
+        for tip_cell in self.global_tip_cells_list:
             # get tip cell position
             tcp = tip_cell.get_position()
             # get collisions
@@ -513,25 +468,6 @@ class TipCellManager:
                 debug_msg = f"Appending tip cell in pos {tip_cell.get_position()} to local to remove because " \
                             f"it is outside the global mesh."
                 _debug_adapter.debug(debug_msg)
-
-        # """2. For local tip cells which are outside the local mesh, check if they are outside the global mesh. """
-        # global_to_check_if_outside_global_mesh = _comm.gather(local_to_check_if_outside_global_mesh, 0)
-        # if _rank == 0:
-        #     global_to_check_if_outside_global_mesh = fu.flatten_list_of_lists(global_to_check_if_outside_global_mesh)
-        # global_to_check_if_outside_global_mesh = _comm.bcast(global_to_check_if_outside_global_mesh, 0)
-        # for tip_cell in global_to_check_if_outside_global_mesh:
-        #     is_inside_local_mesh = fu.is_point_inside_mesh(self.mesh, tip_cell.get_position())
-        #     is_inside_local_mesh_array = _comm.gather(is_inside_local_mesh, 0)
-        #     if _rank == 0:
-        #         is_inside_global_mesh = any(is_inside_local_mesh_array)
-        #     else:
-        #         is_inside_global_mesh = None
-        #     is_inside_global_mesh = _comm.bcast(is_inside_global_mesh, 0)
-        #     if not is_inside_global_mesh:
-        #         local_to_remove.append(tip_cell)
-        #         debug_msg = f"Appending tip cell in pos {tip_cell.get_position()} to local to remove because " \
-        #                     f"it is outside the global mesh."
-        #         _debug_adapter.debug(debug_msg)
 
         """2. Remove local tip cells near to each other, due to Delta-Notch signalling."""
         near_tcs_to_remove = []  # init list of cells to remove
@@ -694,23 +630,6 @@ class TipCellManager:
         # return tip cells field
         return tip_cells_field_expression
 
-    # def _assign_values_to_vector(self, c, t_c_f_function):
-    #     """
-    #     Assign the positive values of ``t_c_f_function`` to the capillaries field c.
-    #
-    #     :param c: capillaries field
-    #     :param t_c_f_function: tip cell field function
-    #     :return: nothing
-    #     """
-    #     # get local values for T and source_field
-    #     t_c_f_loc_values = t_c_f_function.vector().get_local()
-    #     phi_loc_values = c.vector().get_local()
-    #     # set T to 1. where source_field is 1
-    #     where_t_c_f_greater_than_0 = t_c_f_loc_values > 0.
-    #     phi_loc_values[where_t_c_f_greater_than_0] = t_c_f_loc_values[where_t_c_f_greater_than_0]
-    #     c.vector().set_local(phi_loc_values)
-    #     c.vector().update_ghost_values()  # necessary, otherwise errors
-
     def _apply_tip_cells_field(self, c, tip_cells_field_expression):
         """
         INTERNAL USE.
@@ -735,38 +654,6 @@ class TipCellManager:
         # set all the others to phi min
         t_c_function.x.array[t_c_f_nan] = self.parameters.get_value("phi_min")
         t_c_function.x.scatter_forward()
-
-        # # get Function Space of af
-        # V_c = c.function_space()
-        #
-        # # check if V_c is sub space
-        # try:
-        #     V_c.collapse()
-        #     is_V_sub_space = True
-        # except RuntimeError:
-        #     is_V_sub_space = False
-        #
-        # if not is_V_sub_space:
-        #     # interpolate tip_cells_field
-        #     t_c_f_function = fenics.interpolate(tip_cells_field_expression, V_c)
-        #     # assign t_c_f_function to c where is greater than 0
-        #     self._assign_values_to_vector(c, t_c_f_function)
-        # else:
-        #     # collapse subspace
-        #     V_collapsed = V_c.collapse()
-        #     # interpolate tip cells field
-        #     t_c_f_function = fenics.interpolate(tip_cells_field_expression, V_collapsed)
-        #     # create assigner to collapsed
-        #     assigner_to_collapsed = fenics.FunctionAssigner(V_collapsed, V_c)
-        #     # assign c to local variable phi_temp
-        #     phi_temp = fenics.Function(V_collapsed)
-        #     assigner_to_collapsed.assign(phi_temp, c)
-        #     # assign values to phi_temp
-        #     self._assign_values_to_vector(phi_temp, t_c_f_function)
-        #     # create inverse assigner
-        #     assigner_to_sub = fenics.FunctionAssigner(V_c, V_collapsed)
-        #     # assign phi_temp to c
-        #     assigner_to_sub.assign(c, phi_temp)
 
         # return tip cells field function for monitoring
         return t_c_function

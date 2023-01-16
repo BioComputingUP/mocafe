@@ -63,10 +63,11 @@ def setup_data_folder(folder_path: str,
     Works in parallel with MPI.
 
     :param folder_path: the path of the folder to generate
-    :param auto_enumerate: if set to True, this method will create coded folder under the given ``folder_path`` in the
-        order: 0000, 0001, ..., and so on.
+    :param auto_enumerate: set to "code" to enumerate folders; to "datetime" to sort according to the date and time;
+        to None otherwise.
     :return: the generated folder
     """
+    raised_error = False
     if rank == 0:
         # rename folder_path
         data_folder = pathlib.Path(folder_path)
@@ -89,15 +90,18 @@ def setup_data_folder(folder_path: str,
         elif auto_enumerate is None:
             pass
         else:
-            raise ValueError(f"auto_enumerate set to {auto_enumerate}. auto_enumerate can be only equal to 'code', "
-                             f"'datetime', and None.")
+            raised_error = True
 
         # create data folder
         data_folder.mkdir(parents=True, exist_ok=True)
     else:
         data_folder = None
-    data_folder = comm.bcast(data_folder, 0)
-    return data_folder
+    if raised_error:
+        raise ValueError(f"auto_enumerate set to {auto_enumerate}. auto_enumerate can be only equal to 'code', "
+                         f"'datetime', and None.")
+    else:
+        data_folder = comm.bcast(data_folder, 0)
+        return data_folder
 
 
 def save_sim_info(data_folder: pathlib.Path,

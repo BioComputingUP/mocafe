@@ -15,7 +15,7 @@ For a use example see the :ref:`Angiogenesis <Angiogenesis 2D Demo>` and the
 import ufl
 import dolfinx
 from petsc4py import PETSc
-from mocafe.fenut.parameters import Parameters
+from mocafe.fenut.parameters import Parameters, _unpack_parameters_list
 
 
 def vascular_proliferation_form(alpha_p,
@@ -145,7 +145,8 @@ def angiogenesis_form(c: dolfinx.fem.Function,
                       v1: ufl.TestFunction,
                       v2: ufl.TestFunction,
                       af: dolfinx.fem.Function,
-                      parameters: Parameters):
+                      parameters: Parameters = None,
+                      **kwargs):
     r"""
     Returns the UFL form for the Phase-Field model for angiogenesis reported by Travasso et al. (2011)
     :cite:`Travasso2011a`.
@@ -183,6 +184,10 @@ def angiogenesis_form(c: dolfinx.fem.Function,
     :param parameters: simulation parameters
     :return:
     """
+    # get parameters
+    dt, epsilon, M, alpha_p, T_p = _unpack_parameters_list(["dt", "epsilon", "M", "alpha_p", "T_p"],
+                                                           parameters,
+                                                           kwargs)
     # define theta
     theta = 0.5
 
@@ -200,11 +205,72 @@ def angiogenesis_form(c: dolfinx.fem.Function,
     return form
 
 
+def angiogenesis_form_no_proliferation(c: dolfinx.fem.Function,
+                                       c0: dolfinx.fem.Function,
+                                       mu: dolfinx.fem.Function,
+                                       mu0: dolfinx.fem.Function,
+                                       v1: ufl.TestFunction,
+                                       v2: ufl.TestFunction,
+                                       parameters: Parameters = None,
+                                       **kwargs):
+    r"""
+    (New in version 1.4)
+    Returns the UFL form for the Phase-Field model for angiogenesis reported by Travasso et al. (2011)
+    :cite:`Travasso2011a`, without the proliferation term.
+
+    The equation reads simply as:
+
+    .. math::
+       \frac{\partial c}{\partial t} = M \cdot \nabla^2 [\frac{df}{dc}\ - \epsilon \nabla^2 c]
+
+    Where :math: `c` is the unknown field representing the capillaries, and :
+
+    .. math:: f = \frac{1}{4} \cdot c^4 - \frac{1}{2} \cdot c^2
+
+    In this implementation, the equation is splitted in two equations of lower order, in order to make the weak form
+    solvable using standard Lagrange finite elements:
+
+    .. math::
+       \frac{\partial c}{\partial t} &= M \nabla^2 \cdot \mu\\
+       \mu &= \frac{d f}{d c} - \epsilon \nabla^{2}c
+
+    Specify a parameter for the form calling the function, e.g. with
+    ``angiogenesis_form(c, c0, mu, mu0, v1, v2, af, parameters, alpha_p=10, M=20)``. If both a Parameters object and a
+    parameter as input are given, the function will choose the input parameter.
+
+    :param c: capillaries field
+    :param c0: initial condition for the capillaries field
+    :param mu: auxiliary field
+    :param mu0: initial condition for the auxiliary field
+    :param v1: test function for c
+    :param v2: test function  for mu
+    :param af: angiogenic factor field
+    :param parameters: simulation parameters
+    :return:
+    """
+    # get parameters
+    dt, epsilon, M = _unpack_parameters_list(["dt", "epsilon", "M"],
+                                             parameters,
+                                             kwargs)
+    # define theta
+    theta = 0.5
+
+    # define chemical potential for the phase field
+    c = ufl.variable(c)
+    chem_potential = ((c ** 4) / 4) - ((c ** 2) / 2)
+
+    # define total form
+    form_cahn_hillard = cahn_hillard_form(c, c0, mu, mu0, v1, v2, dt, theta, chem_potential,
+                                          epsilon, M)
+    return form_cahn_hillard
+
+
 def angiogenic_factor_form(af: dolfinx.fem.Function,
                            af_0: dolfinx.fem.Function,
                            c: dolfinx.fem.Function,
                            v: ufl.TestFunction,
-                           parameters: Parameters):
+                           parameters: Parameters = None,
+                           **kwargs):
     r"""
     Returns the UFL form for the equation for the angiogenic factor reported by Travasso et al. (2011)
     :cite:`Travasso2011a`.
@@ -226,9 +292,9 @@ def angiogenic_factor_form(af: dolfinx.fem.Function,
     :return:
     """
     # get parameters
-    alfa = parameters.get_value("alpha_T")
-    D = parameters.get_value("D")
-    dt = parameters.get_value("dt")
+    alfa, D, dt = _unpack_parameters_list(["alpha_T", "D", "dt"],
+                                          parameters,
+                                          kwargs)
     # define reaction term
     reaction_term = alfa * af * c
     reaction_term_non_negative = ufl.conditional(

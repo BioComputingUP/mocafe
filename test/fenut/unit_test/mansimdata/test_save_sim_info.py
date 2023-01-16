@@ -26,7 +26,7 @@ def test_save_sim_info_format(tmpdir, odf_sheet_test):
                       f"  <h2>Basic informations </h2>\n" \
                       f"  <p>Simulation name: {sim_name} </p>\n" \
                       f"  <p>Execution time: {execution_time / 60} min </p>\n" \
-                      f"  <p>Mocafe version: {mocafe.__version__} min </p>\n" \
+                      f"  <p>Mocafe version: {mocafe.__version__} </p>\n" \
                       f"  <p>Date and time: {dateandtime} </p>\n" \
                       f"  <h2>Simulation rationale </h2>\n" \
                       f"  <p>test </p>\n" \
@@ -56,7 +56,7 @@ def test_save_sim_info_rationale(tmpdir, odf_sheet_test):
                       f"  <h2>Basic informations </h2>\n" \
                       f"  <p>Simulation name: {sim_name} </p>\n" \
                       f"  <p>Execution time: {execution_time / 60} min </p>\n" \
-                      f"  <p>Mocafe version: {mocafe.__version__} min </p>\n" \
+                      f"  <p>Mocafe version: {mocafe.__version__} </p>\n" \
                       f"  <p>Date and time: {dateandtime} </p>\n" \
                       f"  <h2>Simulation rationale </h2>\n" \
                       f"  <p>{sim_rationale} </p>\n" \
@@ -88,7 +88,7 @@ def test_sim_info_error(tmpdir, odf_sheet_test):
                       f"  <h2>Basic informations </h2>\n" \
                       f"  <p>Simulation name: {sim_name} </p>\n" \
                       f"  <p>Execution time: {execution_time / 60} min </p>\n" \
-                      f"  <p>Mocafe version: {mocafe.__version__} min </p>\n" \
+                      f"  <p>Mocafe version: {mocafe.__version__} </p>\n" \
                       f"  <p>Date and time: {dateandtime} </p>\n" \
                       f"  <h2>Simulation rationale </h2>\n" \
                       f"  <p>{sim_rationale} </p>\n" \

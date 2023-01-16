@@ -11,11 +11,13 @@ If you use this model in your research, remember to cite the original paper desc
 For a complete description of the model, please refer to the original publication. Also, if you use this model
 for your scientific work, remember to cite the original paper.
 """
-import fenics
-import mocafe.fenut.parameters as mcfp
+import dolfinx
+import ufl
+from ufl.variable import Variable
+from mocafe.fenut.parameters import Parameters, _unpack_parameters_list
 
 
-def prostate_cancer_chem_potential(var_phi: fenics.Variable,
+def prostate_cancer_chem_potential(var_phi: Variable,
                                    chem_potential_constant):
     r"""
     Returns the "chemical potential" associated with the cancer equation. It is used to build the weak form for
@@ -38,16 +40,17 @@ def df_dphi(phi, chem_potential_constant):
     :param chem_potential_constant: the constant of the chemical potential (equals to 16 in :cite:`Lorenzo2016`)
     :return: the derivative of the chemical potential, as FEniCS UFL equation
     """
-    var_phi = fenics.variable(phi)
+    var_phi = ufl.variable(phi)
     chem_potential = prostate_cancer_chem_potential(var_phi, chem_potential_constant)
-    return fenics.diff(chem_potential, var_phi)
+    return ufl.diff(chem_potential, var_phi)
 
 
-def prostate_cancer_form(phi: fenics.Function,
-                         phi_prec: fenics.Function,
-                         sigma: fenics.Function,
-                         v: fenics.TestFunction,
-                         parameters: mcfp.Parameters):
+def prostate_cancer_form(phi: dolfinx.fem.Function,
+                         phi_prec: dolfinx.fem.Function,
+                         sigma: dolfinx.fem.Function,
+                         v: ufl.TestFunction,
+                         parameters: Parameters or None,
+                         **kwargs):
     r"""
     Builds the FEniCS UFL weak form for the prostate cancer equation reported by Lorenzo and collaborators
     :cite:`Lorenzo2016`. The name of the variable for the cancer is \varphi
@@ -62,6 +65,10 @@ def prostate_cancer_form(phi: fenics.Function,
     - ``chi``: proliferation rate for prostate cancer (correspond to \chi in the original publication)
     - ``A``: the apoptosis rate for the prostate cancer (correspond to :math:`A` in the original publication
 
+    (New in version 1.4) Specify a parameter for the form calling the function, e.g. with
+    ``prostate_cancer_form(phi, phi0, sigma, v, parameters, A=400, tau=10)``. If both a Parameters object and a
+    parameter as input are given, the function will choose the input parameter.
+
     :param phi: the FEniCS ``Function`` for \varphi
     :param phi_prec: the initial value for \varphi
     :param sigma: the FEniCS ``Function`` for the nutrients (\sigma)
@@ -70,21 +77,29 @@ def prostate_cancer_form(phi: fenics.Function,
         documentation must be present
     :return: the UFL weak form for the prostate cancer equation
     """
-    F = (((phi - phi_prec) / parameters.get_value("dt")) * v * fenics.dx) \
-        + (parameters.get_value("lambda") * fenics.dot(fenics.grad(phi), fenics.grad(v)) * fenics.dx) \
-        + ((1 / parameters.get_value("tau")) * df_dphi(phi, parameters.get_value("chempot_constant")) * v * fenics.dx) \
-        + (- parameters.get_value("chi") * sigma * v * fenics.dx) \
-        + (parameters.get_value("A") * phi * v * fenics.dx)
+    # get parameters
+    dt, lmda, tau, chempot_constant, chi, A = _unpack_parameters_list(
+        ["dt", "lambda", "tau", "chempot_constant", "chi", "A"],
+        parameters,
+        kwargs
+    )
+    # build form
+    F = (((phi - phi_prec) / dt) * v * ufl.dx) \
+        + (lmda * ufl.dot(ufl.grad(phi), ufl.grad(v)) * ufl.dx) \
+        + ((1 / tau) * df_dphi(phi, chempot_constant) * v * ufl.dx) \
+        + (- chi * sigma * v * ufl.dx) \
+        + (A * phi * v * ufl.dx)
 
     return F
 
 
-def prostate_cancer_nutrient_form(sigma: fenics.Function,
-                                  sigma_old: fenics.Function,
-                                  phi: fenics.Function,
-                                  v: fenics.TestFunction,
-                                  s: fenics.Function,
-                                  parameters: mcfp.Parameters):
+def prostate_cancer_nutrient_form(sigma: dolfinx.fem.Function,
+                                  sigma_old: dolfinx.fem.Function,
+                                  phi: dolfinx.fem.Function,
+                                  v: ufl.TestFunction,
+                                  s: dolfinx.fem.Function,
+                                  parameters: Parameters = None,
+                                  **kwargs):
     r"""
     Builds the FEniCS UFL weak form for the nutrient equation reported by Lorenzo and collaborators
     :cite:`Lorenzo2016`. The name of the nutrient is \sigma.
@@ -97,6 +112,10 @@ def prostate_cancer_nutrient_form(sigma: fenics.Function,
     - ``delta``: the uptake rate of the nutrient by the cancer (correspond to \delta in the original paper)
     - ``gamma``: the decay rate for \sigma (correspong to \gamma in the original paper)
 
+    (New in version 1.4) Specify a parameter for the form calling the function, e.g. with
+    ``prostate_cancer_nutrient_form(sigma, sigma0, phi, v, s, parameters, dt=0.1, delta=10)``. If both a Parameters
+    object and a parameter as input are given, the function will choose the input parameter.
+
     :param sigma: the FEniCS ``Function`` for the \sigma variable
     :param sigma_old: the FEniCS ``Function`` for the initial value of the \sigma value
     :param phi: the FEniCS ``Function`` for the cancer
@@ -106,10 +125,14 @@ def prostate_cancer_nutrient_form(sigma: fenics.Function,
         documentation must be present
     :return: the UFL weak form for the nutrient equation
     """
-    F = (((sigma - sigma_old) / parameters.get_value("dt")) * v * fenics.dx) \
-        + (parameters.get_value("epsilon") * fenics.dot(fenics.grad(sigma), fenics.grad(v)) * fenics.dx) \
-        + (- s * v * fenics.dx) \
-        + (parameters.get_value("delta") * phi * v * fenics.dx) \
-        + (parameters.get_value("gamma") * sigma * v * fenics.dx)
+    # get parameters
+    dt, epsilon, delta, gamma = _unpack_parameters_list(["dt", "epsilon", "delta", "gamma"],
+                                                        parameters,
+                                                        kwargs)
+    F = (((sigma - sigma_old) / dt) * v * ufl.dx) \
+        + (epsilon * ufl.dot(ufl.grad(sigma), ufl.grad(v)) * ufl.dx) \
+        + (- s * v * ufl.dx) \
+        + (delta * phi * v * ufl.dx) \
+        + (gamma * sigma * v * ufl.dx)
 
     return F

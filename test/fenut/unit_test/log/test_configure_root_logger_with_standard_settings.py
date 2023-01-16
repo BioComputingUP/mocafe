@@ -1,4 +1,4 @@
-import fenics
+from mpi4py import MPI
 import logging
 from pathlib import Path
 from mocafe.fenut.log import \
@@ -6,7 +6,7 @@ from mocafe.fenut.log import \
     default_debug_log_folder, \
     default_debug_log_file, default_info_log_folder, default_info_log_file
 
-comm = fenics.MPI.comm_world
+comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 
 test_logger = logging.getLogger("test")

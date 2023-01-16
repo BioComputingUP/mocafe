@@ -1,5 +1,3 @@
-import pytest
-import pathlib
 from mocafe.fenut.parameters import from_ods_sheet, Parameters
 
 

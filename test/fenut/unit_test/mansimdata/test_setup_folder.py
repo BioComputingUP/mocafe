@@ -1,7 +1,7 @@
-import fenics
+from mpi4py import MPI
 import mocafe.fenut.mansimdata as mansim
 
-comm = fenics.MPI.comm_world
+comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 
 
@@ -48,8 +48,8 @@ def test_setup_multiple_data_folder(tmpdir):
 
 def test_setup_multiple_data_folder_no_enumerate(tmpdir):
     # define multiple data folders
-    data_folder1 = mansim.setup_data_folder(folder_path=f"{tmpdir}/{mansim.test_sim_name}", auto_enumerate=False)
-    data_folder2 = mansim.setup_data_folder(folder_path=f"{tmpdir}/{mansim.test_sim_name}", auto_enumerate=False)
+    data_folder1 = mansim.setup_data_folder(folder_path=f"{tmpdir}/{mansim.test_sim_name}", auto_enumerate=None)
+    data_folder2 = mansim.setup_data_folder(folder_path=f"{tmpdir}/{mansim.test_sim_name}", auto_enumerate=None)
 
     assert data_folder1.exists(), "Data folder 1 should exist"
     assert data_folder2.exists(), "Data folder 2 should exist"

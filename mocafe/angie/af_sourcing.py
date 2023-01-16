@@ -336,7 +336,7 @@ class SourcesManager:
         for source_cell in global_to_remove:
             self.source_map.remove_global_source(source_cell)
 
-    def apply_sources(self, af: dolfinx.fem.Function):
+    def apply_sources(self, af: dolfinx.fem.Function or dolfinx.fem.Constant):
         """
         Apply the sources at the current time to the angiogenic factor field af, respecting the expression function.
 
@@ -344,6 +344,9 @@ class SourcesManager:
         :return: nothing
 
         """
+        # check type
+        if not isinstance(af, dolfinx.fem.Function):
+            raise ValueError(f"af must by of type dolfinix.fem.Function. Found {type(af)} instead.")
         # create a field for sources copying af
         s_f = af.copy()
         # interpolate the custom sources expression on it
@@ -354,59 +357,6 @@ class SourcesManager:
         s_f_not_nan = ~np.isnan(np.array(s_f.x.array))
         af.x.array[s_f_not_nan] = s_f.x.array[s_f_not_nan]
         s_f.x.scatter_forward()  # update ghost values
-
-        # # get Function Space of af
-        # V_af = af.function_space
-        #
-        # # check if V_af is sub space
-        # if V_af.component():
-        #     is_V_sub_space = True
-        # else:
-        #     is_V_sub_space = False
-
-        # # interpolate according to V_af
-        # if not is_V_sub_space:
-        #     # interpolate source field
-        #     s_f = dolfinx.fem.Function(V_af)
-        #     s_f.interpolate(ConstantSourcesField(self.source_map, self.parameters))
-        #     # assign s_f to T where s_f equals 1
-        #     self._assign_values_to_vector(af, s_f)
-        # else:
-        #     # collapse subspace
-        #     V_collapsed = V_af.collapse()[0]
-        #     # interpolate source field
-        #     s_f = dolfinx.fem.Function(V_collapsed)
-        #     s_f.interpolate(ConstantSourcesField(self.source_map, self.parameters))
-        #     # create assigner to collapsed
-        #     assigner_to_collapsed = fenics.FunctionAssigner(V_collapsed, V_af)
-        #     # assign T to local variable T_temp
-        #     T_temp = fenics.Function(V_collapsed)
-        #     assigner_to_collapsed.assign(T_temp, af)
-        #     # assign values to T_temp
-        #     self._assign_values_to_vector(T_temp, s_f)
-        #     # create inverse assigner
-        #     assigner_to_sub = fenics.FunctionAssigner(V_af, V_collapsed)
-        #     # assign T_temp to T
-        #     assigner_to_sub.assign(af, T_temp)
-
-    # def _assign_values_to_vector(self, af, s_f):
-    #     """
-    #     INTERNAL USE
-    #     Assign the positive values of the source field function to the angiogenic factor field.
-    #
-    #     :param af: angiogenic factor function
-    #     :param s_f: source field function
-    #     :return: nothing
-    #     """
-    #     # get local values for T and source_field
-    #     s_f_loc_values = s_f.vector().get_local()
-    #     T_loc_values = af.vector().get_local()
-    #     # change T value only where s_f is grater than 0
-    #     where_s_f_is_over_zero = s_f_loc_values > 0.
-    #     T_loc_values[where_s_f_is_over_zero] = \
-    #         T_loc_values[where_s_f_is_over_zero] + s_f_loc_values[where_s_f_is_over_zero]
-    #     af.vector().set_local(T_loc_values)
-    #     af.vector().update_ghost_values()  # necessary, otherwise I get errors
 
 
 class ConstantSourcesField:

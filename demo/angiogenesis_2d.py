@@ -177,9 +177,9 @@ rank = comm.Get_rank()
 dolfinx.log.set_log_level(dolfinx.log.LogLevel.ERROR)
 # define data folder
 file_folder = Path(__file__).parent.resolve()
-data_folder = mansimd.setup_data_folder(folder_path=f"{file_folder/Path('demo_out')}/angiogenesis_2d",
-                                        auto_enumerate=False)
-# confgure_root_logger_with_standard_settings(data_folder)
+data_folder = mansimd.setup_data_folder(folder_path=f"{file_folder/Path('demo_out')}/angiogenesis_2d_dolfinx",
+                                        auto_enumerate=None)
+confgure_root_logger_with_standard_settings(data_folder)
 
 # %%
 # Then we initialize the xdmf files for the capillaries and the angiogenic factor. Notice that we also initialize
@@ -405,14 +405,14 @@ ksp.setFromOptions()
 # And initializing the time iteration
 t = 0.
 n_steps = int(parameters.get_value("n_steps"))
-if rank == 0:
-    pbar = tqdm(total=n_steps, ncols=100, position=1, desc="angiogenesis_2d")
-else:
-    pbar = None
+# if rank == 0:
+#     pbar = tqdm(total=n_steps, ncols=100, position=1, desc="angiogenesis_2d")
+# else:
+#     pbar = None
 
 # %%
 # Now, we can start iterating
-for step in range(1, n_steps + 1):
+for step in tqdm(range(1, n_steps + 1), ncols=100, desc="angiogenesis_2d", file=sys.stdout if rank == 0 else None):
     # update time
     t += parameters.get_value("dt")
 
@@ -455,8 +455,8 @@ for step in range(1, n_steps + 1):
     tipcells_field.name = "tipcells"
     tipcells_xdmf.write_function(tipcells_field, t)
 
-    if rank == 0:
-        pbar.update(1)
+    # if rank == 0:
+    #     pbar.update(1)
 
 
 # %%
