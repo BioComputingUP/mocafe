@@ -7,28 +7,6 @@ from mocafe.math import project
 from mpi4py import MPI
 
 
-
-# @pytest.fixture
-# def file_list():
-#     # setup root folder
-#     data_folder = "runtime/test/tipcell"
-#
-#     # define files
-#     file_names = ["c", "T", "grad_T"]
-#     file_list = fu.setup_xdmf_files(file_names, data_folder)
-#     return file_list
-
-
-# @pytest.fixture
-# def mesh():
-#     # define mesh
-#     nx = ny = 300
-#     mesh = fenics.RectangleMesh(fenics.Point(0., 0.),
-#                                 fenics.Point(nx, ny),
-#                                 nx, ny)
-#     return mesh
-
-
 @pytest.fixture
 def T0(parameters, mesh):
     T_c = parameters.get_value("T_c")

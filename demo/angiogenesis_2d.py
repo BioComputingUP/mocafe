@@ -184,7 +184,7 @@ confgure_root_logger_with_standard_settings(data_folder)
 # %%
 # Then we initialize the xdmf files for the capillaries and the angiogenic factor. Notice that we also initialize
 # a file for the tip cells, since is often useful to visualize how tip cells behave during the simulation.
-# However, this is just for visualization purposes and it is not necessary for the model because, as we already
+# However, this is just for visualization purposes, and it is not necessary for the model because, as we already
 # mentioned above, the tip cells dynamics is merged to the capillaries dynamics thorugh the update of the field
 # :math:`c`.
 file_names = ["c", "af", "tipcells", "grad_af"]

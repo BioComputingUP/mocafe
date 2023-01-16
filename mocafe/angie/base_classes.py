@@ -59,7 +59,7 @@ class BaseCell:
 
     def get_distance(self, point):
         """
-        get the distance of the given point from the the cell
+        get the distance of the given point from the cell
 
         :param point: the point to check the distance with
         :return: the distance

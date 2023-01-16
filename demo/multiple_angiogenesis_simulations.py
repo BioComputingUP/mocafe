@@ -196,7 +196,7 @@ you can easly import the ``.xdmf`` files generated during the simulation and vis
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 # A difference in the proliferation rate of the endothelial cells can lead to thicker or thinner vessels. This is shown
 # in Figure 3 of the original publication, where they compared a simulation with a low proliferation rate (3C) and
-# a simulation with an high proliferation rate. Below you can find a crop of the image reported in
+# a simulation with a high proliferation rate. Below you can find a crop of the image reported in
 # the original publication:
 #
 # .. image:: ./images/multiple_angiogenesis_simulations/TravassoFig3_original.png
@@ -231,7 +231,7 @@ you can easly import the ``.xdmf`` files generated during the simulation and vis
 # In Mocafe the difference is less evident than the one evidenced in the original publication. Still, the blood
 # vessels network reported on the right looks slightly denser than the one on the left. The differences we observe
 # in respect with the original publication are probably due to the number of angiogenic factor sources, that was not
-# reported in the original publication and it is critical for this simulation in particular.
+# reported in the original publication, and it is critical for this simulation in particular.
 
 # %%
 #
@@ -261,6 +261,7 @@ fenics.set_log_level(fenics.LogLevel.ERROR)
 # get current folder
 file_folder = Path(__file__).parent.resolve()
 
+
 # define convenience method
 def run_angiogenesis_simulation(loading_message, parameters, data_folder):
     # define xdmf files
@@ -277,12 +278,10 @@ def run_angiogenesis_simulation(loading_message, parameters, data_folder):
                                 nx,
                                 ny)
 
-
     # define function space for c and af
     function_space = fu.get_mixed_function_space(mesh, 3, "CG", 1)
     # define function space for grad_T
     grad_af_function_space = fenics.VectorFunctionSpace(mesh, "CG", 1)
-
 
     initial_vessel_width = parameters.get_value("initial_vessel_width")
 
@@ -311,7 +310,6 @@ def run_angiogenesis_simulation(loading_message, parameters, data_folder):
 
     file_af.write(af_0, 0)
     file_c.write(c_0, 0)
-
 
     v1, v2, v3 = fenics.TestFunctions(function_space)
 

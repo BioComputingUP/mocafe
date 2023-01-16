@@ -228,7 +228,7 @@ for current_step in range(n_steps):
 # %%
 # Result
 # ------
-# We uploaded on Youtube the result on this simulation. You can check it out below or at
+# We uploaded on YouTube the result on this simulation. You can check it out below or at
 # `this link <https://youtu.be/pcT0Vf-kHt0>`_
 #
 # ..  youtube:: pcT0Vf-kHt0
@@ -236,8 +236,8 @@ for current_step in range(n_steps):
 # Visualize the result with ParaView
 # ----------------------------------
 # The result of the simulation is stored in the ``.xdmf`` file generated, which are easy to load and visualize in
-# expernal softwares as ParaView. If you don't now how to do it, you can check out the tutorial below or at
-# `this Youtube link <https://youtu.be/ghx5MNZesvQ>`_.
+# expernal software as ParaView. If you don't know how to do it, you can check out the tutorial below or at
+# `this YouTube link <https://youtu.be/ghx5MNZesvQ>`_.
 #
 # ..  youtube:: ghx5MNZesvQ
 #

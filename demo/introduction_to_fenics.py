@@ -120,7 +120,7 @@ u_0_exp = fenics.Expression("(pow(x[0] - c_x, 2) + pow(x[1] - c_y, 2) <= pow(r, 
 # This ``Expression``, however, is just a "symbolic" representation of our initial condition. In order to translate
 # it in an actual function, discretized in space according to our problem, we need to project it in our function space.
 #
-# FEniCS has a built in function to do so, which is called, indeed, ``project``:
+# FEniCS has a built-in function to do so, which is called, indeed, ``project``:
 u_0 = fenics.project(u_0_exp, V)
 
 # %%

@@ -100,7 +100,7 @@ def cahn_hillard_form(c,
     phase separation, and :math: `M` is a scalar parameter.
 
     The equation involves 4th order derivatives, so its weak form could not be handled with the standard Lagrange
-    finite element basis. However, the equation can be splitted in two second-order equations adding a second unknown
+    finite element basis. However, the equation can be split in two second-order equations adding a second unknown
     auxiliary field :math: `\mu`:
 
     .. math::
@@ -167,7 +167,7 @@ def angiogenesis_form(c: dolfinx.fem.Function,
                     &= \alpha_p \cdot af  \quad \textrm{if} \quad 0<af \le af_p \\
                     & = 0 \quad \textrm{if} \quad af \le 0
 
-    In this implementation, the equation is splitted in two equations of lower order, in order to make the weak form
+    In this implementation, the equation is split in two equations of lower order, in order to make the weak form
     solvable using standard Lagrange finite elements:
 
     .. math::
@@ -196,10 +196,8 @@ def angiogenesis_form(c: dolfinx.fem.Function,
     chem_potential = ((c ** 4) / 4) - ((c ** 2) / 2)
 
     # define total form
-    form_cahn_hillard = cahn_hillard_form(c, c0, mu, mu0, v1, v2, parameters.get_value("dt"), theta, chem_potential,
-                                          parameters.get_value("epsilon"), parameters.get_value("M"))
-    form_proliferation = vascular_proliferation_form(parameters.get_value("alpha_p"), af, parameters.get_value("T_p"),
-                                                     c, v1)
+    form_cahn_hillard = cahn_hillard_form(c, c0, mu, mu0, v1, v2, dt, theta, chem_potential, epsilon, M)
+    form_proliferation = vascular_proliferation_form(alpha_p, af, T_p, c, v1)
     form = form_cahn_hillard - form_proliferation
 
     return form
@@ -227,7 +225,7 @@ def angiogenesis_form_no_proliferation(c: dolfinx.fem.Function,
 
     .. math:: f = \frac{1}{4} \cdot c^4 - \frac{1}{2} \cdot c^2
 
-    In this implementation, the equation is splitted in two equations of lower order, in order to make the weak form
+    In this implementation, the equation is split in two equations of lower order, in order to make the weak form
     solvable using standard Lagrange finite elements:
 
     .. math::
@@ -244,7 +242,6 @@ def angiogenesis_form_no_proliferation(c: dolfinx.fem.Function,
     :param mu0: initial condition for the auxiliary field
     :param v1: test function for c
     :param v2: test function  for mu
-    :param af: angiogenic factor field
     :param parameters: simulation parameters
     :return:
     """

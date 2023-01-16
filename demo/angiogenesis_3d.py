@@ -335,7 +335,7 @@ for step in range(1, n_steps + 1):
 # %%
 # Result
 # ------
-# We uploaded on Youtube the result on this simulation. You can check it out below or at
+# We uploaded on YouTube the result on this simulation. You can check it out below or at
 # `this link <https://youtu.be/ho-V58mqDv8>`_
 #
 # ..  youtube:: ho-V58mqDv8
@@ -343,8 +343,8 @@ for step in range(1, n_steps + 1):
 # Visualize the result with ParaView
 # ----------------------------------
 # The result of the simulation is stored in the ``.xdmf`` file generated, which are easy to load and visualize in
-# expernal softwares as ParaView. If you don't now how to do it, you can check out the tutorial below or at
-# `this Youtube link <https://youtu.be/ATzlVEIjicI>`_.
+# external software as ParaView. If you don't know how to do it, you can check out the tutorial below or at
+# `this YouTube link <https://youtu.be/ATzlVEIjicI>`_.
 #
 # ..  youtube:: ATzlVEIjicI
 #

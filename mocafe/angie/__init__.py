@@ -1,6 +1,6 @@
 """
 This subpackage contains all the modules to simulate an angiogenesis model in FEniCS,
-using an hybrid Phase-Field/agent approach. By default, the algorithms used are the same presented by
+using a hybrid Phase-Field/agent approach. By default, the algorithms used are the same presented by
 Travasso and collaborators :cite:`Travasso2011a`.
 
 It is composed of the following modules:

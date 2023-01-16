@@ -3,10 +3,8 @@ from dolfinx.mesh import create_rectangle
 from dolfinx.fem import Constant, FunctionSpace, Function
 from ufl import VectorElement
 from mpi4py import MPI
-from petsc4py.PETSc import ScalarType
 from mocafe.angie.af_sourcing import SourceMap, SourcesManager
 from mocafe.fenut.fenut import get_colliding_cells_for_points
-import mocafe.fenut.fenut as fu
 import numpy as np
 
 

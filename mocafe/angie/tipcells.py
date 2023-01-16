@@ -78,7 +78,7 @@ class TipCellsField:
     r"""
     Expression representing the capillary field value inside the tip cells.
 
-    In this implementation, the value is coherent with the one used by Travasso et al (2011) in their Phase Field
+    In this implementation, the value is coherent with the one used by Travasso et al. (2011) in their Phase Field
     angiogenesis model :cite:`Travasso2011a`, that is:
 
     .. math::
@@ -274,7 +274,7 @@ class TipCellManager:
         its gradient, grad_af, are met.
 
         In this implementation the conditions are coherent with the one used by Travasso et al. (2011)
-        :cite:`Travasso2011a`, which are reported in the following pseudo-code::
+        :cite:`Travasso2011a`, which are reported in the following pseudocode::
 
             p = possible new tip cell center
             if distance(p, closest_tip_cell) > min_tipcell_distance:
@@ -410,7 +410,7 @@ class TipCellManager:
         Deactivate the tip cells when the right conditions are met.
 
         In this implementation the conditions are coherent with the one used by Travasso et al. (2011)
-        :cite:`Travasso2011a`, which are reported in the following pseudo-code::
+        :cite:`Travasso2011a`, which are reported in the following pseudocode::
 
             tc_p = a tip cell position
             if (af(tc_p) < T_c or norm(grad_af(tc_p)) < G_m):
@@ -423,8 +423,8 @@ class TipCellManager:
         The procedure above is applied to all the active tip cells.
 
         *New*: now the tip cells are deactivated also if there are other Tip Cells nearer then the distance
-        contained in the parameter 'min_tipcell_distance'. This was introduced to simulate the effect of Delta-
-        Notch signalling also on active Tip Cells, which was not present in Travasso et al. (2011) :cite:`Travasso2011a`
+        contained in the parameter 'min_tipcell_distance'. This was introduced to simulate the effect of Delta-Notch
+        signalling also on active Tip Cells, which was not present in Travasso et al. (2011) :cite:`Travasso2011a`
         but has been introduced by Moreira-Soares et al. (2018) :cite:`MoreiraSoares2018`.
 
         :param af: angiogenic factor field
@@ -434,7 +434,6 @@ class TipCellManager:
         _info_adapter.info(f"Called {self.revert_tip_cells.__name__}")
         # init lists
         local_to_remove = []
-        local_to_check_if_outside_global_mesh = []
 
         """1. Iterate on global tip cells."""
         for tip_cell in self.global_tip_cells_list:
@@ -635,7 +634,7 @@ class TipCellManager:
         INTERNAL USE.
         Applies the tip cells field in the given ``tip_cells_field_expression`` to the capillaries field ``c``.
 
-        More precisely, all the values in the tip cell field which are not NaN are pasted over the the capillaries
+        More precisely, all the values in the tip cell field which are not NaN are pasted over the capillaries
         field.
 
         :param c: the capillaries field

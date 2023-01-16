@@ -34,7 +34,7 @@ def from_ods_sheet(file: pathlib.Path, sheet: str):
 
     The given sheet must have at least to columns: ``name``, with the parameters' names; and ``sim_value``, with the
     value of the parameters. Any other column, for instance containing the measure units, the reference of the
-    parameters, or other informations, will be stored inside the Parameters object and used for reporting informations,
+    parameters, or other information, will be stored inside the Parameters object and used for reporting information,
     but are not compulsory.
 
     :param file: file path

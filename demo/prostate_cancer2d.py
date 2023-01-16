@@ -53,7 +53,7 @@ suggest you to refer to the original paper :cite:`Lorenzo2016`. However, we just
 
 The first equation describes a cancer development driven by both proliferation, and apoptosis. Cancer cells are
 assumed to duplicate in presence of nutrient and their proliferation is, indeed, described by the term
-:math:`\chi \sigma`, which contains the nutrients concentration. Apoptosis is, instead assumed to occur at a constant
+:math:`\chi \sigma`, which contains the nutrients' concentration. Apoptosis is, instead assumed to occur at a constant
 rate and is represented in the equation by the term :math:`-A \varphi`.
 
 The second equation describes the diffusion of the nutrients with the Fick's low of diffusion
@@ -213,7 +213,7 @@ phi0 = EllipseField(center=np.array([0., 0.]),
 #
 # The interpolation can be done simply calling the FEniCS method ``interpolate``, which takes as arguments the
 # expression to be interpolated and the function space where to do the interpolation. Notice that, since the function
-# space we defined is mixed, we must choose one of the sub-field to define the function.
+# space we defined is mixed, we must choose one of the subfield to define the function.
 phi0 = fenics.interpolate(phi0, function_space.sub(0).collapse())
 
 # %%
@@ -257,7 +257,7 @@ phi, sigma = fenics.split(u)
 # nutrient that is supplied to the system.
 #
 # In the original paper they simulated the model for both a constant distribution and for a 'capillary-like'
-# distribution based on an picture :cite:`Lorenzo2016`.
+# distribution based on a picture :cite:`Lorenzo2016`.
 #
 # In this implementation we just chose to simulate the model with a random distribution of the nutrient, with
 # values included in the range :math:`[s_{average} + s_{min}, s_{average} + s_{max}]`, where
@@ -446,15 +446,15 @@ for current_step in range(n_steps):
 #
 # Result
 # ------
-# We uploaded on Youtube the result on this simulation. You can check it out below or at `this link <https://youtu.be/2isujSzWH1A>`_
+# We uploaded on YouTube the result on this simulation. You can check it out below or at `this link <https://youtu.be/2isujSzWH1A>`_
 #
 # ..  youtube:: 2isujSzWH1A
 #
 # Visualize the result with ParaView
 # ----------------------------------
 # The result of the simulation is stored in the ``.xdmf`` file generated, which are easy to load and visualize in
-# expernal softwares as ParaView. If you don't now how to do it, you can check out the tutorial below or at
-# `this Youtube link <https://youtu.be/d-BwfqNltN4>`_.
+# expernal software as ParaView. If you don't know how to do it, you can check out the tutorial below or at
+# `this YouTube link <https://youtu.be/d-BwfqNltN4>`_.
 #
 # ..  youtube:: d-BwfqNltN4
 #

@@ -11,7 +11,6 @@ If you use this model in your research, remember to cite the original paper desc
 For a use example see the :ref:`Angiogenesis <Angiogenesis 2D Demo>` and the
 :ref:`Angiogenesis 3D <Angiogenesis 2D Demo>` demos.
 """
-import sys
 import types
 import dolfinx.mesh
 import dolfinx.fem
@@ -47,9 +46,9 @@ class SourceCell(base_classes.BaseCell):
         """
         inits a source cell centered in a given point.
 
-        :param point: center of the tip cell, as ndarray
+        :param point: center of the tip cell, as ndarray.
         :param creation_step: the step of the simulation at which the cell is created. It is used together with the
-            position to generate an unique identifier of the cell.
+            position to generate a unique identifier of the cell.
         """
         super(SourceCell, self).__init__(point, creation_step)
 
@@ -144,7 +143,7 @@ class SourceMap:
         # remove from global list
         self.global_source_cells.remove(source_cell)
         _debug_adapter.debug(f"Removed source cell {source_cell.__hash__()} at position {source_cell.get_position()}"
-                            f"from the global list")
+                             f"from the global list")
         # if in local, remove from local list too
         if source_cell in self.local_source_cells:
             self.local_source_cells.remove(source_cell)
@@ -229,8 +228,8 @@ class RandomSourceMap(SourceMap):
             n_pickable_points = len(pickable_points)
             if n_pickable_points <= n_points:
                 _logger.warning(f"The mesh looks too small for selecting {n_points} random source, since it was asked"
-                               f"to select {n_points} among {n_pickable_points}"
-                               f"pickable points. Returning all available pickable points.")
+                                f"to select {n_points} among {n_pickable_points}"
+                                f"pickable points. Returning all available pickable points.")
                 global_sources_coordinates = pickable_points
             else:
                 global_sources_coordinates = random.sample(pickable_points, n_points)
@@ -269,7 +268,7 @@ class SourcesManager:
             self.default_clock_checker_is_present = False
         elif not parameters.is_value_present("d"):
             _logger.debug("The parameter 'd' is present in the parameters object but the value is not set. "
-                         "Can't init the default clock checker.")
+                          "Can't init the default clock checker.")
             self.default_clock_checker = None
             self.default_clock_checker_is_present = False
 
@@ -298,9 +297,11 @@ class SourcesManager:
         for source_cell in self.source_map.get_local_source_cells():
             source_cell_position = source_cell.get_position()
             _debug_adapter.debug(f"Checking cell {source_cell.__hash__()} at position {source_cell_position}")
-            clock_check_test_result = clock_checker.clock_check(source_cell_position,
-                                                                c,
-                                                                lambda c_val: c_val > self.parameters.get_value("phi_th"))
+            clock_check_test_result = clock_checker.clock_check(
+                source_cell_position,
+                c,
+                lambda c_val: c_val > self.parameters.get_value("phi_th")
+            )
             _debug_adapter.debug(f"Clock Check test result is {clock_check_test_result}")
             # if the clock test is positive, add the source cells in the list of the cells to remove
             if clock_check_test_result:

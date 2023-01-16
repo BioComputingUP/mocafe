@@ -63,7 +63,7 @@ Franco Pradelli (franco.pradelli94@gmail.com), Giovanni Minervini, and Silvio To
 This work is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License. To view a copy of this license, visit http://creativecommons.org/licenses/by-nc/4.0/ or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
   
 ## Contributing  
-We welcome any feedback and we thank you if you're considering to contribute to our project.
+We welcome any feedback, and we thank you if you're considering to contribute to our project.
   
 Mocafe follows the standard "Fork & Pull" contributing model of GitHub (more information [here](https://docs.github.com/en/get-started/quickstart/contributing-to-projects)).
 
