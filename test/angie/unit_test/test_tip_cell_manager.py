@@ -2,9 +2,10 @@ import dolfinx
 import ufl
 import numpy as np
 import pytest
-from mocafe.angie.tipcells import TipCellManager, TipCell
+from mocafe.angie.tipcells import TipCellManager, TipCell, load_tip_cells_from_json
 from mocafe.math import project
 from mpi4py import MPI
+from pathlib import Path
 
 
 @pytest.fixture
@@ -39,27 +40,47 @@ def gradT0(mesh, T0):
     return gradT0
 
 
-def test_activate_tip_cell(T0, phi0, gradT0, mesh, parameters):
+def test_activate_tip_cell(T0, phi0, gradT0, mesh, parameters, tmpdir):
     # create tip cell manager
     tip_cell_manager = TipCellManager(mesh, parameters)
 
     # activate
     tip_cell_manager.activate_tip_cell(phi0, T0, gradT0, 0)
 
-    test_result = False
-    # check if ok
-    if len(tip_cell_manager.get_global_tip_cells_list()) == 1:
-        if tip_cell_manager.get_global_tip_cells_list()[0].get_position()[0] < 30:
-            print(f"p{MPI.COMM_WORLD.Get_rank()}: "
-                  f"Activated tip cell in {tip_cell_manager.get_global_tip_cells_list()[0].get_position()}")
-            test_result = True
-    else:
-        print(f"p{MPI.COMM_WORLD.Get_rank()}: "
-              f" n activated tip cells = {len(tip_cell_manager.get_global_tip_cells_list())}")
-        test_result = False
+    # get global tip cell list
+    g_tc_list = tip_cell_manager.get_global_tip_cells_list()
 
-    assert test_result is True, "There should be just one tip cell activated"
+    # test length
+    assert len(g_tc_list) == 1, "There should be just one tip cell"
 
+    # test if tc is in the right position
+    activated_tc = g_tc_list[0]
+    assert activated_tc.get_position()[0] < 30, f"Tip cell should be where phi0 is high (x[0] < 30). " \
+                                                f"Tip cell found in position {activated_tc.get_position()}"
+
+    # test if a new tip_cell_manager can load the global tip cell list
+    del tip_cell_manager
+    tip_cell_manager2 = TipCellManager(mesh, parameters, initial_tcs=g_tc_list)
+    g_tc_list2 = tip_cell_manager2.get_global_tip_cells_list()
+    assert g_tc_list2 == g_tc_list, f"The two gloabl tip cells list should be equal."
+
+    # check if the new tip cell manager can activate another tip cell
+    tip_cell_manager2.activate_tip_cell(phi0, T0, gradT0, 0)
+    g_tc_list2 = tip_cell_manager2.get_global_tip_cells_list()
+    assert len(g_tc_list2) == 2, f"There should be two tip cells now. Found {len(g_tc_list2)} instead."
+    assert all([tc.get_position()[0] < 30 for tc in g_tc_list2]), f"All Tip Cells should be where phi0 is high " \
+                                                                  f"(x[0] < 30). Tip Cells positions are: " \
+                                                                  f"{[tc.get_position() for tc in g_tc_list2]}"
+
+    # test if I can save tip cells
+    tc_file_r0 = f"{tmpdir}/tipcells.json"
+    tc_file_r0 = MPI.COMM_WORLD.bcast(tc_file_r0, root=0)
+    tip_cell_manager2.save_tip_cells(tc_file_r0)
+    assert Path(tc_file_r0).exists(), f"The tc file {tc_file_r0} should have been created. "
+
+    # test if I can load tip cells
+    tc_list = load_tip_cells_from_json(tc_file_r0)
+    assert tc_list == g_tc_list2
 
 def test_activate_3_tip_cells(parameters, T0, phi0, gradT0, mesh):
     # create tip cell manager
