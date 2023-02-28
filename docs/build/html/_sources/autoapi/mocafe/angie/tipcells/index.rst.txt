@@ -33,6 +33,14 @@ Classes
 
 
 
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   mocafe.angie.tipcells.load_tip_cells_from_json
+
+
 
 .. py:class:: TipCell(position: numpy.ndarray, radius, creation_step)
 
@@ -64,7 +72,7 @@ Classes
 
 
 
-.. py:class:: TipCellsField(parameters: mocafe.fenut.parameters.Parameters, mesh_dim: int)
+.. py:class:: TipCellsField(mesh_dim: int = None, parameters: mocafe.fenut.parameters.Parameters = None, **kwargs)
 
    Bases: :py:obj:`fenics.UserExpression`
 
@@ -133,7 +141,7 @@ Classes
 
 
 
-.. py:class:: TipCellManager(mesh: fenics.Mesh, parameters: mocafe.fenut.parameters.Parameters)
+.. py:class:: TipCellManager(mesh: fenics.Mesh, parameters: mocafe.fenut.parameters.Parameters = None, initial_tcs: List[TipCell] = None, **kwargs)
 
    Class to manage the tip cells throughout the simulation.
 
@@ -243,5 +251,27 @@ Classes
 
    .. py:method:: get_latest_tip_cell_function(self)
 
+
+   .. py:method:: save_tip_cells(self, tc_file: str)
+
+      Stores the current global tip cell list in a readable json file.
+
+      :param tc_file: file where to store the json tip cell list.
+
+
+   .. py:method:: save_incremental_tip_cells(self, tc_file: str, step: int)
+
+      Stores the global tip cell list in a readable json file at every time step.
+
+      :param tc_file: file where to store the json tip cell list.
+      :param step: time step
+
+
+
+.. py:function:: load_tip_cells_from_json(json_file: str)
+
+   Creates a tip cell list from a json file with tip cells data.
+
+   :param json_file: file to load as tip cell list.
 
 

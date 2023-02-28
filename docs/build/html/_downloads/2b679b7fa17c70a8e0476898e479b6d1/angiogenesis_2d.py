@@ -147,6 +147,7 @@ Notch-Signalling inhibition if they are close to each other.
 # ^^^^^
 # With Mocafe, the implementation of the model is not very different from any other FEniCS script. Let's start
 # importing everything we need:
+import sys
 import fenics
 import mshr
 from tqdm import tqdm
@@ -168,7 +169,7 @@ fenics.set_log_level(fenics.LogLevel.ERROR)
 # define data folder
 file_folder = Path(__file__).parent.resolve()
 data_folder = mansimd.setup_data_folder(folder_path=f"{file_folder/Path('demo_out')}/angiogenesis_2d",
-                                        auto_enumerate=False)
+                                        auto_enumerate=None)
 
 # %%
 # Then we initialize the xdmf files for the capillaries and the angiogenic factor. Notice that we also initialize
@@ -385,14 +386,16 @@ jacobian = fenics.derivative(weak_form, u)
 # And initializing the time iteration
 t = 0.
 n_steps = int(parameters.get_value("n_steps"))
-if rank == 0:
-    pbar = tqdm(total=n_steps, ncols=100, position=1, desc="angiogenesis_2d")
-else:
-    pbar = None
+tqdm_file = sys.stdout if rank == 0 else None
+tqdm_disable = (rank != 0)
+# if rank == 0:
+#     pbar = tqdm(total=n_steps, ncols=100, position=1, desc="angiogenesis_2d")
+# else:
+#     pbar = None
 
 # %%
 # Now, we can start iterating
-for step in range(1, n_steps + 1):
+for step in tqdm(range(1, n_steps + 1), ncols=100, desc="angiogenesis_2d", file=tqdm_file, disable=tqdm_disable):
     # update time
     t += parameters.get_value("dt")
 
@@ -428,8 +431,8 @@ for step in range(1, n_steps + 1):
     file_c.write(c_0, t)
     tipcells_xdmf.write(tipcells_field, t)
 
-    if rank == 0:
-        pbar.update(1)
+    # if rank == 0:
+    #     pbar.update(1)
 
 # %%
 # Notice that additionally to the system solution a number of operations are performed at each time stem which require

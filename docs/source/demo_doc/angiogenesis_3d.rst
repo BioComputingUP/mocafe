@@ -121,7 +121,7 @@ variations.
     # define data folder
     file_folder = Path(__file__).parent.resolve()
     data_folder = mansimd.setup_data_folder(folder_path=f"{file_folder/Path('demo_out')}/angiogenesis_3d",
-                                            auto_enumerate=False)
+                                            auto_enumerate=None)
 
     # setup xdmf files
     file_names = ["c", "af", "tipcells", "mesh"]
@@ -336,16 +336,18 @@ definition of the ``TipCellsManager``:
 After that, everything will just work the same. For efficiency, we make use of the PETSc SNES solver to solve the
 differential equations this time, but this is the only change we made to the 2D demo code.
 
-.. GENERATED FROM PYTHON SOURCE LINES 270-335
+.. GENERATED FROM PYTHON SOURCE LINES 270-337
 
 .. code-block:: default
 
     t = 0.
     n_steps = 200
-    if rank == 0:
-        pbar = tqdm(total=n_steps, ncols=100, position=1, desc="simulation")
-    else:
-        pbar = None
+    tqdm_file = sys.stdout if rank == 0 else None
+    tqdm_disable = (rank != 0)
+    # if rank == 0:
+    #     pbar = tqdm(total=n_steps, ncols=100, position=1, desc="simulation")
+    # else:
+    #     pbar = None
 
     petsc4py.init([__name__,
                    "-snes_type", "newtonls",
@@ -358,7 +360,7 @@ differential equations this time, but this is the only change we made to the 2D 
     snes_solver.setFromOptions()
 
     # start iteration in time
-    for step in range(1, n_steps + 1):
+    for step in tqdm(range(1, n_steps + 1), ncols=100, desc="angiogenesis_3d", file=tqdm_file, disable=tqdm_disable):
         # update time
         t += parameters.get_value("dt")
 
@@ -402,11 +404,11 @@ differential equations this time, but this is the only change we made to the 2D 
         file_c.write(c_0, t)
         tipcells_xdmf.write(tipcells_field, t)
 
-        if rank == 0:
-            pbar.update(1)
+        # if rank == 0:
+        #     pbar.update(1)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 336-351
+.. GENERATED FROM PYTHON SOURCE LINES 338-353
 
 Result
 ------
@@ -424,7 +426,7 @@ expernal softwares as ParaView. If you don't now how to do it, you can check out
 ..  youtube:: ATzlVEIjicI
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 353-581
+.. GENERATED FROM PYTHON SOURCE LINES 355-583
 
 Full code
 ---------

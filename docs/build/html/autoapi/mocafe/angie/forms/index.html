@@ -19,7 +19,6 @@
         <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
         <script src="../../../../_static/jquery.js"></script>
         <script src="../../../../_static/underscore.js"></script>
-        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../../../_static/doctools.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -34,12 +33,16 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../../index.html" class="icon icon-home"> Mocafe
-            <img src="../../../../_static/200mocafe_logo.png" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            Mocafe
+              <img src="../../../../_static/200mocafe_logo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -77,11 +80,11 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../../index.html">API Reference</a> &raquo;</li>
-          <li><a href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe</span></code></a> &raquo;</li>
-          <li><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe.angie</span></code></a> &raquo;</li>
-      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe.angie.forms</span></code></li>
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe</span></code></a></li>
+          <li class="breadcrumb-item"><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe.angie</span></code></a></li>
+      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe.angie.forms</span></code></li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../../../_sources/autoapi/mocafe/angie/forms/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -92,7 +95,7 @@
            <div itemprop="articleBody">
              
   <section id="module-mocafe.angie.forms">
-<span id="mocafe-angie-forms"></span><h1><a class="reference internal" href="#module-mocafe.angie.forms" title="mocafe.angie.forms"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe.angie.forms</span></code></a><a class="headerlink" href="#module-mocafe.angie.forms" title="Permalink to this heading"></a></h1>
+<span id="mocafe-angie-forms"></span><h1><a class="reference internal" href="#module-mocafe.angie.forms" title="mocafe.angie.forms"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe.angie.forms</span></code></a><a class="headerlink" href="#module-mocafe.angie.forms" title="Permalink to this headline"></a></h1>
 <p>Weak forms of the Phase-Field models related to angiogenesis. Each weak form is a FEniCS UFL Form which can be used
 calling a specific method, that returns the form itself.</p>
 <p>If you use this model in your research, remember to cite the original paper describing the model:</p>
@@ -104,10 +107,10 @@ Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5)
 <p>For a use example see the <a class="reference internal" href="../../../../demo_doc/angiogenesis_2d.html#angiogenesis-2d-demo"><span class="std std-ref">Angiogenesis</span></a> and the
 <a class="reference internal" href="../../../../demo_doc/angiogenesis_2d.html#angiogenesis-2d-demo"><span class="std std-ref">Angiogenesis 3D</span></a> demos.</p>
 <section id="module-contents">
-<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading"></a></h2>
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline"></a></h2>
 <section id="functions">
-<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this heading"></a></h3>
-<table class="autosummary longtable docutils align-default">
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline"></a></h3>
+<table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
@@ -119,10 +122,13 @@ Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5)
 <tr class="row-even"><td><p><a class="reference internal" href="#mocafe.angie.forms.cahn_hillard_form" title="mocafe.angie.forms.cahn_hillard_form"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cahn_hillard_form</span></code></a>(c: fenics.Variable, c0: fenics.Function, mu: fenics.Function, mu0: fenics.Function, q: fenics.TestFunction, v: fenics.TestFunction, dt, theta, chem_potential, lmbda, M)</p></td>
 <td><p>Returns the UFL form of a for a general Cahn-Hillard equation, discretized in time using the theta method. The</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mocafe.angie.forms.angiogenesis_form" title="mocafe.angie.forms.angiogenesis_form"><code class="xref py py-obj docutils literal notranslate"><span class="pre">angiogenesis_form</span></code></a>(c: fenics.Function, c0: fenics.Function, mu: fenics.Function, mu0: fenics.Function, v1: fenics.TestFunction, v2: fenics.TestFunction, af: fenics.Function, parameters: mocafe.fenut.parameters.Parameters)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mocafe.angie.forms.angiogenesis_form" title="mocafe.angie.forms.angiogenesis_form"><code class="xref py py-obj docutils literal notranslate"><span class="pre">angiogenesis_form</span></code></a>(c: fenics.Function, c0: fenics.Function, mu: fenics.Function, mu0: fenics.Function, v1: fenics.TestFunction, v2: fenics.TestFunction, af: fenics.Function, parameters: mocafe.fenut.parameters.Parameters = None, **kwargs)</p></td>
 <td><p>Returns the UFL form for the Phase-Field model for angiogenesis reported by Travasso et al. (2011)</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mocafe.angie.forms.angiogenic_factor_form" title="mocafe.angie.forms.angiogenic_factor_form"><code class="xref py py-obj docutils literal notranslate"><span class="pre">angiogenic_factor_form</span></code></a>(af: fenics.Function, af_0: fenics.Function, c: fenics.Function, v: fenics.TestFunction, parameters: mocafe.fenut.parameters.Parameters)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mocafe.angie.forms.angiogenesis_form_no_proliferation" title="mocafe.angie.forms.angiogenesis_form_no_proliferation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">angiogenesis_form_no_proliferation</span></code></a>(c: fenics.Function, c0: fenics.Function, mu: fenics.Function, mu0: fenics.Function, v1: fenics.TestFunction, v2: fenics.TestFunction, parameters: mocafe.fenut.parameters.Parameters = None, **kwargs)</p></td>
+<td><p>(New in version 1.4)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mocafe.angie.forms.angiogenic_factor_form" title="mocafe.angie.forms.angiogenic_factor_form"><code class="xref py py-obj docutils literal notranslate"><span class="pre">angiogenic_factor_form</span></code></a>(af: fenics.Function, af_0: fenics.Function, c: fenics.Function, v: fenics.TestFunction, parameters: mocafe.fenut.parameters.Parameters = None, **kwargs)</p></td>
 <td><p>Returns the UFL form for the equation for the angiogenic factor reported by Travasso et al. (2011)</p></td>
 </tr>
 </tbody>
@@ -204,7 +210,7 @@ implementation uses this form.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mocafe.angie.forms.angiogenesis_form">
-<span class="sig-prename descclassname"><span class="pre">mocafe.angie.forms.</span></span><span class="sig-name descname"><span class="pre">angiogenesis_form</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.TestFunction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.TestFunction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">af</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../fenut/parameters/index.html#mocafe.fenut.parameters.Parameters" title="mocafe.fenut.parameters.Parameters"><span class="pre">mocafe.fenut.parameters.Parameters</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.forms.angiogenesis_form" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">mocafe.angie.forms.</span></span><span class="sig-name descname"><span class="pre">angiogenesis_form</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.TestFunction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.TestFunction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">af</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../fenut/parameters/index.html#mocafe.fenut.parameters.Parameters" title="mocafe.fenut.parameters.Parameters"><span class="pre">mocafe.fenut.parameters.Parameters</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.forms.angiogenesis_form" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the UFL form for the Phase-Field model for angiogenesis reported by Travasso et al. (2011)
 <span id="id2">[<a class="reference internal" href="../../../../bib.html#id7" title="Rui D.M. Travasso, Eugenia Corvera Poiré, Mario Castro, Juan Carlos Rodrguez-Manzaneque, and A. Hernández-Machado. Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5):e19989, 2011. URL: http://www.fct.mctes.pt http://www.gulbenkian.pt/ http://www.conacyt.mx/ http://www.isciii.es/ http://www.micinn.es/, doi:10.1371/journal.pone.0019989.">TPoireC+11</a>]</span>.</p>
 <p>The equation reads simply as the sum of a Cahn-Hillard term and a proliferation term (for further details see
@@ -224,6 +230,48 @@ solvable using standard Lagrange finite elements:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\frac{\partial c}{\partial t} &amp;= M \nabla^2 \cdot \mu + \alpha_p(T) \cdot c H(c) \\
 \mu &amp;= \frac{d f}{d c} - \epsilon \nabla^{2}c\end{split}\]</div>
+<p>(New in version 1.4) Specify a parameter for the form calling the function, e.g. with
+<code class="docutils literal notranslate"><span class="pre">angiogenesis_form(c,</span> <span class="pre">c0,</span> <span class="pre">mu,</span> <span class="pre">mu0,</span> <span class="pre">v1,</span> <span class="pre">v2,</span> <span class="pre">af,</span> <span class="pre">parameters,</span> <span class="pre">alpha_p=10,</span> <span class="pre">M=20)</span></code>. If both a Parameters object and a
+parameter as input are given, the function will choose the input parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>c</strong> – capillaries field</p></li>
+<li><p><strong>c0</strong> – initial condition for the capillaries field</p></li>
+<li><p><strong>mu</strong> – auxiliary field</p></li>
+<li><p><strong>mu0</strong> – initial condition for the auxiliary field</p></li>
+<li><p><strong>v1</strong> – test function for c</p></li>
+<li><p><strong>v2</strong> – test function  for mu</p></li>
+<li><p><strong>af</strong> – angiogenic factor field</p></li>
+<li><p><strong>parameters</strong> – simulation parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mocafe.angie.forms.angiogenesis_form_no_proliferation">
+<span class="sig-prename descclassname"><span class="pre">mocafe.angie.forms.</span></span><span class="sig-name descname"><span class="pre">angiogenesis_form_no_proliferation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.TestFunction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.TestFunction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../fenut/parameters/index.html#mocafe.fenut.parameters.Parameters" title="mocafe.fenut.parameters.Parameters"><span class="pre">mocafe.fenut.parameters.Parameters</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.forms.angiogenesis_form_no_proliferation" title="Permalink to this definition"></a></dt>
+<dd><p>(New in version 1.4)
+Returns the UFL form for the Phase-Field model for angiogenesis reported by Travasso et al. (2011)
+<span id="id3">[<a class="reference internal" href="../../../../bib.html#id7" title="Rui D.M. Travasso, Eugenia Corvera Poiré, Mario Castro, Juan Carlos Rodrguez-Manzaneque, and A. Hernández-Machado. Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5):e19989, 2011. URL: http://www.fct.mctes.pt http://www.gulbenkian.pt/ http://www.conacyt.mx/ http://www.isciii.es/ http://www.micinn.es/, doi:10.1371/journal.pone.0019989.">TPoireC+11</a>]</span>, without the proliferation term.</p>
+<p>The equation reads simply as:</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial c}{\partial t} = M \cdot \nabla^2 [\frac{df}{dc}\ - \epsilon \nabla^2 c]\]</div>
+<p>Where :math: <cite>c</cite> is the unknown field representing the capillaries, and :</p>
+<div class="math notranslate nohighlight">
+\[f = \frac{1}{4} \cdot c^4 - \frac{1}{2} \cdot c^2\]</div>
+<p>In this implementation, the equation is splitted in two equations of lower order, in order to make the weak form
+solvable using standard Lagrange finite elements:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\frac{\partial c}{\partial t} &amp;= M \nabla^2 \cdot \mu\\
+\mu &amp;= \frac{d f}{d c} - \epsilon \nabla^{2}c\end{split}\]</div>
+<p>Specify a parameter for the form calling the function, e.g. with
+<code class="docutils literal notranslate"><span class="pre">angiogenesis_form(c,</span> <span class="pre">c0,</span> <span class="pre">mu,</span> <span class="pre">mu0,</span> <span class="pre">v1,</span> <span class="pre">v2,</span> <span class="pre">af,</span> <span class="pre">parameters,</span> <span class="pre">alpha_p=10,</span> <span class="pre">M=20)</span></code>. If both a Parameters object and a
+parameter as input are given, the function will choose the input parameter.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -245,15 +293,18 @@ solvable using standard Lagrange finite elements:</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mocafe.angie.forms.angiogenic_factor_form">
-<span class="sig-prename descclassname"><span class="pre">mocafe.angie.forms.</span></span><span class="sig-name descname"><span class="pre">angiogenic_factor_form</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">af</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">af_0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.TestFunction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../fenut/parameters/index.html#mocafe.fenut.parameters.Parameters" title="mocafe.fenut.parameters.Parameters"><span class="pre">mocafe.fenut.parameters.Parameters</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.forms.angiogenic_factor_form" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">mocafe.angie.forms.</span></span><span class="sig-name descname"><span class="pre">angiogenic_factor_form</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">af</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">af_0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.TestFunction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../fenut/parameters/index.html#mocafe.fenut.parameters.Parameters" title="mocafe.fenut.parameters.Parameters"><span class="pre">mocafe.fenut.parameters.Parameters</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.forms.angiogenic_factor_form" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the UFL form for the equation for the angiogenic factor reported by Travasso et al. (2011)
-<span id="id3">[<a class="reference internal" href="../../../../bib.html#id7" title="Rui D.M. Travasso, Eugenia Corvera Poiré, Mario Castro, Juan Carlos Rodrguez-Manzaneque, and A. Hernández-Machado. Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5):e19989, 2011. URL: http://www.fct.mctes.pt http://www.gulbenkian.pt/ http://www.conacyt.mx/ http://www.isciii.es/ http://www.micinn.es/, doi:10.1371/journal.pone.0019989.">TPoireC+11</a>]</span>.</p>
+<span id="id4">[<a class="reference internal" href="../../../../bib.html#id7" title="Rui D.M. Travasso, Eugenia Corvera Poiré, Mario Castro, Juan Carlos Rodrguez-Manzaneque, and A. Hernández-Machado. Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5):e19989, 2011. URL: http://www.fct.mctes.pt http://www.gulbenkian.pt/ http://www.conacyt.mx/ http://www.isciii.es/ http://www.micinn.es/, doi:10.1371/journal.pone.0019989.">TPoireC+11</a>]</span>.</p>
 <p>The equation simply considers the diffusion of the angiogenic factor and its consumption by the capillaries
 (for further details see the original paper):</p>
 <div class="math notranslate nohighlight">
 \[\frac{\partial af}{\partial t} = D \nabla^2 af - \alpha_T \cdot af \cdot c \cdot H(c)\]</div>
 <p>Where :math: <cite>af</cite> is the angiogenic factor field, :math: <cite>c</cite> is the capillaries field, and :math: <cite>H(c)</cite> is the
 Heaviside function</p>
+<p>(New in version 1.4) Specify a parameter for the form calling the function, e.g. with
+<code class="docutils literal notranslate"><span class="pre">angiogenic_factor_form(af,</span> <span class="pre">af0,</span> <span class="pre">c,</span> <span class="pre">v,</span> <span class="pre">parameters,</span> <span class="pre">alpha_T=10)</span></code>. If both a Parameters object and a
+parameter as input are given, the function will choose the input parameter.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">

@@ -19,7 +19,6 @@
         <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
         <script src="../../../../_static/jquery.js"></script>
         <script src="../../../../_static/underscore.js"></script>
-        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../../../_static/doctools.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -34,12 +33,16 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../../index.html" class="icon icon-home"> Mocafe
-            <img src="../../../../_static/200mocafe_logo.png" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            Mocafe
+              <img src="../../../../_static/200mocafe_logo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -77,11 +80,11 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../../index.html">API Reference</a> &raquo;</li>
-          <li><a href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe</span></code></a> &raquo;</li>
-          <li><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe.angie</span></code></a> &raquo;</li>
-      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe.angie.tipcells</span></code></li>
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe</span></code></a></li>
+          <li class="breadcrumb-item"><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe.angie</span></code></a></li>
+      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe.angie.tipcells</span></code></li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../../../_sources/autoapi/mocafe/angie/tipcells/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -92,7 +95,7 @@
            <div itemprop="articleBody">
              
   <section id="module-mocafe.angie.tipcells">
-<span id="mocafe-angie-tipcells"></span><h1><a class="reference internal" href="#module-mocafe.angie.tipcells" title="mocafe.angie.tipcells"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe.angie.tipcells</span></code></a><a class="headerlink" href="#module-mocafe.angie.tipcells" title="Permalink to this heading"></a></h1>
+<span id="mocafe-angie-tipcells"></span><h1><a class="reference internal" href="#module-mocafe.angie.tipcells" title="mocafe.angie.tipcells"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mocafe.angie.tipcells</span></code></a><a class="headerlink" href="#module-mocafe.angie.tipcells" title="Permalink to this headline"></a></h1>
 <p>This module contains classes and methods to manage the tip cells in Mocafe. More precisely, it provides useful
 tools to activate, remove, and move the tip cell in the spatial domain.</p>
 <p>If you use this model in your research, remember to cite the original paper describing the model:</p>
@@ -104,10 +107,10 @@ Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5)
 <p>For a use example see the <a class="reference internal" href="../../../../demo_doc/angiogenesis_2d.html#angiogenesis-2d-demo"><span class="std std-ref">Angiogenesis</span></a> and the
 <a class="reference internal" href="../../../../demo_doc/angiogenesis_2d.html#angiogenesis-2d-demo"><span class="std std-ref">Angiogenesis 3D</span></a> demos.</p>
 <section id="module-contents">
-<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading"></a></h2>
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline"></a></h2>
 <section id="classes">
-<h3>Classes<a class="headerlink" href="#classes" title="Permalink to this heading"></a></h3>
-<table class="autosummary longtable docutils align-default">
+<h3>Classes<a class="headerlink" href="#classes" title="Permalink to this headline"></a></h3>
+<table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
@@ -121,6 +124,20 @@ Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5)
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#mocafe.angie.tipcells.TipCellManager" title="mocafe.angie.tipcells.TipCellManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TipCellManager</span></code></a></p></td>
 <td><p>Class to manage the tip cells throughout the simulation.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline"></a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mocafe.angie.tipcells.load_tip_cells_from_json" title="mocafe.angie.tipcells.load_tip_cells_from_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_tip_cells_from_json</span></code></a>(json_file: str)</p></td>
+<td><p>Creates a tip cell list from a json file with tip cells data.</p></td>
 </tr>
 </tbody>
 </table>
@@ -172,7 +189,7 @@ Tumor angiogenesis and vascular patterning: A mathematical model. PLoS ONE, 6(5)
 
 <dl class="py class">
 <dt class="sig sig-object py" id="mocafe.angie.tipcells.TipCellsField">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.angie.tipcells.</span></span><span class="sig-name descname"><span class="pre">TipCellsField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../fenut/parameters/index.html#mocafe.fenut.parameters.Parameters" title="mocafe.fenut.parameters.Parameters"><span class="pre">mocafe.fenut.parameters.Parameters</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCellsField" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.angie.tipcells.</span></span><span class="sig-name descname"><span class="pre">TipCellsField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../fenut/parameters/index.html#mocafe.fenut.parameters.Parameters" title="mocafe.fenut.parameters.Parameters"><span class="pre">mocafe.fenut.parameters.Parameters</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCellsField" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">fenics.UserExpression</span></code></p>
 <p>Expression representing the capillary field value inside the tip cells.</p>
 <p>In this implementation, the value is coherent with the one used by Travasso et al (2011) in their Phase Field
@@ -258,7 +275,7 @@ the value in 2D is:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="mocafe.angie.tipcells.TipCellManager">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.angie.tipcells.</span></span><span class="sig-name descname"><span class="pre">TipCellManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.Mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../fenut/parameters/index.html#mocafe.fenut.parameters.Parameters" title="mocafe.fenut.parameters.Parameters"><span class="pre">mocafe.fenut.parameters.Parameters</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCellManager" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mocafe.angie.tipcells.</span></span><span class="sig-name descname"><span class="pre">TipCellManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fenics.Mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../fenut/parameters/index.html#mocafe.fenut.parameters.Parameters" title="mocafe.fenut.parameters.Parameters"><span class="pre">mocafe.fenut.parameters.Parameters</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_tcs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mocafe.angie.tipcells.TipCell" title="mocafe.angie.tipcells.TipCell"><span class="pre">TipCell</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCellManager" title="Permalink to this definition"></a></dt>
 <dd><p>Class to manage the tip cells throughout the simulation.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mocafe.angie.tipcells.TipCellManager.get_global_tip_cells_list">
@@ -392,6 +409,42 @@ but has been introduced by Moreira-Soares et al. (2018) <span id="id6">[<a class
 <span class="sig-name descname"><span class="pre">get_latest_tip_cell_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCellManager.get_latest_tip_cell_function" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="mocafe.angie.tipcells.TipCellManager.save_tip_cells">
+<span class="sig-name descname"><span class="pre">save_tip_cells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tc_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCellManager.save_tip_cells" title="Permalink to this definition"></a></dt>
+<dd><p>Stores the current global tip cell list in a readable json file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tc_file</strong> – file where to store the json tip cell list.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mocafe.angie.tipcells.TipCellManager.save_incremental_tip_cells">
+<span class="sig-name descname"><span class="pre">save_incremental_tip_cells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tc_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.TipCellManager.save_incremental_tip_cells" title="Permalink to this definition"></a></dt>
+<dd><p>Stores the global tip cell list in a readable json file at every time step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tc_file</strong> – file where to store the json tip cell list.</p></li>
+<li><p><strong>step</strong> – time step</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mocafe.angie.tipcells.load_tip_cells_from_json">
+<span class="sig-prename descclassname"><span class="pre">mocafe.angie.tipcells.</span></span><span class="sig-name descname"><span class="pre">load_tip_cells_from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mocafe.angie.tipcells.load_tip_cells_from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Creates a tip cell list from a json file with tip cells data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>json_file</strong> – file to load as tip cell list.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

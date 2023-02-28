@@ -32,7 +32,7 @@ Functions
 
 
 
-.. py:function:: xu2016_nutrient_form(sigma: fenics.Function, sigma_0: fenics.Function, c: fenics.Function, phi: fenics.Function, v: fenics.TestFunction, params: dict)
+.. py:function:: xu2016_nutrient_form(sigma: fenics.Function, sigma_0: fenics.Function, c: fenics.Function, phi: fenics.Function, v: fenics.TestFunction, params: Parameters or None, **kwargs)
 
    Equation describing the nutrient evolution in time based on the equation (6) of the paper by Xu et al.
    :cite:`Xu2016`.
@@ -49,6 +49,10 @@ Functions
    - ``V_uT``: nutrient uptake rate by the tumor (correspond to :math:`V_{u}^{T}` in the original paper)
    - ``V_uH``: nutrient uptake rate by the healthy tissue (correspond to :math:`V_{u}^{H}` in the original paper)
 
+   (New in version 1.4) Specify a parameter for the form calling the function, e.g. with
+   ``xu2016_nutrient_form(sigma, sigma0, c, phi, v, params, D_sigma=0.1)``. If both a Parameters
+   object and a parameter as input are given, the function will choose the input parameter.
+
    :param sigma: the FEniCS ``Function`` for the nutrient
    :param sigma_0: the FEniCS ``Function`` for the nutrient initial value
    :param c: the FEniCS ``Function`` for the capillaries
@@ -58,7 +62,7 @@ Functions
    :return: the FEniCS UFL form of the equation
 
 
-.. py:function:: xu_2016_cancer_form(phi: fenics.Function, phi_0: fenics.Function, sigma: fenics.Function, v: fenics.TestFunction, params: mocafe.fenut.parameters.Parameters)
+.. py:function:: xu_2016_cancer_form(phi: fenics.Function, phi_0: fenics.Function, sigma: fenics.Function, v: fenics.TestFunction, params: mocafe.fenut.parameters.Parameters = None, **kwargs)
 
    Equation describing cancer evolution according to equation (5) of the paper of Xu et al. :cite:`Xu2016`.
 
@@ -71,8 +75,12 @@ Functions
    - ``dt``: the time step (time discretization: backward Euler)
    - ``M_phi``: mobility constant for \varphi (correspond to :math:`M_{\phi}` in the original paper)
    - ``lambda_phi``: interface constant (correspond to :math:`\lambda_{phi}` in the original paper)
-   - ``sigma^(h-v)``: nutrient value separating the proliferative rim and the hypoxic rim (correspond to
+   - ``sigma_h_v``: nutrient value separating the proliferative rim and the hypoxic rim (correspond to
      :math:`\sigma^{h - v}` in the original paper)
+
+   (New in version 1.4) Specify a parameter for the form calling the function, e.g. with
+   ``xu_2016_cancer_form(phi, phi0, sigma, v, params, M_phi=0.1)``. If both a Parameters
+   object and a parameter as input are given, the function will choose the input parameter.
 
    :param phi: the FEniCS ``Function`` for the tumor
    :param phi_0: the FEniCS ``Function`` for the tumor initial condition

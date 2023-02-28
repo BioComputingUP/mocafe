@@ -55,7 +55,7 @@ Functions
    :return: the derivative of the chemical potential, as FEniCS UFL equation
 
 
-.. py:function:: prostate_cancer_form(phi: fenics.Function, phi_prec: fenics.Function, sigma: fenics.Function, v: fenics.TestFunction, parameters: mocafe.fenut.parameters.Parameters)
+.. py:function:: prostate_cancer_form(phi: fenics.Function, phi_prec: fenics.Function, sigma: fenics.Function, v: fenics.TestFunction, parameters: Parameters or None, **kwargs)
 
    Builds the FEniCS UFL weak form for the prostate cancer equation reported by Lorenzo and collaborators
    :cite:`Lorenzo2016`. The name of the variable for the cancer is \varphi
@@ -70,6 +70,10 @@ Functions
    - ``chi``: proliferation rate for prostate cancer (correspond to \chi in the original publication)
    - ``A``: the apoptosis rate for the prostate cancer (correspond to :math:`A` in the original publication
 
+   (New in version 1.4) Specify a parameter for the form calling the function, e.g. with
+   ``prostate_cancer_form(phi, phi0, sigma, v, parameters, A=400, tau=10)``. If both a Parameters object and a
+   parameter as input are given, the function will choose the input parameter.
+
    :param phi: the FEniCS ``Function`` for \varphi
    :param phi_prec: the initial value for \varphi
    :param sigma: the FEniCS ``Function`` for the nutrients (\sigma)
@@ -79,7 +83,7 @@ Functions
    :return: the UFL weak form for the prostate cancer equation
 
 
-.. py:function:: prostate_cancer_nutrient_form(sigma: fenics.Function, sigma_old: fenics.Function, phi: fenics.Function, v: fenics.TestFunction, s: fenics.Function, parameters: mocafe.fenut.parameters.Parameters)
+.. py:function:: prostate_cancer_nutrient_form(sigma: fenics.Function, sigma_old: fenics.Function, phi: fenics.Function, v: fenics.TestFunction, s: fenics.Function, parameters: mocafe.fenut.parameters.Parameters = None, **kwargs)
 
    Builds the FEniCS UFL weak form for the nutrient equation reported by Lorenzo and collaborators
    :cite:`Lorenzo2016`. The name of the nutrient is \sigma.
@@ -91,6 +95,10 @@ Functions
    - ``epsilon``: diffusion constant for \sigma (correspond to \lambda in the original paper)
    - ``delta``: the uptake rate of the nutrient by the cancer (correspond to \delta in the original paper)
    - ``gamma``: the decay rate for \sigma (correspong to \gamma in the original paper)
+
+   (New in version 1.4) Specify a parameter for the form calling the function, e.g. with
+   ``prostate_cancer_nutrient_form(sigma, sigma0, phi, v, s, parameters, dt=0.1, delta=10)``. If both a Parameters
+   object and a parameter as input are given, the function will choose the input parameter.
 
    :param sigma: the FEniCS ``Function`` for the \sigma variable
    :param sigma_old: the FEniCS ``Function`` for the initial value of the \sigma value

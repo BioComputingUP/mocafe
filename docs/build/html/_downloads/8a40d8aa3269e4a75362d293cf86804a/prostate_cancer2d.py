@@ -112,7 +112,7 @@ rank = comm.Get_rank()
 #
 file_folder = Path(__file__).parent.resolve()
 data_folder = setup_data_folder(folder_path=f"{file_folder/Path('demo_out')}/prostate_cancer_2d",
-                                auto_enumerate=False)
+                                auto_enumerate=None)
 
 # %%
 # - then, the two files for the cancer :math:`\varphi` and for the nutrients :math:`\sigma`, which will be called

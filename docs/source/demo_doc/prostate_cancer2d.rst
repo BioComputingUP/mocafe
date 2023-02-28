@@ -157,7 +157,7 @@ methods for defining:
 
     file_folder = Path(__file__).parent.resolve()
     data_folder = setup_data_folder(folder_path=f"{file_folder/Path('demo_out')}/prostate_cancer_2d",
-                                    auto_enumerate=False)
+                                    auto_enumerate=None)
 
 
 .. GENERATED FROM PYTHON SOURCE LINES 118-121
