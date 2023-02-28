@@ -44,9 +44,10 @@ def setup_xdmf_files(file_names: list,
     :return: the FEniCS objects representing the files.
     """
     xdmf_files = [fenics.XDMFFile(comm, str(data_folder) + "/" + file_name + ".xdmf") for file_name in file_names]
-    for xdmf_f in xdmf_files:
-        for k, i in xdmf_files_parameters.items():
-            xdmf_f.parameters[k] = i
+    if xdmf_files_parameters is not None:
+        for xdmf_f in xdmf_files:
+            for k, i in xdmf_files_parameters.items():
+                xdmf_f.parameters[k] = i
     return xdmf_files
 
 
