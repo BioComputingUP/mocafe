@@ -388,10 +388,6 @@ t = 0.
 n_steps = int(parameters.get_value("n_steps"))
 tqdm_file = sys.stdout if rank == 0 else None
 tqdm_disable = (rank != 0)
-# if rank == 0:
-#     pbar = tqdm(total=n_steps, ncols=100, position=1, desc="angiogenesis_2d")
-# else:
-#     pbar = None
 
 # %%
 # Now, we can start iterating
@@ -430,9 +426,6 @@ for step in tqdm(range(1, n_steps + 1), ncols=100, desc="angiogenesis_2d", file=
     file_af.write(af_0, t)
     file_c.write(c_0, t)
     tipcells_xdmf.write(tipcells_field, t)
-
-    # if rank == 0:
-    #     pbar.update(1)
 
 # %%
 # Notice that additionally to the system solution a number of operations are performed at each time stem which require
@@ -558,7 +551,7 @@ for step in tqdm(range(1, n_steps + 1), ncols=100, desc="angiogenesis_2d", file=
 #   # define data folder
 #   file_folder = Path(__file__).parent.resolve()
 #   data_folder = mansimd.setup_data_folder(folder_path=f"{file_folder / Path('demo_out')}/angiogenesis_2d",
-#                                           auto_enumerate=False)
+#                                           auto_enumerate=None)
 #   file_names = ["c", "af", "tipcells"]
 #   file_c, file_af, tipcells_xdmf = fu.setup_xdmf_files(file_names, data_folder)
 #
@@ -633,13 +626,11 @@ for step in tqdm(range(1, n_steps + 1), ncols=100, desc="angiogenesis_2d", file=
 #
 #   t = 0.
 #   n_steps = int(parameters.get_value("n_steps"))
-#   if _rank == 0:
-#       pbar = tqdm(total=n_steps, ncols=100, position=1, desc="angiogenesis_2d")
-#   else:
-#       pbar = None
+#   tqdm_file = sys.stdout if rank == 0 else None
+#   tqdm_disable = (rank != 0)
 #
 #   # start iterating
-#   for step in range(1, n_steps + 1):
+#   for step in tqdm(range(1, n_steps + 1), ncols=100, desc="angiogenesis_2d", file=tqdm_file, disable=tqdm_disable):
 #       # update time
 #       t += parameters.get_value("dt")
 #
@@ -674,6 +665,3 @@ for step in tqdm(range(1, n_steps + 1), ncols=100, desc="angiogenesis_2d", file=
 #       file_af.write(af_0, t)
 #       file_c.write(c_0, t)
 #       tipcells_xdmf.write(tipcells_field, t)
-#
-#       if _rank == 0:
-#           pbar.update(1)

@@ -561,7 +561,7 @@ expernal softwares as ParaView. If you don’t now how to do it, you can check o
 
 <span class="n">file_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
 <span class="n">data_folder</span> <span class="o">=</span> <span class="n">setup_data_folder</span><span class="p">(</span><span class="n">folder_path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_folder</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;demo_out&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">/prostate_cancer_2d&quot;</span><span class="p">,</span>
-                                  <span class="n">auto_enumerate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                                  <span class="n">auto_enumerate</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 <span class="n">phi_xdmf</span><span class="p">,</span> <span class="n">sigma_xdmf</span> <span class="o">=</span> <span class="n">setup_xdmf_files</span><span class="p">([</span><span class="s2">&quot;phi&quot;</span><span class="p">,</span> <span class="s2">&quot;sigma&quot;</span><span class="p">],</span> <span class="n">data_folder</span><span class="p">)</span>
 
 <span class="n">parameters</span> <span class="o">=</span> <span class="n">from_dict</span><span class="p">({</span>
