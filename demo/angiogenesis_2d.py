@@ -431,8 +431,8 @@ for step in tqdm(range(1, n_steps + 1), ncols=100, desc="angiogenesis_2d", file=
     file_c.write(c_0, t)
     tipcells_xdmf.write(tipcells_field, t)
 
-    if rank == 0:
-        pbar.update(1)
+    # if rank == 0:
+    #     pbar.update(1)
 
 # %%
 # Notice that additionally to the system solution a number of operations are performed at each time stem which require
