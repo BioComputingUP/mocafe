@@ -1,6 +1,8 @@
 import pandas as pd
 import pathlib
 from pandas_ods_reader import read_ods
+from typing import List, Dict
+import warnings
 
 
 def from_dict(parameters: dict):
@@ -115,3 +117,46 @@ class Parameters:
         return name in self.param_df.index
 
 
+def _unpack_parameters_list(p_names: List[str],
+                            sim_parameters: Parameters or None,
+                            kwargs: Dict):
+    """
+    INTERNAL USE
+
+    (New in version 1.4) For each parameter name in the p_name list, gets the parameter in sim parameters or in
+    kwargs. Raises error if the parameter is missing.
+    """
+    # init param list value
+    parameters_value_list = []
+    for p_name in p_names:
+        parameters_value_list.append(
+            _unpack_parameter(p_name, sim_parameters, kwargs)
+        )
+    return parameters_value_list
+
+
+def _unpack_parameter(p_name: str,
+                      sim_parameters: Parameters or None,
+                      kwargs: Dict):
+    """
+    INTERNAL USE
+
+    (New in version 1.4) Returns the parameter with the given name in sim parameters or in
+    kwargs. Raises error if the parameter is missing.
+    """
+    # check where to find the parameter
+    is_in_sim_parameters = False if sim_parameters is None else sim_parameters.is_parameter(p_name)
+    is_in_kwargs = p_name in kwargs.keys()
+    # set p_value accordingly
+    if is_in_sim_parameters and is_in_kwargs:
+        # if both are specified, take the kwargs value
+        p_value = kwargs[p_name]
+        warnings.warn(f"Parameter {p_name} is given both as input and in simulation parameters. Set "
+                      f"to the value given as input ({p_name} = {p_value}).")
+    elif is_in_sim_parameters:
+        p_value = sim_parameters.get_value(p_name)
+    elif is_in_kwargs:
+        p_value = kwargs[p_name]
+    else:
+        raise RuntimeError(f"Parameter {p_name} has not been specified.")
+    return p_value

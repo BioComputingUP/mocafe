@@ -325,8 +325,7 @@ A_values = [300, 600]
 # run multiple simulations
 for chi_value, A_value in zip(chi_values, A_values):
     # set data folder for current simulation
-    data_folder = setup_data_folder(folder_path=f"{file_folder / Path('demo_out')}/multiple_pc_simulations",
-                                    auto_enumerate=True)
+    data_folder = setup_data_folder(folder_path=f"{file_folder / Path('demo_out')}/multiple_pc_simulations")
 
     # set new parameters values
     std_parameters.set_value("chi", chi_value)

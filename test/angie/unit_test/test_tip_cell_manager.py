@@ -1,19 +1,9 @@
 import fenics
-import sys
 import numpy as np
 import pytest
-from mocafe.angie.tipcells import TipCellManager, TipCell
-
-
-# @pytest.fixture
-# def file_list():
-#     # setup root folder
-#     data_folder = "runtime/test/tipcell"
-#
-#     # define files
-#     file_names = ["c", "T", "grad_T"]
-#     file_list = fu.setup_xdmf_files(file_names, data_folder)
-#     return file_list
+import itertools
+from pathlib import Path
+from mocafe.angie.tipcells import TipCellManager, TipCell, load_tip_cells_from_json
 
 
 @pytest.fixture
@@ -61,49 +51,83 @@ def gradT0(mesh, T0):
     return gradT0
 
 
-def test_activate_tip_cell(T0, phi0, gradT0, mesh, parameters):
+def test_activate_tip_cell(T0, phi0, gradT0, mesh, parameters, tmpdir):
     # create tip cell manager
     tip_cell_manager = TipCellManager(mesh, parameters)
 
     # activate
     tip_cell_manager.activate_tip_cell(phi0, T0, gradT0, 0)
 
-    test_result = False
-    # check if ok
-    if len(tip_cell_manager.get_global_tip_cells_list()) == 1:
-        if tip_cell_manager.get_global_tip_cells_list()[0].get_position()[0] < 30:
-            print(f"p{fenics.MPI.comm_world.Get_rank()}: "
-                  f"Activated tip cell in {tip_cell_manager.get_global_tip_cells_list()[0].get_position()}")
-            test_result = True
-    else:
-        print(f"p{fenics.MPI.comm_world.Get_rank()}: "
-              f" n activated tip cells = {len(tip_cell_manager.get_global_tip_cells_list())}")
-        test_result = False
+    # get global tip cell list
+    g_tc_list = tip_cell_manager.get_global_tip_cells_list()
 
-    assert test_result is True, "There should be just one tip cell activated"
+    # test length
+    assert len(g_tc_list) == 1, "There should be just one tip cell"
+
+    # test if tc is in the right position
+    activated_tc = g_tc_list[0]
+    assert activated_tc.get_position()[0] < 30, f"Tip cell should be where phi0 is high (x[0] < 30). " \
+                                                f"Tip cell found in position {activated_tc.get_position()}"
+
+    # test if a new tip_cell_manager can load the global tip cell list
+    del tip_cell_manager
+    tip_cell_manager2 = TipCellManager(mesh, parameters, initial_tcs=g_tc_list)
+    g_tc_list2 = tip_cell_manager2.get_global_tip_cells_list()
+    assert g_tc_list2 == g_tc_list, f"The two gloabl tip cells list should be equal."
+
+    # check if the new tip cell manager can activate another tip cell
+    tip_cell_manager2.activate_tip_cell(phi0, T0, gradT0, 0)
+    g_tc_list2 = tip_cell_manager2.get_global_tip_cells_list()
+    assert len(g_tc_list2) == 2, f"There should be two tip cells now. Found {len(g_tc_list2)} instead."
+    assert all([tc.get_position()[0] < 30 for tc in g_tc_list2]), f"All Tip Cells should be where phi0 is high " \
+                                                                  f"(x[0] < 30). Tip Cells positions are: " \
+                                                                  f"{[tc.get_position() for tc in g_tc_list2]}"
+
+    # test if I can save tip cells
+    tc_file_r0 = f"{tmpdir}/tipcells.json"
+    tc_file_r0 = fenics.MPI.comm_world.bcast(tc_file_r0, root=0)
+    tip_cell_manager2.save_tip_cells(tc_file_r0)
+    assert Path(tc_file_r0).exists(), f"The tc file {tc_file_r0} should have been created. "
+
+    # test if I can load tip cells
+    tc_list = load_tip_cells_from_json(tc_file_r0)
+    assert tc_list == g_tc_list2
 
 
 def test_activate_3_tip_cells(parameters, T0, phi0, gradT0, mesh):
     # create tip cell manager
     tip_cell_manager = TipCellManager(mesh, parameters)
 
+    # create 3 tip cells
     for i in range(3):
         tip_cell_manager.activate_tip_cell(phi0, T0, gradT0, i)
 
+    # check if len is correct
     tip_cell_list = tip_cell_manager.get_global_tip_cells_list()
-    tip_cell_list_len_is_3 = len(tip_cell_list) == 3
-    are_cells_distant = True
-    for index, tip_cell in enumerate(tip_cell_list):
-        print(f"p{fenics.MPI.comm_world.Get_rank()}: activated tip cells in pos:"
-              f"    {tip_cell.get_position()}")
-        other_indexes = [i for i in range(len(tip_cell_list))]
-        other_indexes.remove(index)
-        for i in other_indexes:
-            distance = tip_cell.get_distance(tip_cell_list[i].get_position())
-            if distance < 4 * parameters.get_value("R_c"):
-                are_cells_distant = False
+    assert len(tip_cell_list) == 3, f"There should be 3 Tip Cells. Found {len(tip_cell_list)} instead"
 
-    assert tip_cell_list_len_is_3 and are_cells_distant, "There should be 3 cells distant to each other"
+    # check if tcs are distant
+    min_tc_distance = parameters.get_value("min_tipcell_distance")
+    for tc, other_tc in itertools.combinations(tip_cell_list, 2):
+        # compute distance
+        tc_distance = tc.get_distance(other_tc.get_position())
+        # check if is correct
+        assert tc_distance >= min_tc_distance, f"Min distance between tip cells should be" \
+                                               f"{min_tc_distance}. Is {tc_distance} instead."
+
+    # repeat the tests for another tip cell manager, which loads the previous tc_list
+    del tip_cell_manager
+    tip_cell_manager2 = TipCellManager(mesh, parameters, initial_tcs=tip_cell_list)
+    for i in range(3):
+        tip_cell_manager2.activate_tip_cell(phi0, T0, gradT0, i)
+    tip_cell_list = tip_cell_manager2.get_global_tip_cells_list()
+    assert len(tip_cell_list) == 6, f"There should be 6 Tip Cells. Found {len(tip_cell_list)} instead"
+    for tc, other_tc in itertools.combinations(tip_cell_list, 2):
+        # compute distance
+        tc_distance = tc.get_distance(other_tc.get_position())
+        # check if is correct
+        assert tc_distance >= min_tc_distance, f"Min distance between tip cells should be" \
+                                               f"{min_tc_distance}. Is {tc_distance} instead."
 
 
 def test_revert_tip_cells(phi0, T0, gradT0, mesh, parameters):
@@ -112,6 +136,7 @@ def test_revert_tip_cells(phi0, T0, gradT0, mesh, parameters):
 
     # set test result
     ref_len = [1, 2, 0]
+    # init list for test results
     actual_len = []
     for i in range(3):
         if i == 2:
@@ -119,8 +144,6 @@ def test_revert_tip_cells(phi0, T0, gradT0, mesh, parameters):
         tip_cell_manager.activate_tip_cell(phi0, T0, gradT0, i)
         tip_cell_manager.revert_tip_cells(T0, gradT0)
         n_tip_cells = len(tip_cell_manager.get_global_tip_cells_list())
-        print(f"p{fenics.MPI.comm_world.Get_rank()}: step {i}: "
-              f"len = {len(tip_cell_manager.get_global_tip_cells_list())}")
         actual_len.append(n_tip_cells)
     assert np.allclose(ref_len, actual_len), \
         "There should be 1 tip cell at step 0, 2 tip cells at step 1, and 0 at step 2"
@@ -198,3 +221,14 @@ def test_delta_notch_3_cells(parameters, T0, gradT0, mesh):
         f"Tip Cell in position {tipcell1_pos} should be in the list"
     assert tipcell3 in tip_cell_manager.get_global_tip_cells_list(), \
         f"Tip Cell in position {tipcell3_pos} should be in the list"
+
+
+def test_different_initial_tc_lists_on_different_processes(mesh, parameters):
+    if fenics.MPI.comm_world.Get_size() > 1:
+        # create different tip cell list in different processes
+        init_tc_list = [TipCell(np.array([4, 4]), 4, 100),
+                        TipCell(np.array([10, 10]), 4, 101),
+                        TipCell(np.array([20, 20]), 4, fenics.MPI.comm_world.Get_rank())]
+        # check if error raises
+        with pytest.raises(RuntimeError):
+            TipCellManager(mesh, parameters, initial_tcs=init_tc_list)
